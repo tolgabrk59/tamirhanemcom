@@ -171,7 +171,8 @@ export async function POST(req: Request) {
         data = JSON.parse(cleanText);
     } catch (jsonError) {
         // Fallback: Try without tools (Pure AI)
-        const modelAI = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        const fallbackGenAI = new GoogleGenerativeAI(keys[0]);
+        const modelAI = fallbackGenAI.getGenerativeModel({ model: "gemini-2.5-flash" });
         const result = await modelAI.generateContent(prompt + "\n\n(Not: JSON format hatası alındı, lütfen sadece geçerli JSON döndür.)");
         const response = await result.response;
         // Try parsing fallback
