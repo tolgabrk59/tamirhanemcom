@@ -1,0 +1,17 @@
+[Unit]
+Description=TamirHanem Next.js Development Server
+After=network.target
+
+[Service]
+Type=simple
+User=dietpi
+WorkingDirectory=/home/dietpi/tamirhanem-next
+Environment="PATH=/home/dietpi/.nvm/versions/node/v20.19.2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=/home/dietpi/.nvm/versions/node/v20.19.2/bin/npm run dev
+Restart=always
+RestartSec=10
+StandardOutput=append:/var/log/tamirhanem-next.log
+StandardError=append:/var/log/tamirhanem-next.log
+
+[Install]
+WantedBy=multi-user.target

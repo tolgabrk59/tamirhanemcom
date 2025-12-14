@@ -1,0 +1,33 @@
+import { NextResponse } from 'next/server';
+import { searchServices } from '@/lib/db';
+
+export async function GET(request: Request) {
+    try {
+        const { searchParams } = new URL(request.url);
+
+
+        const filters = {
+            brand: searchParams.get('brand') || undefined,
+            model: searchParams.get('model') || undefined,
+            category: searchParams.get('category') || undefined,
+            city: searchParams.get('city') || undefined,
+            district: searchParams.get('district') || undefined,
+            fuel_type: searchParams.get('fuel_type') || undefined,
+        };
+
+
+        const services = await searchServices(filters);
+
+        return NextResponse.json({
+            success: true,
+            data: services,
+            count: services.length
+        });
+    } catch (error) {
+        console.error('API Error:', error);
+        return NextResponse.json(
+            { success: false, error: 'Servisler yüklenemedi' },
+            { status: 500 }
+        );
+    }
+}

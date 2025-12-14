@@ -1,0 +1,1198 @@
+export interface EncyclopediaComponent {
+    id: string;
+    name: string;
+    slug: string;
+    description: string;
+    function: string;
+    symptoms: string[];
+    repairAdvice: string[];
+    estimatedCost?: { min: number; max: number };
+    laborTime?: string;
+    relatedComponents?: string[];
+}
+
+export interface EncyclopediaSubsystem {
+    id: string;
+    name: string;
+    slug: string;
+    description: string;
+    components: EncyclopediaComponent[];
+}
+
+export interface EncyclopediaSystem {
+    id: string;
+    name: string;
+    slug: string;
+    description: string;
+    icon: string;
+    color: string;
+    subsystems?: EncyclopediaSubsystem[];
+    components: EncyclopediaComponent[];
+}
+
+export const encyclopediaSystems: EncyclopediaSystem[] = [
+    {
+        id: 'motor',
+        name: 'Motor Sistemi',
+        slug: 'motor-sistemi',
+        description: 'Aracınızın kalbi olan motor sistemi, yakıtı güce dönüştürerek aracınızı hareket ettirir.',
+        icon: 'engine',
+        color: 'red',
+        subsystems: [
+            {
+                id: 'zamanlama',
+                name: 'Zamanlama Sistemi',
+                slug: 'zamanlama-sistemi',
+                description: 'Motor zamanlamasını kontrol eden kritik bileşenler.',
+                components: [
+                    {
+                        id: 'triger-kayisi',
+                        name: 'Triger Kayışı (Timing Belt)',
+                        slug: 'triger-kayisi',
+                        description: 'Motor zamanlamasını sağlayan kritik kayış.',
+                        function: 'Krank mili ile kam milini senkronize ederek supapların doğru zamanda açılıp kapanmasını sağlar.',
+                        symptoms: ['Motordan tıkırtı sesi', 'Motor çalışırken titreme', 'Motor performans kaybı', 'Motor çalışmıyor'],
+                        repairAdvice: ['60.000-100.000 km\'de değiştirilmeli', 'Su pompası ile birlikte değiştirilmeli', 'Gergi ve rulmanlarda kontrol edilmeli'],
+                        estimatedCost: { min: 2000, max: 5000 },
+                        laborTime: '3-5 saat'
+                    },
+                    {
+                        id: 'triger-zinciri',
+                        name: 'Triger Zinciri (Timing Chain)',
+                        slug: 'triger-zinciri',
+                        description: 'Metal zincir ile zamanlama sağlar.',
+                        function: 'Kayış yerine zincir kullanarak daha uzun ömürlü zamanlama sağlar.',
+                        symptoms: ['Motordan zincir sesi', 'Soğuk çalıştırmada gürültü', 'Motor performans kaybı'],
+                        repairAdvice: ['150.000+ km ömürlü', 'Gergi kontrol edilmeli', 'Yağ değişimi düzenli yapılmalı'],
+                        estimatedCost: { min: 3000, max: 8000 },
+                        laborTime: '4-6 saat'
+                    },
+                    {
+                        id: 'triger-gergi',
+                        name: 'Triger Gergisi (Timing Belt Tensioner)',
+                        slug: 'triger-gergi',
+                        description: 'Triger kayışının gerginliğini sağlar.',
+                        function: 'Kayışın doğru gerginlikte kalmasını sağlayarak kayma ve kopma riskini önler.',
+                        symptoms: ['Kayıştan cırlama sesi', 'Motor zamanlaması bozuk', 'Kayış atlaması'],
+                        repairAdvice: ['Kayış ile birlikte değiştirilmeli', 'Rulman kontrol edilmeli'],
+                        estimatedCost: { min: 500, max: 1500 },
+                        laborTime: '1-2 saat'
+                    },
+                    {
+                        id: 'kam-mili',
+                        name: 'Kam Mili (Camshaft)',
+                        slug: 'kam-mili',
+                        description: 'Supapları açıp kapatan mil.',
+                        function: 'Dönerek supapları belirli sırada açıp kapatır.',
+                        symptoms: ['Motor performans kaybı', 'Yakıt tüketimi artışı', 'Motor çalışmıyor'],
+                        repairAdvice: ['Aşınma varsa değiştirilmeli', 'Yağlama kritik', 'Kam sensörü kontrol edilmeli'],
+                        estimatedCost: { min: 3000, max: 10000 },
+                        laborTime: '6-10 saat'
+                    },
+                    {
+                        id: 'kam-sensoru',
+                        name: 'Kam Sensörü (Camshaft Position Sensor)',
+                        slug: 'kam-sensoru',
+                        description: 'Kam mili pozisyonunu algılar.',
+                        function: 'Kam milinin pozisyonunu ECU\'ya bildirir.',
+                        symptoms: ['Check engine lambası', 'Motor çalışmıyor', 'Performans kaybı'],
+                        repairAdvice: ['Arızalı sensör değiştirilmeli', 'Elektrik bağlantıları kontrol edilmeli'],
+                        estimatedCost: { min: 400, max: 1200 },
+                        laborTime: '30 dakika - 1 saat'
+                    },
+                    {
+                        id: 'kam-keceleri',
+                        name: 'Kam Keçeleri (Camshaft Seal)',
+                        slug: 'kam-keceleri',
+                        description: 'Kam milinden yağ sızıntısını önler.',
+                        function: 'Kam mili çıkışlarında sızdırmazlık sağlar.',
+                        symptoms: ['Yağ sızıntısı', 'Yağ seviyesi düşüyor', 'Motor bölgesinde yağ'],
+                        repairAdvice: ['Sızıntı varsa değiştirilmeli', 'Triger değişiminde kontrol edilmeli'],
+                        estimatedCost: { min: 500, max: 1500 },
+                        laborTime: '2-3 saat'
+                    },
+                    {
+                        id: 'timing-cover',
+                        name: 'Zamanlama Kapağı (Timing Cover)',
+                        slug: 'timing-cover',
+                        description: 'Zamanlama mekanizmasını korur.',
+                        function: 'Triger kayışı/zincirini dış etkenlerden korur.',
+                        symptoms: ['Yağ sızıntısı', 'Kapaktan gürültü'],
+                        repairAdvice: ['Conta ile birlikte değiştirilmeli', 'Vidalar doğru torkta sıkılmalı'],
+                        estimatedCost: { min: 800, max: 2500 },
+                        laborTime: '2-4 saat'
+                    },
+                    {
+                        id: 'balance-shaft',
+                        name: 'Denge Mili (Balance Shaft)',
+                        slug: 'balance-shaft',
+                        description: 'Motor titreşimini azaltır.',
+                        function: 'Motor dengesizliğini gidererek titreşimi azaltır.',
+                        symptoms: ['Aşırı titreşim', 'Gürültü'],
+                        repairAdvice: ['Rulman kontrol edilmeli', 'Yağlama önemli'],
+                        estimatedCost: { min: 2000, max: 5000 },
+                        laborTime: '4-6 saat'
+                    }
+                ]
+            },
+            {
+                id: 'atesle me',
+                name: 'Ateşleme Sistemi',
+                slug: 'atesleme-sistemi',
+                description: 'Yakıt-hava karışımını ateşleyen sistem.',
+                components: [
+                    {
+                        id: 'buji',
+                        name: 'Buji (Spark Plug)',
+                        slug: 'buji',
+                        description: 'Yakıt karışımını ateşleyen parça.',
+                        function: 'Yüksek voltajla kıvılcım oluşturarak yakıt-hava karışımını yakar.',
+                        symptoms: ['Motor titremesi', 'Zor çalışma', 'Yakıt tüketimi artışı', 'Güç kaybı'],
+                        repairAdvice: ['20.000-40.000 km\'de değiştirilmeli', 'Tüm bujiler birlikte değişmeli', 'Doğru tip buji kullanılmalı'],
+                        estimatedCost: { min: 400, max: 1200 },
+                        laborTime: '30 dakika - 1 saat'
+                    },
+                    {
+                        id: 'atesleme-bobini',
+                        name: 'Ateşleme Bobini (Ignition Coil)',
+                        slug: 'atesleme-bobini',
+                        description: 'Bujilere yüksek voltaj sağlar.',
+                        function: '12V\'u 20.000-40.000V\'a yükselterek bujilere iletir.',
+                        symptoms: ['Motor titremesi', 'Güç kaybı', 'Check engine lambası', 'Zor çalışma'],
+                        repairAdvice: ['Arızalı bobin değiştirilmeli', 'Elektrik bağlantıları kontrol edilmeli', 'Nem hasara yol açar'],
+                        estimatedCost: { min: 800, max: 2500 },
+                        laborTime: '30 dakika - 1 saat'
+                    },
+                    {
+                        id: 'atesleme-kablolari',
+                        name: 'Ateşleme Kabloları (Spark Plug Wires)',
+                        slug: 'atesleme-kablolari',
+                        description: 'Bobinden bujilere voltaj iletir.',
+                        function: 'Yüksek voltajı bobinden bujilere güvenli şekilde iletir.',
+                        symptoms: ['Motor titremesi', 'Performans kaybı', 'Yakıt tüketimi artışı'],
+                        repairAdvice: ['Çatlak veya yıpranmış kablolar değiştirilmeli', 'Nem ve ısıdan korunmalı'],
+                        estimatedCost: { min: 300, max: 1000 },
+                        laborTime: '30 dakika'
+                    },
+                    {
+                        id: 'distributor',
+                        name: 'Distribütör (Distributor)',
+                        slug: 'distributor',
+                        description: 'Ateşleme zamanlamasını dağıtır.',
+                        function: 'Ateşleme sinyalini doğru silindire doğru zamanda gönderir.',
+                        symptoms: ['Motor çalışmıyor', 'Ateşleme zamanlaması bozuk', 'Performans kaybı'],
+                        repairAdvice: ['Eski motorlarda bulunur', 'Kapak ve rotor kontrol edilmeli'],
+                        estimatedCost: { min: 1000, max: 3000 },
+                        laborTime: '1-2 saat'
+                    }
+                ]
+            },
+            {
+                id: 'motor-blok',
+                name: 'Motor Blok ve Parçaları',
+                slug: 'motor-blok',
+                description: 'Motorun ana yapısal bileşenleri.',
+                components: [
+                    {
+                        id: 'silindir-kapagi',
+                        name: 'Silindir Kapağı (Cylinder Head)',
+                        slug: 'silindir-kapagi',
+                        description: 'Yanma odasını oluşturan üst kapak.',
+                        function: 'Supapları, kam milini ve yanma odasını barındırır.',
+                        symptoms: ['Aşırı ısınma', 'Güç kaybı', 'Beyaz duman', 'Yağ-su karışması'],
+                        repairAdvice: ['Çatlak varsa tamir veya değişim', 'Conta değişimi kritik', 'Düzleştirme gerekebilir'],
+                        estimatedCost: { min: 5000, max: 15000 },
+                        laborTime: '8-12 saat'
+                    },
+                    {
+                        id: 'motor-blogu',
+                        name: 'Motor Bloğu (Engine Block)',
+                        slug: 'motor-blogu',
+                        description: 'Motorun ana gövdesi.',
+                        function: 'Silindirler, krank mili ve pistonları barındırır.',
+                        symptoms: ['Çatlak', 'Aşırı ısınma', 'Yağ sızıntısı'],
+                        repairAdvice: ['Çatlak varsa tamir veya motor değişimi', 'Çok pahalı onarım'],
+                        estimatedCost: { min: 15000, max: 50000 },
+                        laborTime: '20-40 saat'
+                    },
+                    {
+                        id: 'pistonlar',
+                        name: 'Pistonlar (Pistons)',
+                        slug: 'pistonlar',
+                        description: 'Yanma gücünü harekete çevirir.',
+                        function: 'Yanma basıncını krank miline iletir.',
+                        symptoms: ['Motor vuruntu', 'Güç kaybı', 'Mavi duman', 'Yağ tüketimi'],
+                        repairAdvice: ['Segmanlar ile birlikte değiştirilmeli', 'Silindir honlanmalı'],
+                        estimatedCost: { min: 4000, max: 12000 },
+                        laborTime: '10-15 saat'
+                    },
+                    {
+                        id: 'krank-mili',
+                        name: 'Krank Mili (Crankshaft)',
+                        slug: 'krank-mili',
+                        description: 'Pistonların hareketini dönme hareketine çevirir.',
+                        function: 'Pistonların ileri-geri hareketini döner harekete dönüştürür.',
+                        symptoms: ['Motor vuruntu', 'Titreşim', 'Yağ basıncı düşük'],
+                        repairAdvice: ['Rulman kontrol edilmeli', 'Yağ değişimi kritik', 'Çok pahalı onarım'],
+                        estimatedCost: { min: 8000, max: 25000 },
+                        laborTime: '15-25 saat'
+                    },
+                    {
+                        id: 'krank-sensoru',
+                        name: 'Krank Sensörü (Crankshaft Position Sensor)',
+                        slug: 'krank-sensoru',
+                        description: 'Krank mili pozisyonunu algılar.',
+                        function: 'Krank mili devir ve pozisyonunu ECU\'ya bildirir.',
+                        symptoms: ['Motor çalışmıyor', 'Check engine lambası', 'Titreşim'],
+                        repairAdvice: ['Arızalı sensör değiştirilmeli', 'Elektrik bağlantıları kontrol edilmeli'],
+                        estimatedCost: { min: 400, max: 1200 },
+                        laborTime: '30 dakika - 1 saat'
+                    },
+                    {
+                        id: 'krank-kasnagi',
+                        name: 'Krank Kasnağı (Crankshaft Pulley)',
+                        slug: 'krank-kasnagi',
+                        description: 'Aksesuar kayışını tahrik eder.',
+                        function: 'Krank milinden gücü alarak aksesuar kayışını döndürür.',
+                        symptoms: ['Titreşim', 'Kayıştan ses', 'Aksesuar arızaları'],
+                        repairAdvice: ['Hasar varsa değiştirilmeli', 'Vida torku önemli'],
+                        estimatedCost: { min: 800, max: 2000 },
+                        laborTime: '1-2 saat'
+                    },
+                    {
+                        id: 'supaplar',
+                        name: 'Supaplar (Valves)',
+                        slug: 'supaplar',
+                        description: 'Hava girişini ve egzoz çıkışını kontrol eder.',
+                        function: 'Emme ve egzoz supapları yanma odasına hava girişini ve egzoz çıkışını sağlar.',
+                        symptoms: ['Güç kaybı', 'Tıkırtı sesi', 'Mavi duman', 'Yağ tüketimi'],
+                        repairAdvice: ['Supap ayarı düzenli yapılmalı', 'Yanmış supaplar değiştirilmeli', 'Kılavuz kontrol edilmeli'],
+                        estimatedCost: { min: 3000, max: 8000 },
+                        laborTime: '6-10 saat'
+                    },
+                    {
+                        id: 'supap-kapagi',
+                        name: 'Supap Kapağı (Valve Cover)',
+                        slug: 'supap-kapagi',
+                        description: 'Kam milini ve supapları korur.',
+                        function: 'Üst motor bölümünü korur ve yağ sızıntısını önler.',
+                        symptoms: ['Yağ sızıntısı', 'Yanık yağ kokusu'],
+                        repairAdvice: ['Conta düzenli değiştirilmeli', 'Vidalar doğru torkta sıkılmalı'],
+                        estimatedCost: { min: 500, max: 1500 },
+                        laborTime: '1-2 saat'
+                    },
+                    {
+                        id: 'silindir',
+                        name: 'Silindir (Engine Cylinder)',
+                        slug: 'silindir',
+                        description: 'Pistonun hareket ettiği bölüm.',
+                        function: 'Pistonun yukarı aşağı hareket ettiği silindirik boşluk.',
+                        symptoms: ['Kompresyon kaybı', 'Güç kaybı', 'Yağ tüketimi'],
+                        repairAdvice: ['Honlama gerekebilir', 'Aşınma varsa tamir'],
+                        estimatedCost: { min: 5000, max: 15000 },
+                        laborTime: '10-20 saat'
+                    },
+                    {
+                        id: 'connecting-rod',
+                        name: 'Biyel Kolu (Connecting Rod)',
+                        slug: 'connecting-rod',
+                        description: 'Pistonu krank miline bağlar.',
+                        function: 'Pistonun hareketini krank miline iletir.',
+                        symptoms: ['Motor vuruntu', 'Metal sesi'],
+                        repairAdvice: ['Rulman kontrol edilmeli', 'Hasar varsa değiştirilmeli'],
+                        estimatedCost: { min: 3000, max: 10000 },
+                        laborTime: '10-15 saat'
+                    }
+                ]
+            },
+            {
+                id: 'yaglama',
+                name: 'Yağlama Sistemi',
+                slug: 'yaglama-sistemi',
+                description: 'Motor parçalarını yağlayan sistem.',
+                components: [
+                    {
+                        id: 'yag-pompasi',
+                        name: 'Yağ Pompası (Oil Pump)',
+                        slug: 'yag-pompasi',
+                        description: 'Motor yağını basınçla pompalayan parça.',
+                        function: 'Motor yağını basınç altında tüm motor parçalarına dağıtır.',
+                        symptoms: ['Düşük yağ basıncı', 'Yağ lambası yanıyor', 'Motor gürültüsü', 'Aşırı ısınma'],
+                        repairAdvice: ['Yağ değişimi düzenli yapılmalı', 'Yağ filtresi kontrol edilmeli', 'Arızalı pompa değiştirilmeli'],
+                        estimatedCost: { min: 1500, max: 4000 },
+                        laborTime: '3-5 saat'
+                    },
+                    {
+                        id: 'yag-filtresi',
+                        name: 'Yağ Filtresi (Oil Filter)',
+                        slug: 'yag-filtresi',
+                        description: 'Motor yağını temizler.',
+                        function: 'Motor yağındaki metal parçacıkları ve kirleri tutar.',
+                        symptoms: ['Düşük yağ basıncı', 'Motor gürültüsü', 'Yağ lambası'],
+                        repairAdvice: ['Her yağ değişiminde değiştirilmeli', 'Kaliteli filtre kullanılmalı'],
+                        estimatedCost: { min: 100, max: 300 },
+                        laborTime: '15-30 dakika'
+                    },
+                    {
+                        id: 'karter',
+                        name: 'Karter (Oil Pan/Crankcase)',
+                        slug: 'karter',
+                        description: 'Motor yağını tutan kap.',
+                        function: 'Motor yağını depolar ve motor altını korur.',
+                        symptoms: ['Yağ sızıntısı', 'Yağ seviyesi düşüyor', 'Hasar'],
+                        repairAdvice: ['Conta düzenli değiştirilmeli', 'Hasar varsa tamir veya değişim'],
+                        estimatedCost: { min: 800, max: 2500 },
+                        laborTime: '2-4 saat'
+                    },
+                    {
+                        id: 'yag-sogutucusu',
+                        name: 'Yağ Soğutucu (Oil Cooler)',
+                        slug: 'yag-sogutucusu',
+                        description: 'Motor yağını soğutur.',
+                        function: 'Yağ sıcaklığını düşürerek motor ömrünü uzatır.',
+                        symptoms: ['Yağ sıcaklığı yüksek', 'Yağ sızıntısı', 'Performans kaybı'],
+                        repairAdvice: ['Tıkanma varsa temizlenmeli', 'Sızıntı varsa tamir'],
+                        estimatedCost: { min: 1500, max: 4000 },
+                        laborTime: '2-3 saat'
+                    },
+                    {
+                        id: 'motor-yagi',
+                        name: 'Motor Yağı (Engine Oil)',
+                        slug: 'motor-yagi',
+                        description: 'Motor parçalarını yağlar.',
+                        function: 'Sürtünmeyi azaltır, soğutma sağlar, temizler.',
+                        symptoms: ['Yağ seviyesi düşük', 'Kirli yağ', 'Motor gürültüsü'],
+                        repairAdvice: ['Düzenli değiştirilmeli (10.000-15.000 km)', 'Doğru viskozite kullanılmalı'],
+                        estimatedCost: { min: 300, max: 1000 },
+                        laborTime: '30 dakika'
+                    },
+                    {
+                        id: 'yag-kecesi',
+                        name: 'Yağ Keçesi (Oil Seal)',
+                        slug: 'yag-kecesi',
+                        description: 'Yağ sızıntısını önler.',
+                        function: 'Krank mili ve kam mili çıkışlarında sızdırmazlık sağlar.',
+                        symptoms: ['Yağ sızıntısı', 'Yağ seviyesi düşüyor'],
+                        repairAdvice: ['Sızıntı varsa değiştirilmeli', 'Triger değişiminde kontrol edilmeli'],
+                        estimatedCost: { min: 500, max: 1500 },
+                        laborTime: '2-4 saat'
+                    }
+                ]
+            },
+            {
+                id: 'hava-emme',
+                name: 'Hava Emme Sistemi',
+                slug: 'hava-emme-sistemi',
+                description: 'Motora temiz hava sağlayan sistem.',
+                components: [
+                    {
+                        id: 'hava-filtresi',
+                        name: 'Hava Filtresi (Air Filter)',
+                        slug: 'hava-filtresi',
+                        description: 'Motora giren havayı temizler.',
+                        function: 'Havadaki toz ve kirleri tutar, temiz hava sağlar.',
+                        symptoms: ['Güç kaybı', 'Yakıt tüketimi artışı', 'Siyah duman', 'Hızlanma sorunu'],
+                        repairAdvice: ['15.000-30.000 km\'de değiştirilmeli', 'Tozlu ortamlarda daha sık', 'Temizlenebilir filtreler yıkanabilir'],
+                        estimatedCost: { min: 150, max: 500 },
+                        laborTime: '10-15 dakika'
+                    },
+                    {
+                        id: 'gaz-kelebegi',
+                        name: 'Gaz Kelebeği (Throttle Body)',
+                        slug: 'gaz-kelebegi',
+                        description: 'Motora giren hava miktarını kontrol eder.',
+                        function: 'Gaz pedalı ile kontrol edilerek hava akışını ayarlar.',
+                        symptoms: ['Rölanti problemi', 'Titreşim', 'Check engine lambası', 'Güç kaybı'],
+                        repairAdvice: ['Düzenli temizlenmeli', 'Sensör kontrol edilmeli', 'Elektronik kelebek kalibrasyonu'],
+                        estimatedCost: { min: 1500, max: 4000 },
+                        laborTime: '1-2 saat'
+                    },
+                    {
+                        id: 'emme-manifoldu',
+                        name: 'Emme Manifoldu (Intake Manifold)',
+                        slug: 'emme-manifoldu',
+                        description: 'Havayı silindirlere dağıtır.',
+                        function: 'Hava-yakıt karışımını silindirlere eşit dağıtır.',
+                        symptoms: ['Vakum kaçağı', 'Rölanti problemi', 'Güç kaybı', 'Check engine lambası'],
+                        repairAdvice: ['Conta kontrol edilmeli', 'Çatlak varsa tamir', 'Vakum hortumları kontrol edilmeli'],
+                        estimatedCost: { min: 2000, max: 6000 },
+                        laborTime: '3-5 saat'
+                    },
+                    {
+                        id: 'turbo',
+                        name: 'Turboşarj (Turbocharger)',
+                        slug: 'turbo',
+                        description: 'Motora basınçlı hava sağlar.',
+                        function: 'Egzoz gazlarını kullanarak havayı sıkıştırır ve motora daha fazla hava verir.',
+                        symptoms: ['Güç kaybı', 'Siyah/mavi duman', 'Islık sesi', 'Yağ tüketimi', 'Turbo gecikmesi'],
+                        repairAdvice: ['Yağ değişimi kritik', 'Soğuma süresi verilmeli', 'Hava filtresi temiz olmalı'],
+                        estimatedCost: { min: 5000, max: 15000 },
+                        laborTime: '4-8 saat'
+                    },
+                    {
+                        id: 'supercharger',
+                        name: 'Süperşarj (Supercharger)',
+                        slug: 'supercharger',
+                        description: 'Mekanik olarak basınçlı hava sağlar.',
+                        function: 'Motor gücüyle çalışarak havayı sıkıştırır.',
+                        symptoms: ['Güç kaybı', 'Gürültü', 'Kayış problemi'],
+                        repairAdvice: ['Kayış kontrol edilmeli', 'Yağ seviyesi kontrol edilmeli'],
+                        estimatedCost: { min: 8000, max: 20000 },
+                        laborTime: '6-10 saat'
+                    },
+                    {
+                        id: 'maf-sensoru',
+                        name: 'MAF Sensörü (Mass Air Flow Sensor)',
+                        slug: 'maf-sensoru',
+                        description: 'Hava akış miktarını ölçer.',
+                        function: 'Motora giren hava miktarını ECU\'ya bildirir.',
+                        symptoms: ['Rölanti problemi', 'Güç kaybı', 'Check engine lambası', 'Kötü yakıt ekonomisi'],
+                        repairAdvice: ['Temizlenebilir', 'Arızalı ise değiştirilmeli', 'Hava filtresi temiz olmalı'],
+                        estimatedCost: { min: 800, max: 2500 },
+                        laborTime: '30 dakika - 1 saat'
+                    },
+                    {
+                        id: 'intercooler',
+                        name: 'Intercooler',
+                        slug: 'intercooler',
+                        description: 'Turbodan gelen havayı soğutur.',
+                        function: 'Sıkıştırılmış havayı soğutarak yoğunluğunu artırır.',
+                        symptoms: ['Güç kaybı', 'Turbo basıncı düşük', 'Sızıntı'],
+                        repairAdvice: ['Sızıntı kontrol edilmeli', 'Temizlik önemli'],
+                        estimatedCost: { min: 2000, max: 5000 },
+                        laborTime: '2-4 saat'
+                    },
+                    {
+                        id: 'throttle-actuator',
+                        name: 'Gaz Kelebeği Aktüatörü (Throttle Actuator)',
+                        slug: 'throttle-actuator',
+                        description: 'Elektronik gaz kelebeğini kontrol eder.',
+                        function: 'ECU komutlarına göre kelebeği açıp kapatır.',
+                        symptoms: ['Rölanti problemi', 'Gaz tepkisi yok', 'Check engine lambası'],
+                        repairAdvice: ['Kalibrasyon gerekebilir', 'Arızalı ise değiştirilmeli'],
+                        estimatedCost: { min: 1500, max: 4000 },
+                        laborTime: '1-2 saat'
+                    }
+                ]
+            },
+            {
+                id: 'contalar',
+                name: 'Contalar ve Sızdırmazlık',
+                slug: 'contalar',
+                description: 'Motor sızdırmazlığını sağlayan parçalar.',
+                components: [
+                    {
+                        id: 'silindir-kapak-contasi',
+                        name: 'Silindir Kapak Contası (Head Gasket)',
+                        slug: 'silindir-kapak-contasi',
+                        description: 'Silindir kapağı ile blok arasında sızdırmazlık sağlar.',
+                        function: 'Yanma odasını, yağ ve su kanallarını birbirinden ayırır.',
+                        symptoms: ['Aşırı ısınma', 'Beyaz duman', 'Yağ-su karışması', 'Güç kaybı', 'Radyatörde köpük'],
+                        repairAdvice: ['Hasar varsa hemen değiştirilmeli', 'Kapak düzleştirme gerekebilir', 'Pahalı onarım'],
+                        estimatedCost: { min: 3000, max: 8000 },
+                        laborTime: '6-10 saat'
+                    },
+                    {
+                        id: 'karter-contasi',
+                        name: 'Karter Contası (Oil Pan Gasket)',
+                        slug: 'karter-contasi',
+                        description: 'Karter ile blok arasında sızdırmazlık.',
+                        function: 'Yağ sızıntısını önler.',
+                        symptoms: ['Yağ sızıntısı', 'Yağ seviyesi düşüyor'],
+                        repairAdvice: ['Sızıntı varsa değiştirilmeli', 'Silikon conta kullanılabilir'],
+                        estimatedCost: { min: 500, max: 1500 },
+                        laborTime: '2-3 saat'
+                    },
+                    {
+                        id: 'supap-kapak-contasi',
+                        name: 'Supap Kapak Contası (Valve Cover Gasket)',
+                        slug: 'supap-kapak-contasi',
+                        description: 'Supap kapağı sızdırmazlığı.',
+                        function: 'Üst motordan yağ sızıntısını önler.',
+                        symptoms: ['Yağ sızıntısı', 'Yanık yağ kokusu', 'Motor üstünde yağ'],
+                        repairAdvice: ['Düzenli değiştirilmeli', 'Vidalar doğru torkta sıkılmalı'],
+                        estimatedCost: { min: 400, max: 1200 },
+                        laborTime: '1-2 saat'
+                    },
+                    {
+                        id: 'timing-cover-gasket',
+                        name: 'Zamanlama Kapağı Contası (Timing Cover Gasket)',
+                        slug: 'timing-cover-gasket',
+                        description: 'Zamanlama kapağı sızdırmazlığı.',
+                        function: 'Ön kapaktan yağ sızıntısını önler.',
+                        symptoms: ['Yağ sızıntısı', 'Triger bölgesinde yağ'],
+                        repairAdvice: ['Triger değişiminde kontrol edilmeli', 'Sızıntı varsa değiştirilmeli'],
+                        estimatedCost: { min: 800, max: 2000 },
+                        laborTime: '3-5 saat'
+                    },
+                    {
+                        id: 'main-seal',
+                        name: 'Ana Keçe (Main Seal)',
+                        slug: 'main-seal',
+                        description: 'Krank mili arka keçesi.',
+                        function: 'Krank mili arkasından yağ sızıntısını önler.',
+                        symptoms: ['Yağ sızıntısı', 'Debriyaj üzerinde yağ'],
+                        repairAdvice: ['Şanzıman sökülmeli', 'Pahalı işçilik'],
+                        estimatedCost: { min: 2000, max: 5000 },
+                        laborTime: '6-10 saat'
+                    },
+                    {
+                        id: 'emme-manifold-contasi',
+                        name: 'Emme Manifoldu Contası (Intake Manifold Gasket)',
+                        slug: 'emme-manifold-contasi',
+                        description: 'Emme manifoldu sızdırmazlığı.',
+                        function: 'Vakum kaçağını önler.',
+                        symptoms: ['Rölanti problemi', 'Vakum kaçağı', 'Check engine lambası'],
+                        repairAdvice: ['Kaçak varsa değiştirilmeli', 'Vakum hortumları kontrol edilmeli'],
+                        estimatedCost: { min: 800, max: 2500 },
+                        laborTime: '2-4 saat'
+                    }
+                ]
+            },
+            {
+                id: 'sensorler',
+                name: 'Sensörler ve Kontrol',
+                slug: 'sensorler',
+                description: 'Motor kontrolünü sağlayan elektronik parçalar.',
+                components: [
+                    {
+                        id: 'ecu',
+                        name: 'Motor Kontrol Ünitesi (ECU/Engine Control Unit)',
+                        slug: 'ecu',
+                        description: 'Motorun beyni.',
+                        function: 'Tüm sensörlerden veri alarak enjeksiyon, ateşleme ve diğer sistemleri kontrol eder.',
+                        symptoms: ['Check engine lambası', 'Motor çalışmıyor', 'Performans kaybı', 'Yakıt tüketimi artışı'],
+                        repairAdvice: ['Yazılım güncellemesi gerekebilir', 'Arızalı ECU değiştirilmeli', 'Çok pahalı'],
+                        estimatedCost: { min: 5000, max: 15000 },
+                        laborTime: '2-4 saat'
+                    },
+                    {
+                        id: 'oksijen-sensoru',
+                        name: 'Oksijen Sensörü (O2 Sensor)',
+                        slug: 'oksijen-sensoru',
+                        description: 'Egzoz gazındaki oksijen miktarını ölçer.',
+                        function: 'Yakıt-hava karışımını optimize etmek için ECU\'ya veri sağlar.',
+                        symptoms: ['Check engine lambası', 'Yakıt tüketimi artışı', 'Performans kaybı', 'Emisyon testi başarısız'],
+                        repairAdvice: ['100.000-150.000 km\'de değiştirilmeli', 'Katalitik önce ve sonrası sensörler var'],
+                        estimatedCost: { min: 600, max: 1800 },
+                        laborTime: '30 dakika - 1 saat'
+                    },
+                    {
+                        id: 'sicaklik-sensoru',
+                        name: 'Motor Sıcaklık Sensörü (Coolant Temperature Sensor)',
+                        slug: 'sicaklik-sensoru',
+                        description: 'Motor sıcaklığını ölçer.',
+                        function: 'Motor sıcaklığını ECU\'ya bildirir.',
+                        symptoms: ['Yanlış sıcaklık göstergesi', 'Fan çalışmıyor', 'Aşırı ısınma', 'Check engine lambası'],
+                        repairAdvice: ['Arızalı sensör değiştirilmeli', 'Elektrik bağlantıları kontrol edilmeli'],
+                        estimatedCost: { min: 300, max: 1000 },
+                        laborTime: '30 dakika - 1 saat'
+                    },
+                    {
+                        id: 'knock-sensor',
+                        name: 'Vuruntu Sensörü (Knock Sensor)',
+                        slug: 'knock-sensor',
+                        description: 'Motor vuruntusunu algılar.',
+                        function: 'Anormal yanmayı tespit ederek ateşleme zamanlamasını ayarlar.',
+                        symptoms: ['Vuruntu sesi', 'Güç kaybı', 'Check engine lambası'],
+                        repairAdvice: ['Arızalı sensör değiştirilmeli', 'Kaliteli yakıt kullanılmalı'],
+                        estimatedCost: { min: 500, max: 1500 },
+                        laborTime: '1-2 saat'
+                    },
+                    {
+                        id: 'tps-sensor',
+                        name: 'Gaz Kelebeği Pozisyon Sensörü (TPS)',
+                        slug: 'tps-sensor',
+                        description: 'Kelebek açıklığını ölçer.',
+                        function: 'Gaz pedalı pozisyonunu ECU\'ya bildirir.',
+                        symptoms: ['Rölanti problemi', 'Titreşim', 'Güç kaybı', 'Check engine lambası'],
+                        repairAdvice: ['Kalibrasyon gerekebilir', 'Arızalı ise değiştirilmeli'],
+                        estimatedCost: { min: 600, max: 1800 },
+                        laborTime: '30 dakika - 1 saat'
+                    },
+                    {
+                        id: 'map-sensor',
+                        name: 'Manifold Basınç Sensörü (MAP Sensor)',
+                        slug: 'map-sensor',
+                        description: 'Emme manifoldu basıncını ölçer.',
+                        function: 'Motor yükünü hesaplamak için basınç verisini ECU\'ya gönderir.',
+                        symptoms: ['Güç kaybı', 'Kötü yakıt ekonomisi', 'Check engine lambası'],
+                        repairAdvice: ['Vakum hortumları kontrol edilmeli', 'Arızalı sensör değiştirilmeli'],
+                        estimatedCost: { min: 500, max: 1500 },
+                        laborTime: '30 dakika - 1 saat'
+                    }
+                ]
+            },
+            {
+                id: 'kayislar',
+                name: 'Kayışlar ve Kasnak',
+                slug: 'kayislar',
+                description: 'Motor aksesuarlarını tahrik eden kayışlar.',
+                components: [
+                    {
+                        id: 'aksesuar-kayisi',
+                        name: 'Aksesuar Kayışı (Drive Belt/Serpentine Belt)',
+                        slug: 'aksesuar-kayisi',
+                        description: 'Alternatör, klima, direksiyon pompası gibi aksesuarları çalıştırır.',
+                        function: 'Krank kasnağından gücü alarak tüm aksesuarları döndürür.',
+                        symptoms: ['Cırlama sesi', 'Akü şarj olmuyor', 'Direksiyon ağırlaşıyor', 'Klima çalışmıyor', 'Aşırı ısınma'],
+                        repairAdvice: ['40.000-80.000 km\'de değiştirilmeli', 'Çatlak veya aşınma varsa değiştirilmeli', 'Gergi kontrol edilmeli'],
+                        estimatedCost: { min: 300, max: 800 },
+                        laborTime: '30 dakika - 1 saat'
+                    },
+                    {
+                        id: 'kayis-gergisi',
+                        name: 'Kayış Gergisi (Belt Tensioner)',
+                        slug: 'kayis-gergisi',
+                        description: 'Aksesuar kayışının gerginliğini sağlar.',
+                        function: 'Kayışı doğru gerginlikte tutar.',
+                        symptoms: ['Kayıştan cırlama', 'Titreşim', 'Kayış atlaması'],
+                        repairAdvice: ['Rulman kontrol edilmeli', 'Arızalı gergi değiştirilmeli'],
+                        estimatedCost: { min: 400, max: 1200 },
+                        laborTime: '1-2 saat'
+                    },
+                    {
+                        id: 'kasnak',
+                        name: 'Kasnak (Pulley)',
+                        slug: 'kasnak',
+                        description: 'Kayışı yönlendirir.',
+                        function: 'Kayışın doğru yolda gitmesini sağlar.',
+                        symptoms: ['Gürültü', 'Titreşim', 'Kayış aşınması'],
+                        repairAdvice: ['Rulman kontrol edilmeli', 'Hasar varsa değiştirilmeli'],
+                        estimatedCost: { min: 300, max: 1000 },
+                        laborTime: '1-2 saat'
+                    }
+                ]
+            },
+            {
+                id: 'sogutma-motor',
+                name: 'Motor Soğutma Sistemi',
+                slug: 'sogutma-motor',
+                description: 'Motorun aşırı ısınmasını önleyen soğutma bileşenleri.',
+                components: [
+                    {
+                        id: 'radyator',
+                        name: 'Radyatör (Radiator)',
+                        slug: 'radyator',
+                        description: 'Motor sıcaklığını düşüren ısı değiştirici.',
+                        function: 'Soğutma sıvısındaki ısıyı havaya aktararak motoru soğutur.',
+                        symptoms: ['Aşırı ısınma', 'Sızıntı', 'Radyatörde tıkanma', 'Soğutma suyu kaybı'],
+                        repairAdvice: ['Düzenli temizlenmeli', 'Hasarlı radyatör değiştirilmeli', 'Radyatör kapağı kontrol edilmeli'],
+                        estimatedCost: { min: 1500, max: 4000 },
+                        laborTime: '2-3 saat'
+                    },
+                    {
+                        id: 'su-pompasi',
+                        name: 'Su Pompası (Water Pump)',
+                        slug: 'su-pompasi',
+                        description: 'Soğutma sıvısını dolaştıran pompa.',
+                        function: 'Soğutma sıvısını motor ve radyatör arasında pompalar.',
+                        symptoms: ['Sızıntı', 'Aşırı ısınma', 'Gürültü', 'Soğutma suyu kaybı'],
+                        repairAdvice: ['Triger değişiminde kontrol edilmeli', 'Sızıntı varsa değiştirilmeli'],
+                        estimatedCost: { min: 1200, max: 3000 },
+                        laborTime: '2-4 saat'
+                    },
+                    {
+                        id: 'termostat',
+                        name: 'Termostat (Thermostat)',
+                        slug: 'termostat',
+                        description: 'Motor sıcaklığını kontrol eden valf.',
+                        function: 'Motor sıcaklığına göre soğutma sıvısı akışını ayarlar.',
+                        symptoms: ['Aşırı ısınma', 'Motor ısınmıyor', 'Yakıt tüketimi artışı'],
+                        repairAdvice: ['Arızalı termostat değiştirilmeli', 'Conta ile birlikte değiştirilmeli'],
+                        estimatedCost: { min: 400, max: 1200 },
+                        laborTime: '1-2 saat'
+                    },
+                    {
+                        id: 'sogutma-fani',
+                        name: 'Soğutma Fanı (Cooling Fan)',
+                        slug: 'sogutma-fani',
+                        description: 'Radyatörden hava geçiren fan.',
+                        function: 'Radyatör üzerinden hava geçirerek soğutmayı artırır.',
+                        symptoms: ['Aşırı ısınma', 'Fan çalışmıyor', 'Gürültü'],
+                        repairAdvice: ['Fan motoru kontrol edilmeli', 'Termostatik anahtar kontrol edilmeli'],
+                        estimatedCost: { min: 800, max: 2500 },
+                        laborTime: '1-2 saat'
+                    },
+                    {
+                        id: 'ust-radyator-hortumu',
+                        name: 'Üst Radyatör Hortumu (Upper Radiator Hose)',
+                        slug: 'ust-radyator-hortumu',
+                        description: 'Motordan radyatöre sıcak su taşır.',
+                        function: 'Sıcak soğutma sıvısını motordan radyatöre iletir.',
+                        symptoms: ['Sızıntı', 'Çatlak', 'Aşırı ısınma'],
+                        repairAdvice: ['Çatlak veya şişmiş hortumlar değiştirilmeli', 'Kelepçeler kontrol edilmeli'],
+                        estimatedCost: { min: 200, max: 600 },
+                        laborTime: '30 dakika - 1 saat'
+                    },
+                    {
+                        id: 'alt-radyator-hortumu',
+                        name: 'Alt Radyatör Hortumu (Lower Radiator Hose)',
+                        slug: 'alt-radyator-hortumu',
+                        description: 'Radyatörden motora soğuk su taşır.',
+                        function: 'Soğumuş soğutma sıvısını radyatörden motora iletir.',
+                        symptoms: ['Sızıntı', 'Çatlak', 'Aşırı ısınma'],
+                        repairAdvice: ['Çatlak veya şişmiş hortumlar değiştirilmeli', 'Kelepçeler kontrol edilmeli'],
+                        estimatedCost: { min: 200, max: 600 },
+                        laborTime: '30 dakika - 1 saat'
+                    },
+                    {
+                        id: 'radyator-kapagi',
+                        name: 'Radyatör Kapağı (Radiator Cap)',
+                        slug: 'radyator-kapagi',
+                        description: 'Soğutma sisteminde basıncı kontrol eder.',
+                        function: 'Sistemde doğru basıncı korur ve taşmayı önler.',
+                        symptoms: ['Aşırı ısınma', 'Soğutma suyu kaybı', 'Taşma'],
+                        repairAdvice: ['Basınç testi yapılmalı', 'Arızalı kapak değiştirilmeli'],
+                        estimatedCost: { min: 100, max: 300 },
+                        laborTime: '10 dakika'
+                    },
+                    {
+                        id: 'genlesme-tanki',
+                        name: 'Genleşme Tankı (Coolant Expansion Tank)',
+                        slug: 'genlesme-tanki',
+                        description: 'Soğutma sıvısı genleşmesini karşılar.',
+                        function: 'Isınan soğutma sıvısının genleşmesini karşılar.',
+                        symptoms: ['Sızıntı', 'Çatlak', 'Soğutma suyu kaybı'],
+                        repairAdvice: ['Çatlak tank değiştirilmeli', 'Seviye düzenli kontrol edilmeli'],
+                        estimatedCost: { min: 300, max: 800 },
+                        laborTime: '30 dakika - 1 saat'
+                    },
+                    {
+                        id: 'fan-kasnagi',
+                        name: 'Fan Kasnağı (Cooling Fan Clutch)',
+                        slug: 'fan-kasnagi',
+                        description: 'Mekanik fanı kontrol eder.',
+                        function: 'Motor sıcaklığına göre fan hızını ayarlar.',
+                        symptoms: ['Aşırı ısınma', 'Sürekli çalışan fan', 'Gürültü'],
+                        repairAdvice: ['Arızalı kasnak değiştirilmeli', 'Viskoz yağ kontrol edilmeli'],
+                        estimatedCost: { min: 600, max: 1500 },
+                        laborTime: '1-2 saat'
+                    },
+                    {
+                        id: 'sogutma-suyu',
+                        name: 'Soğutma Sıvısı (Coolant)',
+                        slug: 'sogutma-suyu',
+                        description: 'Motor sıcaklığını düşüren sıvı.',
+                        function: 'Isıyı motor bloğundan radyatöre taşır.',
+                        symptoms: ['Düşük seviye', 'Kirli soğutma suyu', 'Aşırı ısınma'],
+                        repairAdvice: ['Düzenli değiştirilmeli (2-3 yılda)', 'Doğru tip kullanılmalı', 'Karışım oranı önemli'],
+                        estimatedCost: { min: 200, max: 600 },
+                        laborTime: '30 dakika - 1 saat'
+                    }
+                ]
+            },
+        ],
+        components: []
+    },
+
+    {
+        id: 'fren',
+        name: 'Fren Sistemi',
+        slug: 'fren-sistemi',
+        description: 'Aracınızı güvenli bir şekilde yavaşlatıp durduran hayati güvenlik sistemi.',
+        icon: 'brake',
+        color: 'orange',
+        subsystems: [
+            {
+                id: 'fren-bilesenleri',
+                name: 'Fren Bileşenleri',
+                slug: 'fren-bilesenleri',
+                description: 'Fren sisteminin temel bileşenleri.',
+                components: [
+            {
+                id: 'fren-balata',
+                name: 'Fren Balatası',
+                slug: 'fren-balata',
+                description: 'Fren diskine sürtünerek aracı yavaşlatan sürtünme malzemesi.',
+                function: 'Fren pedalına basıldığında fren diskine baskı yaparak sürtünme oluşturur ve aracı yavaşlatır.',
+                symptoms: [
+                    'Fren yaparken cırlama sesi',
+                    'Fren pedalında titreme',
+                    'Fren mesafesinde uzama',
+                    'Fren yaparken çekme hissi',
+                    'Fren lambası yanması'
+                ],
+                repairAdvice: [
+                    'Balatalar genellikle 30.000-70.000 km\'de değiştirilmeli',
+                    'Ön ve arka balatalar aynı anda değiştirilmeli',
+                    'Fren diskleri de kontrol edilmeli',
+                    'Kaliteli balata kullanımı önemlidir',
+                    'Aşınma göstergesi varsa takip edilmeli'
+                ],
+                estimatedCost: { min: 600, max: 1800 },
+                laborTime: '1-2 saat',
+                relatedComponents: ['fren-diski', 'fren-hidrolik']
+            },
+            {
+                id: 'fren-diski',
+                name: 'Fren Diski',
+                slug: 'fren-diski',
+                description: 'Balataların sürtündüğü metal disk.',
+                function: 'Balataların sürtünmesiyle ısı oluşturarak kinetik enerjiyi ısı enerjisine dönüştürür.',
+                symptoms: [
+                    'Fren yaparken titreme',
+                    'Fren yaparken gürültü',
+                    'Fren performansında düşüş',
+                    'Direksiyonda titreme',
+                    'Disk yüzeyinde çizikler'
+                ],
+                repairAdvice: [
+                    'Diskler genellikle 60.000-100.000 km\'de değiştirilmeli',
+                    'Disk kalınlığı minimum değerin üzerinde olmalı',
+                    'Çarpık veya çizik diskler değiştirilmeli',
+                    'Diskler çiftler halinde değiştirilmeli',
+                    'Yeni balata takılırken diskler kontrol edilmeli'
+                ],
+                estimatedCost: { min: 800, max: 2500 },
+                laborTime: '1-2 saat',
+                relatedComponents: ['fren-balata', 'fren-kaliper']
+            }
+                ]
+            }
+        ],
+        components: []
+    },
+    {
+        id: 'suspansiyon',
+        name: 'Süspansiyon Sistemi',
+        slug: 'suspansiyon-sistemi',
+        description: 'Sürüş konforunu sağlayan ve yol tutuşunu iyileştiren sistem.',
+        icon: 'suspension',
+        color: 'blue',
+        subsystems: [
+            {
+                id: 'suspansiyon-bilesenleri',
+                name: 'Süspansiyon Bileşenleri',
+                slug: 'suspansiyon-bilesenleri',
+                description: 'Süspansiyon sisteminin temel bileşenleri.',
+                components: [
+            {
+                id: 'amortisör',
+                name: 'Amortisör',
+                slug: 'amortisor',
+                description: 'Yay hareketlerini sönümleyerek sürüş konforunu sağlar.',
+                function: 'Yayların hareketini kontrol ederek aracın zıplamasını önler ve yol tutuşunu iyileştirir.',
+                symptoms: [
+                    'Aşırı zıplama',
+                    'Virajlarda yalpalama',
+                    'Frenleme sırasında öne dalma',
+                    'Lastik aşınması',
+                    'Yağ sızıntısı'
+                ],
+                repairAdvice: [
+                    'Amortisörler genellikle 80.000-100.000 km\'de değiştirilmeli',
+                    'Çiftler halinde değiştirilmeli',
+                    'Gaz veya yağ amortisör seçimi önemli',
+                    'Yay durumu da kontrol edilmeli',
+                    'Kaliteli marka tercih edilmeli'
+                ],
+                estimatedCost: { min: 1500, max: 4000 },
+                laborTime: '2-3 saat',
+                relatedComponents: ['yay', 'rot']
+            }
+                ]
+            }
+        ],
+        components: []
+    },
+    {
+        id: 'elektrik',
+        name: 'Elektrik Sistemi',
+        slug: 'elektrik-sistemi',
+        description: 'Aracın tüm elektrikli bileşenlerini besleyen ve kontrol eden sistem.',
+        icon: 'electric',
+        color: 'yellow',
+        subsystems: [
+            {
+                id: 'elektrik-bilesenleri',
+                name: 'Elektrik Bileşenleri',
+                slug: 'elektrik-bilesenleri',
+                description: 'Elektrik sisteminin temel bileşenleri.',
+                components: [
+            {
+                id: 'aküü',
+                name: 'Akü',
+                slug: 'aku',
+                description: 'Aracın elektrik enerjisini depolayan batarya.',
+                function: 'Marş motorunu çalıştırır ve motor kapalıyken elektrikli sistemlere güç sağlar.',
+                symptoms: [
+                    'Zor çalışma',
+                    'Farların sönük yanması',
+                    'Elektrikli aksesuarlarda sorun',
+                    'Akü lambası yanması',
+                    'Korozyon oluşumu'
+                ],
+                repairAdvice: [
+                    'Akü ömrü genellikle 3-5 yıldır',
+                    'Kutuplar temiz tutulmalı',
+                    'Akü suyu seviyesi kontrol edilmeli (bakımlı akülerde)',
+                    'Soğuk havalarda performans düşer',
+                    'Alternatör de kontrol edilmeli'
+                ],
+                estimatedCost: { min: 1200, max: 3500 },
+                laborTime: '30 dakika',
+                relatedComponents: ['alternator', 'mars-motoru']
+            }
+                ]
+            }
+        ],
+        components: []
+    },
+    {
+        id: 'yakit',
+        name: 'Yakıt Sistemi',
+        slug: 'yakit-sistemi',
+        description: 'Yakıtı depodan motora ileten ve püskürten sistem.',
+        icon: 'fuel',
+        color: 'green',
+        subsystems: [
+            {
+                id: 'yakit-bilesenleri',
+                name: 'Yakıt Bileşenleri',
+                slug: 'yakit-bilesenleri',
+                description: 'Yakıt sisteminin temel bileşenleri.',
+                components: [
+            {
+                id: 'yakit-filtresi',
+                name: 'Yakıt Filtresi',
+                slug: 'yakit-filtresi',
+                description: 'Yakıttaki kirleri filtreleyen bileşen.',
+                function: 'Yakıt sistemine giren kirleri ve partikülleri filtreler, enjektörleri korur.',
+                symptoms: [
+                    'Motor gücünde kayıp',
+                    'Zor çalışma',
+                    'Motor takılması',
+                    'Yakıt tüketiminde artış',
+                    'Motor arızası lambası'
+                ],
+                repairAdvice: [
+                    'Filtre 20.000-40.000 km\'de değiştirilmeli',
+                    'Kalitesiz yakıt kullanımında daha sık değişmeli',
+                    'Tıkanmış filtre enjektör hasarına yol açabilir',
+                    'Orijinal veya kaliteli filtre kullanılmalı'
+                ],
+                estimatedCost: { min: 300, max: 800 },
+                laborTime: '30 dakika - 1 saat',
+                relatedComponents: ['yakit-pompasi', 'enjektör']
+            }
+                ]
+            }
+        ],
+        components: []
+    },
+    {
+        id: 'sogutma',
+        name: 'Soğutma Sistemi',
+        slug: 'sogutma-sistemi',
+        description: 'Motorun aşırı ısınmasını önleyen sistem.',
+        icon: 'cooling',
+        color: 'cyan',
+        subsystems: [
+            {
+                id: 'sogutma-bilesenleri',
+                name: 'Soğutma Bileşenleri',
+                slug: 'sogutma-bilesenleri',
+                description: 'Soğutma sisteminin temel bileşenleri.',
+                components: [
+            {
+                id: 'su-pompasi',
+                name: 'Su Pompası',
+                slug: 'su-pompasi',
+                description: 'Soğutma sıvısını motor bloğunda dolaştıran pompa.',
+                function: 'Soğutma sıvısını motor ve radyatör arasında dolaştırarak ısı transferi sağlar.',
+                symptoms: [
+                    'Motor aşırı ısınması',
+                    'Soğutma sıvısı kaybı',
+                    'Pompa bölgesinden sızıntı',
+                    'Motordan hırıltı sesi',
+                    'Isı göstergesinde yükselme'
+                ],
+                repairAdvice: [
+                    'Su pompası genellikle 100.000 km\'de değiştirilmeli',
+                    'Triger kayışı ile birlikte değiştirilmesi önerilir',
+                    'Soğutma sıvısı da yenilenmelidir',
+                    'Orijinal veya OES kalitesinde pompa kullanılmalı'
+                ],
+                estimatedCost: { min: 1500, max: 3500 },
+                laborTime: '2-3 saat',
+                relatedComponents: ['triger-kayisi', 'termostat', 'radyator']
+            },
+            {
+                id: 'termostat',
+                name: 'Termostat',
+                slug: 'termostat',
+                description: 'Motor sıcaklığını kontrol eden valf.',
+                function: 'Soğutma sıvısının akışını düzenleyerek motorun optimal sıcaklıkta çalışmasını sağlar.',
+                symptoms: [
+                    'Motor yavaş ısınması',
+                    'Motor aşırı ısınması',
+                    'Kalorifer çalışmaması',
+                    'Yakıt tüketiminde artış',
+                    'Motor arızası lambası'
+                ],
+                repairAdvice: [
+                    'Termostat genellikle 80.000-100.000 km\'de değiştirilmeli',
+                    'Arızalı termostat motor hasarına yol açabilir',
+                    'Soğutma sıvısı değişiminde kontrol edilmeli',
+                    'Orijinal sıcaklık derecesinde termostat kullanılmalı'
+                ],
+                estimatedCost: { min: 400, max: 1200 },
+                laborTime: '1-2 saat',
+                relatedComponents: ['su-pompasi', 'radyator']
+            }
+                ]
+            }
+        ],
+        components: []
+    },
+    {
+        id: 'egzoz',
+        name: 'Egzoz Sistemi',
+        slug: 'egzoz-sistemi',
+        description: 'Yanma gazlarını dışarı atan ve emisyonları azaltan sistem.',
+        icon: 'exhaust',
+        color: 'gray',
+        subsystems: [
+            {
+                id: 'egzoz-bilesenleri',
+                name: 'Egzoz Bileşenleri',
+                slug: 'egzoz-bilesenleri',
+                description: 'Egzoz sisteminin temel bileşenleri.',
+                components: [
+            {
+                id: 'katalitik-konvertor',
+                name: 'Katalitik Konvertör',
+                slug: 'katalitik-konvertor',
+                description: 'Zararlı egzoz gazlarını temizleyen bileşen.',
+                function: 'Egzoz gazlarındaki zararlı maddeleri kimyasal reaksiyonlarla zararsız hale getirir.',
+                symptoms: [
+                    'Motor gücünde kayıp',
+                    'Yakıt tüketiminde artış',
+                    'Egzozdan kötü koku',
+                    'Motor arızası lambası',
+                    'Egzozdan tıkırtı sesi'
+                ],
+                repairAdvice: [
+                    'Katalitik konvertör genellikle 150.000+ km dayanır',
+                    'Kalitesiz yakıt kullanımı ömrünü kısaltır',
+                    'Motor arızaları katalizöre zarar verebilir',
+                    'Değişim maliyeti yüksektir',
+                    'Orijinal parça kullanımı önemlidir'
+                ],
+                estimatedCost: { min: 5000, max: 15000 },
+                laborTime: '2-3 saat',
+                relatedComponents: ['oksijen-sensoru', 'egzoz-manifoldu']
+            }
+                ]
+            }
+        ],
+        components: []
+    },
+    {
+        id: 'iletim',
+        name: 'İletim Sistemi (Şanzıman)',
+        slug: 'iletim-sistemi',
+        description: 'Motor gücünü tekerleklere ileten sistem.',
+        icon: 'transmission',
+        color: 'purple',
+        subsystems: [
+            {
+                id: 'iletim-bilesenleri',
+                name: 'İletim Bileşenleri',
+                slug: 'iletim-bilesenleri',
+                description: 'İletim sisteminin temel bileşenleri.',
+                components: [
+            {
+                id: 'debriyaj',
+                name: 'Debriyaj Seti',
+                slug: 'debriyaj',
+                description: 'Motor ile şanzıman arasındaki bağlantıyı sağlayan mekanizma.',
+                function: 'Motor gücünü şanzımana iletir ve vites değişimlerinde bağlantıyı keser.',
+                symptoms: [
+                    'Debriyaj pedalında sertlik',
+                    'Vites geçişlerinde zorluk',
+                    'Debriyaj kayması',
+                    'Yanık kokusu',
+                    'Titreme ve gürültü'
+                ],
+                repairAdvice: [
+                    'Debriyaj genellikle 100.000-150.000 km\'de değiştirilmeli',
+                    'Volant ve baskı da kontrol edilmeli',
+                    'Sürüş tarzı ömrü etkiler',
+                    'Komple set değişimi önerilir',
+                    'Hidrolik sistem de kontrol edilmeli'
+                ],
+                estimatedCost: { min: 3000, max: 8000 },
+                laborTime: '4-6 saat',
+                relatedComponents: ['volant', 'debriyaj-hidrolik']
+            }
+                ]
+            }
+        ],
+        components: []
+    }
+];
+
+export function getSystemBySlug(slug: string): EncyclopediaSystem | undefined {
+    return encyclopediaSystems.find(system => system.slug === slug);
+}
+
+export function getSubsystemBySlug(systemSlug: string, subsystemSlug: string): EncyclopediaSubsystem | undefined {
+    const system = getSystemBySlug(systemSlug);
+    if (!system || !system.subsystems) return undefined;
+    return system.subsystems.find(subsystem => subsystem.slug === subsystemSlug);
+}
+
+export function getComponentBySlug(systemSlug: string, componentSlug: string, subsystemSlug?: string): EncyclopediaComponent | undefined {
+    const system = getSystemBySlug(systemSlug);
+    if (!system) return undefined;
+    
+    // If subsystem slug is provided, search in that subsystem
+    if (subsystemSlug && system.subsystems) {
+        const subsystem = system.subsystems.find(sub => sub.slug === subsystemSlug);
+        return subsystem?.components.find(component => component.slug === componentSlug);
+    }
+    
+    // Otherwise search in direct components
+    return system.components.find(component => component.slug === componentSlug);
+}
+
+export function getAllSystems(): EncyclopediaSystem[] {
+    return encyclopediaSystems;
+}
+
+export function searchEncyclopedia(query: string): { system: EncyclopediaSystem; component: EncyclopediaComponent; subsystem?: EncyclopediaSubsystem }[] {
+    const results: { system: EncyclopediaSystem; component: EncyclopediaComponent; subsystem?: EncyclopediaSubsystem }[] = [];
+    const lowerQuery = query.toLowerCase();
+
+    encyclopediaSystems.forEach(system => {
+        // Search in subsystems if they exist
+        if (system.subsystems) {
+            system.subsystems.forEach(subsystem => {
+                subsystem.components.forEach(component => {
+                    if (
+                        component.name.toLowerCase().includes(lowerQuery) ||
+                        component.description.toLowerCase().includes(lowerQuery) ||
+                        component.symptoms.some(s => s.toLowerCase().includes(lowerQuery))
+                    ) {
+                        results.push({ system, component, subsystem });
+                    }
+                });
+            });
+        }
+        
+        // Search in direct components
+        system.components.forEach(component => {
+            if (
+                component.name.toLowerCase().includes(lowerQuery) ||
+                component.description.toLowerCase().includes(lowerQuery) ||
+                component.symptoms.some(s => s.toLowerCase().includes(lowerQuery))
+            ) {
+                results.push({ system, component });
+            }
+        });
+    });
+
+    return results;
+}

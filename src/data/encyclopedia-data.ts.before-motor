@@ -1,0 +1,494 @@
+export interface EncyclopediaComponent {
+    id: string;
+    name: string;
+    slug: string;
+    description: string;
+    function: string;
+    symptoms: string[];
+    repairAdvice: string[];
+    estimatedCost?: { min: number; max: number };
+    laborTime?: string;
+    relatedComponents?: string[];
+}
+
+export interface EncyclopediaSubsystem {
+    id: string;
+    name: string;
+    slug: string;
+    description: string;
+    components: EncyclopediaComponent[];
+}
+
+export interface EncyclopediaSystem {
+    id: string;
+    name: string;
+    slug: string;
+    description: string;
+    icon: string;
+    color: string;
+    subsystems?: EncyclopediaSubsystem[];
+    components: EncyclopediaComponent[];
+}
+
+export const encyclopediaSystems: EncyclopediaSystem[] = [
+    {
+        id: 'motor',
+        name: 'Motor Sistemi',
+        slug: 'motor-sistemi',
+        description: 'Aracınızın kalbi olan motor sistemi, yakıtı güce dönüştürerek aracınızı hareket ettirir.',
+        icon: 'engine',
+        color: 'red',
+        components: [
+            {
+                id: 'triger-kayisi',
+                name: 'Triger Kayışı',
+                slug: 'triger-kayisi',
+                description: 'Motor zamanlamasını sağlayan kritik bir bileşendir.',
+                function: 'Krank mili ile eksantrik mili senkronize ederek supapların doğru zamanda açılıp kapanmasını sağlar.',
+                symptoms: [
+                    'Motordan tıkırtı veya çıtırtı sesi gelmesi',
+                    'Motor çalışırken titreme',
+                    'Motor arızası lambası yanması',
+                    'Motorun çalışmaması',
+                    'Egzozdan yoğun duman çıkması'
+                ],
+                repairAdvice: [
+                    'Triger kayışı genellikle 60.000-100.000 km\'de değiştirilmelidir',
+                    'Kayış değişiminde su pompası da kontrol edilmeli',
+                    'Orijinal veya OES kalitesinde parça kullanılmalı',
+                    'Gergi rulmanları da aynı anda değiştirilmeli',
+                    'Zamanında değiştirilmezse motor ciddi hasar görebilir'
+                ],
+                estimatedCost: { min: 2500, max: 6000 },
+                laborTime: '2-4 saat',
+                relatedComponents: ['su-pompasi', 'gergi-rulmani']
+            },
+            {
+                id: 'motor-yagi',
+                name: 'Motor Yağı',
+                slug: 'motor-yagi',
+                description: 'Motorun hareketli parçalarını yağlayan ve soğutan hayati sıvı.',
+                function: 'Motor parçaları arasındaki sürtünmeyi azaltır, ısıyı dağıtır ve motoru temiz tutar.',
+                symptoms: [
+                    'Yağ lambası yanması',
+                    'Motor gürültüsü artması',
+                    'Egzozdan mavi duman çıkması',
+                    'Motor performansında düşüş',
+                    'Yakıt tüketiminde artış'
+                ],
+                repairAdvice: [
+                    'Motor yağı 10.000-15.000 km\'de veya yılda bir kez değiştirilmeli',
+                    'Araç üreticisinin önerdiği viskozite değerinde yağ kullanılmalı',
+                    'Yağ filtresi her yağ değişiminde mutlaka değiştirilmeli',
+                    'Sentetik yağlar daha uzun ömürlüdür',
+                    'Yağ seviyesi düzenli kontrol edilmeli'
+                ],
+                estimatedCost: { min: 800, max: 2500 },
+                laborTime: '30 dakika - 1 saat',
+                relatedComponents: ['yag-filtresi']
+            },
+            {
+                id: 'buji',
+                name: 'Buji',
+                slug: 'buji',
+                description: 'Benzinli motorlarda yakıt-hava karışımını ateşleyen bileşen.',
+                function: 'Yüksek voltajlı elektrik kıvılcımı üreterek silindir içindeki karışımı yakar.',
+                symptoms: [
+                    'Motor çalkalanması',
+                    'Zor çalışma',
+                    'Yakıt tüketiminde artış',
+                    'Motor gücünde kayıp',
+                    'Motor arızası lambası yanması'
+                ],
+                repairAdvice: [
+                    'Bujiler genellikle 30.000-50.000 km\'de değiştirilmeli',
+                    'Platin veya iridyum bujiler daha uzun ömürlüdür',
+                    'Tüm bujiler aynı anda değiştirilmeli',
+                    'Buji kabloları da kontrol edilmeli',
+                    'Yanlış buji tipi motor hasarına yol açabilir'
+                ],
+                estimatedCost: { min: 400, max: 1500 },
+                laborTime: '30 dakika - 1 saat',
+                relatedComponents: ['ateşleme-bobini']
+            }
+        ]
+    },
+    {
+        id: 'fren',
+        name: 'Fren Sistemi',
+        slug: 'fren-sistemi',
+        description: 'Aracınızı güvenli bir şekilde yavaşlatıp durduran hayati güvenlik sistemi.',
+        icon: 'brake',
+        color: 'orange',
+        subsystems: [
+            {
+                id: 'fren-bilesenleri',
+                name: 'Fren Bileşenleri',
+                slug: 'fren-bilesenleri',
+                description: 'Fren sisteminin temel bileşenleri.',
+                components: [
+            {
+                id: 'fren-balata',
+                name: 'Fren Balatası',
+                slug: 'fren-balata',
+                description: 'Fren diskine sürtünerek aracı yavaşlatan sürtünme malzemesi.',
+                function: 'Fren pedalına basıldığında fren diskine baskı yaparak sürtünme oluşturur ve aracı yavaşlatır.',
+                symptoms: [
+                    'Fren yaparken cırlama sesi',
+                    'Fren pedalında titreme',
+                    'Fren mesafesinde uzama',
+                    'Fren yaparken çekme hissi',
+                    'Fren lambası yanması'
+                ],
+                repairAdvice: [
+                    'Balatalar genellikle 30.000-70.000 km\'de değiştirilmeli',
+                    'Ön ve arka balatalar aynı anda değiştirilmeli',
+                    'Fren diskleri de kontrol edilmeli',
+                    'Kaliteli balata kullanımı önemlidir',
+                    'Aşınma göstergesi varsa takip edilmeli'
+                ],
+                estimatedCost: { min: 600, max: 1800 },
+                laborTime: '1-2 saat',
+                relatedComponents: ['fren-diski', 'fren-hidrolik']
+            },
+            {
+                id: 'fren-diski',
+                name: 'Fren Diski',
+                slug: 'fren-diski',
+                description: 'Balataların sürtündüğü metal disk.',
+                function: 'Balataların sürtünmesiyle ısı oluşturarak kinetik enerjiyi ısı enerjisine dönüştürür.',
+                symptoms: [
+                    'Fren yaparken titreme',
+                    'Fren yaparken gürültü',
+                    'Fren performansında düşüş',
+                    'Direksiyonda titreme',
+                    'Disk yüzeyinde çizikler'
+                ],
+                repairAdvice: [
+                    'Diskler genellikle 60.000-100.000 km\'de değiştirilmeli',
+                    'Disk kalınlığı minimum değerin üzerinde olmalı',
+                    'Çarpık veya çizik diskler değiştirilmeli',
+                    'Diskler çiftler halinde değiştirilmeli',
+                    'Yeni balata takılırken diskler kontrol edilmeli'
+                ],
+                estimatedCost: { min: 800, max: 2500 },
+                laborTime: '1-2 saat',
+                relatedComponents: ['fren-balata', 'fren-kaliper']
+            }
+                ]
+            }
+        ],
+        components: []
+    },
+    {
+        id: 'suspansiyon',
+        name: 'Süspansiyon Sistemi',
+        slug: 'suspansiyon-sistemi',
+        description: 'Sürüş konforunu sağlayan ve yol tutuşunu iyileştiren sistem.',
+        icon: 'suspension',
+        color: 'blue',
+        subsystems: [
+            {
+                id: 'suspansiyon-bilesenleri',
+                name: 'Süspansiyon Bileşenleri',
+                slug: 'suspansiyon-bilesenleri',
+                description: 'Süspansiyon sisteminin temel bileşenleri.',
+                components: [
+            {
+                id: 'amortisör',
+                name: 'Amortisör',
+                slug: 'amortisor',
+                description: 'Yay hareketlerini sönümleyerek sürüş konforunu sağlar.',
+                function: 'Yayların hareketini kontrol ederek aracın zıplamasını önler ve yol tutuşunu iyileştirir.',
+                symptoms: [
+                    'Aşırı zıplama',
+                    'Virajlarda yalpalama',
+                    'Frenleme sırasında öne dalma',
+                    'Lastik aşınması',
+                    'Yağ sızıntısı'
+                ],
+                repairAdvice: [
+                    'Amortisörler genellikle 80.000-100.000 km\'de değiştirilmeli',
+                    'Çiftler halinde değiştirilmeli',
+                    'Gaz veya yağ amortisör seçimi önemli',
+                    'Yay durumu da kontrol edilmeli',
+                    'Kaliteli marka tercih edilmeli'
+                ],
+                estimatedCost: { min: 1500, max: 4000 },
+                laborTime: '2-3 saat',
+                relatedComponents: ['yay', 'rot']
+            }
+                ]
+            }
+        ],
+        components: []
+    },
+    {
+        id: 'elektrik',
+        name: 'Elektrik Sistemi',
+        slug: 'elektrik-sistemi',
+        description: 'Aracın tüm elektrikli bileşenlerini besleyen ve kontrol eden sistem.',
+        icon: 'electric',
+        color: 'yellow',
+        subsystems: [
+            {
+                id: 'elektrik-bilesenleri',
+                name: 'Elektrik Bileşenleri',
+                slug: 'elektrik-bilesenleri',
+                description: 'Elektrik sisteminin temel bileşenleri.',
+                components: [
+            {
+                id: 'aküü',
+                name: 'Akü',
+                slug: 'aku',
+                description: 'Aracın elektrik enerjisini depolayan batarya.',
+                function: 'Marş motorunu çalıştırır ve motor kapalıyken elektrikli sistemlere güç sağlar.',
+                symptoms: [
+                    'Zor çalışma',
+                    'Farların sönük yanması',
+                    'Elektrikli aksesuarlarda sorun',
+                    'Akü lambası yanması',
+                    'Korozyon oluşumu'
+                ],
+                repairAdvice: [
+                    'Akü ömrü genellikle 3-5 yıldır',
+                    'Kutuplar temiz tutulmalı',
+                    'Akü suyu seviyesi kontrol edilmeli (bakımlı akülerde)',
+                    'Soğuk havalarda performans düşer',
+                    'Alternatör de kontrol edilmeli'
+                ],
+                estimatedCost: { min: 1200, max: 3500 },
+                laborTime: '30 dakika',
+                relatedComponents: ['alternator', 'mars-motoru']
+            }
+                ]
+            }
+        ],
+        components: []
+    },
+    {
+        id: 'yakit',
+        name: 'Yakıt Sistemi',
+        slug: 'yakit-sistemi',
+        description: 'Yakıtı depodan motora ileten ve püskürten sistem.',
+        icon: 'fuel',
+        color: 'green',
+        subsystems: [
+            {
+                id: 'yakit-bilesenleri',
+                name: 'Yakıt Bileşenleri',
+                slug: 'yakit-bilesenleri',
+                description: 'Yakıt sisteminin temel bileşenleri.',
+                components: [
+            {
+                id: 'yakit-filtresi',
+                name: 'Yakıt Filtresi',
+                slug: 'yakit-filtresi',
+                description: 'Yakıttaki kirleri filtreleyen bileşen.',
+                function: 'Yakıt sistemine giren kirleri ve partikülleri filtreler, enjektörleri korur.',
+                symptoms: [
+                    'Motor gücünde kayıp',
+                    'Zor çalışma',
+                    'Motor takılması',
+                    'Yakıt tüketiminde artış',
+                    'Motor arızası lambası'
+                ],
+                repairAdvice: [
+                    'Filtre 20.000-40.000 km\'de değiştirilmeli',
+                    'Kalitesiz yakıt kullanımında daha sık değişmeli',
+                    'Tıkanmış filtre enjektör hasarına yol açabilir',
+                    'Orijinal veya kaliteli filtre kullanılmalı'
+                ],
+                estimatedCost: { min: 300, max: 800 },
+                laborTime: '30 dakika - 1 saat',
+                relatedComponents: ['yakit-pompasi', 'enjektör']
+            }
+                ]
+            }
+        ],
+        components: []
+    },
+    {
+        id: 'sogutma',
+        name: 'Soğutma Sistemi',
+        slug: 'sogutma-sistemi',
+        description: 'Motorun aşırı ısınmasını önleyen sistem.',
+        icon: 'cooling',
+        color: 'cyan',
+        subsystems: [
+            {
+                id: 'sogutma-bilesenleri',
+                name: 'Soğutma Bileşenleri',
+                slug: 'sogutma-bilesenleri',
+                description: 'Soğutma sisteminin temel bileşenleri.',
+                components: [
+            {
+                id: 'su-pompasi',
+                name: 'Su Pompası',
+                slug: 'su-pompasi',
+                description: 'Soğutma sıvısını motor bloğunda dolaştıran pompa.',
+                function: 'Soğutma sıvısını motor ve radyatör arasında dolaştırarak ısı transferi sağlar.',
+                symptoms: [
+                    'Motor aşırı ısınması',
+                    'Soğutma sıvısı kaybı',
+                    'Pompa bölgesinden sızıntı',
+                    'Motordan hırıltı sesi',
+                    'Isı göstergesinde yükselme'
+                ],
+                repairAdvice: [
+                    'Su pompası genellikle 100.000 km\'de değiştirilmeli',
+                    'Triger kayışı ile birlikte değiştirilmesi önerilir',
+                    'Soğutma sıvısı da yenilenmelidir',
+                    'Orijinal veya OES kalitesinde pompa kullanılmalı'
+                ],
+                estimatedCost: { min: 1500, max: 3500 },
+                laborTime: '2-3 saat',
+                relatedComponents: ['triger-kayisi', 'termostat', 'radyator']
+            },
+            {
+                id: 'termostat',
+                name: 'Termostat',
+                slug: 'termostat',
+                description: 'Motor sıcaklığını kontrol eden valf.',
+                function: 'Soğutma sıvısının akışını düzenleyerek motorun optimal sıcaklıkta çalışmasını sağlar.',
+                symptoms: [
+                    'Motor yavaş ısınması',
+                    'Motor aşırı ısınması',
+                    'Kalorifer çalışmaması',
+                    'Yakıt tüketiminde artış',
+                    'Motor arızası lambası'
+                ],
+                repairAdvice: [
+                    'Termostat genellikle 80.000-100.000 km\'de değiştirilmeli',
+                    'Arızalı termostat motor hasarına yol açabilir',
+                    'Soğutma sıvısı değişiminde kontrol edilmeli',
+                    'Orijinal sıcaklık derecesinde termostat kullanılmalı'
+                ],
+                estimatedCost: { min: 400, max: 1200 },
+                laborTime: '1-2 saat',
+                relatedComponents: ['su-pompasi', 'radyator']
+            }
+                ]
+            }
+        ],
+        components: []
+    },
+    {
+        id: 'egzoz',
+        name: 'Egzoz Sistemi',
+        slug: 'egzoz-sistemi',
+        description: 'Yanma gazlarını dışarı atan ve emisyonları azaltan sistem.',
+        icon: 'exhaust',
+        color: 'gray',
+        subsystems: [
+            {
+                id: 'egzoz-bilesenleri',
+                name: 'Egzoz Bileşenleri',
+                slug: 'egzoz-bilesenleri',
+                description: 'Egzoz sisteminin temel bileşenleri.',
+                components: [
+            {
+                id: 'katalitik-konvertor',
+                name: 'Katalitik Konvertör',
+                slug: 'katalitik-konvertor',
+                description: 'Zararlı egzoz gazlarını temizleyen bileşen.',
+                function: 'Egzoz gazlarındaki zararlı maddeleri kimyasal reaksiyonlarla zararsız hale getirir.',
+                symptoms: [
+                    'Motor gücünde kayıp',
+                    'Yakıt tüketiminde artış',
+                    'Egzozdan kötü koku',
+                    'Motor arızası lambası',
+                    'Egzozdan tıkırtı sesi'
+                ],
+                repairAdvice: [
+                    'Katalitik konvertör genellikle 150.000+ km dayanır',
+                    'Kalitesiz yakıt kullanımı ömrünü kısaltır',
+                    'Motor arızaları katalizöre zarar verebilir',
+                    'Değişim maliyeti yüksektir',
+                    'Orijinal parça kullanımı önemlidir'
+                ],
+                estimatedCost: { min: 5000, max: 15000 },
+                laborTime: '2-3 saat',
+                relatedComponents: ['oksijen-sensoru', 'egzoz-manifoldu']
+            }
+                ]
+            }
+        ],
+        components: []
+    },
+    {
+        id: 'iletim',
+        name: 'İletim Sistemi (Şanzıman)',
+        slug: 'iletim-sistemi',
+        description: 'Motor gücünü tekerleklere ileten sistem.',
+        icon: 'transmission',
+        color: 'purple',
+        subsystems: [
+            {
+                id: 'iletim-bilesenleri',
+                name: 'İletim Bileşenleri',
+                slug: 'iletim-bilesenleri',
+                description: 'İletim sisteminin temel bileşenleri.',
+                components: [
+            {
+                id: 'debriyaj',
+                name: 'Debriyaj Seti',
+                slug: 'debriyaj',
+                description: 'Motor ile şanzıman arasındaki bağlantıyı sağlayan mekanizma.',
+                function: 'Motor gücünü şanzımana iletir ve vites değişimlerinde bağlantıyı keser.',
+                symptoms: [
+                    'Debriyaj pedalında sertlik',
+                    'Vites geçişlerinde zorluk',
+                    'Debriyaj kayması',
+                    'Yanık kokusu',
+                    'Titreme ve gürültü'
+                ],
+                repairAdvice: [
+                    'Debriyaj genellikle 100.000-150.000 km\'de değiştirilmeli',
+                    'Volant ve baskı da kontrol edilmeli',
+                    'Sürüş tarzı ömrü etkiler',
+                    'Komple set değişimi önerilir',
+                    'Hidrolik sistem de kontrol edilmeli'
+                ],
+                estimatedCost: { min: 3000, max: 8000 },
+                laborTime: '4-6 saat',
+                relatedComponents: ['volant', 'debriyaj-hidrolik']
+            }
+                ]
+            }
+        ],
+        components: []
+    }
+];
+
+export function getSystemBySlug(slug: string): EncyclopediaSystem | undefined {
+    return encyclopediaSystems.find(system => system.slug === slug);
+}
+
+export function getComponentBySlug(systemSlug: string, componentSlug: string): EncyclopediaComponent | undefined {
+    const system = getSystemBySlug(systemSlug);
+    return system?.components.find(component => component.slug === componentSlug);
+}
+
+export function getAllSystems(): EncyclopediaSystem[] {
+    return encyclopediaSystems;
+}
+
+export function searchEncyclopedia(query: string): { system: EncyclopediaSystem; component: EncyclopediaComponent }[] {
+    const results: { system: EncyclopediaSystem; component: EncyclopediaComponent }[] = [];
+    const lowerQuery = query.toLowerCase();
+
+    encyclopediaSystems.forEach(system => {
+        system.components.forEach(component => {
+            if (
+                component.name.toLowerCase().includes(lowerQuery) ||
+                component.description.toLowerCase().includes(lowerQuery) ||
+                component.symptoms.some(s => s.toLowerCase().includes(lowerQuery))
+            ) {
+                results.push({ system, component });
+            }
+        });
+    });
+
+    return results;
+}

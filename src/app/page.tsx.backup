@@ -1,0 +1,938 @@
+import Link from 'next/link';
+import SearchBox from '@/components/SearchBox';
+import CategoryCard from '@/components/CategoryCard';
+import ProblemsByModel from '@/components/ProblemsByModel';
+import ObdInfoSection from '@/components/ObdInfoSection';
+import CostEstimator from '@/components/CostEstimator';
+import ReviewsSection from '@/components/Reviews';
+import FAQSection from '@/components/FAQ';
+import WaitlistModal from '@/components/WaitlistModal';
+import BusinessDashboard from '@/components/BusinessDashboard';
+import { getCategories } from '@/lib/db';
+import { categoriesData } from '@/data/categories';
+import type { Category } from '@/types';
+
+// Dynamic data fetching from MySQL
+async function getCategoriesData(): Promise<Category[]> {
+  try {
+    const dbCategories = await getCategories();
+    if (dbCategories && dbCategories.length > 0) {
+      return dbCategories as unknown as Category[];
+    }
+  } catch (error) {
+    console.error('Failed to fetch categories from MySQL:', error);
+  }
+  // Fallback to local data
+  return categoriesData;
+}
+
+export default async function HomePage() {
+  const categories = await getCategoriesData();
+
+  return (
+    <>
+      {/* Hero Section - White */}
+      <section className="relative bg-white text-secondary-900 overflow-hidden">
+        {/* Background Image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-5"
+          style={{ backgroundImage: 'url(/hero-bg.png)' }}
+        />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-secondary-900">
+              Aracınız için güvenilir hizmeti
+              <br />
+              <span className="text-primary-600">birkaç adımda bulun.</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-secondary-600 max-w-3xl mx-auto mb-8">
+              TamirHanem; şeffaf fiyatlandırma, izlenebilir geçmiş ve kalite güvenceli hizmet sunar.
+            </p>
+
+            {/* Trust Badges */}
+            <div className="flex flex-wrap justify-center gap-6 mb-12">
+              <div className="flex items-center gap-2 text-secondary-700">
+                <svg className="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span>Şeffaf Fiyatlandırma</span>
+              </div>
+              <div className="flex items-center gap-2 text-secondary-700">
+                <svg className="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span>Onaylı Servisler</span>
+              </div>
+              <div className="flex items-center gap-2 text-secondary-700">
+                <svg className="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span>Garanti Güvencesi</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Search Box */}
+          <div className="max-w-5xl mx-auto">
+            <SearchBox />
+          </div>
+
+          {/* Quick Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 max-w-4xl mx-auto">
+            <div className="text-center">
+              <p className="text-3xl md:text-4xl font-bold text-primary-600">500+</p>
+              <p className="text-secondary-500 text-sm">Anlaşmalı Servis</p>
+            </div>
+            <div className="text-center">
+              <p className="text-3xl md:text-4xl font-bold text-primary-600">50K+</p>
+              <p className="text-secondary-500 text-sm">Mutlu Müşteri</p>
+            </div>
+            <div className="text-center">
+              <p className="text-3xl md:text-4xl font-bold text-primary-600">4.8</p>
+              <p className="text-secondary-500 text-sm">Ortalama Puan</p>
+            </div>
+            <div className="text-center">
+              <p className="text-3xl md:text-4xl font-bold text-primary-600">%30</p>
+              <p className="text-secondary-500 text-sm">Tasarruf</p>
+            </div>
+          </div>
+
+          {/* Mobile App Download Section */}
+          <div className="mt-12 text-center">
+            <p className="text-secondary-900 text-xl md:text-2xl mb-2 font-bold">
+              Gelişmiş özelliklerden faydalanmak için mobil uygulamamızı indirin
+            </p>
+            <p className="text-secondary-600 text-sm md:text-base mb-6">
+              Randevu yönetimi, servis geçmişi ve özel kampanyalara mobil uygulama üzerinden erişebilirsiniz
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap">
+              {/* Google Play Badge */}
+              <a href="#" className="transition-all transform hover:scale-105">
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                  alt="Google Play'den İndir"
+                  className="h-12 w-auto"
+                />
+              </a>
+
+              {/* App Store Badge */}
+              <a href="#" className="transition-all transform hover:scale-105">
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg"
+                  alt="App Store'dan İndir"
+                  className="h-12 w-auto"
+                />
+              </a>
+
+              {/* AppGallery Badge */}
+              <a href="#" className="transition-all transform hover:scale-105">
+                <img
+                  src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTM1IiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMTM1IDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTM1IiBoZWlnaHQ9IjQwIiByeD0iNSIgZmlsbD0iYmxhY2siLz4KPHRleHQgeD0iNDUiIHk9IjE1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iOCIgZmlsbD0id2hpdGUiIG9wYWNpdHk9IjAuNyI+RVhQTE9SRSBJVCBPTjwvdGV4dD4KPHRleHQgeD0iNDUiIHk9IjI4IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSI+QXBwR2FsbGVyeTwvdGV4dD4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMTIiIGZpbGw9IiNFRTBBMjQiLz4KPHBhdGggZD0iTTIwIDEyTDIzIDIwTDIwIDI4TDE3IDIwTDIwIDEyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+"
+                  alt="AppGallery'den İndir"
+                  className="h-12 w-auto"
+                />
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section - Dark Theme */}
+      <section className="py-16 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
+              Tüm araç ihtiyaçlarınız için tek yer.
+            </h2>
+            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+              Aracınızı bakımda tutma, sorunları giderme ve daha fazlası için yardım alın.
+            </p>
+          </div>
+
+          {/* Feature Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Geri Çağırmalar */}
+            <Link href="/geri-cagrima" className="group bg-white rounded-xl p-6 hover:shadow-xl transition-all duration-300 border border-secondary-100 hover:border-primary-300">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center group-hover:bg-primary-200 transition-colors">
+                  <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold mb-2 group-hover:text-primary-600 transition-colors" style={{ color: '#454545' }}>Geri Çağırmalar</h3>
+                  <p className="text-sm text-secondary-600">Aracınızın geri çağırma durumunu kontrol edin</p>
+                </div>
+              </div>
+            </Link>
+
+            {/* Yaygın Problemler */}
+            <Link href="/#yayin-problemler" className="group bg-white rounded-xl p-6 hover:shadow-xl transition-all duration-300 border border-secondary-100 hover:border-primary-300">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center group-hover:bg-primary-200 transition-colors">
+                  <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold mb-2 group-hover:text-primary-600 transition-colors" style={{ color: '#454545' }}>Yaygın Problemler</h3>
+                  <p className="text-sm text-secondary-600">Araç modelinize özel sorunları keşfedin</p>
+                </div>
+              </div>
+            </Link>
+
+            {/* Lastikler */}
+            <Link href="/lastikler" className="group bg-white rounded-xl p-6 hover:shadow-xl transition-all duration-300 border border-secondary-100 hover:border-primary-300">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center group-hover:bg-primary-200 transition-colors">
+                  <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="9" strokeWidth={2} />
+                    <circle cx="12" cy="12" r="5" strokeWidth={2} />
+                    <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold mb-2 group-hover:text-primary-600 transition-colors" style={{ color: '#454545' }}>Lastikler</h3>
+                  <p className="text-sm text-secondary-600">Lastik seçimi ve bakım rehberi</p>
+                </div>
+              </div>
+            </Link>
+
+            {/* Güvenilirlik */}
+            <Link href="/guvenilirlik" className="group bg-white rounded-xl p-6 hover:shadow-xl transition-all duration-300 border border-secondary-100 hover:border-primary-300">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center group-hover:bg-primary-200 transition-colors">
+                  <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold mb-2 group-hover:text-primary-600 transition-colors" style={{ color: '#454545' }}>Güvenilirlik</h3>
+                  <p className="text-sm text-secondary-600">Araç modellerinin güvenilirlik puanları</p>
+                </div>
+              </div>
+            </Link>
+
+            {/* Belirti Rehberi */}
+            <Link href="/belirtiler" className="group bg-white rounded-xl p-6 hover:shadow-xl transition-all duration-300 border border-secondary-100 hover:border-primary-300">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center group-hover:bg-primary-200 transition-colors">
+                  <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold mb-2 group-hover:text-primary-600 transition-colors" style={{ color: '#454545' }}>Belirti Rehberi</h3>
+                  <p className="text-sm text-secondary-600">Araç sorunlarını belirtilerden tanıyın</p>
+                </div>
+              </div>
+            </Link>
+
+            {/* Bakım Takvimi */}
+            <Link href="/bakim-takvimi" className="group bg-white rounded-xl p-6 hover:shadow-xl transition-all duration-300 border border-secondary-100 hover:border-primary-300">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center group-hover:bg-primary-200 transition-colors">
+                  <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold mb-2 group-hover:text-primary-600 transition-colors" style={{ color: '#454545' }}>Bakım Takvimi</h3>
+                  <p className="text-sm text-secondary-600">Periyodik bakım zamanlarını takip edin</p>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Categories Section */}
+      <section className="py-16 bg-white">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-secondary-900 mb-4">
+              Hizmet Kategorileri
+            </h2>
+            <p className="text-secondary-600 max-w-2xl mx-auto">
+              İhtiyacınıza uygun hizmeti seçin ve anında fiyat teklifi alın
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+            {categories.slice(0, 12).map((category) => (
+              <CategoryCard key={category.id} category={category} />
+            ))}
+          </div>
+
+          <div className="text-center mt-8">
+            <Link
+              href="/servisler"
+              className="inline-flex items-center text-primary-600 font-medium hover:text-primary-700"
+            >
+              Tüm kategorileri gör
+              <svg className="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Feature Cards Section */}
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-4">
+              Araç Bakımını Kolaylaştıran Özellikler
+            </h2>
+            <p className="text-secondary-600 max-w-2xl mx-auto">
+              TamirHanem ile araç bakımı artık çok daha kolay, güvenli ve şeffaf
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Güvenli Ödeme Sistemi */}
+            <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-secondary-100 group hover:border-primary-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-secondary-900 mb-2">Güvenli Ödeme Sistemi</h3>
+              <p className="text-secondary-600">
+                Ödemeniz işlem tamamlanana kadar havuzda tutulur. Siz onaylamadan servis ücretini alamaz.
+              </p>
+            </div>
+
+            {/* Dijital Bakım Karnesi */}
+            <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-secondary-100 group hover:border-primary-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-secondary-900 mb-2">Dijital Bakım Karnesi</h3>
+              <p className="text-secondary-600">
+                Tüm servis işlemleri otomatik kaydedilir. Aracınızı satarken geçmişi belgeleyebilirsiniz.
+              </p>
+            </div>
+
+            {/* Vale Hizmeti */}
+            <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-secondary-100 group hover:border-primary-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-secondary-900 mb-2">Vale Hizmeti</h3>
+              <p className="text-secondary-600">
+                Aracınızı bulunduğunuz adresten teslim alır, bakım sonrası geri getiririz.
+              </p>
+            </div>
+
+            {/* Acil Yol Yardım */}
+            <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-secondary-100 group hover:border-primary-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414 1 1 0 01-1.414-1.414z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-secondary-900 mb-2">Acil Yol Yardım</h3>
+              <p className="text-secondary-600">
+                Yolda kaldığınızda konum paylaşın, en yakın çekici veya mobil tamirci size ulaşsın.
+              </p>
+            </div>
+
+            {/* Özel Kampanyalar */}
+            <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-secondary-100 group hover:border-primary-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-secondary-900 mb-2">Özel Kampanyalar</h3>
+              <p className="text-secondary-600">
+                Bakım, lastik ve temizlik hizmetlerinde platforma özel indirimlerden yararlanın.
+              </p>
+            </div>
+
+            {/* Misafir Erişimi */}
+            <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-secondary-100 group hover:border-primary-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-secondary-900 mb-2">Misafir Erişimi</h3>
+              <p className="text-secondary-600">
+                Kayıt olmadan servisleri inceleyin, fiyatları karşılaştırın, sonra karar verin.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Common Problems Section */}
+      <div className="bg-blue-50">
+        <ProblemsByModel />
+      </div>
+
+      {/* OBD Info Section */}
+      <ObdInfoSection />
+
+      {/* Trust Badges Section */}
+      <section className="py-12 bg-white border-y border-secondary-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-3 gap-8 items-center">
+            {/* KVKK Uyumlu */}
+            <div className="flex items-center gap-4 justify-center">
+              <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-bold text-secondary-900">KVKK Uyumlu</h4>
+                <p className="text-sm text-secondary-600">Verileriniz güvende</p>
+              </div>
+            </div>
+
+            {/* Güvenli Ödeme */}
+            <div className="flex items-center gap-4 justify-center">
+              <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-bold text-secondary-900">Güvenli Ödeme</h4>
+                <p className="text-sm text-secondary-600">256-bit SSL şifreleme</p>
+              </div>
+            </div>
+
+            {/* Şeffaf Takip */}
+            <div className="flex items-center gap-4 justify-center">
+              <div className="w-14 h-14 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-bold text-secondary-900">Şeffaf Takip</h4>
+                <p className="text-sm text-secondary-600">Her adımda bilgilendirilirsiniz</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Cost Estimator CTA Section */}
+      <section className="py-16 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl font-bold mb-4">
+                Tamir Maliyetini Önceden Öğrenin
+              </h2>
+              <p className="text-secondary-300 mb-6 leading-relaxed">
+                Aracınızın markası, modeli ve yapılacak işleme göre tahmini maliyet hesaplayın.
+                Servis fiyatlarını karşılaştırın ve bütçenize en uygun seçeneği bulun.
+              </p>
+
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>İşçilik ve parça maliyeti ayrı ayrı</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Marka bazlı fiyat karşılaştırma</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Tahmini işlem süresi</span>
+                </li>
+              </ul>
+
+              <Link
+                href="/fiyat-hesapla"
+                className="inline-flex items-center bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium"
+              >
+                Fiyat Hesapla
+                <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </Link>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
+              <div className="space-y-4">
+                {/* Sample cost breakdown */}
+                <div className="bg-white/10 rounded-lg p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium">Fren Balata Değişimi</span>
+                    <span className="text-primary-300">600 - 1.800 TL</span>
+                  </div>
+                  <div className="w-full bg-white/20 rounded-full h-2">
+                    <div className="bg-primary-400 h-2 rounded-full" style={{ width: '40%' }}></div>
+                  </div>
+                </div>
+
+                <div className="bg-white/10 rounded-lg p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium">Yağ + Filtre Değişimi</span>
+                    <span className="text-primary-300">800 - 2.500 TL</span>
+                  </div>
+                  <div className="w-full bg-white/20 rounded-full h-2">
+                    <div className="bg-primary-400 h-2 rounded-full" style={{ width: '30%' }}></div>
+                  </div>
+                </div>
+
+                <div className="bg-white/10 rounded-lg p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium">Triger Kayışı</span>
+                    <span className="text-primary-300">2.500 - 6.000 TL</span>
+                  </div>
+                  <div className="w-full bg-white/20 rounded-full h-2">
+                    <div className="bg-primary-400 h-2 rounded-full" style={{ width: '60%' }}></div>
+                  </div>
+                </div>
+
+                <div className="bg-white/10 rounded-lg p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium">Debriyaj Seti</span>
+                    <span className="text-primary-300">3.000 - 8.000 TL</span>
+                  </div>
+                  <div className="w-full bg-white/20 rounded-full h-2">
+                    <div className="bg-primary-400 h-2 rounded-full" style={{ width: '75%' }}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TamirHanem Onaylı Section */}
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="inline-block bg-primary-100 rounded-full px-6 py-2 mb-4">
+              <span className="text-primary-700 font-bold text-sm">✓ TamirHanem Onaylı</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: '#454545' }}>
+              Herkes İçin Avantajlı
+            </h2>
+            <p className="text-secondary-600 max-w-2xl mx-auto">
+              TamirHanem, hem araç sahiplerine hem de servis işletmelerine değer katıyor. Platformumuza katılın, avantajlardan yararlanın.
+            </p>
+          </div>
+
+          {/* Two Column Benefits */}
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Araç Sahipleri İçin */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-primary-200">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold" style={{ color: '#454545' }}>Araç Sahipleri</h3>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-primary-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <div>
+                    <p className="font-semibold text-secondary-900">Güvenli Ödeme Sistemi</p>
+                    <p className="text-sm text-secondary-600">Paranız işlem tamamlanana kadar güvende</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-primary-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <div>
+                    <p className="font-semibold text-secondary-900">Fiyat Karşılaştırma</p>
+                    <p className="text-sm text-secondary-600">Birden fazla servisten teklif alın</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-primary-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <div>
+                    <p className="font-semibold text-secondary-900">Dijital Bakım Karnesi</p>
+                    <p className="text-sm text-secondary-600">Tüm servis geçmişiniz kayıt altında</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-primary-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <div>
+                    <p className="font-semibold text-secondary-900">7/24 Yol Yardım</p>
+                    <p className="text-sm text-secondary-600">Acil durumlarda anında destek</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-secondary-100">
+                <a href="/register" className="block w-full bg-primary-500 hover:bg-primary-600 text-white text-center py-3 rounded-xl font-bold transition-colors">
+                  Ücretsiz Kayıt Ol
+                </a>
+              </div>
+            </div>
+
+            {/* Servis İşletmeleri İçin */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-primary-200">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold" style={{ color: '#454545' }}>Servis İşletmeleri</h3>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-primary-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <div>
+                    <p className="font-semibold text-secondary-900">Yeni Müşteriler</p>
+                    <p className="text-sm text-secondary-600">Binlerce araç sahibine ulaşın</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-primary-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <div>
+                    <p className="font-semibold text-secondary-900">Dijital Randevu Sistemi</p>
+                    <p className="text-sm text-secondary-600">Online randevu yönetimi</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-primary-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <div>
+                    <p className="font-semibold text-secondary-900">Hızlı Tahsilat</p>
+                    <p className="text-sm text-secondary-600">Güvenli ödeme altyapısı</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-primary-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <div>
+                    <p className="font-semibold text-secondary-900">Ücretsiz Kayıt</p>
+                    <p className="text-sm text-secondary-600">Başlangıç ücreti yok</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-secondary-100">
+                <a href="https://servis.tamirhanem.net" target="_blank" rel="noopener noreferrer" className="block w-full bg-secondary-800 hover:bg-secondary-900 text-white text-center py-3 rounded-xl font-bold transition-colors">
+                  İşletme Başvurusu
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom CTA */}
+          <div className="mt-12 text-center bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl p-8">
+            <h3 className="text-2xl font-bold mb-3" style={{ color: '#454545' }}>
+              TamirHanem Ailesine Katılın
+            </h3>
+            <p className="text-secondary-600 mb-6 max-w-2xl mx-auto">
+              İster araç sahibi olun ister servis işletmesi, TamirHanem ile otomotiv dünyasını daha kolay ve güvenilir hale getiriyoruz.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <a href="/register" className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-8 py-3 rounded-xl font-bold transition-colors">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                Araç Sahibi Olarak Başla
+              </a>
+              <a href="https://servis.tamirhanem.net" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-secondary-800 hover:bg-secondary-900 text-white px-8 py-3 rounded-xl font-bold transition-colors">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                Servis Olarak Katıl
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Digital Business Panel Section */}
+      <section className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative overflow-hidden">
+        {/* Decorative Elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary-500/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary-500/5 rounded-full blur-3xl"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-12">
+            <div className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
+              <span className="text-sm font-semibold">Servis İşletmeleri İçin</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+              Dijital İşletme Paneli
+            </h2>
+            <p className="text-xl text-white/70 max-w-2xl mx-auto">
+              Müşteri bulma, randevu yönetimi ve tahsilat süreçlerinizi tek panelden yönetin.
+            </p>
+          </div>
+
+          {/* Two Column Layout */}
+          <div className="grid lg:grid-cols-[2fr_3fr] gap-12 items-start">
+            {/* Left Side - Informative Content */}
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-2xl font-bold mb-4">İşletmenizi Dijitalleştirin</h3>
+                <p className="text-white/70 leading-relaxed mb-6">
+                  TamirHanem İşletme Paneli ile servis işletmenizi dijital dünyaya taşıyın.
+                  Müşteri yönetiminden finansal raporlamaya kadar tüm süreçlerinizi tek platformdan yönetin.
+                </p>
+              </div>
+
+              {/* Features List */}
+              <div className="space-y-4">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-primary-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                    <svg className="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold mb-1">Online Randevu Yönetimi</h4>
+                    <p className="text-sm text-white/60">Dijital takvim ile randevuları planlayın, müşterilerinize otomatik hatırlatma gönderin</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-primary-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                    <svg className="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold mb-1">Müşteri İlişkileri Yönetimi</h4>
+                    <p className="text-sm text-white/60">Müşteri geçmişini takip edin, özel kampanyalar oluşturun, sadakat programları yönetin</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-primary-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                    <svg className="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold mb-1">Finansal Raporlama</h4>
+                    <p className="text-sm text-white/60">Gelir-gider takibi, detaylı raporlar, karlılık analizi ve tahsilat yönetimi</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-primary-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                    <svg className="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold mb-1">Stok ve Parça Yönetimi</h4>
+                    <p className="text-sm text-white/60">Yedek parça stoklarını takip edin, otomatik sipariş bildirimleri alın</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Side - Dashboard */}
+            <div>
+              <BusinessDashboard />
+            </div>
+          </div>
+
+          {/* CTA Button */}
+          <div className="text-center mt-12">
+            <a
+              href="https://servis.tamirhanem.net"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-white text-gray-900 px-8 py-4 rounded-xl font-bold hover:bg-white/90 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+              İşletme Başvurusu Yap
+            </a>
+          </div>
+        </div>
+      </section >
+
+      {/* Reviews Section */}
+      < ReviewsSection />
+
+      {/* FAQ Section */}
+      < FAQSection />
+
+      {/* Final CTA Section - Dual Audience with Asymmetric Design */}
+      < section className="relative py-16 overflow-hidden" style={{ backgroundColor: '#454545' }
+      }>
+        {/* Diagonal Yellow Shape */}
+        < div className="absolute inset-0" >
+          <div
+            className="absolute top-0 right-0 w-2/3 h-full bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700"
+            style={{
+              clipPath: 'polygon(30% 0, 100% 0, 100% 100%, 0% 100%)',
+              transform: 'skewX(-5deg) translateX(5%)'
+            }}
+          ></div>
+        </div >
+
+        {/* Decorative Circles */}
+        < div className="absolute top-10 left-10 w-32 h-32 bg-primary-400/20 rounded-full blur-2xl" ></div >
+        <div className="absolute bottom-10 right-20 w-40 h-40 bg-primary-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-white/5 rounded-full blur-xl"></div>
+
+        {/* Curved Accent Line */}
+        <svg className="absolute top-0 left-0 w-full h-full opacity-10" preserveAspectRatio="none">
+          <path d="M 0,100 Q 400,50 800,100 T 1600,100 L 1600,0 L 0,0 Z" fill="white" opacity="0.05" />
+        </svg>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+              İster Araç Sahibi Olun, İster Esnaf
+            </h2>
+            <p className="text-gray-200 text-lg max-w-3xl mx-auto">
+              TamirHanem'e katılın ve güvenilir oto bakım hizmetlerinin bir parçası olun
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Araç Sahibi Card */}
+            <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-secondary-100 hover:scale-105">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold mb-3" style={{ color: '#454545' }}>Araç Sahibiyseniz</h3>
+                <p className="text-secondary-600 mb-6">
+                  Güvenilir servisler bulun, şeffaf fiyatlarla aracınızı bakıma alın
+                </p>
+              </div>
+
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-sm text-secondary-700">Ücretsiz fiyat teklifi alın</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-sm text-secondary-700">Onaylı servislerden seçim yapın</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-sm text-secondary-700">Araç geçmişinizi takip edin</span>
+                </li>
+              </ul>
+
+              <Link
+                href="/kayit-ol?tip=musteri"
+                className="block w-full bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors text-center shadow-lg hover:shadow-xl"
+              >
+                Araç Sahibi Olarak Kayıt Ol
+              </Link>
+            </div>
+
+            {/* Esnaf Card */}
+            <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-secondary-100 hover:scale-105">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold mb-3" style={{ color: '#454545' }}>Esnaf İseniz</h3>
+                <p className="text-secondary-600 mb-6">
+                  İşletmenizi büyütün, yeni müşterilere ulaşın, güvenilirliğinizi kanıtlayın
+                </p>
+              </div>
+
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-sm text-secondary-700">Binlerce potansiyel müşteriye ulaşın</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-sm text-secondary-700">TamirHanem sertifikası kazanın</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-sm text-secondary-700">İşletme yönetim araçları kullanın</span>
+                </li>
+              </ul>
+
+              <Link
+                href="/kayit-ol?tip=esnaf"
+                className="block w-full bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors text-center shadow-lg hover:shadow-xl"
+              >
+                Esnaf Olarak Kayıt Ol
+              </Link>
+            </div>
+          </div>
+
+          {/* Additional Info */}
+          <div className="text-center mt-12">
+            <p className="text-white text-sm">
+              Zaten hesabınız var mı?{' '}
+              <Link href="/giris-yap" className="font-semibold hover:underline text-primary-300">
+                Giriş Yapın
+              </Link>
+            </p>
+          </div>
+        </div>
+      </section >
+
+      {/* Waitlist Modal */}
+      < WaitlistModal />
+    </>
+  );
+}

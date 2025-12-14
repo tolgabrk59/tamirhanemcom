@@ -1,0 +1,13 @@
+[Unit]
+Description=Cloudflare Tunnel for tamirhanem.org
+After=network.target
+
+[Service]
+Type=simple
+User=dietpi
+ExecStart=/usr/local/bin/cloudflared tunnel --config /home/dietpi/.cloudflared/config.yml run tamirhanem-mcp
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

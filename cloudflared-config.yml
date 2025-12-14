@@ -1,0 +1,11 @@
+tunnel: 3a04f169-6e5d-4231-a4c0-3da1c9febd7d
+credentials-file: /home/dietpi/.cloudflared/3a04f169-6e5d-4231-a4c0-3da1c9febd7d.json
+
+ingress:
+  - hostname: tamirhanem.org
+    service: http://localhost:3002
+  - hostname: www.tamirhanem.org
+    service: http://localhost:3002
+  - hostname: mcp.tamirhanem.net
+    service: http://localhost:7080
+  - service: http_status:404

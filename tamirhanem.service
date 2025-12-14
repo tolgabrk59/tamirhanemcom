@@ -1,0 +1,16 @@
+[Unit]
+Description=TamirHanem Next.js Application
+After=network.target
+
+[Service]
+Type=simple
+User=dietpi
+WorkingDirectory=/home/dietpi/tamirhanem-next
+ExecStart=/usr/bin/npm run dev
+Restart=always
+RestartSec=10
+Environment=NODE_ENV=production
+Environment=PORT=3002
+
+[Install]
+WantedBy=multi-user.target
