@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ObdDetail from '@/components/ObdDetail';
-import { getObdCodeByCode } from '@/lib/strapi';
+import pool from '@/lib/db';
 import { getObdCodeByCodeLocal, obdCodesData } from '@/data/obd-codes';
 import type { ObdCode } from '@/types';
 
@@ -11,12 +11,53 @@ interface PageProps {
 
 async function getObdCodeData(code: string): Promise<ObdCode | null> {
   try {
-    const strapiCode = await getObdCodeByCode(code);
-    if (strapiCode) {
-      return strapiCode;
+    // MySQL'den OBD kodunu çek
+    const [rows] = await pool.execute(
+      `SELECT id, code, title, description, causes, solutions, severity, frequency
+       FROM obdkodlari WHERE code = ?`,
+      [code.toUpperCase()]
+    ) as [any[], any];
+    
+    if (rows.length > 0) {
+      const row = rows[0];
+      const severityMap: { [key: string]: ObdCode['severity'] } = {
+        'YÜKSEK': 'high',
+        'ORTA': 'medium',
+        'DÜŞÜK': 'low'
+      };
+
+      let causes: string[] = [];
+      let solutions: string[] = [];
+
+      try {
+        causes = row.causes ? JSON.parse(row.causes) : [];
+      } catch {
+        causes = row.causes ? row.causes.split('\n').filter((c: string) => c.trim()) : [];
+      }
+
+      try {
+        solutions = row.solutions ? JSON.parse(row.solutions) : [];
+      } catch {
+        solutions = row.solutions ? row.solutions.split('\n').filter((s: string) => s.trim()) : [];
+      }
+
+      return {
+        id: row.id,
+        code: row.code,
+        title: row.title,
+        description: row.description || '',
+        causes: causes,
+        fixes: solutions,
+        symptoms: [],
+        severity: severityMap[row.severity] || 'medium',
+        category: '',
+        estimatedCostMin: null,
+        estimatedCostMax: null,
+        frequency: row.frequency || 0
+      };
     }
   } catch (error) {
-    console.error('Failed to fetch OBD code from Strapi:', error);
+    console.error('Failed to fetch OBD code from MySQL:', error);
   }
   return getObdCodeByCodeLocal(code) || null;
 }

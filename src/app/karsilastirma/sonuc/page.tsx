@@ -130,7 +130,7 @@ export default function ComparisonResultPage() {
                 <h2 className="text-2xl font-bold mb-2">Araçlar Karşılaştırılıyor...</h2>
                 <p className="text-secondary-400 text-center max-w-md">
                     Yapay zeka her iki aracın teknik verilerini, kronik sorunlarını ve kullanıcı yorumlarını analiz ediyor.
-                    Bu işlem 30-45 saniye sürebilir.
+                    Bu işlem 1-2 dakika sürebilir.
                 </p>
             </div>
         );
@@ -174,20 +174,37 @@ export default function ComparisonResultPage() {
 
     return (
         <div className="bg-gray-50 min-h-screen pb-20">
-            {/* Header */}
-            <div className="bg-secondary-900 text-white pt-12 pb-24">
-                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <Link href="/karsilastirma/olustur" className="inline-flex items-center text-secondary-400 hover:text-white mb-6 transition-colors text-sm">
+            {/* Hero Section */}
+            <section className="relative py-20 overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+                {/* Background Image with 10% opacity */}
+                <div 
+                    className="absolute inset-0 bg-cover bg-center opacity-10"
+                    style={{ backgroundImage: `url('/images/comparison-hero.jpg')` }}
+                />
+                
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-900/50 to-gray-900" />
+                
+                {/* Decorative Elements */}
+                <div className="absolute top-10 left-10 w-32 h-32 bg-primary-500/20 rounded-full blur-3xl" />
+                <div className="absolute bottom-10 right-10 w-40 h-40 bg-primary-400/20 rounded-full blur-3xl" />
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl" />
+                
+                <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <Link href="/karsilastirma/olustur" className="inline-flex items-center text-gray-400 hover:text-white mb-6 transition-colors text-sm">
                         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
                         Yeni Karşılaştırma
                     </Link>
-                    <h1 className="text-3xl md:text-4xl font-bold">
+                    <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
                         {brand1} {model1} <span className="text-red-500 mx-2">VS</span> {brand2} {model2}
                     </h1>
-                 </div>
-            </div>
+                    <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+                        İki aracın teknik özellikleri, artıları, eksileri ve fiyatlarını karşılaştırın
+                    </p>
+                </div>
+            </section>
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16">
                 
@@ -224,36 +241,39 @@ export default function ComparisonResultPage() {
                 {/* Specs Table */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-8">
                     <div className="bg-secondary-50 px-6 py-4 border-b border-gray-200">
-                        <h3 className="font-bold text-lg text-secondary-900">Teknik Özellikler</h3>
+                        <h3 className="font-bold text-lg text-secondary-900 text-center">Teknik Özellikler</h3>
+                    </div>
+                    {/* Header Row */}
+                    <div className="grid grid-cols-3 bg-secondary-100 p-4 border-b border-gray-200">
+                        <div className="text-center font-bold text-secondary-900">{brand1} {model1}</div>
+                        <div className="text-center font-medium text-secondary-500">Özellik</div>
+                        <div className="text-center font-bold text-secondary-900">{brand2} {model2}</div>
                     </div>
                     <div className="divide-y divide-gray-100">
-                         {/* Dynamic rendering of specs from API Data */}
-                         {/* Assuming 'specs' object in data. If not, map known fields */}
-                         
                          {/* Engine */}
                          <div className="grid grid-cols-3 hover:bg-gray-50 p-4">
-                            <div className="text-sm text-secondary-500 font-medium">Motor & Performans</div>
                             <div className="text-center font-semibold text-secondary-900">{data1.specs?.engine || '-'}</div>
+                            <div className="text-center text-sm text-primary-600 font-medium">Motor & Performans</div>
                             <div className="text-center font-semibold text-secondary-900">{data2.specs?.engine || '-'}</div>
                          </div>
                          <div className="grid grid-cols-3 hover:bg-gray-50 p-4">
-                            <div className="text-sm text-secondary-500 font-medium">Güç (HP)</div>
                             <div className="text-center font-semibold text-secondary-900">{data1.specs?.horsepower || '-'}</div>
+                            <div className="text-center text-sm text-primary-600 font-medium">Güç (HP)</div>
                             <div className="text-center font-semibold text-secondary-900">{data2.specs?.horsepower || '-'}</div>
                          </div>
                          <div className="grid grid-cols-3 hover:bg-gray-50 p-4">
-                            <div className="text-sm text-secondary-500 font-medium">Şanzıman</div>
                             <div className="text-center font-semibold text-secondary-900">{data1.specs?.transmission || '-'}</div>
+                            <div className="text-center text-sm text-primary-600 font-medium">Şanzıman</div>
                             <div className="text-center font-semibold text-secondary-900">{data2.specs?.transmission || '-'}</div>
                          </div>
                          <div className="grid grid-cols-3 hover:bg-gray-50 p-4">
-                            <div className="text-sm text-secondary-500 font-medium">Yakıt Tüketimi</div>
                             <div className="text-center font-semibold text-secondary-900">{data1.specs?.fuel_economy || '-'}</div>
+                            <div className="text-center text-sm text-primary-600 font-medium">Yakıt Tüketimi</div>
                             <div className="text-center font-semibold text-secondary-900">{data2.specs?.fuel_economy || '-'}</div>
                          </div>
                          <div className="grid grid-cols-3 hover:bg-gray-50 p-4">
-                            <div className="text-sm text-secondary-500 font-medium">Tahmini Fiyat</div>
                             <div className="text-center font-bold text-primary-600">{data1.estimated_prices?.average || '-'}</div>
+                            <div className="text-center text-sm text-primary-600 font-medium">Tahmini Fiyat</div>
                             <div className="text-center font-bold text-primary-600">{data2.estimated_prices?.average || '-'}</div>
                          </div>
                     </div>

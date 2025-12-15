@@ -136,10 +136,10 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="py-6 border-t border-secondary-800 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm">
-            &copy; {currentYear} TamirHanem. Tüm hakları saklıdır.
+            &copy; {currentYear} TamirHanem. <a href="http://next-ai.com.tr" target="_blank" rel="noopener noreferrer" className="hover:text-primary-400 transition-colors">Next AI Teknoloji Yazılım San. ve Tic.Ltd.Şti</a> markasıdır.
           </p>
-          <p className="text-sm mt-2 md:mt-0">
-            Türkiye&apos;nin güvenilir araç bakım platformu
+          <p className="text-2xl mt-2 md:mt-0 font-[family-name:var(--font-handwriting)] italic text-primary-400">
+            &quot; Her Araç Kıymetlidir&quot;
           </p>
         </div>
       </div>

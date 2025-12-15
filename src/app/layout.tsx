@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Dancing_Script } from 'next/font/google';
 import './globals.css';
 import dynamic from 'next/dynamic';
 import Footer from '@/components/Footer';
@@ -8,6 +8,11 @@ const Header = dynamic(() => import('@/components/Header'), { ssr: false });
 const ChatWidget = dynamic(() => import('@/components/ChatWidget'), { ssr: false });
 
 const inter = Inter({ subsets: ['latin'] });
+
+const dancingScript = Dancing_Script({ 
+  subsets: ['latin'],
+  variable: '--font-handwriting'
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.SITE_URL || 'https://tamirhanem.com'),
@@ -88,7 +93,7 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#2563eb" />
       </head>
-      <body className={inter.className} suppressHydrationWarning>
+      <body className={`${inter.className} ${dancingScript.variable}`} suppressHydrationWarning>
         <div className="min-h-screen flex flex-col">
           <Header />
           <main className="flex-1">{children}</main>

@@ -50,7 +50,7 @@ export async function getCategories() {
 // Markaları çek (benzersiz)
 export async function getBrands() {
     try {
-        const [rows] = await pool.execute('SELECT DISTINCT brand FROM arac_dataveri WHERE brand IS NOT NULL ORDER BY brand ASC');
+        const [rows] = await pool.execute('SELECT DISTINCT brand FROM arac_dataveris WHERE brand IS NOT NULL ORDER BY brand ASC');
         return rows;
     } catch (error) {
         console.error('MySQL Error:', error);
@@ -62,7 +62,7 @@ export async function getBrands() {
 export async function getModelsByBrand(brand: string) {
     try {
         const [rows] = await pool.execute(
-            'SELECT DISTINCT model FROM arac_dataveri WHERE brand = ? AND model IS NOT NULL ORDER BY model ASC',
+            'SELECT DISTINCT model FROM arac_dataveris WHERE brand = ? AND model IS NOT NULL ORDER BY model ASC',
             [brand]
         );
         return rows;
@@ -76,7 +76,7 @@ export async function getModelsByBrand(brand: string) {
 export async function getPackagesByBrandModel(brand: string, model: string) {
     try {
         const [rows] = await pool.execute(
-            'SELECT DISTINCT full_model FROM arac_dataveri WHERE brand = ? AND model = ? AND full_model IS NOT NULL ORDER BY full_model ASC',
+            'SELECT DISTINCT fuel_type, engine_type, year FROM arac_dataveris WHERE brand = ? AND model = ? ORDER BY year DESC',
             [brand, model]
         );
         return rows;
@@ -108,7 +108,6 @@ export async function searchServices(filters: {
                 s.latitude,
                 s.longitude,
                 s.phone,
-                s.pic,
                 s.supported_vehicles,
                 s.supports_all_vehicles,
                 s.is_official_service,
@@ -348,16 +347,51 @@ export async function searchChronicProblems(brand?: string, model?: string, year
     }
 }
 
-// AI Analizlerini getir (Cache)
+// Cache expiration config (in days)
+const CACHE_TTL = {
+    PRICES: 30,           // Fiyat verileri 30 gün
+    CHRONIC_PROBLEMS: 30, // Kronik sorunlar 30 gün
+    TECHNICAL: 120        // Teknik veriler 120 gün
+};
+
+// AI Analizlerini getir (Cache with expiration)
 export async function getVehicleAnalysis(brand: string, model: string, year: number) {
     try {
         const [rows] = await pool.execute(
-            'SELECT data FROM ai_vehicle_analysis WHERE brand = ? AND model = ? AND year = ?',
+            'SELECT data, updated_at FROM ai_vehicle_analysis WHERE brand = ? AND model = ? AND year = ?',
             [brand, model, year]
         ) as [any[], any];
 
         if (rows.length > 0) {
-            return rows[0].data;
+            const cachedData = typeof rows[0].data === 'string' ? JSON.parse(rows[0].data) : rows[0].data;
+            const updatedAt = new Date(rows[0].updated_at);
+            const now = new Date();
+            const daysSinceUpdate = Math.floor((now.getTime() - updatedAt.getTime()) / (1000 * 60 * 60 * 24));
+
+            // Check if prices need refresh (30 days)
+            const pricesExpired = daysSinceUpdate >= CACHE_TTL.PRICES;
+            // Check if chronic problems need refresh (30 days)
+            const chronicExpired = daysSinceUpdate >= CACHE_TTL.CHRONIC_PROBLEMS;
+            // Check if technical data needs refresh (120 days)
+            const technicalExpired = daysSinceUpdate >= CACHE_TTL.TECHNICAL;
+
+            // If all data is still valid, return from cache
+            if (!pricesExpired && !chronicExpired && !technicalExpired) {
+                return { ...cachedData, _fromCache: true, _cacheAge: daysSinceUpdate };
+            }
+
+            // If only some parts expired, return partial data with refresh flags
+            return {
+                ...cachedData,
+                _fromCache: true,
+                _cacheAge: daysSinceUpdate,
+                _needsRefresh: {
+                    prices: pricesExpired,
+                    chronic_problems: chronicExpired,
+                    technical: technicalExpired,
+                    full: technicalExpired // If technical expired, refresh everything
+                }
+            };
         }
         return null;
     } catch (error) {
@@ -370,7 +404,9 @@ export async function getVehicleAnalysis(brand: string, model: string, year: num
 export async function saveVehicleAnalysis(brand: string, model: string, year: number, data: any) {
     try {
         await pool.execute(
-            'INSERT INTO ai_vehicle_analysis (brand, model, year, data) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE data = VALUES(data)',
+            `INSERT INTO ai_vehicle_analysis (brand, model, year, data, updated_at) 
+             VALUES (?, ?, ?, ?, NOW()) 
+             ON DUPLICATE KEY UPDATE data = VALUES(data), updated_at = NOW()`,
             [brand, model, year, JSON.stringify(data)]
         );
         return true;
@@ -379,3 +415,4 @@ export async function saveVehicleAnalysis(brand: string, model: string, year: nu
         return false;
     }
 }
+

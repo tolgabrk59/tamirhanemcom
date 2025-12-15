@@ -98,12 +98,21 @@ export async function POST(req: Request) {
 
     // 1. Check Cache (Database)
     const cachedData = await getVehicleAnalysis(brand, model, year);
-    if (cachedData) {
-      console.log(`Cache HIT for ${year} ${brand} ${model}`);
-      return NextResponse.json(typeof cachedData === 'string' ? JSON.parse(cachedData) : cachedData);
+    
+    // If cache exists and doesn't need full refresh, return it
+    if (cachedData && !cachedData._needsRefresh?.full) {
+      console.log(`Cache HIT for ${year} ${brand} ${model} (age: ${cachedData._cacheAge || 0} days)`);
+      // Remove internal cache metadata before returning
+      const { _fromCache, _cacheAge, _needsRefresh, ...cleanData } = cachedData;
+      return NextResponse.json(cleanData);
     }
 
-    console.log(`Cache MISS for ${year} ${brand} ${model}, calling AI...`);
+    // Log appropriate message
+    if (cachedData?._needsRefresh?.full) {
+      console.log(`Cache EXPIRED for ${year} ${brand} ${model} (age: ${cachedData._cacheAge} days), refreshing...`);
+    } else {
+      console.log(`Cache MISS for ${year} ${brand} ${model}, calling AI...`);
+    }
 
     const prompt = `
       Sen uzman bir otomobil teknisyenisin ve veri analistisin. 

@@ -8,6 +8,7 @@ import ReviewsSection from '@/components/Reviews';
 import FAQSection from '@/components/FAQ';
 import WaitlistModal from '@/components/WaitlistModal';
 import BusinessDashboard from '@/components/BusinessDashboard';
+import HomeStats from '@/components/HomeStats';
 import { getCategories } from '@/lib/db';
 import { categoriesData } from '@/data/categories';
 import type { Category } from '@/types';
@@ -78,25 +79,8 @@ export default async function HomePage() {
             <SearchBox />
           </div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 max-w-4xl mx-auto">
-            <div className="text-center">
-              <p className="text-3xl md:text-4xl font-bold text-primary-600">500+</p>
-              <p className="text-secondary-500 text-sm">Anlaşmalı Servis</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl md:text-4xl font-bold text-primary-600">50K+</p>
-              <p className="text-secondary-500 text-sm">Mutlu Müşteri</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl md:text-4xl font-bold text-primary-600">4.8</p>
-              <p className="text-secondary-500 text-sm">Ortalama Puan</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl md:text-4xl font-bold text-primary-600">%30</p>
-              <p className="text-secondary-500 text-sm">Tasarruf</p>
-            </div>
-          </div>
+          {/* Quick Stats - Dynamic from MySQL */}
+          <HomeStats />
 
           {/* Mobile App Download Section */}
           <div className="mt-12 text-center">
@@ -592,7 +576,7 @@ export default async function HomePage() {
               </div>
 
               <div className="mt-6 pt-6 border-t border-secondary-100">
-                <a href="/register" className="block w-full bg-primary-500 hover:bg-primary-600 text-white text-center py-3 rounded-xl font-bold transition-colors">
+                <a href="https://tamirhanem.net/register.html" className="block w-full bg-primary-500 hover:bg-primary-600 text-white text-center py-3 rounded-xl font-bold transition-colors">
                   Ücretsiz Kayıt Ol
                 </a>
               </div>
@@ -652,7 +636,7 @@ export default async function HomePage() {
               </div>
 
               <div className="mt-6 pt-6 border-t border-secondary-100">
-                <a href="https://servis.tamirhanem.net" target="_blank" rel="noopener noreferrer" className="block w-full bg-secondary-800 hover:bg-secondary-900 text-white text-center py-3 rounded-xl font-bold transition-colors">
+                <a href="https://tamirhanem.net/register.html" className="block w-full bg-secondary-800 hover:bg-secondary-900 text-white text-center py-3 rounded-xl font-bold transition-colors">
                   İşletme Başvurusu
                 </a>
               </div>
@@ -668,13 +652,13 @@ export default async function HomePage() {
               İster araç sahibi olun ister servis işletmesi, TamirHanem ile otomotiv dünyasını daha kolay ve güvenilir hale getiriyoruz.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <a href="/register" className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-8 py-3 rounded-xl font-bold transition-colors">
+              <a href="https://tamirhanem.net/register.html" className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-8 py-3 rounded-xl font-bold transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
                 Araç Sahibi Olarak Başla
               </a>
-              <a href="https://servis.tamirhanem.net" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-secondary-800 hover:bg-secondary-900 text-white px-8 py-3 rounded-xl font-bold transition-colors">
+              <a href="https://tamirhanem.net/register.html" className="inline-flex items-center gap-2 bg-secondary-800 hover:bg-secondary-900 text-white px-8 py-3 rounded-xl font-bold transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
@@ -777,7 +761,7 @@ export default async function HomePage() {
           {/* CTA Button */}
           <div className="text-center mt-12">
             <a
-              href="https://servis.tamirhanem.net"
+              href="https://tamirhanem.net/register.html"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-white text-gray-900 px-8 py-4 rounded-xl font-bold hover:bg-white/90 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105"
@@ -824,7 +808,7 @@ export default async function HomePage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-              İster Araç Sahibi Olun, İster Esnaf
+              İster Araç Sahibi Olun, İster Servis
             </h2>
             <p className="text-gray-200 text-lg max-w-3xl mx-auto">
               TamirHanem'e katılın ve güvenilir oto bakım hizmetlerinin bir parçası olun
@@ -840,9 +824,9 @@ export default async function HomePage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold mb-3" style={{ color: '#454545' }}>Araç Sahibiyseniz</h3>
+                <h3 className="text-2xl font-bold mb-3" style={{ color: '#454545' }}>TamirHanem'in Araç Sahibine Faydaları</h3>
                 <p className="text-secondary-600 mb-6">
-                  Güvenilir servisler bulun, şeffaf fiyatlarla aracınızı bakıma alın
+                  Güvenilir servisleri bulur, şeffaf fiyatlarla aracını bakıma alır
                 </p>
               </div>
 
@@ -851,24 +835,24 @@ export default async function HomePage() {
                   <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span className="text-sm text-secondary-700">Ücretsiz fiyat teklifi alın</span>
+                  <span className="text-sm text-secondary-700">Ücretsiz fiyat teklifi alır</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span className="text-sm text-secondary-700">Onaylı servislerden seçim yapın</span>
+                  <span className="text-sm text-secondary-700">Onaylı servislerden seçim yapar</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span className="text-sm text-secondary-700">Araç geçmişinizi takip edin</span>
+                  <span className="text-sm text-secondary-700">Araç geçmişini takip eder</span>
                 </li>
               </ul>
 
               <Link
-                href="/kayit-ol?tip=musteri"
+                href="https://tamirhanem.net/register.html"
                 className="block w-full bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors text-center shadow-lg hover:shadow-xl"
               >
                 Araç Sahibi Olarak Kayıt Ol
@@ -883,9 +867,9 @@ export default async function HomePage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold mb-3" style={{ color: '#454545' }}>Esnaf İseniz</h3>
+                <h3 className="text-2xl font-bold mb-3" style={{ color: '#454545' }}>TamirHanem'in Servis İşletmelerine Faydaları</h3>
                 <p className="text-secondary-600 mb-6">
-                  İşletmenizi büyütün, yeni müşterilere ulaşın, güvenilirliğinizi kanıtlayın
+                  İşletmesini büyütür, yeni müşterilere ulaşır, güvenilirliğini kanıtlar
                 </p>
               </div>
 
@@ -894,27 +878,27 @@ export default async function HomePage() {
                   <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span className="text-sm text-secondary-700">Binlerce potansiyel müşteriye ulaşın</span>
+                  <span className="text-sm text-secondary-700">Binlerce potansiyel müşteriye ulaşır</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span className="text-sm text-secondary-700">TamirHanem sertifikası kazanın</span>
+                  <span className="text-sm text-secondary-700">TamirHanem sertifikası kazanır</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span className="text-sm text-secondary-700">İşletme yönetim araçları kullanın</span>
+                  <span className="text-sm text-secondary-700">TamirHanem'e özel işletme yönetim araçlarını kullanır</span>
                 </li>
               </ul>
 
               <Link
-                href="/kayit-ol?tip=esnaf"
+                href="https://tamirhanem.net/register.html"
                 className="block w-full bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors text-center shadow-lg hover:shadow-xl"
               >
-                Esnaf Olarak Kayıt Ol
+                Servis Olarak Kayıt Ol
               </Link>
             </div>
           </div>
