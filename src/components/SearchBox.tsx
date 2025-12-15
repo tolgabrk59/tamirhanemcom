@@ -31,8 +31,8 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
   const router = useRouter();
 
   // Form states
-  const [city, setCity] = useState('');
-  const [district, setDistrict] = useState('');
+  const [city, setCity] = useState('Tekirdağ');
+  const [district, setDistrict] = useState('Çorlu');
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
   const [packageName, setPackageName] = useState('');
