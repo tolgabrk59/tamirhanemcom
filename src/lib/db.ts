@@ -50,7 +50,7 @@ export async function getCategories() {
 // Markaları çek (benzersiz)
 export async function getBrands() {
     try {
-        const [rows] = await pool.execute('SELECT DISTINCT brand FROM arac_dataveris WHERE brand IS NOT NULL ORDER BY brand ASC');
+        const [rows] = await pool.execute('SELECT DISTINCT brand FROM arac_dataveri WHERE brand IS NOT NULL ORDER BY brand ASC');
         return rows;
     } catch (error) {
         console.error('MySQL Error:', error);
@@ -62,7 +62,7 @@ export async function getBrands() {
 export async function getModelsByBrand(brand: string) {
     try {
         const [rows] = await pool.execute(
-            'SELECT DISTINCT model FROM arac_dataveris WHERE brand = ? AND model IS NOT NULL ORDER BY model ASC',
+            'SELECT DISTINCT model FROM arac_dataveri WHERE brand = ? AND model IS NOT NULL ORDER BY model ASC',
             [brand]
         );
         return rows;
@@ -76,7 +76,7 @@ export async function getModelsByBrand(brand: string) {
 export async function getPackagesByBrandModel(brand: string, model: string) {
     try {
         const [rows] = await pool.execute(
-            'SELECT DISTINCT fuel_type, engine_type, year FROM arac_dataveris WHERE brand = ? AND model = ? ORDER BY year DESC',
+            'SELECT DISTINCT fuel_type, engine_type, year FROM arac_dataveri WHERE brand = ? AND model = ? ORDER BY year DESC',
             [brand, model]
         );
         return rows;
