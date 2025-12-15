@@ -106,7 +106,8 @@ export default function EncyclopediaPage() {
                             ...c,
                             systemName: system.name,
                             systemSlug: system.slug,
-                            subsystemName: sub.name
+                            subsystemName: sub.name,
+                            subsystemSlug: sub.slug
                         }));
                         allComponents.push(...subsystemComponents);
                     }
@@ -271,7 +272,10 @@ export default function EncyclopediaPage() {
                                                         {searchResults.components.map((component: any) => (
                                                             <Link
                                                                 key={component.id}
-                                                                href={`/arac/ansiklopedi/${component.systemSlug}/${component.slug}`}
+                                                                href={component.subsystemSlug 
+                                                                    ? `/arac/ansiklopedi/${component.systemSlug}/${component.subsystemSlug}/${component.slug}`
+                                                                    : `/arac/ansiklopedi/${component.systemSlug}/${component.slug}`
+                                                                }
                                                                 onClick={() => setShowResults(false)}
                                                                 className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary-50 transition-colors group"
                                                             >
@@ -307,20 +311,30 @@ export default function EncyclopediaPage() {
             </section>
 
             {/* Systems Grid */}
-            <section className="py-20 bg-gradient-to-b from-secondary-50 to-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <section className="py-20 bg-gradient-to-b from-secondary-900 via-secondary-800 to-secondary-900 relative overflow-hidden">
+                {/* Background decorations */}
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjAzIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-50"></div>
+                <div className="absolute top-20 left-10 w-96 h-96 bg-primary-500/20 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-20 right-10 w-80 h-80 bg-blue-500/15 rounded-full blur-3xl"></div>
+                
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl font-bold mb-4 text-secondary-900">
-                            Otomotiv Sistemleri
+                        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-6">
+                            <svg className="w-4 h-4 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                            <span className="text-white/80 text-sm font-medium">Tüm Sistemler</span>
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">
+                            Otomotiv <span className="text-primary-400">Sistemleri</span>
                         </h2>
-                        <p className="text-secondary-600 text-lg max-w-2xl mx-auto">
+                        <p className="text-gray-400 text-lg max-w-2xl mx-auto">
                             Aracınızın ana sistemlerini keşfedin ve detaylı bilgi edinin
                         </p>
                     </div>
 
-
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {systems.map((system) => {
+                    <div className="space-y-8">
+                        {systems.map((system, index) => {
                             const colors = colorClasses[system.color];
                             const imageMap: Record<string, string> = {
                                 'engine': '/images/systems/engine.png',
@@ -333,61 +347,168 @@ export default function EncyclopediaPage() {
                                 'transmission': '/images/systems/transmission.png',
                             };
                             
-                            // Calculate total component count (including subsystems)
-                            let totalComponents = system.components?.length || 0;
+                            // Collect all components for this system
+                            let allSystemComponents: any[] = [];
                             if (system.subsystems && system.subsystems.length > 0) {
                                 system.subsystems.forEach(subsystem => {
-                                    if (subsystem) totalComponents += subsystem.components?.length || 0;
+                                    if (subsystem && subsystem.components) {
+                                        const componentsWithSubsystem = subsystem.components.map(c => ({
+                                            ...c,
+                                            systemSlug: system.slug,
+                                            subsystemSlug: subsystem.slug
+                                        }));
+                                        allSystemComponents.push(...componentsWithSubsystem);
+                                    }
                                 });
+                            } else if (system.components) {
+                                allSystemComponents = system.components.map(c => ({
+                                    ...c,
+                                    systemSlug: system.slug
+                                }));
                             }
                             
+                            // Sort alphabetically
+                            allSystemComponents.sort((a, b) => a.name.localeCompare(b.name, 'tr-TR'));
+                            
+                            // Group by letter ranges (Turkish alphabet aware)
+                            const groupAF = allSystemComponents.filter(c => {
+                                const firstLetter = c.name.charAt(0).toUpperCase();
+                                return 'ABCÇDEFabc'.includes(firstLetter) || firstLetter <= 'F';
+                            });
+                            const groupGM = allSystemComponents.filter(c => {
+                                const firstLetter = c.name.charAt(0).toUpperCase();
+                                return 'GĞHIİJKLMgğhıijklm'.includes(firstLetter) || (firstLetter > 'F' && firstLetter <= 'M');
+                            });
+                            const groupNZ = allSystemComponents.filter(c => {
+                                const firstLetter = c.name.charAt(0).toUpperCase();
+                                return !groupAF.includes(c) && !groupGM.includes(c);
+                            });
+                            
                             return (
-                                <Link
-                                    key={system.id}
-                                    href={`/arac/ansiklopedi/${system.slug}`}
-                                    className="bg-white border-2 border-secondary-100 hover:border-primary-300 rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group relative"
+                                <div 
+                                    key={system.id} 
+                                    className="group bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden hover:bg-white/10 hover:border-primary-500/30 transition-all duration-500"
                                 >
-                                    {/* Gradient Overlay on Hover */}
-                                    <div className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
-                                    
-                                    <div className="relative">
-                                        {/* Image Section */}
-                                        <div className="h-48 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-6 relative overflow-hidden">
-                                            <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent"></div>
+                                    {/* System Header */}
+                                    <div className="flex flex-col md:flex-row gap-6 p-8 border-b border-white/10">
+                                        <div className="w-full md:w-56 h-40 bg-gradient-to-br from-white/10 to-white/5 rounded-2xl flex items-center justify-center flex-shrink-0 relative overflow-hidden group-hover:from-primary-500/20 group-hover:to-primary-600/10 transition-all duration-500">
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                                             <img 
                                                 src={imageMap[system.icon] || '/images/systems/engine.png'} 
                                                 alt={system.name}
-                                                className="w-full h-full object-contain relative z-10 group-hover:scale-110 transition-transform duration-500"
+                                                className="w-full h-full object-contain p-6 relative z-10 group-hover:scale-110 transition-transform duration-500"
                                             />
                                         </div>
-                                        
-                                        {/* Content Section */}
-                                        <div className="p-6">
-                                            <h3 className="font-bold text-xl mb-2 text-secondary-900 group-hover:text-primary-600 transition-colors">
-                                                {system.name}
-                                            </h3>
-                                            <p className="text-secondary-600 text-sm leading-relaxed mb-4 line-clamp-2">
+                                        <div className="flex-1 flex flex-col justify-center">
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <span className="px-3 py-1 bg-primary-500/20 text-primary-400 text-xs font-bold rounded-full">
+                                                    {allSystemComponents.length} Bileşen
+                                                </span>
+                                            </div>
+                                            <Link 
+                                                href={`/arac/ansiklopedi/${system.slug}`}
+                                                className="inline-block"
+                                            >
+                                                <h3 className="text-2xl md:text-3xl font-bold text-white group-hover:text-primary-400 transition-colors mb-3 flex items-center gap-3">
+                                                    {system.name}
+                                                    <svg className="w-6 h-6 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                                    </svg>
+                                                </h3>
+                                            </Link>
+                                            <p className="text-gray-400 leading-relaxed text-lg">
                                                 {system.description}
                                             </p>
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-2 text-sm font-bold text-secondary-700">
-                                                    <svg className="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                                    </svg>
-                                                    <span>{totalComponents} Bileşen</span>
-                                                </div>
-                                                <div className="flex items-center gap-1 text-primary-600 font-medium text-sm group-hover:gap-2 transition-all">
-                                                    <span>Keşfet</span>
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                                    </svg>
-                                                </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Components Grid by Letter */}
+                                    <div className="p-8 bg-gradient-to-b from-transparent to-white/[0.02]">
+                                        <div className="grid md:grid-cols-3 gap-8">
+                                            {/* A-F Column */}
+                                            <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
+                                                <h4 className="text-primary-400 font-bold text-sm mb-4 pb-3 border-b border-primary-500/30 flex items-center gap-2">
+                                                    <span className="w-8 h-8 bg-primary-500/20 rounded-lg flex items-center justify-center text-primary-300">A</span>
+                                                    <span>- F</span>
+                                                </h4>
+                                                <ul className="space-y-2.5">
+                                                    {groupAF.map((component) => (
+                                                        <li key={component.id}>
+                                                            <Link 
+                                                                href={component.subsystemSlug 
+                                                                    ? `/arac/ansiklopedi/${component.systemSlug}/${component.subsystemSlug}/${component.slug}`
+                                                                    : `/arac/ansiklopedi/${component.systemSlug}/${component.slug}`
+                                                                }
+                                                                className="text-gray-300 hover:text-primary-400 transition-colors text-sm flex items-center gap-2 group/item"
+                                                            >
+                                                                <span className="w-1.5 h-1.5 bg-gray-600 rounded-full group-hover/item:bg-primary-400 transition-colors"></span>
+                                                                {component.name}
+                                                            </Link>
+                                                        </li>
+                                                    ))}
+                                                    {groupAF.length === 0 && (
+                                                        <li className="text-gray-600 text-sm italic">Bileşen yok</li>
+                                                    )}
+                                                </ul>
+                                            </div>
+                                            
+                                            {/* G-M Column */}
+                                            <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
+                                                <h4 className="text-primary-400 font-bold text-sm mb-4 pb-3 border-b border-primary-500/30 flex items-center gap-2">
+                                                    <span className="w-8 h-8 bg-primary-500/20 rounded-lg flex items-center justify-center text-primary-300">G</span>
+                                                    <span>- M</span>
+                                                </h4>
+                                                <ul className="space-y-2.5">
+                                                    {groupGM.map((component) => (
+                                                        <li key={component.id}>
+                                                            <Link 
+                                                                href={component.subsystemSlug 
+                                                                    ? `/arac/ansiklopedi/${component.systemSlug}/${component.subsystemSlug}/${component.slug}`
+                                                                    : `/arac/ansiklopedi/${component.systemSlug}/${component.slug}`
+                                                                }
+                                                                className="text-gray-300 hover:text-primary-400 transition-colors text-sm flex items-center gap-2 group/item"
+                                                            >
+                                                                <span className="w-1.5 h-1.5 bg-gray-600 rounded-full group-hover/item:bg-primary-400 transition-colors"></span>
+                                                                {component.name}
+                                                            </Link>
+                                                        </li>
+                                                    ))}
+                                                    {groupGM.length === 0 && (
+                                                        <li className="text-gray-600 text-sm italic">Bileşen yok</li>
+                                                    )}
+                                                </ul>
+                                            </div>
+                                            
+                                            {/* N-Z Column */}
+                                            <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
+                                                <h4 className="text-primary-400 font-bold text-sm mb-4 pb-3 border-b border-primary-500/30 flex items-center gap-2">
+                                                    <span className="w-8 h-8 bg-primary-500/20 rounded-lg flex items-center justify-center text-primary-300">N</span>
+                                                    <span>- Z</span>
+                                                </h4>
+                                                <ul className="space-y-2.5">
+                                                    {groupNZ.map((component) => (
+                                                        <li key={component.id}>
+                                                            <Link 
+                                                                href={component.subsystemSlug 
+                                                                    ? `/arac/ansiklopedi/${component.systemSlug}/${component.subsystemSlug}/${component.slug}`
+                                                                    : `/arac/ansiklopedi/${component.systemSlug}/${component.slug}`
+                                                                }
+                                                                className="text-gray-300 hover:text-primary-400 transition-colors text-sm flex items-center gap-2 group/item"
+                                                            >
+                                                                <span className="w-1.5 h-1.5 bg-gray-600 rounded-full group-hover/item:bg-primary-400 transition-colors"></span>
+                                                                {component.name}
+                                                            </Link>
+                                                        </li>
+                                                    ))}
+                                                    {groupNZ.length === 0 && (
+                                                        <li className="text-gray-600 text-sm italic">Bileşen yok</li>
+                                                    )}
+                                                </ul>
                                             </div>
                                         </div>
                                     </div>
-                                </Link>
+                                </div>
                             );
-
                         })}
                     </div>
                 </div>

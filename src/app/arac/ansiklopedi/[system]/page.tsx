@@ -66,8 +66,11 @@ export default async function SystemPage({ params }: PageProps) {
             }
         });
     } else if (system.components) {
-        allComponents = system.components;
+        allComponents = [...system.components];
     }
+    
+    // Sort components alphabetically by name (Turkish locale)
+    allComponents.sort((a, b) => a.name.localeCompare(b.name, 'tr-TR'));
 
     return (
         <div className="bg-secondary-50 min-h-screen">

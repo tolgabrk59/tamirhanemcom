@@ -1,11 +1,12 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
+// Gemini API Keys - Environment Variables'dan okunuyor
 const keys = [
   process.env.GEMINI_API_KEY,
-  "AIzaSyBhDz1ohYPnd-EJjW9EQJl1UJYuVhqCGGA",
-  "AIzaSyDARmu40CilsH7e7raGds08G_BZ-E64QQ8",
-  "AIzaSyDXg03_6P_LNc6KfbnD7E243c-U2-Ejrro"
+  process.env.GEMINI_API_KEY_2,
+  process.env.GEMINI_API_KEY_3,
+  process.env.GEMINI_API_KEY_4
 ].filter(Boolean) as string[];
 
 async function fetchCarImage(query: string) {
