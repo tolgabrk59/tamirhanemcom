@@ -11,11 +11,11 @@ export async function GET(request: NextRequest) {
     });
 
     const [rows] = await connection.execute(`
-      SELECT DISTINCT marka, model, MIN(yil) as min_year, MAX(yil) as max_year
+      SELECT DISTINCT brand, model, MIN(year_start) as min_year, MAX(year_end) as max_year
       FROM kronik_sorunlar
-      WHERE marka IS NOT NULL AND model IS NOT NULL
-      GROUP BY marka, model
-      ORDER BY marka, model
+      WHERE brand IS NOT NULL AND model IS NOT NULL
+      GROUP BY brand, model
+      ORDER BY brand, model
     `);
 
     await connection.end();
