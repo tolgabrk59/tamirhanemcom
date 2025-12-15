@@ -1,9 +1,11 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { VehicleData } from '@/types';
+
+export const dynamic = 'force-dynamic';
 
 // Copied from API or types
 interface ComparisonResult {

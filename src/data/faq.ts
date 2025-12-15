@@ -175,5 +175,6 @@ export function getFAQsByCategory(category: string): FAQ[] {
 }
 
 export function getFAQCategories(): string[] {
-  return [...new Set(faqData.map((faq) => faq.category).filter(Boolean))] as string[];
+  const categories = faqData.map((faq) => faq.category).filter((c): c is string => Boolean(c));
+  return Array.from(new Set(categories));
 }

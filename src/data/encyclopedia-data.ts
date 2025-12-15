@@ -26,7 +26,7 @@ export interface EncyclopediaSystem {
     description: string;
     icon: string;
     color: string;
-    subsystems?: EncyclopediaSubsystem[];
+    subsystems?: (EncyclopediaSubsystem | undefined)[];
     components: EncyclopediaComponent[];
 }
 
@@ -3092,15 +3092,17 @@ export function searchEncyclopedia(query: string): { system: EncyclopediaSystem;
         // Search in subsystems if they exist
         if (system.subsystems) {
             system.subsystems.forEach(subsystem => {
-                subsystem.components.forEach(component => {
-                    if (
-                        component.name.toLowerCase().includes(lowerQuery) ||
-                        component.description.toLowerCase().includes(lowerQuery) ||
-                        component.symptoms.some(s => s.toLowerCase().includes(lowerQuery))
-                    ) {
-                        results.push({ system, component, subsystem });
-                    }
-                });
+                if (subsystem) {
+                    subsystem.components.forEach(component => {
+                        if (
+                            component.name.toLowerCase().includes(lowerQuery) ||
+                            component.description.toLowerCase().includes(lowerQuery) ||
+                            component.symptoms.some(s => s.toLowerCase().includes(lowerQuery))
+                        ) {
+                            results.push({ system, component, subsystem });
+                        }
+                    });
+                }
             });
         }
         

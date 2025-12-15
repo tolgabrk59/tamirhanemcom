@@ -184,7 +184,7 @@ export default function EncyclopediaPage() {
                                         let count = sys.components?.length || 0;
                                         if (sys.subsystems) {
                                             sys.subsystems.forEach(sub => {
-                                                count += sub.components?.length || 0;
+                                                if (sub) count += sub.components?.length || 0;
                                             });
                                         }
                                         return acc + count;
@@ -337,7 +337,7 @@ export default function EncyclopediaPage() {
                             let totalComponents = system.components?.length || 0;
                             if (system.subsystems && system.subsystems.length > 0) {
                                 system.subsystems.forEach(subsystem => {
-                                    totalComponents += subsystem.components?.length || 0;
+                                    if (subsystem) totalComponents += subsystem.components?.length || 0;
                                 });
                             }
                             

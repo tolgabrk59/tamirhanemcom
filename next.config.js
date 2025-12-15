@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
   images: {
     domains: ['localhost', 'strapi.tamirhanem.com', 'api.tamirhanem.net'],
     remotePatterns: [
