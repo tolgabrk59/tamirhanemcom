@@ -19,10 +19,6 @@ interface Model {
   model: string;
 }
 
-interface Package {
-  full_model: string;
-}
-
 interface SearchBoxProps {
   vertical?: boolean;
 }
@@ -33,21 +29,19 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
   // Form states
   const [city, setCity] = useState('Tekirdağ');
   const [district, setDistrict] = useState('Çorlu');
+  const [vehicleType, setVehicleType] = useState<'otomobil' | 'motorsiklet' | ''>('otomobil');
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
-  const [packageName, setPackageName] = useState('');
   const [category, setCategory] = useState('');
 
   // Data states
   const [brands, setBrands] = useState<Brand[]>([]);
   const [models, setModels] = useState<Model[]>([]);
-  const [packages, setPackages] = useState<Package[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
 
   // Loading states
-  const [brandsLoading, setBrandsLoading] = useState(true);
+  const [brandsLoading, setBrandsLoading] = useState(false);
   const [modelsLoading, setModelsLoading] = useState(false);
-  const [packagesLoading, setPackagesLoading] = useState(false);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   // Modal state
@@ -56,21 +50,30 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
   // İlçeleri şehre göre al
   const districts = city ? turkeyLocations[city] || [] : [];
 
-  // Markaları MySQL'den çek
+  // Markaları araç türüne göre MySQL'den çek
   useEffect(() => {
-    fetch('/api/brands')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setBrands(data.data);
-        }
-        setBrandsLoading(false);
-      })
-      .catch(err => {
-        console.error('Marka yükleme hatası:', err);
-        setBrandsLoading(false);
-      });
-  }, []);
+    if (vehicleType) {
+      setBrandsLoading(true);
+      setBrand('');
+      setModel('');
+      setModels([]);
+      fetch(`/api/brands?vehicleType=${vehicleType}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            setBrands(data.data);
+          }
+          setBrandsLoading(false);
+        })
+        .catch(err => {
+          console.error('Marka yükleme hatası:', err);
+          setBrandsLoading(false);
+        });
+    } else {
+      setBrands([]);
+      setModels([]);
+    }
+  }, [vehicleType]);
 
   // Kategorileri MySQL'den çek
   useEffect(() => {
@@ -90,12 +93,10 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
 
   // Modelleri markaya göre MySQL'den çek
   useEffect(() => {
-    if (brand) {
+    if (brand && vehicleType) {
       setModelsLoading(true);
       setModel('');
-      setPackageName('');
-      setPackages([]);
-      fetch(`/api/models?brand=${encodeURIComponent(brand)}`)
+      fetch(`/api/models?brand=${encodeURIComponent(brand)}&vehicleType=${vehicleType}`)
         .then(res => res.json())
         .then(data => {
           if (data.success) {
@@ -109,31 +110,8 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
         });
     } else {
       setModels([]);
-      setPackages([]);
     }
-  }, [brand]);
-
-  // Paketleri markaya ve modele göre MySQL'den çek
-  useEffect(() => {
-    if (brand && model) {
-      setPackagesLoading(true);
-      setPackageName('');
-      fetch(`/api/packages?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            setPackages(data.data);
-          }
-          setPackagesLoading(false);
-        })
-        .catch(err => {
-          console.error('Paket yükleme hatası:', err);
-          setPackagesLoading(false);
-        });
-    } else {
-      setPackages([]);
-    }
-  }, [brand, model]);
+  }, [brand, vehicleType]);
 
   const handleSearch = () => {
     // Navigate to results page instead of opening modal
@@ -184,13 +162,28 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
           ))}
         </select>
 
+        {/* Vehicle Type Select */}
+        <select
+          value={vehicleType}
+          onChange={(e) => setVehicleType(e.target.value as 'otomobil' | 'motorsiklet' | '')}
+          className={vertical
+            ? "w-full px-4 py-3 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900"
+            : "flex-1 min-w-[110px] px-3 py-2 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900 text-sm"
+          }
+        >
+          <option value="">Araç Türü</option>
+          <option value="otomobil">Otomobil</option>
+          <option value="motorsiklet">Motorsiklet</option>
+        </select>
+
         {/* Brand Select */}
         <select
           value={brand}
           onChange={(e) => setBrand(e.target.value)}
+          disabled={!vehicleType}
           className={vertical
-            ? "w-full px-4 py-3 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900"
-            : "flex-1 min-w-[100px] px-3 py-2 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900 text-sm"
+            ? "w-full px-4 py-3 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900 disabled:bg-secondary-50"
+            : "flex-1 min-w-[100px] px-3 py-2 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900 text-sm disabled:bg-secondary-50"
           }
         >
           <option value="">Marka</option>
@@ -219,26 +212,6 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
           ) : (
             models.map((m) => (
               <option key={m.model} value={m.model}>{m.model}</option>
-            ))
-          )}
-        </select>
-
-        {/* Package Select */}
-        <select
-          value={packageName}
-          onChange={(e) => setPackageName(e.target.value)}
-          disabled={!brand || !model}
-          className={vertical
-            ? "w-full px-4 py-3 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900 disabled:bg-secondary-50"
-            : "flex-1 min-w-[100px] px-3 py-2 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900 text-sm disabled:bg-secondary-50"
-          }
-        >
-          <option value="">Paket</option>
-          {packagesLoading ? (
-            <option disabled>Yükleniyor...</option>
-          ) : (
-            packages.map((p) => (
-              <option key={p.full_model} value={p.full_model}>{p.full_model}</option>
             ))
           )}
         </select>
@@ -291,7 +264,7 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
       {brand && model && (
         <div className="mt-4 p-3 bg-primary-50 border border-primary-200 rounded-lg">
           <p className="text-sm font-semibold text-secondary-900">
-            Aracınızın Marka Modeli: <span className="text-primary-600">{brand} {model}{packageName ? ` ${packageName}` : ''}</span>
+            Aracınızın Marka Modeli: <span className="text-primary-600">{brand} {model}</span>
           </p>
         </div>
       )}
@@ -303,7 +276,7 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
         filters={{
           brand,
           model,
-          packageName,
+          packageName: '',
           category,
           city,
           district

@@ -47,10 +47,23 @@ export async function getCategories() {
     }
 }
 
-// Markaları çek (benzersiz)
-export async function getBrands() {
+// Markaları çek (benzersiz) - vehicleType ile filtreleme
+export async function getBrands(vehicleType?: string) {
     try {
-        const [rows] = await pool.execute('SELECT DISTINCT brand FROM arac_dataveri WHERE brand IS NOT NULL ORDER BY brand ASC');
+        let query: string;
+        
+        if (vehicleType === 'motorsiklet') {
+            // Motorsiklet için: model alanındaki değerleri marka olarak döndür
+            query = 'SELECT DISTINCT model as brand FROM arac_dataveri WHERE brand = \'MOTORSIKLET\' AND model IS NOT NULL AND model != \'\' ORDER BY model ASC';
+        } else if (vehicleType === 'otomobil') {
+            // Otomobil için: MOTORSIKLET hariç tüm markaları döndür
+            query = 'SELECT DISTINCT brand FROM arac_dataveri WHERE brand IS NOT NULL AND brand != \'\' AND brand != \'MOTORSIKLET\' ORDER BY brand ASC';
+        } else {
+            // Varsayılan: Tüm markaları döndür
+            query = 'SELECT DISTINCT brand FROM arac_dataveri WHERE brand IS NOT NULL AND brand != \'\' ORDER BY brand ASC';
+        }
+        
+        const [rows] = await pool.execute(query);
         return rows;
     } catch (error) {
         console.error('MySQL Error:', error);
@@ -58,13 +71,24 @@ export async function getBrands() {
     }
 }
 
-// Modelleri markaya göre çek
-export async function getModelsByBrand(brand: string) {
+// Modelleri markaya göre çek - vehicleType ile farklı sorgulama
+export async function getModelsByBrand(brand: string, vehicleType?: string) {
     try {
-        const [rows] = await pool.execute(
-            'SELECT DISTINCT model FROM arac_dataveri WHERE brand = ? AND model IS NOT NULL ORDER BY model ASC',
-            [brand]
-        );
+        let query: string;
+        let params: string[];
+        
+        if (vehicleType === 'motorsiklet') {
+            // Motorsiklet için: brand parametresi aslında model alanından geliyor
+            // Bu durumda full_model alanını model olarak döndür
+            query = 'SELECT DISTINCT full_model as model FROM arac_dataveri WHERE brand = \'MOTORSIKLET\' AND model = ? AND full_model IS NOT NULL AND full_model != \'\' ORDER BY full_model ASC';
+            params = [brand];
+        } else {
+            // Otomobil için: Normal marka-model sorgusu
+            query = 'SELECT DISTINCT model FROM arac_dataveri WHERE brand = ? AND model IS NOT NULL ORDER BY model ASC';
+            params = [brand];
+        }
+        
+        const [rows] = await pool.execute(query, params);
         return rows;
     } catch (error) {
         console.error('MySQL Error:', error);
