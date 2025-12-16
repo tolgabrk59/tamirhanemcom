@@ -19,11 +19,11 @@ export default function VehicleOverviewPage() {
     const [selectedModel, setSelectedModel] = useState('');
     const [selectedYear, setSelectedYear] = useState('');
 
-    // Fetch Brands
+    // Fetch Brands (otomobil only)
     useEffect(() => {
         async function fetchBrands() {
             try {
-                const res = await fetch('/api/brands');
+                const res = await fetch('/api/brands?vehicleType=otomobil');
                 if (res.ok) {
                     const result = await res.json();
                     // API returns { success: true, data: [...] }
@@ -36,7 +36,7 @@ export default function VehicleOverviewPage() {
         fetchBrands();
     }, []);
 
-    // Fetch Models when Brand changes
+    // Fetch Models when Brand changes (otomobil only)
     useEffect(() => {
         async function fetchModels() {
             if (!selectedBrand) {
@@ -44,7 +44,7 @@ export default function VehicleOverviewPage() {
                 return;
             }
             try {
-                const res = await fetch(`/api/models?brand=${encodeURIComponent(selectedBrand)}`);
+                const res = await fetch(`/api/models?brand=${encodeURIComponent(selectedBrand)}&vehicleType=otomobil`);
                 if (res.ok) {
                     const result = await res.json();
                     // API returns { success: true, data: [...] }
