@@ -1,41 +1,60 @@
 import { NextResponse } from 'next/server';
-import { getPopularObdCodes } from '@/lib/db';
-import { getPopularObdCodesLocal } from '@/data/obd-codes';
 
-export async function GET() {
+const STRAPI_API = 'https://api.tamirhanem.net/api';
+
+export async function GET(request: Request) {
     try {
-        // Try MySQL first
-        let results = await getPopularObdCodes(2);
+        const { searchParams } = new URL(request.url);
+        const limit = parseInt(searchParams.get('limit') || '6');
 
-        // Fallback to local data if MySQL returns no results
-        if (results.length === 0) {
-            console.log('MySQL returned no results, falling back to local data');
-            results = getPopularObdCodesLocal(2);
+        // Strapi'den popüler kodları çek (frequency'ye göre sıralı)
+        const response = await fetch(
+            `${STRAPI_API}/obd-codes?sort=frequency:desc&pagination[limit]=${limit}`,
+            { next: { revalidate: 3600 } }
+        );
+
+        if (!response.ok) {
+            throw new Error('Strapi API erişim hatası');
         }
+
+        const json = await response.json();
+        const obdCodes = json.data || [];
+
+        // Strapi formatından frontend formatına çevir
+        const formattedCodes = obdCodes.map((item: any) => {
+            const attrs = item.attributes || item;
+            const severityMap: Record<string, string> = {
+                'high': 'high', 'yuksek': 'high', 'critical': 'high',
+                'medium': 'medium', 'orta': 'medium',
+                'low': 'low', 'dusuk': 'low'
+            };
+
+            return {
+                id: item.id,
+                code: attrs.code,
+                title: attrs.title,
+                description: attrs.description || '',
+                causes: attrs.causes || [],
+                fixes: attrs.solutions || [],
+                symptoms: [],
+                severity: severityMap[attrs.severity?.toLowerCase()] || 'medium',
+                category: '',
+                estimatedCostMin: null,
+                estimatedCostMax: null,
+                frequency: attrs.frequency || 0
+            };
+        });
 
         return NextResponse.json({
-            results,
-            total: results.length,
-            source: results.length > 0 ? 'database' : 'local'
+            success: true,
+            data: formattedCodes,
+            count: formattedCodes.length
         });
     } catch (error) {
-        console.error('Popular OBD codes error:', error);
-
-        // Fallback to local data on error
-        try {
-            const results = getPopularObdCodesLocal(2);
-            return NextResponse.json({
-                results,
-                total: results.length,
-                source: 'local',
-                warning: 'Database error, using local data'
-            });
-        } catch (fallbackError) {
-            return NextResponse.json({
-                error: 'Veri alınırken bir hata oluştu',
-                results: [],
-                total: 0
-            }, { status: 500 });
-        }
+        console.error('Strapi API Error:', error);
+        return NextResponse.json(
+            { success: false, error: 'Popüler OBD kodları yüklenemedi' },
+            { status: 500 }
+        );
     }
 }

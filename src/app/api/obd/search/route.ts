@@ -1,68 +1,71 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { searchObdCodes } from '@/lib/db';
-import { searchObdCodesLocal } from '@/data/obd-codes';
-import type { ObdCode } from '@/types';
+import { NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
+const STRAPI_API = 'https://api.tamirhanem.net/api';
+
+export async function GET(request: Request) {
     try {
-        const searchParams = request.nextUrl.searchParams;
+        const { searchParams } = new URL(request.url);
         const query = searchParams.get('q') || '';
         const limit = parseInt(searchParams.get('limit') || '20');
 
-        if (!query) {
-            return NextResponse.json({
-                results: [],
-                total: 0,
-                query: '',
-                message: 'Arama terimi gerekli'
-            }, { status: 400 });
+        if (!query || query.length < 2) {
+            return NextResponse.json({ success: true, data: [], count: 0 });
         }
 
-        // Try MySQL first
-        let results: ObdCode[] = await searchObdCodes(query, limit);
+        // Strapi'de arama yap
+        const filters = [
+            `filters[$or][0][code][$containsi]=${encodeURIComponent(query)}`,
+            `filters[$or][1][title][$containsi]=${encodeURIComponent(query)}`,
+            `filters[$or][2][description][$containsi]=${encodeURIComponent(query)}`
+        ].join('&');
 
-        // Fallback to local data if MySQL returns no results
-        if (results.length === 0) {
-            console.log('MySQL returned no results, falling back to local data');
-            const localResults = searchObdCodesLocal(query).slice(0, limit);
-            // Add frequency field to match database schema
-            results = localResults.map(r => ({ ...r, frequency: r.frequency || 0 })) as ObdCode[];
+        const response = await fetch(
+            `${STRAPI_API}/obd-codes?${filters}&sort=frequency:desc&pagination[limit]=${limit}`,
+            { next: { revalidate: 3600 } }
+        );
+
+        if (!response.ok) {
+            throw new Error('Strapi API erişim hatası');
         }
 
-        const total = results.length;
+        const json = await response.json();
+        const obdCodes = json.data || [];
+
+        // Strapi formatından frontend formatına çevir
+        const formattedCodes = obdCodes.map((item: any) => {
+            const attrs = item.attributes || item;
+            const severityMap: Record<string, string> = {
+                'high': 'high', 'yuksek': 'high', 'critical': 'high',
+                'medium': 'medium', 'orta': 'medium',
+                'low': 'low', 'dusuk': 'low'
+            };
+
+            return {
+                id: item.id,
+                code: attrs.code,
+                title: attrs.title,
+                description: attrs.description || '',
+                causes: attrs.causes || [],
+                fixes: attrs.solutions || [],
+                symptoms: [],
+                severity: severityMap[attrs.severity?.toLowerCase()] || 'medium',
+                category: '',
+                estimatedCostMin: null,
+                estimatedCostMax: null,
+                frequency: attrs.frequency || 0
+            };
+        });
 
         return NextResponse.json({
-            results,
-            total,
-            query,
-            limit,
-            source: results.length > 0 ? 'database' : 'local'
+            success: true,
+            data: formattedCodes,
+            count: formattedCodes.length
         });
     } catch (error) {
-        console.error('OBD search error:', error);
-
-        // Fallback to local data on error
-        try {
-            const query = request.nextUrl.searchParams.get('q') || '';
-            const limit = parseInt(request.nextUrl.searchParams.get('limit') || '20');
-            const localResults = searchObdCodesLocal(query).slice(0, limit);
-            // Add frequency field to match database schema
-            const results = localResults.map(r => ({ ...r, frequency: r.frequency || 0 }));
-
-            return NextResponse.json({
-                results,
-                total: results.length,
-                query,
-                limit,
-                source: 'local',
-                warning: 'Database error, using local data'
-            });
-        } catch (fallbackError) {
-            return NextResponse.json({
-                error: 'Arama sırasında bir hata oluştu',
-                results: [],
-                total: 0
-            }, { status: 500 });
-        }
+        console.error('Strapi API Error:', error);
+        return NextResponse.json(
+            { success: false, error: 'OBD kodları araması başarısız oldu' },
+            { status: 500 }
+        );
     }
 }
