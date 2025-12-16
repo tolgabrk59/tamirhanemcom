@@ -1,16 +1,16 @@
 import mysql from 'mysql2/promise';
 import type { ObdCode } from '@/types';
 
-// MySQL bağlantı havuzu
+// MySQL bağlantı havuzu - trim() ile trailing whitespace temizlenir
 const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'tamirhanem',
-    password: process.env.DB_PASSWORD || 'Aras2017@',
-    database: process.env.DB_NAME || 'randevu_db',
+    host: (process.env.DB_HOST || 'localhost').trim(),
+    user: (process.env.DB_USER || 'tamirhanem').trim(),
+    password: (process.env.DB_PASSWORD || 'Aras2017@').trim(),
+    database: (process.env.DB_NAME || 'randevu_db').trim(),
     waitForConnections: true,
-    connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT || '10'),
+    connectionLimit: parseInt((process.env.DB_CONNECTION_LIMIT || '10').trim()),
     queueLimit: 0,
-    ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: true } : undefined,
+    ssl: (process.env.DB_SSL || '').trim() === 'true' ? { rejectUnauthorized: true } : undefined,
 });
 
 export default pool;
