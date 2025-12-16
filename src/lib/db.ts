@@ -76,7 +76,7 @@ export async function getModelsByBrand(brand: string) {
 export async function getPackagesByBrandModel(brand: string, model: string) {
     try {
         const [rows] = await pool.execute(
-            'SELECT DISTINCT fuel_type, engine_type, year FROM arac_dataveri WHERE brand = ? AND model = ? ORDER BY year DESC',
+            'SELECT DISTINCT full_model, paket FROM arac_dataveri WHERE brand = ? AND model = ? AND paket IS NOT NULL ORDER BY full_model ASC',
             [brand, model]
         );
         return rows;
