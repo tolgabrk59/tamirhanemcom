@@ -12,6 +12,12 @@ interface Model {
     model: string;
 }
 
+interface Package {
+    id: number;
+    paket: string;
+    full_model: string;
+}
+
 // Reusable Selector Component
 function ComparisonSelector({ 
     label, 
@@ -24,15 +30,17 @@ function ComparisonSelector({
 }) {
     const [brands, setBrands] = useState<Brand[]>([]);
     const [models, setModels] = useState<Model[]>([]);
+    const [packages, setPackages] = useState<Package[]>([]);
     const [selectedBrand, setSelectedBrand] = useState('');
     const [selectedModel, setSelectedModel] = useState('');
+    const [selectedPackage, setSelectedPackage] = useState('');
     const [selectedYear, setSelectedYear] = useState('');
 
-    // Fetch Brands
+    // Fetch Brands (otomobil only)
     useEffect(() => {
         async function fetchBrands() {
             try {
-                const res = await fetch('/api/brands');
+                const res = await fetch('/api/brands?vehicleType=otomobil');
                 if (res.ok) {
                     const result = await res.json();
                     setBrands(result.data || []);
@@ -52,7 +60,7 @@ function ComparisonSelector({
         }
         async function fetchModels() {
             try {
-                const res = await fetch(`/api/models?brand=${encodeURIComponent(selectedBrand)}`);
+                const res = await fetch(`/api/models?brand=${encodeURIComponent(selectedBrand)}&vehicleType=otomobil`);
                 if (res.ok) {
                     const result = await res.json();
                     setModels(result.data || []);
@@ -64,14 +72,34 @@ function ComparisonSelector({
         fetchModels();
     }, [selectedBrand]);
 
-    // Update parent
+    // Fetch Packages when Model changes
+    useEffect(() => {
+        if (!selectedBrand || !selectedModel) {
+            setPackages([]);
+            return;
+        }
+        async function fetchPackages() {
+            try {
+                const res = await fetch(`/api/packages?brand=${encodeURIComponent(selectedBrand)}&model=${encodeURIComponent(selectedModel)}`);
+                if (res.ok) {
+                    const result = await res.json();
+                    setPackages(result.data || []);
+                }
+            } catch (error) {
+                console.error('Error fetching packages:', error);
+            }
+        }
+        fetchPackages();
+    }, [selectedBrand, selectedModel]);
+
+    // Update parent - use selectedPackage if available, otherwise use selectedModel
     useEffect(() => {
         onChange({
             brand: selectedBrand,
-            model: selectedModel,
+            model: selectedPackage || selectedModel,
             year: selectedYear
         });
-    }, [selectedBrand, selectedModel, selectedYear, onChange]);
+    }, [selectedBrand, selectedModel, selectedPackage, selectedYear, onChange]);
 
     return (
         <div className={`bg-white p-6 rounded-2xl shadow-lg border border-secondary-100 ${disabled ? 'opacity-50 pointer-events-none' : ''}`}>
@@ -91,6 +119,7 @@ function ComparisonSelector({
                         onChange={(e) => {
                             setSelectedBrand(e.target.value);
                             setSelectedModel('');
+                            setSelectedPackage('');
                             setSelectedYear('');
                         }}
                     >
@@ -106,12 +135,30 @@ function ComparisonSelector({
                     <select
                         className="w-full p-3 bg-secondary-50 border border-secondary-200 rounded-xl text-secondary-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none disabled:bg-secondary-100"
                         value={selectedModel}
-                        onChange={(e) => setSelectedModel(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedModel(e.target.value);
+                            setSelectedPackage('');
+                        }}
                         disabled={!selectedBrand}
                     >
                         <option value="">Önce Marka Seçin</option>
                         {models.map((m) => (
                             <option key={m.model} value={m.model}>{m.model}</option>
+                        ))}
+                    </select>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-secondary-700 mb-1">Paket</label>
+                    <select
+                        className="w-full p-3 bg-secondary-50 border border-secondary-200 rounded-xl text-secondary-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none disabled:bg-secondary-100"
+                        value={selectedPackage}
+                        onChange={(e) => setSelectedPackage(e.target.value)}
+                        disabled={!selectedModel || packages.length === 0}
+                    >
+                        <option value="">Paket Seçin (Opsiyonel)</option>
+                        {packages.map((pkg) => (
+                            <option key={pkg.id} value={pkg.full_model}>{pkg.paket || pkg.full_model}</option>
                         ))}
                     </select>
                 </div>
@@ -166,7 +213,7 @@ export default function CreateComparisonPage() {
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10">
                 <div className="grid md:grid-cols-2 gap-8 items-start relative">
                     {/* VS Badge */}
-                    <div className="hidden md:flex absolute left-1/2 top-[180px] transform -translate-x-1/2 -translate-y-1/2 z-10">
+                    <div className="hidden md:flex absolute left-1/2 top-[220px] transform -translate-x-1/2 -translate-y-1/2 z-10">
                         <div className="bg-red-600 text-white font-black text-2xl rounded-full w-16 h-16 flex items-center justify-center border-4 border-white shadow-xl">
                             VS
                         </div>

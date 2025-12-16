@@ -18,8 +18,8 @@ export default function ObdPage() {
       try {
         const response = await fetch('/api/obd/popular');
         const data = await response.json();
-        if (data.results) {
-          setPopularCodes(data.results);
+        if (data.success && data.data) {
+          setPopularCodes(data.data);
         }
       } catch (error) {
         console.error('Error fetching popular codes:', error);
@@ -50,12 +50,17 @@ export default function ObdPage() {
       const response = await fetch(`/api/obd/search?q=${encodeURIComponent(query)}&limit=20`);
       const data = await response.json();
 
-      if (data.results) {
-        setResults(data.results);
-        setTotal(data.total);
+      if (data.success && data.data) {
+        setResults(data.data);
+        setTotal(data.count || data.data.length);
+      } else {
+        setResults([]);
+        setTotal(0);
       }
     } catch (error) {
       console.error('Search error:', error);
+      setResults([]);
+      setTotal(0);
     } finally {
       setLoading(false);
     }

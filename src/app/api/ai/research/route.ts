@@ -97,12 +97,28 @@ async function saveVehicleAnalysisToStrapi(brand: string, model: string, year: n
         body: JSON.stringify(payload)
       });
     } else {
-      // Create new entry
-      res = await fetch(`${STRAPI_API}/vehicle-analyses`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+      // Double-check for existing entry before creating (prevents race condition duplicates)
+      const checkUrl = `${STRAPI_API}/vehicle-analyses?filters[brand][$eq]=${encodeURIComponent(brand)}&filters[model][$eq]=${encodeURIComponent(model)}&filters[year][$eq]=${year}`;
+      const checkRes = await fetch(checkUrl);
+      const checkData = await checkRes.json();
+      
+      if (checkData.data && checkData.data.length > 0) {
+        // Entry was created by another parallel request, update instead
+        const foundId = checkData.data[0].id;
+        console.log(`Found existing entry (id=${foundId}), updating instead of creating`);
+        res = await fetch(`${STRAPI_API}/vehicle-analyses/${foundId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        // Create new entry
+        res = await fetch(`${STRAPI_API}/vehicle-analyses`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      }
     }
     
     if (!res.ok) {

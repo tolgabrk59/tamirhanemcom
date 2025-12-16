@@ -6,6 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import ServiceCard from '@/components/ServiceCard';
 import ResultsMap from '@/components/ResultsMap';
 import ServiceSearchModal from '@/components/ServiceSearchModal';
+import ServiceDetailPanel from '@/components/ServiceDetailPanel';
 import { turkeyLocations, cityList } from '@/data/turkey-locations';
 
 interface Service {
@@ -20,6 +21,10 @@ interface Service {
     pic: string | null;
     is_official_service: boolean;
     provides_roadside_assistance: boolean;
+    categories?: string[];
+    address?: string;
+    description?: string;
+    working_hours?: any;
 }
 
 function ServiceResultsContent() {
@@ -32,15 +37,16 @@ function ServiceResultsContent() {
     const [showMap, setShowMap] = useState(true);
     const [showSearchModal, setShowSearchModal] = useState(false);
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+    const [selectedServiceForDetail, setSelectedServiceForDetail] = useState<Service | null>(null);
 
     // Edit modal states
     const [showLocationModal, setShowLocationModal] = useState(false);
     const [showVehicleModal, setShowVehicleModal] = useState(false);
     const [showCategoryModal, setShowCategoryModal] = useState(false);
 
-    // Filter states (initialized from URL)
-    const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || '');
-    const [selectedDistrict, setSelectedDistrict] = useState(searchParams.get('district') || '');
+    // Filter states (initialized from URL, default: Çorlu, Tekirdağ)
+    const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || 'Tekirdağ');
+    const [selectedDistrict, setSelectedDistrict] = useState(searchParams.get('district') || 'Çorlu');
     const [selectedBrand, setSelectedBrand] = useState(searchParams.get('brand') || '');
     const [selectedModel, setSelectedModel] = useState(searchParams.get('model') || '');
     const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
@@ -89,18 +95,18 @@ function ServiceResultsContent() {
         fetchServices();
     }, [selectedCity, selectedDistrict, selectedBrand, selectedModel, selectedCategory, selectedFuelType]);
 
-    // Fetch brands
+    // Fetch brands (otomobil only)
     useEffect(() => {
-        fetch('/api/brands')
+        fetch('/api/brands?vehicleType=otomobil')
             .then(res => res.json())
             .then(data => setBrands(data.data || []))
             .catch(err => console.error('Error fetching brands:', err));
     }, []);
 
-    // Fetch models when brand changes
+    // Fetch models when brand changes (otomobil only)
     useEffect(() => {
         if (selectedBrand) {
-            fetch(`/api/models?brand=${selectedBrand}`)
+            fetch(`/api/models?brand=${encodeURIComponent(selectedBrand)}&vehicleType=otomobil`)
                 .then(res => res.json())
                 .then(data => setModels(data.data || []))
                 .catch(err => console.error('Error fetching models:', err));
@@ -251,19 +257,19 @@ function ServiceResultsContent() {
                     </div>
 
                     {/* Results Count and Sort */}
-                    <div className="flex items-center justify-between mb-4">
-                        <p className="text-gray-700">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                        <p className="text-gray-700 text-sm sm:text-base">
                             <span className="font-bold">{filteredServices.length}</span> sonuç bulundu
                             {activeFilterCount > 0 && (
-                                <span className="ml-2 text-sm text-primary-600">
+                                <span className="ml-2 text-xs sm:text-sm text-primary-600">
                                     ({activeFilterCount} filtre aktif)
                                 </span>
                             )}
                         </p>
 
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto pb-2 sm:pb-0">
                             {/* View Mode Toggle */}
-                            <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+                            <div className="hidden sm:flex items-center gap-2 bg-gray-100 rounded-lg p-1">
                                 <button
                                     onClick={() => setViewMode('list')}
                                     className={`px-3 py-2 rounded-md transition-all ${
@@ -295,83 +301,83 @@ function ServiceResultsContent() {
                             {/* Map Toggle (Mobile) */}
                             <button
                                 onClick={() => setShowMap(!showMap)}
-                                className="lg:hidden flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                                className="lg:hidden flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm whitespace-nowrap"
                             >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                                 </svg>
-                                {showMap ? 'Haritayı Gizle' : 'Haritayı Göster'}
+                                <span className="hidden xs:inline">{showMap ? 'Haritayı Gizle' : 'Harita'}</span>
                             </button>
 
                             {/* Sort Dropdown */}
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
-                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                className="px-2 sm:px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                             >
-                                <option value="recommended">Tavsiye Edilen</option>
-                                <option value="rating">En Yüksek Puan</option>
-                                <option value="reviews">En Çok Yorum</option>
+                                <option value="recommended">Tavsiye</option>
+                                <option value="rating">Puan</option>
+                                <option value="reviews">Yorum</option>
                             </select>
                         </div>
                     </div>
 
                     {/* Filter Buttons */}
-                    <div className="flex flex-wrap items-center gap-3 mt-4">
-                        <span className="text-sm font-medium text-gray-700">Filtreler:</span>
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-4 overflow-x-auto pb-2">
+                        <span className="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">Filtreler:</span>
 
                         <button
                             onClick={() => setShowOpenOnly(!showOpenOnly)}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${showOpenOnly
+                            className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg border-2 transition-all whitespace-nowrap ${showOpenOnly
                                 ? 'bg-green-50 border-green-500 text-green-700'
                                 : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
                                 }`}
                         >
-                            <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${showOpenOnly ? 'bg-green-500 border-green-500' : 'border-gray-400'
+                            <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded border-2 flex items-center justify-center ${showOpenOnly ? 'bg-green-500 border-green-500' : 'border-gray-400'
                                 }`}>
                                 {showOpenOnly && (
-                                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-2 h-2 sm:w-3 sm:h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                     </svg>
                                 )}
                             </div>
-                            <span className="text-sm font-medium">Açık Olanlar</span>
+                            <span className="text-xs sm:text-sm font-medium">Açık</span>
                         </button>
 
                         <button
                             onClick={() => setShowOfficialOnly(!showOfficialOnly)}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${showOfficialOnly
+                            className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg border-2 transition-all whitespace-nowrap ${showOfficialOnly
                                 ? 'bg-primary-50 border-primary-500 text-primary-700'
                                 : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
                                 }`}
                         >
-                            <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${showOfficialOnly ? 'bg-primary-500 border-primary-500' : 'border-gray-400'
+                            <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded border-2 flex items-center justify-center ${showOfficialOnly ? 'bg-primary-500 border-primary-500' : 'border-gray-400'
                                 }`}>
                                 {showOfficialOnly && (
-                                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-2 h-2 sm:w-3 sm:h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                     </svg>
                                 )}
                             </div>
-                            <span className="text-sm font-medium">Yetkili Servis</span>
+                            <span className="text-xs sm:text-sm font-medium">Yetkili</span>
                         </button>
 
                         <button
                             onClick={() => setShowRoadsideOnly(!showRoadsideOnly)}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${showRoadsideOnly
+                            className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg border-2 transition-all whitespace-nowrap ${showRoadsideOnly
                                 ? 'bg-blue-50 border-blue-500 text-blue-700'
                                 : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
                                 }`}
                         >
-                            <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${showRoadsideOnly ? 'bg-blue-500 border-blue-500' : 'border-gray-400'
+                            <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded border-2 flex items-center justify-center ${showRoadsideOnly ? 'bg-blue-500 border-blue-500' : 'border-gray-400'
                                 }`}>
                                 {showRoadsideOnly && (
-                                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-2 h-2 sm:w-3 sm:h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                     </svg>
                                 )}
                             </div>
-                            <span className="text-sm font-medium">Yol Yardımı</span>
+                            <span className="text-xs sm:text-sm font-medium">Yol Yardımı</span>
                         </button>
 
                         {activeFilterCount > 0 && (
@@ -381,9 +387,9 @@ function ServiceResultsContent() {
                                     setShowOfficialOnly(false);
                                     setShowRoadsideOnly(false);
                                 }}
-                                className="text-sm text-gray-600 hover:text-gray-900 underline"
+                                className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 underline whitespace-nowrap"
                             >
-                                Filtreleri Temizle
+                                Temizle
                             </button>
                         )}
                     </div>
@@ -422,6 +428,7 @@ function ServiceResultsContent() {
                                             index={index + 1}
                                             onHover={setHoveredService}
                                             isHovered={hoveredService === service.id}
+                                            onDetailClick={(s) => setSelectedServiceForDetail(s)}
                                         />
                                     ))}
                                 </div>
@@ -649,6 +656,13 @@ function ServiceResultsContent() {
                     city: selectedCity,
                     district: selectedDistrict
                 }}
+            />
+
+            {/* Service Detail Panel */}
+            <ServiceDetailPanel
+                service={selectedServiceForDetail}
+                isOpen={!!selectedServiceForDetail}
+                onClose={() => setSelectedServiceForDetail(null)}
             />
         </div >
     );

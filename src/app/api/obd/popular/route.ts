@@ -23,6 +23,7 @@ export async function GET(request: Request) {
         // Strapi formatından frontend formatına çevir
         const formattedCodes = obdCodes.map((item: any) => {
             const attrs = item.attributes || item;
+
             const severityMap: Record<string, string> = {
                 'high': 'high', 'yuksek': 'high', 'critical': 'high',
                 'medium': 'medium', 'orta': 'medium',
@@ -32,15 +33,15 @@ export async function GET(request: Request) {
             return {
                 id: item.id,
                 code: attrs.code,
-                title: attrs.title,
+                title: attrs.title || '',
                 description: attrs.description || '',
                 causes: attrs.causes || [],
                 fixes: attrs.solutions || [],
-                symptoms: [],
+                symptoms: attrs.symptoms || [],
                 severity: severityMap[attrs.severity?.toLowerCase()] || 'medium',
-                category: '',
-                estimatedCostMin: null,
-                estimatedCostMax: null,
+                category: attrs.category || '',
+                estimatedCostMin: attrs.estimated_cost_min || null,
+                estimatedCostMax: attrs.estimated_cost_max || null,
                 frequency: attrs.frequency || 0
             };
         });

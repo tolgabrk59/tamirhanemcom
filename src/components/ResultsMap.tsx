@@ -91,7 +91,7 @@ export default function ResultsMap({ services, hoveredService, onServiceClick }:
         if (validService) {
             return { longitude: validService.longitude!, latitude: validService.latitude! };
         }
-        return { longitude: 28.9784, latitude: 41.0082 }; // Default: Istanbul
+        return { longitude: 27.8069, latitude: 41.1592 }; // Default: Çorlu, Tekirdağ
     };
 
     const mapCenter = getMapCenter();

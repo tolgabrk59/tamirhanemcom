@@ -12,11 +12,19 @@ interface Model {
     model: string;
 }
 
+interface Package {
+    id: number;
+    paket: string;
+    full_model: string;
+}
+
 export default function VehicleOverviewPage() {
     const [brands, setBrands] = useState<Brand[]>([]);
     const [models, setModels] = useState<Model[]>([]);
+    const [packages, setPackages] = useState<Package[]>([]);
     const [selectedBrand, setSelectedBrand] = useState('');
     const [selectedModel, setSelectedModel] = useState('');
+    const [selectedPackage, setSelectedPackage] = useState('');
     const [selectedYear, setSelectedYear] = useState('');
 
     // Fetch Brands (otomobil only)
@@ -56,6 +64,27 @@ export default function VehicleOverviewPage() {
         }
         fetchModels();
     }, [selectedBrand]);
+
+    // Fetch Packages when Model changes
+    useEffect(() => {
+        async function fetchPackages() {
+            if (!selectedBrand || !selectedModel) {
+                setPackages([]);
+                return;
+            }
+            try {
+                const res = await fetch(`/api/packages?brand=${encodeURIComponent(selectedBrand)}&model=${encodeURIComponent(selectedModel)}`);
+                if (res.ok) {
+                    const result = await res.json();
+                    // API returns { success: true, data: [...] }
+                    setPackages(result.data || []);
+                }
+            } catch (error) {
+                console.error('Error fetching packages:', error);
+            }
+        }
+        fetchPackages();
+    }, [selectedBrand, selectedModel]);
 
     const popularBrands = [
         { name: 'Toyota', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Toyota_carlogo.svg' },
@@ -123,6 +152,7 @@ export default function VehicleOverviewPage() {
                                         onChange={(e) => {
                                             setSelectedBrand(e.target.value);
                                             setSelectedModel('');
+                                            setSelectedPackage('');
                                         }}
                                     >
                                         <option value="">Marka Seçin</option>
@@ -135,7 +165,10 @@ export default function VehicleOverviewPage() {
                                         <select
                                             className="w-full p-4 bg-secondary-50 border border-secondary-200 rounded-xl text-secondary-700 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all disabled:opacity-50"
                                             value={selectedModel}
-                                            onChange={(e) => setSelectedModel(e.target.value)}
+                                            onChange={(e) => {
+                                                setSelectedModel(e.target.value);
+                                                setSelectedPackage('');
+                                            }}
                                             disabled={!selectedBrand}
                                         >
                                             <option value="">Model Seçin</option>
@@ -145,20 +178,32 @@ export default function VehicleOverviewPage() {
                                         </select>
 
                                         <select
-                                            className="w-full p-4 bg-secondary-50 border border-secondary-200 rounded-xl text-secondary-700 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
-                                            value={selectedYear}
-                                            onChange={(e) => setSelectedYear(e.target.value)}
+                                            className="w-full p-4 bg-secondary-50 border border-secondary-200 rounded-xl text-secondary-700 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all disabled:opacity-50"
+                                            value={selectedPackage}
+                                            onChange={(e) => setSelectedPackage(e.target.value)}
+                                            disabled={!selectedModel || packages.length === 0}
                                         >
-                                            <option value="">Yıl</option>
-                                            {vehicleYears.map((year) => (
-                                                <option key={year} value={year}>{year}</option>
+                                            <option value="">Paket Seçin</option>
+                                            {packages.map((pkg) => (
+                                                <option key={pkg.id} value={pkg.full_model}>{pkg.paket || pkg.full_model}</option>
                                             ))}
                                         </select>
                                     </div>
 
+                                    <select
+                                        className="w-full p-4 bg-secondary-50 border border-secondary-200 rounded-xl text-secondary-700 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
+                                        value={selectedYear}
+                                        onChange={(e) => setSelectedYear(e.target.value)}
+                                    >
+                                        <option value="">Yıl Seçin</option>
+                                        {vehicleYears.map((year) => (
+                                            <option key={year} value={year}>{year}</option>
+                                        ))}
+                                    </select>
+
                                     <Link
                                         href={selectedBrand && selectedModel && selectedYear 
-                                            ? `/arac/analiz?brand=${encodeURIComponent(selectedBrand)}&model=${encodeURIComponent(selectedModel)}&year=${encodeURIComponent(selectedYear)}`
+                                            ? `/arac/analiz?brand=${encodeURIComponent(selectedBrand)}&model=${encodeURIComponent(selectedPackage || selectedModel)}&year=${encodeURIComponent(selectedYear)}`
                                             : '#'}
                                         onClick={(e) => {
                                             if (!selectedBrand || !selectedModel || !selectedYear) {

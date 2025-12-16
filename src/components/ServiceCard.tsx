@@ -22,9 +22,10 @@ interface ServiceCardProps {
     index: number;
     onHover?: (serviceId: number | null) => void;
     isHovered?: boolean;
+    onDetailClick?: (service: Service) => void;
 }
 
-export default function ServiceCard({ service, index, onHover, isHovered }: ServiceCardProps) {
+export default function ServiceCard({ service, index, onHover, isHovered, onDetailClick }: ServiceCardProps) {
     const [imageError, setImageError] = useState(false);
 
     // Mock open/closed status - you can replace with real data
@@ -42,7 +43,7 @@ export default function ServiceCard({ service, index, onHover, isHovered }: Serv
             <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
                 {service.pic && !imageError ? (
                     <Image
-                        src={`https://api.tamirhanem.net${service.pic}`}
+                        src={service.pic.startsWith('http') ? service.pic : `https://api.tamirhanem.net${service.pic}`}
                         alt={service.name}
                         fill
                         unoptimized
@@ -127,9 +128,12 @@ export default function ServiceCard({ service, index, onHover, isHovered }: Serv
                     )}
                 </div>
 
-                {/* Check Availability Button */}
-                <button className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-bold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
-                    Müsaitlik Kontrolü
+                {/* Detail Button */}
+                <button 
+                    onClick={() => onDetailClick?.(service)}
+                    className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-bold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                >
+                    Detaylı Bilgi
                 </button>
             </div>
         </div>
