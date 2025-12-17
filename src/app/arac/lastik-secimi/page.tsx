@@ -44,7 +44,14 @@ export default function TireSelectionPage() {
   useEffect(() => {
     fetch('/api/brands?vehicleType=otomobil')
       .then(res => res.json())
-      .then(data => setBrands(data.brands || []))
+      .then(data => {
+        // API returns {data: [{brand: "..."}, ...]} or {brands: [...]}
+        if (data.data && Array.isArray(data.data)) {
+          setBrands(data.data.map((item: any) => item.brand));
+        } else if (data.brands) {
+          setBrands(data.brands);
+        }
+      })
       .catch(err => console.error('Error fetching brands:', err));
   }, []);
 
@@ -60,7 +67,14 @@ export default function TireSelectionPage() {
       
       fetch(`/api/models?brand=${encodeURIComponent(selectedBrand)}&vehicleType=otomobil`)
         .then(res => res.json())
-        .then(data => setModels(data.models || []))
+        .then(data => {
+          // API returns {data: [{model: "..."}, ...]} or {models: [...]}
+          if (data.data && Array.isArray(data.data)) {
+            setModels(data.data.map((item: any) => item.model || item.full_model));
+          } else if (data.models) {
+            setModels(data.models);
+          }
+        })
         .catch(err => console.error('Error fetching models:', err));
     }
   }, [selectedBrand]);
@@ -70,19 +84,26 @@ export default function TireSelectionPage() {
     if (selectedBrand && selectedModel) {
       setPackages([]);
       setSelectedPackage('');
-      setSelectedYear('');
       setTireData(null);
       
       fetch(`/api/packages?brand=${encodeURIComponent(selectedBrand)}&model=${encodeURIComponent(selectedModel)}`)
         .then(res => res.json())
-        .then(data => setPackages(data.packages || []))
+        .then(data => {
+          // API returns {data: [...]} or {packages: [...]}
+          if (data.data && Array.isArray(data.data)) {
+            setPackages(data.data);
+          } else if (data.packages) {
+            setPackages(data.packages);
+          }
+        })
         .catch(err => console.error('Error fetching packages:', err));
     }
   }, [selectedBrand, selectedModel]);
 
-  // Set years when package is selected
+  // Set years when model is selected (package is optional)
+
   useEffect(() => {
-    if (selectedPackage) {
+    if (selectedModel) {
       setSelectedYear('');
       setTireData(null);
       const currentYear = new Date().getFullYear();
@@ -92,7 +113,8 @@ export default function TireSelectionPage() {
       }
       setYears(yearList);
     }
-  }, [selectedPackage]);
+  }, [selectedModel]);
+
 
   // Search for tire info with AI
   const searchTireInfo = async () => {
@@ -187,13 +209,13 @@ export default function TireSelectionPage() {
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 11a1 1 0 112 0 1 1 0 01-2 0zm2-5a1 1 0 00-1 1v2a1 1 0 102 0V7a1 1 0 00-1-1z" />
               </svg>
-              <span className="text-sm font-semibold">AI Destekli Lastik Rehberi</span>
+              <span className="text-sm font-semibold">Uzman Lastik Rehberi</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Lastik Seçimi Rehberi
             </h1>
             <p className="text-xl text-primary-100 mb-6">
-              Aracınız için en uygun lastiği yapay zeka ile bulun. Marka, model ve yıla göre öneriler alın.
+              Aracınız için en uygun lastiği bulun. Marka, model ve yıla göre öneriler alın.
             </p>
           </div>
         </div>
@@ -212,7 +234,7 @@ export default function TireSelectionPage() {
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-900">Aracınızı Seçin</h2>
-                <p className="text-sm text-gray-600">AI ile lastik önerisi alın</p>
+                <p className="text-sm text-gray-600">Doğru lastik boyutunu öğrenin</p>
               </div>
             </div>
             
@@ -264,7 +286,7 @@ export default function TireSelectionPage() {
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white disabled:bg-gray-100"
-                  disabled={!selectedPackage}
+                  disabled={!selectedModel}
                 >
                   <option value="">Yıl Seçin</option>
                   {years.map((year) => (
@@ -294,7 +316,7 @@ export default function TireSelectionPage() {
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                       </svg>
-                      <span>AI ile Lastik Önerisi Al</span>
+                      <span>Lastik Önerisi Al</span>
                     </>
                   )}
                 </button>
