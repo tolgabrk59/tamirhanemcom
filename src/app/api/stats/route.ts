@@ -1,17 +1,27 @@
 import { NextResponse } from 'next/server';
-import pool from '@/lib/db';
+
+const STRAPI_API = 'https://api.tamirhanem.net/api';
 
 export async function GET() {
     try {
-        // MySQL'den servis verilerini çek
-        const [services] = await pool.execute('SELECT id, rating FROM services WHERE published_at IS NOT NULL') as [any[], any];
+        // Strapi'den servis verilerini çek
+        const response = await fetch(`${STRAPI_API}/services?pagination[pageSize]=1000&fields[0]=id&fields[1]=rating`, {
+            next: { revalidate: 300 } // 5 dakika cache
+        });
+
+        if (!response.ok) {
+            throw new Error('Strapi API erişim hatası');
+        }
+
+        const json = await response.json();
+        const services = json.data || [];
         
         // Servis sayısı
         const serviceCount = services.length;
         
         // Ortalama rating hesapla
         const ratingsWithValues = services
-            .map((s: any) => s.rating)
+            .map((s: any) => s.attributes?.rating || s.rating)
             .filter((r: number | null) => r !== null && r > 0);
         
         const avgRating = ratingsWithValues.length > 0

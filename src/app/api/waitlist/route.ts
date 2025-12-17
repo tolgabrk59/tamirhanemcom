@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import pool from '@/lib/db';
+
+const STRAPI_API = 'https://api.tamirhanem.net/api';
 
 export async function POST(request: NextRequest) {
     try {
@@ -13,36 +14,46 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const connection = await pool.getConnection();
+        // Strapi'de email kontrolü
+        const checkResponse = await fetch(
+            `${STRAPI_API}/waitinglists?filters[email][$eq]=${encodeURIComponent(email)}`,
+            { cache: 'no-store' }
+        );
 
-        try {
-            // Check if email already exists
-            const [existing] = await connection.execute(
-                'SELECT id FROM waitinglists WHERE email = ?',
-                [email]
-            );
-
-            if (Array.isArray(existing) && existing.length > 0) {
+        if (checkResponse.ok) {
+            const checkData = await checkResponse.json();
+            if (checkData.data && checkData.data.length > 0) {
                 return NextResponse.json(
                     { message: 'Already registered' },
                     { status: 200 }
                 );
             }
-
-            // Insert new waitlist entry
-            const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
-            await connection.execute(
-                'INSERT INTO waitinglists (email, phone, created_at, updated_at, published_at) VALUES (?, ?, ?, ?, ?)',
-                [email, phone || null, now, now, now]
-            );
-
-            return NextResponse.json(
-                { message: 'Successfully added to waitlist' },
-                { status: 200 }
-            );
-        } finally {
-            connection.release();
         }
+
+        // Strapi'ye yeni kayıt ekle
+        const createResponse = await fetch(`${STRAPI_API}/waitinglists`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                data: {
+                    email,
+                    phone: phone || null,
+                }
+            })
+        });
+
+        if (!createResponse.ok) {
+            const errorText = await createResponse.text();
+            console.error('Strapi create error:', errorText);
+            throw new Error('Waitlist kayıt hatası');
+        }
+
+        return NextResponse.json(
+            { message: 'Successfully added to waitlist' },
+            { status: 200 }
+        );
     } catch (error) {
         console.error('Waitlist API error:', error);
         return NextResponse.json(

@@ -9,23 +9,56 @@ import FAQSection from '@/components/FAQ';
 import WaitlistModal from '@/components/WaitlistModal';
 import BusinessDashboard from '@/components/BusinessDashboard';
 import HomeStats from '@/components/HomeStats';
-import { getCategories } from '@/lib/db';
 import { categoriesData } from '@/data/categories';
 import type { Category } from '@/types';
 
-// Dynamic data fetching from MySQL
+const STRAPI_API = 'https://api.tamirhanem.net/api';
+
+// Türkçe karakterleri slug'a çevir
+const slugify = (text: string) => {
+  return text
+    .toLowerCase()
+    .replace(/ğ/g, 'g')
+    .replace(/ü/g, 'u')
+    .replace(/ş/g, 's')
+    .replace(/ı/g, 'i')
+    .replace(/ö/g, 'o')
+    .replace(/ç/g, 'c')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+};
+
+// Dynamic data fetching from Strapi
 async function getCategoriesData(): Promise<Category[]> {
   try {
-    const dbCategories = await getCategories();
-    if (dbCategories && dbCategories.length > 0) {
-      return dbCategories as unknown as Category[];
+    const response = await fetch(`${STRAPI_API}/categories?pagination[pageSize]=50&sort=name:asc`, {
+      next: { revalidate: 3600 } // 1 saat cache
+    });
+
+    if (response.ok) {
+      const json = await response.json();
+      const items = json.data || [];
+      
+      if (items.length > 0) {
+        return items.map((item: any) => {
+          const attrs = item.attributes || item;
+          return {
+            id: item.id,
+            name: attrs.name,
+            title: attrs.name,
+            description: attrs.description || '',
+            slug: slugify(attrs.name)
+          };
+        }) as Category[];
+      }
     }
   } catch (error) {
-    console.error('Failed to fetch categories from MySQL:', error);
+    console.error('Failed to fetch categories from Strapi:', error);
   }
   // Fallback to local data
   return categoriesData;
 }
+
 
 export default async function HomePage() {
   const categories = await getCategoriesData();

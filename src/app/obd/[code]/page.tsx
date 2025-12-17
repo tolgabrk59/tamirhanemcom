@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ObdDetail from '@/components/ObdDetail';
-import pool from '@/lib/db';
 import { getObdCodeByCodeLocal, obdCodesData } from '@/data/obd-codes';
 import type { ObdCode } from '@/types';
+
+const STRAPI_API = 'https://api.tamirhanem.net/api';
 
 interface PageProps {
   params: Promise<{ code: string }>;
@@ -11,54 +12,79 @@ interface PageProps {
 
 async function getObdCodeData(code: string): Promise<ObdCode | null> {
   try {
-    // MySQL'den OBD kodunu çek
-    const [rows] = await pool.execute(
-      `SELECT id, code, title, description, causes, solutions, severity, frequency
-       FROM obdkodlari WHERE code = ?`,
-      [code.toUpperCase()]
-    ) as [any[], any];
-    
-    if (rows.length > 0) {
-      const row = rows[0];
-      const severityMap: { [key: string]: ObdCode['severity'] } = {
-        'YÜKSEK': 'high',
-        'ORTA': 'medium',
-        'DÜŞÜK': 'low'
-      };
+    // Strapi'den OBD kodunu çek
+    const response = await fetch(
+      `${STRAPI_API}/obd-codes?filters[code][$eq]=${code.toUpperCase()}&pagination[limit]=1`,
+      { next: { revalidate: 3600 } } // 1 saat cache
+    );
 
-      let causes: string[] = [];
-      let solutions: string[] = [];
+    if (response.ok) {
+      const json = await response.json();
+      const items = json.data || [];
+      
+      if (items.length > 0) {
+        const item = items[0];
+        const attrs = item.attributes || item;
+        
+        const severityMap: { [key: string]: ObdCode['severity'] } = {
+          'YÜKSEK': 'high',
+          'high': 'high',
+          'ORTA': 'medium',
+          'medium': 'medium',
+          'DÜŞÜK': 'low',
+          'low': 'low'
+        };
 
-      try {
-        causes = row.causes ? JSON.parse(row.causes) : [];
-      } catch {
-        causes = row.causes ? row.causes.split('\n').filter((c: string) => c.trim()) : [];
+        let causes: string[] = [];
+        let solutions: string[] = [];
+
+        // causes parsing
+        if (attrs.causes) {
+          if (Array.isArray(attrs.causes)) {
+            causes = attrs.causes;
+          } else if (typeof attrs.causes === 'string') {
+            try {
+              causes = JSON.parse(attrs.causes);
+            } catch {
+              causes = attrs.causes.split('\n').filter((c: string) => c.trim());
+            }
+          }
+        }
+
+        // solutions parsing
+        if (attrs.solutions) {
+          if (Array.isArray(attrs.solutions)) {
+            solutions = attrs.solutions;
+          } else if (typeof attrs.solutions === 'string') {
+            try {
+              solutions = JSON.parse(attrs.solutions);
+            } catch {
+              solutions = attrs.solutions.split('\n').filter((s: string) => s.trim());
+            }
+          }
+        }
+
+        return {
+          id: item.id,
+          code: attrs.code,
+          title: attrs.title,
+          description: attrs.description || '',
+          causes: causes,
+          fixes: solutions,
+          symptoms: [],
+          severity: severityMap[attrs.severity] || 'medium',
+          category: attrs.category || '',
+          estimatedCostMin: attrs.estimated_cost_min || null,
+          estimatedCostMax: attrs.estimated_cost_max || null,
+          frequency: attrs.frequency || 0
+        };
       }
-
-      try {
-        solutions = row.solutions ? JSON.parse(row.solutions) : [];
-      } catch {
-        solutions = row.solutions ? row.solutions.split('\n').filter((s: string) => s.trim()) : [];
-      }
-
-      return {
-        id: row.id,
-        code: row.code,
-        title: row.title,
-        description: row.description || '',
-        causes: causes,
-        fixes: solutions,
-        symptoms: [],
-        severity: severityMap[row.severity] || 'medium',
-        category: '',
-        estimatedCostMin: null,
-        estimatedCostMax: null,
-        frequency: row.frequency || 0
-      };
     }
   } catch (error) {
-    console.error('Failed to fetch OBD code from MySQL:', error);
+    console.error('Failed to fetch OBD code from Strapi:', error);
   }
+  
+  // Fallback to local data
   return getObdCodeByCodeLocal(code) || null;
 }
 
