@@ -89,9 +89,13 @@ export default function TireSelectionPage() {
       fetch(`/api/packages?brand=${encodeURIComponent(selectedBrand)}&model=${encodeURIComponent(selectedModel)}`)
         .then(res => res.json())
         .then(data => {
-          // API returns {data: [...]} or {packages: [...]}
+          // API returns {data: [{paket: "..."}, ...]} or {packages: [...]}
           if (data.data && Array.isArray(data.data)) {
-            setPackages(data.data);
+            // Extract package names from objects
+            const packageNames = data.data.map((item: any) => 
+              typeof item === 'string' ? item : (item.paket || item.package || item.name || '')
+            ).filter((p: string) => p);
+            setPackages(packageNames);
           } else if (data.packages) {
             setPackages(data.packages);
           }
@@ -275,8 +279,8 @@ export default function TireSelectionPage() {
                   disabled={!selectedModel || packages.length === 0}
                 >
                   <option value="">Paket Seçin</option>
-                  {packages.map((pkg) => (
-                    <option key={pkg} value={pkg}>{pkg}</option>
+                  {packages.map((pkg, index) => (
+                    <option key={`${pkg}-${index}`} value={pkg}>{pkg}</option>
                   ))}
                 </select>
               </div>
