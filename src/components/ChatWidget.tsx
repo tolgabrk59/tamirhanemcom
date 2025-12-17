@@ -76,7 +76,7 @@ export default function ChatWidget() {
     <>
       {/* Chat Popup */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-96 h-[600px] bg-white rounded-2xl shadow-2xl border border-secondary-200 flex flex-col z-50 animate-in slide-in-from-bottom-5 duration-300">
+        <div className="fixed inset-4 sm:inset-auto sm:bottom-24 sm:right-6 sm:w-96 sm:h-[600px] bg-white rounded-2xl shadow-2xl border border-secondary-200 flex flex-col z-50 animate-in slide-in-from-bottom-5 duration-300">
           {/* Header */}
           <div className="bg-gradient-to-r from-primary-600 to-primary-500 px-4 py-3 rounded-t-2xl flex items-center justify-between">
             <div className="flex items-center gap-3">
