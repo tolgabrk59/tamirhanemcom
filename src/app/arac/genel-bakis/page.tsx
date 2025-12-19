@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { vehicleYears } from '@/data/vehicles';
 
@@ -18,6 +18,12 @@ interface Package {
     full_model: string;
 }
 
+interface ValidationResult {
+    valid: boolean;
+    production_years: { start: number; end: number } | null;
+    message: string | null;
+}
+
 export default function VehicleOverviewPage() {
     const [brands, setBrands] = useState<Brand[]>([]);
     const [models, setModels] = useState<Model[]>([]);
@@ -26,6 +32,10 @@ export default function VehicleOverviewPage() {
     const [selectedModel, setSelectedModel] = useState('');
     const [selectedPackage, setSelectedPackage] = useState('');
     const [selectedYear, setSelectedYear] = useState('');
+    
+    // Validation states
+    const [isValidating, setIsValidating] = useState(false);
+    const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
 
     // Fetch Brands (otomobil only)
     useEffect(() => {
@@ -85,6 +95,44 @@ export default function VehicleOverviewPage() {
         }
         fetchPackages();
     }, [selectedBrand, selectedModel]);
+
+    // Validate year/model combination
+    useEffect(() => {
+        async function validateVehicle() {
+            if (!selectedBrand || !selectedModel || !selectedYear) {
+                setValidationResult(null);
+                return;
+            }
+
+            setIsValidating(true);
+            try {
+                const modelToValidate = selectedPackage || selectedModel;
+                const res = await fetch('/api/ai/validate-vehicle', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        brand: selectedBrand,
+                        model: modelToValidate,
+                        year: selectedYear
+                    })
+                });
+
+                if (res.ok) {
+                    const result = await res.json();
+                    setValidationResult(result);
+                }
+            } catch (error) {
+                console.error('Validation error:', error);
+                setValidationResult(null);
+            } finally {
+                setIsValidating(false);
+            }
+        }
+
+        // Debounce validation
+        const timer = setTimeout(validateVehicle, 500);
+        return () => clearTimeout(timer);
+    }, [selectedBrand, selectedModel, selectedPackage, selectedYear]);
 
     const popularBrands = [
         { name: 'Toyota', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Toyota_carlogo.svg' },
@@ -201,21 +249,71 @@ export default function VehicleOverviewPage() {
                                         ))}
                                     </select>
 
+                                    {/* Validation Warning Banner */}
+                                    {isValidating && (
+                                        <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-xl">
+                                            <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                            <span className="text-sm text-blue-700">Araç bilgisi doğrulanıyor...</span>
+                                        </div>
+                                    )}
+
+                                    {validationResult && !validationResult.valid && !isValidating && (
+                                        <div className="p-4 bg-amber-50 border border-amber-300 rounded-xl">
+                                            <div className="flex items-start gap-3">
+                                                <div className="flex-shrink-0 w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                                                    <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-semibold text-amber-800 mb-1">Geçersiz Yıl/Model Kombinasyonu</h4>
+                                                    <p className="text-sm text-amber-700">
+                                                        {validationResult.message || `${selectedBrand} ${selectedModel} modeli ${selectedYear} yılında üretilmemiştir.`}
+                                                    </p>
+                                                    {validationResult.production_years && (
+                                                        <p className="text-sm text-amber-600 mt-1 font-medium">
+                                                            Bu model {validationResult.production_years.start} - {validationResult.production_years.end} yılları arasında üretilmiştir.
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {validationResult && validationResult.valid && !isValidating && (
+                                        <div className="p-3 bg-green-50 border border-green-200 rounded-xl">
+                                            <div className="flex items-center gap-2">
+                                                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                </svg>
+                                                <span className="text-sm text-green-700">
+                                                    ✓ Geçerli araç kombinasyonu
+                                                    {validationResult.production_years && (
+                                                        <span className="text-green-600 ml-1">
+                                                            ({validationResult.production_years.start} - {validationResult.production_years.end} üretim)
+                                                        </span>
+                                                    )}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <Link
-                                        href={selectedBrand && selectedModel && selectedYear 
+                                        href={selectedBrand && selectedModel && selectedYear && (!validationResult || validationResult.valid)
                                             ? `/arac/analiz?brand=${encodeURIComponent(selectedBrand)}&model=${encodeURIComponent(selectedPackage || selectedModel)}&year=${encodeURIComponent(selectedYear)}`
                                             : '#'}
                                         onClick={(e) => {
-                                            if (!selectedBrand || !selectedModel || !selectedYear) {
+                                            if (!selectedBrand || !selectedModel || !selectedYear || (validationResult && !validationResult.valid)) {
                                                 e.preventDefault();
                                             }
                                         }}
-                                        className={`w-full py-4 rounded-xl font-bold text-center transition-all ${selectedBrand && selectedModel && selectedYear
-                                            ? 'bg-primary-600 text-white hover:bg-primary-700 shadow-lg hover:shadow-xl'
-                                            : 'bg-secondary-200 text-secondary-400 cursor-not-allowed'
-                                            }`}
+                                        className={`w-full py-4 rounded-xl font-bold text-center transition-all ${
+                                            selectedBrand && selectedModel && selectedYear && (!validationResult || validationResult.valid) && !isValidating
+                                                ? 'bg-primary-600 text-white hover:bg-primary-700 shadow-lg hover:shadow-xl'
+                                                : 'bg-secondary-200 text-secondary-400 cursor-not-allowed'
+                                        }`}
                                     >
-                                        Aracı İncele
+                                        {isValidating ? 'Doğrulanıyor...' : 'Aracı İncele'}
                                     </Link>
                                 </div>
                             </div>

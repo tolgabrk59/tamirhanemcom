@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 interface Service {
@@ -19,6 +19,8 @@ interface Service {
     description?: string;
     address?: string;
     working_hours?: any;
+    supported_vehicles?: any[];
+    supports_all_vehicles?: boolean;
 }
 
 interface ServiceDetailPanelProps {
@@ -28,6 +30,15 @@ interface ServiceDetailPanelProps {
 }
 
 export default function ServiceDetailPanel({ service, isOpen, onClose }: ServiceDetailPanelProps) {
+    const [showAllCategories, setShowAllCategories] = useState(false);
+    const [showAllBrands, setShowAllBrands] = useState(false);
+
+    // Reset expand states when service changes
+    useEffect(() => {
+        setShowAllCategories(false);
+        setShowAllBrands(false);
+    }, [service?.id]);
+
     // Close on escape key
     useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => {
@@ -73,7 +84,7 @@ export default function ServiceDetailPanel({ service, isOpen, onClose }: Service
                 </div>
 
                 {/* Content */}
-                <div className="overflow-y-auto h-[calc(100%-80px)]">
+                <div className="overflow-y-auto h-[calc(100%-160px)]">
                     {/* Service Image */}
                     <div className="relative h-56 bg-gradient-to-br from-gray-100 to-gray-200">
                         {service.pic ? (
@@ -139,43 +150,71 @@ export default function ServiceDetailPanel({ service, isOpen, onClose }: Service
                             </div>
                         </div>
 
-                        {/* Phone */}
-                        {service.phone && (
-                            <div className="bg-gray-50 rounded-xl p-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="bg-green-100 p-2 rounded-lg">
-                                        <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-900 mb-1">Telefon</h4>
-                                        <a href={`tel:${service.phone}`} className="text-primary-600 font-medium hover:underline">
-                                            {service.phone}
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
                         {/* Categories */}
                         {service.categories && service.categories.length > 0 && (
                             <div>
                                 <h4 className="font-semibold text-gray-900 mb-3">Hizmetler</h4>
                                 <div className="flex flex-wrap gap-2">
-                                    {service.categories.slice(0, 8).map((cat, idx) => (
+                                    {(showAllCategories ? service.categories : service.categories.slice(0, 8)).map((cat, idx) => (
                                         <span key={idx} className="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full">
                                             {cat}
                                         </span>
                                     ))}
                                     {service.categories.length > 8 && (
-                                        <span className="bg-gray-200 text-gray-600 text-sm px-3 py-1 rounded-full">
-                                            +{service.categories.length - 8} daha
-                                        </span>
+                                        <button
+                                            onClick={() => setShowAllCategories(!showAllCategories)}
+                                            className="bg-primary-100 text-primary-700 text-sm px-3 py-1 rounded-full hover:bg-primary-200 transition-colors cursor-pointer font-medium"
+                                        >
+                                            {showAllCategories ? 'Daha az göster' : `+${service.categories.length - 8} daha`}
+                                        </button>
                                     )}
                                 </div>
                             </div>
                         )}
+
+                        {/* Supported Brands */}
+                        <div>
+                            <h4 className="font-semibold text-gray-900 mb-3">Hizmet Verilen Markalar</h4>
+                            {service.supports_all_vehicles ? (
+                                <div className="bg-gradient-to-r from-primary-50 to-blue-50 border border-primary-200 rounded-xl p-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-primary-500 p-2 rounded-lg">
+                                            <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <span className="font-semibold text-primary-700">Tüm Markalara Hizmet Verilmektedir</span>
+                                            <p className="text-sm text-gray-600 mt-1">Bu servis tüm araç marka ve modellerine bakım ve onarım hizmeti sunmaktadır.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : service.supported_vehicles && service.supported_vehicles.length > 0 ? (
+                                <div className="flex flex-wrap gap-2">
+                                    {(showAllBrands ? service.supported_vehicles : service.supported_vehicles.slice(0, 12)).map((vehicle: any, idx: number) => {
+                                        const brandName = typeof vehicle === 'string' ? vehicle : (vehicle.brand || vehicle.name || vehicle);
+                                        return (
+                                            <span key={idx} className="bg-gray-100 text-gray-700 text-sm px-3 py-1.5 rounded-full border border-gray-200 flex items-center gap-1.5">
+                                                <svg className="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z" />
+                                                </svg>
+                                                {brandName}
+                                            </span>
+                                        );
+                                    })}
+                                    {service.supported_vehicles.length > 12 && (
+                                        <button
+                                            onClick={() => setShowAllBrands(!showAllBrands)}
+                                            className="bg-primary-100 text-primary-700 text-sm px-3 py-1.5 rounded-full hover:bg-primary-200 transition-colors cursor-pointer font-medium"
+                                        >
+                                            {showAllBrands ? 'Daha az göster' : `+${service.supported_vehicles.length - 12} daha`}
+                                        </button>
+                                    )}
+                                </div>
+                            ) : (
+                                <p className="text-gray-500 text-sm italic">Marka bilgisi bulunmuyor</p>
+                            )}
+                        </div>
 
                         {/* Features */}
                         <div className="grid grid-cols-2 gap-3">
@@ -197,6 +236,21 @@ export default function ServiceDetailPanel({ service, isOpen, onClose }: Service
                             )}
                         </div>
                     </div>
+                </div>
+
+                {/* Fixed Bottom Button */}
+                <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-gray-200">
+                    <a
+                        href={`/randevu-al?servis=${encodeURIComponent(service.name)}&servis_id=${service.id}`}
+                        className="block w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-bold py-4 px-6 rounded-xl text-center transition-all shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                    >
+                        <span className="flex items-center justify-center gap-2">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            Randevu Al
+                        </span>
+                    </a>
                 </div>
             </div>
         </>

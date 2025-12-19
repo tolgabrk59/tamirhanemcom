@@ -25,6 +25,8 @@ interface Service {
     address?: string;
     description?: string;
     working_hours?: any;
+    supported_vehicles?: any[];
+    supports_all_vehicles?: boolean;
 }
 
 function ServiceResultsContent() {

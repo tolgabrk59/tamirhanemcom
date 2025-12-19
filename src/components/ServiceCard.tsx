@@ -15,6 +15,9 @@ interface Service {
     pic: string | null;
     is_official_service: boolean;
     provides_roadside_assistance: boolean;
+    categories?: string[];
+    supported_vehicles?: any[];
+    supports_all_vehicles?: boolean;
 }
 
 interface ServiceCardProps {
