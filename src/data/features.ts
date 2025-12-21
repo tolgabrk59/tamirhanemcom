@@ -23,7 +23,7 @@ export const featuresData: Feature[] = [
         title: 'Yaygın Problemler',
         description: 'Araç markanız ve modelinize özgü en sık karşılaşılan sorunları keşfedin.',
         icon: 'wrench',
-        href: '/#yayin-problemler',
+        href: '/#yaygin-problemler',
         color: '#f97316',
         gradient: 'from-orange-500 to-orange-600',
     },
