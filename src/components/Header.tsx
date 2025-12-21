@@ -55,6 +55,14 @@ export default function Header() {
             { href: '/guvenilirlik', label: 'Güvenilirlik Derecelendirmeleri', desc: 'Marka ve model istatistikleri' },
             { href: '/arac/workshop-kilavuzlari', label: 'Workshop Kılavuzları', desc: 'Teknik dökümanlar ve tamir prosedürleri' },
           ]
+        },
+        {
+          title: 'Araçlar & Rehberler',
+          items: [
+            { href: '/arac/deger-hesaplama', label: 'Araç Değer Hesaplama', desc: 'Aracınızın güncel piyasa değerini öğrenin' },
+            { href: '/arac/videolar', label: 'Video İçerik Merkezi', desc: 'DIY bakım videoları ve rehberler' },
+            { href: '/arac/elektrikli-araclar', label: 'Elektrikli Araç Rehberi', desc: 'EV şarj, bakım ve batarya bilgileri' },
+          ]
         }
       ]
     },
