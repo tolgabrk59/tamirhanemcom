@@ -44,6 +44,25 @@ export async function GET(request: Request) {
             
             const json = await response.json();
             models = json.data || [];
+            
+            // FIAT için TOFAS-FIAT modellerini de dahil et
+            if (brand.toUpperCase() === 'FIAT') {
+                try {
+                    const tofasResponse = await fetch(
+                        `${STRAPI_API}/models/TOFAS-FIAT`,
+                        { next: { revalidate: 3600 } }
+                    );
+                    if (tofasResponse.ok) {
+                        const tofasJson = await tofasResponse.json();
+                        const tofasModels = tofasJson.data || [];
+                        // Birleştir ve unique yap
+                        models = [...new Set([...models, ...tofasModels])];
+                    }
+                } catch (e) {
+                    // TOFAS-FIAT modelleri alınamazsa sessizce devam et
+                    console.log('TOFAS-FIAT modelleri alınamadı');
+                }
+            }
         }
         
         // Strapi string array döndürüyor, frontend { model: string } bekliyor

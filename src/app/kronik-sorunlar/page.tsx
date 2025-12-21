@@ -46,7 +46,7 @@ export default function ChronicProblemsPage() {
     useEffect(() => {
         async function fetchBrands() {
             try {
-                const res = await fetch('/api/brands');
+                const res = await fetch('/api/brands?vehicleType=otomobil');
                 if (res.ok) {
                     const result = await res.json();
                     setBrands(result.data || []);

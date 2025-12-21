@@ -52,7 +52,8 @@ export async function GET(request: Request) {
         const district = searchParams.get('district');
         
         // Tüm servisleri çek (HTML mantığı: client-side filtering)
-        const url = `${STRAPI_API}/services?populate=*&pagination[pageSize]=100&sort=rating:desc`;
+        // working_hours component'ini de populate et
+        const url = `${STRAPI_API}/services?populate[0]=ProfilePicture&populate[1]=categories&populate[2]=supported_vehicles&populate[3]=working_hours.monday&populate[4]=working_hours.tuesday&populate[5]=working_hours.wednesday&populate[6]=working_hours.thursday&populate[7]=working_hours.friday&populate[8]=working_hours.saturday&populate[9]=working_hours.sunday&pagination[pageSize]=100&sort=rating:desc`;
         
         const response = await fetch(url, {
             next: { revalidate: 300 } // 5 dakika cache

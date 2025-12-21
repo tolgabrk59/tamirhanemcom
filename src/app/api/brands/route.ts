@@ -3,7 +3,9 @@ import { NextResponse } from 'next/server';
 const STRAPI_API = 'https://api.tamirhanem.net/api/arac-dataveri';
 
 // Türkiye pazarında olmayan veya pasif edilecek OTOMOBİL markaları
+// (Kamyon, otobüs, ticari araç markaları da dahil)
 const EXCLUDED_CAR_BRANDS = [
+    // Türkiye'de olmayan/pasif markalar
     'BUGATTI',
     'CADILLAC',
     'DAF',
@@ -29,6 +31,15 @@ const EXCLUDED_CAR_BRANDS = [
     'VOYAH',
     'HARLEY-DAVIDSON',
     'RAMZEY',
+    // Kamyon, otobüs, ticari araç markaları (otomobil değil)
+    'BMC',
+    'ISUZU',
+    'MAN',
+    'DFSK',
+    'MAXUS',
+    'TATA',
+    // Birleştirilmiş markalar (FIAT altında gösterilecek)
+    'TOFAS-FIAT',
 ];
 
 // Türkiye'de aktif olan MOTORSİKLET markaları (whitelist)

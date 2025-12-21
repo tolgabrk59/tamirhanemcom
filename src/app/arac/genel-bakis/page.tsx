@@ -299,16 +299,16 @@ export default function VehicleOverviewPage() {
                                     )}
 
                                     <Link
-                                        href={selectedBrand && selectedModel && selectedYear && (!validationResult || validationResult.valid)
+                                        href={selectedBrand && selectedModel && selectedYear && validationResult?.valid
                                             ? `/arac/analiz?brand=${encodeURIComponent(selectedBrand)}&model=${encodeURIComponent(selectedPackage || selectedModel)}&year=${encodeURIComponent(selectedYear)}`
                                             : '#'}
                                         onClick={(e) => {
-                                            if (!selectedBrand || !selectedModel || !selectedYear || (validationResult && !validationResult.valid)) {
+                                            if (!selectedBrand || !selectedModel || !selectedYear || !validationResult?.valid) {
                                                 e.preventDefault();
                                             }
                                         }}
                                         className={`w-full py-4 rounded-xl font-bold text-center transition-all ${
-                                            selectedBrand && selectedModel && selectedYear && (!validationResult || validationResult.valid) && !isValidating
+                                            selectedBrand && selectedModel && selectedYear && validationResult?.valid && !isValidating
                                                 ? 'bg-primary-600 text-white hover:bg-primary-700 shadow-lg hover:shadow-xl'
                                                 : 'bg-secondary-200 text-secondary-400 cursor-not-allowed'
                                         }`}
