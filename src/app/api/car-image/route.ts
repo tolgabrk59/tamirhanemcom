@@ -48,10 +48,10 @@ export async function GET(req: Request) {
     }
 
     // 2. Fallback to Serper (Google Images) if no local image found
-    // Using key from existing scripts or env
-    const serperKey = process.env.SERPER_API_KEY || "c54a2c0b18f493218783bd24abef63aceb9c1b18";
+    const serperKey = process.env.SERPER_API_KEY;
     const query = `${year || ''} ${brand} ${model} car`.trim();
 
+    // Only attempt Serper if API key is configured
     if (serperKey) {
         try {
             const serperRes = await fetch('https://google.serper.dev/images', {

@@ -113,7 +113,7 @@ export default function AdvicePage() {
                         <input
                             type="text"
                             placeholder="Hangi konuda yardıma ihtiyacınız var? (Örn: Fren sesi, Akü değişimi)"
-                            className="w-full px-6 py-4 rounded-full text-secondary-900 focus:outline-none focus:ring-4 focus:ring-primary-500/50 shadow-xl text-lg placeholder:text-secondary-400"
+                            className="w-full px-6 py-4 rounded-full text-secondary-900 focus:outline-none focus:ring-4 focus:ring-primary-500/50 shadow-xl text-lg placeholder:text-secondary-500"
                         />
                         <button className="absolute right-2 top-2 bg-primary-600 text-white p-2.5 rounded-full hover:bg-primary-700 transition-colors">
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -179,7 +179,7 @@ export default function AdvicePage() {
                                         {article.category}
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-3 text-xs text-secondary-400 mb-3">
+                                <div className="flex items-center gap-3 text-xs text-secondary-500 mb-3">
                                     <span>{article.date}</span>
                                     <span>•</span>
                                     <span>3 dk okuma</span>

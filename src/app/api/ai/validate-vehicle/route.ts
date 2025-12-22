@@ -139,8 +139,12 @@ KURALLAR:
     }
   }
   
-  // If all keys fail, return valid by default
-  return { valid: true, production_years: null, message: null };
+  // If all keys fail, return invalid to avoid false positives
+  return {
+    valid: false,
+    production_years: null,
+    message: "Araç doğrulaması şu anda yapılamadı."
+  };
 }
 
 export async function POST(req: Request) {
@@ -186,9 +190,9 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error("Validation Error:", error);
     return NextResponse.json({
-      valid: true,
+      valid: false,
       production_years: null,
-      message: null
+      message: "Araç doğrulaması şu anda yapılamadı."
     });
   }
 }

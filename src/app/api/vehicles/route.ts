@@ -1,16 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import mysql from 'mysql2/promise';
+import { getPool } from '@/lib/db';
+import { successResponse, errors, logError } from '@/lib/api-response';
+
+interface Vehicle {
+  brand: string;
+  model: string;
+  min_year: number;
+  max_year: number;
+}
 
 export async function GET(request: NextRequest) {
   try {
-    const connection = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-    });
+    const pool = getPool();
 
-    const [rows] = await connection.execute(`
+    const [rows] = await pool.execute(`
       SELECT DISTINCT brand, model, MIN(year_start) as min_year, MAX(year_end) as max_year
       FROM kronik_sorunlar
       WHERE brand IS NOT NULL AND model IS NOT NULL
@@ -18,14 +21,9 @@ export async function GET(request: NextRequest) {
       ORDER BY brand, model
     `);
 
-    await connection.end();
-
-    return NextResponse.json({ vehicles: rows });
-  } catch (error: any) {
-    console.error('Database error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch vehicles' },
-      { status: 500 }
-    );
+    return successResponse({ vehicles: rows as Vehicle[] });
+  } catch (error) {
+    logError('Vehicles API', error);
+    return errors.internal('Araç listesi yüklenemedi');
   }
 }

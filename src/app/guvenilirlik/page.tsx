@@ -47,11 +47,11 @@ export default function ReliabilityPage() {
                         <div className="flex flex-wrap gap-4">
                             <div className="flex items-center gap-2 bg-secondary-800/50 px-4 py-2 rounded-lg border border-secondary-700">
                                 <span className="text-primary-400 text-xl font-bold">{reliabilityData.length}</span>
-                                <span className="text-secondary-400 text-sm">Marka Analizi</span>
+                                <span className="text-secondary-500 text-sm">Marka Analizi</span>
                             </div>
                             <div className="flex items-center gap-2 bg-secondary-800/50 px-4 py-2 rounded-lg border border-secondary-700">
                                 <span className="text-green-400 text-xl font-bold">%100</span>
-                                <span className="text-secondary-400 text-sm">Yerel Veri</span>
+                                <span className="text-secondary-500 text-sm">Yerel Veri</span>
                             </div>
                         </div>
                     </div>

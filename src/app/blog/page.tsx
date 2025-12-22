@@ -127,7 +127,7 @@ export default function BlogPage() {
                     <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-medium">
                       {post.category}
                     </span>
-                    <span className="text-secondary-400 text-xs">{post.readTime} okuma</span>
+                    <span className="text-secondary-500 text-xs">{post.readTime} okuma</span>
                   </div>
                   
                   <h2 className="text-xl font-bold mb-2 group-hover:text-primary-600 transition-colors" style={{ color: '#454545' }}>
@@ -139,7 +139,7 @@ export default function BlogPage() {
                   </p>
                   
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-secondary-400">{post.date}</span>
+                    <span className="text-xs text-secondary-500">{post.date}</span>
                     <span className="text-primary-600 font-medium text-sm group-hover:translate-x-1 transition-transform inline-flex items-center">
                       Devamını Oku
                       <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

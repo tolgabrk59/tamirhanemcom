@@ -67,7 +67,7 @@ export default function ObdDetail({ obd }: ObdDetailProps) {
               <p className="text-2xl font-bold text-secondary-900">
                 {obd.estimatedCostMin.toLocaleString('tr-TR')} - {obd.estimatedCostMax.toLocaleString('tr-TR')} TL
               </p>
-              <span className="text-xs text-secondary-400">Parça ve işçilik dahil</span>
+              <span className="text-xs text-secondary-500">Parça ve işçilik dahil</span>
             </div>
           )}
         </div>

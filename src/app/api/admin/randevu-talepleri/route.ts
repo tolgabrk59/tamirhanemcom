@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { validateToken } from '@/lib/admin-auth';
 
 const STRAPI_API = process.env.STRAPI_API_URL || 'https://api.tamirhanem.net/api';
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
@@ -11,17 +12,7 @@ async function isAuthenticated(): Promise<boolean> {
     
     if (!token) return false;
     
-    try {
-        const decoded = Buffer.from(token, 'base64').toString();
-        const [timestamp] = decoded.split(':');
-        const tokenTime = parseInt(timestamp);
-        const now = Date.now();
-        const twentyFourHours = 24 * 60 * 60 * 1000;
-        
-        return (now - tokenTime) < twentyFourHours;
-    } catch {
-        return false;
-    }
+    return validateToken(token);
 }
 
 export async function GET() {

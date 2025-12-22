@@ -128,7 +128,7 @@ export default function ComparisonResultPage() {
             <div className="min-h-screen bg-secondary-900 flex flex-col items-center justify-center text-white px-4">
                 <div className="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mb-6"></div>
                 <h2 className="text-2xl font-bold mb-2">Araçlar Karşılaştırılıyor...</h2>
-                <p className="text-secondary-400 text-center max-w-md">
+                <p className="text-secondary-500 text-center max-w-md">
                     Yapay zeka her iki aracın teknik verilerini, kronik sorunlarını ve kullanıcı yorumlarını analiz ediyor.
                     Bu işlem 1-2 dakika sürebilir.
                 </p>

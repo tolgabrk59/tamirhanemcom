@@ -4,20 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { turkeyLocations, cityList } from '@/data/turkey-locations';
 import ServiceSearchModal from './ServiceSearchModal';
-
-// Interface tanımları
-interface Category {
-  id: number;
-  name: string;
-}
-
-interface Brand {
-  brand: string;
-}
-
-interface Model {
-  model: string;
-}
+import type { Brand, Model, FilterCategory } from '@/types';
 
 interface SearchBoxProps {
   vertical?: boolean;
@@ -37,7 +24,10 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
   // Data states
   const [brands, setBrands] = useState<Brand[]>([]);
   const [models, setModels] = useState<Model[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<FilterCategory[]>([]);
+
+  // Search loading state
+  const [isSearching, setIsSearching] = useState(false);
 
   // Loading states
   const [brandsLoading, setBrandsLoading] = useState(false);
@@ -114,6 +104,7 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
   }, [brand, vehicleType]);
 
   const handleSearch = () => {
+    setIsSearching(true);
     // Navigate to results page instead of opening modal
     const params = new URLSearchParams();
     if (city) params.set('city', city);
@@ -135,6 +126,7 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
             setCity(e.target.value);
             setDistrict('');
           }}
+          aria-label="İl seçin"
           className={vertical
             ? "w-full px-4 py-3 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900"
             : "flex-1 min-w-[100px] px-3 py-2 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900 text-sm"
@@ -151,6 +143,8 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
           value={district}
           onChange={(e) => setDistrict(e.target.value)}
           disabled={!city}
+          aria-label="İlçe seçin"
+          aria-disabled={!city}
           className={vertical
             ? "w-full px-4 py-3 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900 disabled:bg-secondary-50"
             : "flex-1 min-w-[100px] px-3 py-2 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900 text-sm disabled:bg-secondary-50"
@@ -166,6 +160,7 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
         <select
           value={vehicleType}
           onChange={(e) => setVehicleType(e.target.value as 'otomobil' | 'motorsiklet' | '')}
+          aria-label="Araç türü seçin"
           className={vertical
             ? "w-full px-4 py-3 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900"
             : "flex-1 min-w-[110px] px-3 py-2 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900 text-sm"
@@ -181,6 +176,9 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
           value={brand}
           onChange={(e) => setBrand(e.target.value)}
           disabled={!vehicleType}
+          aria-label="Marka seçin"
+          aria-disabled={!vehicleType}
+          aria-busy={brandsLoading}
           className={vertical
             ? "w-full px-4 py-3 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900 disabled:bg-secondary-50"
             : "flex-1 min-w-[100px] px-3 py-2 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900 text-sm disabled:bg-secondary-50"
@@ -201,6 +199,9 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
           value={model}
           onChange={(e) => setModel(e.target.value)}
           disabled={!brand}
+          aria-label="Model seçin"
+          aria-disabled={!brand}
+          aria-busy={modelsLoading}
           className={vertical
             ? "w-full px-4 py-3 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900 disabled:bg-secondary-50"
             : "flex-1 min-w-[100px] px-3 py-2 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900 text-sm disabled:bg-secondary-50"
@@ -220,6 +221,8 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
+          aria-label="Kategori seçin"
+          aria-busy={categoriesLoading}
           className={vertical
             ? "w-full px-4 py-3 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900"
             : "flex-1 min-w-[120px] px-3 py-2 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-secondary-900 text-sm"
@@ -238,15 +241,30 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
         {/* Search Button */}
         <button
           onClick={handleSearch}
+          disabled={isSearching}
+          aria-label="Servis ara"
+          aria-busy={isSearching}
           className={vertical
-            ? "w-full bg-primary-600 text-[#454545] px-5 py-3 rounded-lg hover:bg-primary-700 transition-colors font-bold flex items-center justify-center gap-2"
-            : "bg-primary-600 text-[#454545] px-5 py-2 rounded-lg hover:bg-primary-700 transition-colors font-bold flex items-center gap-2 whitespace-nowrap"
+            ? "w-full bg-primary-600 text-[#454545] px-5 py-3 rounded-lg hover:bg-primary-700 transition-colors font-bold flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+            : "bg-primary-600 text-[#454545] px-5 py-2 rounded-lg hover:bg-primary-700 transition-colors font-bold flex items-center gap-2 whitespace-nowrap disabled:opacity-70 disabled:cursor-not-allowed"
           }
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <span>Servis Bul</span>
+          {isSearching ? (
+            <>
+              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              <span>Aranıyor...</span>
+            </>
+          ) : (
+            <>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <span>Servis Bul</span>
+            </>
+          )}
         </button>
       </div>
 

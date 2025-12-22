@@ -10,6 +10,42 @@
   body {
     @apply bg-secondary-50 text-secondary-900 antialiased;
   }
+
+  /* Focus-visible ring system - WCAG 2.1 AA */
+  *:focus {
+    outline: none;
+  }
+
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  select:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible {
+    @apply ring-2 ring-primary-500 ring-offset-2 outline-none;
+  }
+
+  /* Skip to content link */
+  .skip-to-content {
+    @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999]
+           focus:bg-primary-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg
+           focus:shadow-lg focus:font-semibold;
+  }
+
+  /* Touch target minimum sizes */
+  @media (pointer: coarse) {
+    button,
+    a,
+    select,
+    input[type="checkbox"],
+    input[type="radio"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
 }
 
 @layer components {
@@ -89,4 +125,215 @@
 ::selection {
   background-color: #3b82f6;
   color: white;
+}
+
+/* Float Animation for Cards */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Gradient Text Animation */
+@keyframes gradient-x {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 3s ease infinite;
+}
+
+/* Motion Preference - Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-float,
+  .animate-bounce,
+  .animate-pulse,
+  .animate-gradient-x {
+    animation: none !important;
+  }
+}
+
+/* Link Hover Underline Animation */
+.link-hover-underline {
+  position: relative;
+}
+
+.link-hover-underline::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: currentColor;
+  transition: width 0.3s ease;
+}
+
+.link-hover-underline:hover::after {
+  width: 100%;
+}
+
+/* Fade In Up Animation for Scroll */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+/* Shake Animation for Form Errors */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Success Checkmark Animation */
+@keyframes checkmark {
+  0% { stroke-dashoffset: 100; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.animate-checkmark {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: checkmark 0.5s ease forwards;
+}
+
+/* Scale In Animation */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.3s ease forwards;
+}
+
+/* Slide In From Right */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.4s ease forwards;
+}
+
+/* Button Interactive States */
+.btn-interactive {
+  @apply transition-all duration-200;
+}
+
+.btn-interactive:hover {
+  @apply shadow-md -translate-y-0.5;
+}
+
+.btn-interactive:active {
+  @apply translate-y-0 shadow-sm;
+}
+
+.btn-interactive:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+.btn-interactive:disabled:hover {
+  @apply shadow-none translate-y-0;
+}
+
+/* Card Hover Effect */
+.card-hover {
+  @apply transition-all duration-300;
+}
+
+.card-hover:hover {
+  @apply shadow-xl -translate-y-1;
+}
+
+/* Input Focus Animation */
+.input-animated {
+  @apply transition-all duration-200;
+}
+
+.input-animated:focus {
+  @apply border-primary-500 shadow-sm shadow-primary-100;
+}
+
+/* Loading Spinner */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin 2s linear infinite;
+}
+
+/* Pulse Ring Effect */
+@keyframes pulseRing {
+  0% {
+    box-shadow: 0 0 0 0 rgba(251, 201, 29, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(251, 201, 29, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(251, 201, 29, 0);
+  }
+}
+
+.animate-pulseRing {
+  animation: pulseRing 2s infinite;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .dark-mode-auto {
+    @apply bg-gray-900 text-white;
+  }
 }

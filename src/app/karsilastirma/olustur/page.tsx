@@ -239,7 +239,7 @@ export default function CreateComparisonPage() {
                         }
                         className={`inline-flex items-center justify-center px-12 py-4 rounded-xl text-lg font-bold transition-all transform ${isComplete 
                             ? 'bg-primary-600 text-white hover:bg-primary-700 hover:scale-105 shadow-xl shadow-primary-500/30 cursor-pointer'
-                            : 'bg-secondary-200 text-secondary-400 cursor-not-allowed'
+                            : 'bg-secondary-200 text-secondary-500 cursor-not-allowed'
                         }`}
                         onClick={(e) => {
                             if (!isComplete) e.preventDefault();

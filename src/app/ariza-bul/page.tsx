@@ -240,7 +240,7 @@ export default function ArizaBulPage() {
           </form>
 
           <div className="mt-8 flex flex-wrap justify-center gap-2">
-            <span className="text-secondary-400 text-sm">Popüler kodlar:</span>
+            <span className="text-secondary-500 text-sm">Popüler kodlar:</span>
             {obdCodesData.slice(0, 4).map((obd) => (
               <Link
                 key={obd.code}

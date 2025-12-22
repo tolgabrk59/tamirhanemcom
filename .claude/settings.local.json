@@ -11,7 +11,30 @@
       "Bash(python3:*)",
       "Bash(pip3 install:*)",
       "Bash(timeout 300 python3:*)",
-      "Bash(kill:*)"
+      "Bash(kill:*)",
+      "WebSearch",
+      "Bash(npm run build:*)",
+      "WebFetch(domain:www.arabam.com)",
+      "Bash(npm install:*)",
+      "Bash(node /home/dietpi/tamirhanem-next/scripts/test-scrape.js:*)",
+      "WebFetch(domain:www.sahibinden.com)",
+      "Bash(curl:*)",
+      "Bash(\"https://www.sahibinden.com/oto360/arac-degerleme/alirken\")",
+      "Bash(timeout 60 node:*)",
+      "Bash(node scripts/test-sahibinden-list.js:*)",
+      "Bash(node scripts/test-arabam-packages.js:*)",
+      "Bash(node scripts/test-arabam-filters.js:*)",
+      "Bash(node scripts/test-specific.js:*)",
+      "Bash(node scripts/clean-brands.js:*)",
+      "Bash(node scripts/fetch-packages.js:*)",
+      "Bash(node -e:*)",
+      "Bash(for model in Golf Passat Polo Corolla Focus Megane Clio Egea i20 Civic Astra 308)",
+      "Bash(do)",
+      "Bash(echo:*)",
+      "Bash(done)",
+      "Skill(frontend-design)",
+      "Bash(ls:*)",
+      "Bash(npx @sentry/wizard@latest -i nextjs --saas --org next-ai-teknoloji-yazlm-san-ve --project javascript-nextjs)"
     ]
   }
 }

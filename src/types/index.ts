@@ -1,4 +1,132 @@
+// ============================================
+// Working Hours Types
+// ============================================
+export interface DayHours {
+  open: string;
+  close: string;
+  is_closed?: boolean;
+}
+
+export interface WorkingHours {
+  monday?: DayHours;
+  tuesday?: DayHours;
+  wednesday?: DayHours;
+  thursday?: DayHours;
+  friday?: DayHours;
+  saturday?: DayHours;
+  sunday?: DayHours;
+  pazartesi?: DayHours;
+  sali?: DayHours;
+  carsamba?: DayHours;
+  persembe?: DayHours;
+  cuma?: DayHours;
+  cumartesi?: DayHours;
+  pazar?: DayHours;
+}
+
+// ============================================
+// Supported Vehicle Types
+// ============================================
+export interface SupportedVehicle {
+  brand: string;
+  model?: string;
+  fuel_type?: string;
+  year_from?: number;
+  year_to?: number;
+}
+
+// ============================================
+// Service Provider Types (from ServiceCard)
+// ============================================
+export interface ServiceProvider {
+  id: number;
+  name: string;
+  location: string;
+  rating: number | null;
+  rating_count: number | null;
+  latitude: number | null;
+  longitude: number | null;
+  phone: string | null;
+  pic: string | null;
+  is_official_service: boolean;
+  provides_roadside_assistance: boolean;
+  categories?: string[];
+  supported_vehicles?: SupportedVehicle[];
+  supports_all_vehicles?: boolean;
+  working_hours?: WorkingHours;
+  description?: string;
+  address?: string;
+  city?: string;
+  district?: string;
+  website?: string;
+  email?: string;
+}
+
+// ============================================
+// Search/Filter Types
+// ============================================
+export interface SearchFilters {
+  city?: string;
+  district?: string;
+  brand?: string;
+  model?: string;
+  category?: string;
+  vehicleType?: 'otomobil' | 'motorsiklet' | '';
+  packageName?: string;
+}
+
+export interface Brand {
+  brand: string;
+}
+
+export interface Model {
+  model: string;
+}
+
+export interface FilterCategory {
+  id: number;
+  name: string;
+  slug?: string;
+  icon?: string;
+}
+
+// ============================================
+// Location Types
+// ============================================
+export interface UserLocation {
+  lat: number;
+  lng: number;
+}
+
+export interface GeoCoordinates {
+  latitude: number;
+  longitude: number;
+}
+
+// ============================================
+// API Response Types
+// ============================================
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+  error?: string;
+}
+
+export interface PaginatedResponse<T> {
+  success: boolean;
+  data: T[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    pageCount: number;
+    total: number;
+  };
+}
+
+// ============================================
 // Strapi Response Types
+// ============================================
 export interface StrapiResponse<T> {
   data: T;
   meta: {

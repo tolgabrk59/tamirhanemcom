@@ -310,7 +310,7 @@ export default function VehicleOverviewPage() {
                                         className={`w-full py-4 rounded-xl font-bold text-center transition-all ${
                                             selectedBrand && selectedModel && selectedYear && validationResult?.valid && !isValidating
                                                 ? 'bg-primary-600 text-white hover:bg-primary-700 shadow-lg hover:shadow-xl'
-                                                : 'bg-secondary-200 text-secondary-400 cursor-not-allowed'
+                                                : 'bg-secondary-200 text-secondary-500 cursor-not-allowed'
                                         }`}
                                     >
                                         {isValidating ? 'Doğrulanıyor...' : 'Aracı İncele'}

@@ -92,8 +92,9 @@ export default function ServiceDetailPanel({ service, isOpen, onClose }: Service
                                 src={service.pic.startsWith('http') ? service.pic : `https://api.tamirhanem.net${service.pic}`}
                                 alt={service.name}
                                 fill
-                                unoptimized
+                                sizes="(max-width: 768px) 100vw, 400px"
                                 className="object-cover"
+                                loading="lazy"
                             />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center">

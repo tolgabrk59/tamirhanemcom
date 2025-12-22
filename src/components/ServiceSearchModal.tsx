@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Map, { Marker, Popup } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { ServiceCardSkeletonHorizontalList } from './ServiceCardSkeleton';
 
 interface Service {
     id: number;
@@ -241,7 +242,7 @@ export default function ServiceSearchModal({ isOpen, onClose, filters }: Service
                                 </button>
                             </div>
 
-                            {loading && <div className="space-y-4">{[1, 2, 3].map((i) => <div key={i} className="bg-gray-50 rounded-lg p-4 animate-pulse"><div className="h-4 bg-gray-200 rounded w-1/2"></div></div>)}</div>}
+                            {loading && <ServiceCardSkeletonHorizontalList count={4} />}
                             {error && <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center"><p className="text-red-600 text-sm">{error}</p></div>}
                             {!loading && !error && filteredServices.length === 0 && <div className="bg-gray-50 rounded-lg p-8 text-center"><h3 className="text-sm font-semibold text-gray-900">Servis Bulunamadı</h3></div>}
 
@@ -261,7 +262,7 @@ export default function ServiceSearchModal({ isOpen, onClose, filters }: Service
                                         {/* Service Image - Left Side */}
                                         {service.pic ? (
                                             <img
-                                                src={`https://api.tamirhanem.net${service.pic}`}
+                                                src={service.pic.startsWith('http') ? service.pic : `https://api.tamirhanem.net${service.pic}`}
                                                 alt={service.name}
                                                 className="w-36 h-36 object-cover flex-shrink-0 transition-transform duration-300 group-hover:scale-105"
                                                 onError={(e) => {

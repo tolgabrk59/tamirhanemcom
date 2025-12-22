@@ -98,7 +98,7 @@ function ProblemCard({ problem }: { problem: CommonProblem }) {
             </span>
           ))}
           {problem.symptoms.length > 3 && (
-            <span className="text-xs text-secondary-400">+{problem.symptoms.length - 3}</span>
+            <span className="text-xs text-secondary-500">+{problem.symptoms.length - 3}</span>
           )}
         </div>
       </div>

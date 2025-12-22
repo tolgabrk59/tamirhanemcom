@@ -74,7 +74,7 @@ function ReviewCard({ review }: { review: Review }) {
       </p>
 
       {/* Footer */}
-      <div className="flex items-center justify-between text-sm text-secondary-400 pt-4 border-t border-secondary-100">
+      <div className="flex items-center justify-between text-sm text-secondary-500 pt-4 border-t border-secondary-100">
         {review.service && (
           <span className="bg-secondary-100 px-2 py-1 rounded">{review.service}</span>
         )}

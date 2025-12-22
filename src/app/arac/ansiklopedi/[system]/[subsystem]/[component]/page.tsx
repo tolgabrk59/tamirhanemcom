@@ -243,7 +243,7 @@ export default async function ComponentPage({ params }: PageProps) {
                                 href={`/arac/ansiklopedi/${system.slug}/${subsystem.slug}`}
                                 className="block bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all text-center group"
                             >
-                                <svg className="w-6 h-6 text-secondary-400 mx-auto mb-2 group-hover:text-primary-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-6 h-6 text-secondary-500 mx-auto mb-2 group-hover:text-primary-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                                 </svg>
                                 <span className="text-secondary-700 group-hover:text-primary-600 transition-colors font-medium">

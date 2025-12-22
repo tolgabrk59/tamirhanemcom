@@ -91,7 +91,7 @@ export default function EncyclopediaPage() {
                         <input
                             type="text"
                             placeholder="Hangi parçayı arıyorsunuz? (Örn: Balata, Akü, Filtre)"
-                            className="w-full px-6 py-4 rounded-full text-secondary-900 focus:outline-none focus:ring-4 focus:ring-primary-500/50 shadow-xl text-lg placeholder:text-secondary-400"
+                            className="w-full px-6 py-4 rounded-full text-secondary-900 focus:outline-none focus:ring-4 focus:ring-primary-500/50 shadow-xl text-lg placeholder:text-secondary-500"
                         />
                         <button className="absolute right-2 top-2 bg-primary-600 text-white p-2.5 rounded-full hover:bg-primary-700 transition-colors">
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

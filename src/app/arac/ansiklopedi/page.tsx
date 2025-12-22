@@ -222,7 +222,7 @@ export default function EncyclopediaPage() {
                                 <div className="absolute top-full mt-2 w-full bg-white rounded-2xl shadow-2xl border-2 border-secondary-100 max-h-96 overflow-y-auto z-[9999]">
                                     {searchResults.systems.length === 0 && searchResults.components.length === 0 ? (
                                         <div className="p-6 text-center text-secondary-600">
-                                            <svg className="w-12 h-12 mx-auto mb-2 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg className="w-12 h-12 mx-auto mb-2 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
                                             <p className="font-medium">Sonuç bulunamadı</p>
@@ -253,7 +253,7 @@ export default function EncyclopediaPage() {
                                                                     <div className="font-semibold text-secondary-900 group-hover:text-primary-600 transition-colors">{system.name}</div>
                                                                     <div className="text-sm text-secondary-600 line-clamp-1">{system.description}</div>
                                                                 </div>
-                                                                <svg className="w-5 h-5 text-secondary-400 group-hover:text-primary-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <svg className="w-5 h-5 text-secondary-500 group-hover:text-primary-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                                                 </svg>
                                                             </Link>
@@ -293,7 +293,7 @@ export default function EncyclopediaPage() {
                                                                         </div>
                                                                     )}
                                                                 </div>
-                                                                <svg className="w-5 h-5 text-secondary-400 group-hover:text-primary-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <svg className="w-5 h-5 text-secondary-500 group-hover:text-primary-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                                                 </svg>
                                                             </Link>

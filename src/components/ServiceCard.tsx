@@ -3,32 +3,15 @@
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { isServiceOpen, formatDistance, isFavorite, toggleFavorite } from '@/lib/service-utils';
-
-interface Service {
-    id: number;
-    name: string;
-    location: string;
-    rating: number | null;
-    rating_count: number | null;
-    latitude: number | null;
-    longitude: number | null;
-    phone: string | null;
-    pic: string | null;
-    is_official_service: boolean;
-    provides_roadside_assistance: boolean;
-    categories?: string[];
-    supported_vehicles?: any[];
-    supports_all_vehicles?: boolean;
-    working_hours?: any;
-}
+import type { ServiceProvider, SupportedVehicle, WorkingHours, UserLocation } from '@/types';
 
 interface ServiceCardProps {
-    service: Service;
+    service: ServiceProvider;
     index: number;
     onHover?: (serviceId: number | null) => void;
     isHovered?: boolean;
-    onDetailClick?: (service: Service) => void;
-    userLocation?: { lat: number; lng: number } | null;
+    onDetailClick?: (service: ServiceProvider) => void;
+    userLocation?: UserLocation | null;
     distance?: number | null;
 }
 
@@ -64,16 +47,17 @@ export default function ServiceCard({
             onMouseEnter={() => onHover?.(service.id)}
             onMouseLeave={() => onHover?.(null)}
         >
-            {/* Service Image - Compact */}
-            <div className="relative h-28 sm:h-32 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+            {/* Service Image */}
+            <div className="relative h-36 sm:h-40 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
                 {service.pic && !imageError ? (
                     <Image
                         src={service.pic.startsWith('http') ? service.pic : `https://api.tamirhanem.net${service.pic}`}
                         alt={service.name}
                         fill
-                        unoptimized
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         className="object-cover transition-transform duration-300 hover:scale-105"
                         onError={() => setImageError(true)}
+                        loading="lazy"
                     />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300">
@@ -88,16 +72,18 @@ export default function ServiceCard({
                     <span className="text-white font-bold text-xs">{index}</span>
                 </div>
 
-                {/* Favorite Button */}
+                {/* Favorite Button - Touch friendly (min 44px) */}
                 <button
                     onClick={handleFavoriteClick}
-                    className="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow hover:bg-white transition-colors group"
+                    className="absolute top-2 right-2 w-10 h-10 sm:w-9 sm:h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white hover:shadow-lg transition-all duration-200 group active:scale-95"
                     title={isFav ? 'Favorilerden çıkar' : 'Favorilere ekle'}
+                    aria-label={isFav ? 'Favorilerden çıkar' : 'Favorilere ekle'}
+                    aria-pressed={isFav}
                 >
-                    <svg 
-                        className={`w-4 h-4 transition-colors ${isFav ? 'text-red-500 fill-red-500' : 'text-gray-400 group-hover:text-red-400'}`}
+                    <svg
+                        className={`w-5 h-5 transition-all duration-200 ${isFav ? 'text-red-500 fill-red-500 scale-110' : 'text-gray-400 group-hover:text-red-400 group-hover:scale-110'}`}
                         fill={isFav ? 'currentColor' : 'none'}
-                        stroke="currentColor" 
+                        stroke="currentColor"
                         viewBox="0 0 24 24"
                     >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -119,67 +105,71 @@ export default function ServiceCard({
                 )}
             </div>
 
-            {/* Service Info - Compact */}
-            <div className="p-3">
+            {/* Service Info */}
+            <div className="p-4">
                 {/* Name */}
-                <h3 className="text-sm font-bold text-gray-900 mb-1.5 line-clamp-1">
+                <h3 className="text-base font-bold text-gray-900 mb-2 line-clamp-1">
                     {service.name}
                 </h3>
 
-                {/* Rating - Compact */}
-                <div className="flex items-center gap-1.5 mb-2">
+                {/* Rating */}
+                <div className="flex items-center gap-2 mb-3">
                     <div className="flex items-center">
-                        <span className="text-sm font-bold text-gray-900 mr-0.5">
+                        <span className="text-base font-bold text-gray-900 mr-1">
                             {service.rating?.toFixed(1) || 'N/A'}
                         </span>
-                        <div className="flex">
+                        <div className="flex gap-0.5">
                             {[1, 2, 3, 4, 5].map((star) => (
                                 <svg
                                     key={star}
-                                    className={`w-3 h-3 ${service.rating && star <= service.rating
+                                    className={`w-4 h-4 ${service.rating && star <= service.rating
                                         ? 'text-yellow-400'
                                         : 'text-gray-300'
                                         }`}
                                     fill="currentColor"
                                     viewBox="0 0 20 20"
+                                    aria-hidden="true"
                                 >
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                 </svg>
                             ))}
                         </div>
                     </div>
-                    <span className="text-xs text-gray-600">
-                        ({service.rating_count || 0})
+                    <span className="text-sm text-gray-500">
+                        ({service.rating_count || 0} değerlendirme)
                     </span>
                 </div>
 
-                {/* Address - Compact */}
-                <div className="flex items-start gap-1.5 mb-2">
-                    <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                {/* Address */}
+                <div className="flex items-start gap-2 mb-3">
+                    <svg className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                         <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                     </svg>
-                    <p className="text-xs text-gray-600 line-clamp-1">{service.location}</p>
+                    <p className="text-sm text-gray-600 line-clamp-2">{service.location}</p>
                 </div>
 
-                {/* Open/Closed Status - Dynamic */}
-                <div className="mb-2">
+                {/* Open/Closed Status */}
+                <div className="mb-3">
                     {isOpen ? (
-                        <p className="text-xs">
+                        <p className="text-sm flex items-center gap-1.5">
+                            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                             <span className="text-green-600 font-semibold">Açık</span>
-                            {closingTime && <span className="text-gray-500"> · Kapanış: {closingTime}</span>}
+                            {closingTime && <span className="text-gray-500">· Kapanış: {closingTime}</span>}
                         </p>
                     ) : (
-                        <p className="text-xs">
+                        <p className="text-sm flex items-center gap-1.5">
+                            <span className="w-2 h-2 bg-red-500 rounded-full"></span>
                             <span className="text-red-600 font-semibold">Kapalı</span>
-                            {nextTime && <span className="text-gray-500"> · Açılış: {nextTime}</span>}
+                            {nextTime && <span className="text-gray-500">· Açılış: {nextTime}</span>}
                         </p>
                     )}
                 </div>
 
-                {/* Detail Button - Compact */}
-                <button 
+                {/* Detail Button - Touch friendly */}
+                <button
                     onClick={() => onDetailClick?.(service)}
-                    className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold py-2 text-sm rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
+                    className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold py-2.5 text-sm rounded-lg transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98]"
+                    aria-label={`${service.name} servisinin detaylı bilgilerini görüntüle`}
                 >
                     Detaylı Bilgi
                 </button>

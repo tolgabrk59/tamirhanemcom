@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { successResponse, errors, logError } from '@/lib/api-response';
 
 export async function POST(request: NextRequest) {
   try {
     const { message, history } = await request.json();
+
+    if (!message || typeof message !== 'string') {
+      return errors.badRequest('Mesaj gereklidir');
+    }
 
     // Pre-filter: Check if question is clearly non-automotive
     const lowerMessage = message.toLowerCase();
@@ -13,18 +18,17 @@ export async function POST(request: NextRequest) {
       'sağlık', 'doktor', 'ilaç', 'hastalık', 'grip', 'ateş'
     ];
 
-    const isNonAutomotive = nonAutomotiveKeywords.some(keyword => 
+    const isNonAutomotive = nonAutomotiveKeywords.some(keyword =>
       lowerMessage.includes(keyword)
     );
 
     if (isNonAutomotive) {
-      return NextResponse.json({ 
-        message: "Ben TamirHanem için özel tasarlanmış bir asistanım ve sadece araç bakımı, tamir ve arıza konularında yardımcı olabilirim. Aracınızla ilgili başka bir sorunuz var mı?" 
+      return successResponse({
+        message: "Ben TamirHanem için özel tasarlanmış bir asistanım ve sadece araç bakımı, tamir ve arıza konularında yardımcı olabilirim. Aracınızla ilgili başka bir sorunuz var mı?"
       });
     }
 
     // Pre-filter: Check if question requires login (personal/account-specific)
-    // But allow if user specified their car model (e.g., "Opel Astra için lastik öner")
     const personalKeywords = [
       'randevum', 'randevu al', 'randevu oluştur', 'randevu ver', 'randevu ayarla',
       'servis öner', 'yakın servis', 'servis bul', 'servis ara',
@@ -41,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     // Common car brands/models to detect if user specified their car
     const carBrands = [
-      'opel', 'ford', 'renault', 'fiat', 'volkswagen', 'vw', 'bmw', 'mercedes', 
+      'opel', 'ford', 'renault', 'fiat', 'volkswagen', 'vw', 'bmw', 'mercedes',
       'audi', 'toyota', 'honda', 'hyundai', 'kia', 'nissan', 'peugeot', 'citroen',
       'skoda', 'seat', 'mazda', 'suzuki', 'mitsubishi', 'volvo', 'dacia', 'jeep',
       'astra', 'focus', 'megane', 'clio', 'golf', 'passat', 'corolla', 'civic'
@@ -52,18 +56,18 @@ export async function POST(request: NextRequest) {
 
     // If question needs model but user didn't specify, ask for login
     if (needsModel && !hasCarModel) {
-      return NextResponse.json({ 
-        message: "Aracınıza özel öneriler için lütfen üye girişi yapınız. Giriş yaptıktan sonra aracınızın bilgilerini kaydedebilir ve size özel öneriler alabilirsiniz.\n\nAlternatif olarak, araç modelinizi belirterek genel öneriler alabilirsiniz. Örneğin: 'Opel Astra için lastik öner'" 
+      return successResponse({
+        message: "Aracınıza özel öneriler için lütfen üye girişi yapınız. Giriş yaptıktan sonra aracınızın bilgilerini kaydedebilir ve size özel öneriler alabilirsiniz.\n\nAlternatif olarak, araç modelinizi belirterek genel öneriler alabilirsiniz. Örneğin: 'Opel Astra için lastik öner'"
       });
     }
 
-    const isPersonalQuestion = personalKeywords.some(keyword => 
+    const isPersonalQuestion = personalKeywords.some(keyword =>
       lowerMessage.includes(keyword)
     );
 
     if (isPersonalQuestion) {
-      return NextResponse.json({ 
-        message: "Bu tür kişiselleştirilmiş hizmetler için lütfen üye girişi yapınız. Giriş yaptıktan sonra:\n\n• Randevu alabilir\n• Aracınıza özel öneriler alabilir\n• Yakınınızdaki servisleri görebilir\n• Fiyat teklifleri alabilir\n• Bakım geçmişinizi takip edebilirsiniz\n\nGenel araç bakımı ve arıza konularında size yardımcı olmaya devam edebilirim!" 
+      return successResponse({
+        message: "Bu tür kişiselleştirilmiş hizmetler için lütfen üye girişi yapınız. Giriş yaptıktan sonra:\n\n• Randevu alabilir\n• Aracınıza özel öneriler alabilir\n• Yakınınızdaki servisleri görebilir\n• Fiyat teklifleri alabilir\n• Bakım geçmişinizi takip edebilirsiniz\n\nGenel araç bakımı ve arıza konularında size yardımcı olmaya devam edebilirim!"
       });
     }
 
@@ -104,7 +108,7 @@ SEN YAPAY ZEKA OLDUĞUNU BELİRTME, TamirHanem asistanı olarak konuş.`;
 
     // Convert chat history to Gemini format
     const contents = [];
-    
+
     // If this is the first message, add system prompt as context
     if (!history || history.length === 0) {
       contents.push({
@@ -123,7 +127,7 @@ SEN YAPAY ZEKA OLDUĞUNU BELİRTME, TamirHanem asistanı olarak konuş.`;
           parts: [{ text: msg.content }]
         });
       }
-      
+
       // Add current user message
       contents.push({
         role: 'user',
@@ -135,13 +139,19 @@ SEN YAPAY ZEKA OLDUĞUNU BELİRTME, TamirHanem asistanı olarak konuş.`;
       contents,
       generationConfig: {
         temperature: 0.7,
-        maxOutputTokens: 1000, // Increased from 500 to 1000
+        maxOutputTokens: 1000,
       },
     };
 
     // Gemini API endpoint
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
-    
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      logError('Chat API', new Error('GEMINI_API_KEY not configured'));
+      return errors.serviceUnavailable('Sohbet servisi geçici olarak kullanılamıyor');
+    }
+
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
@@ -153,23 +163,20 @@ SEN YAPAY ZEKA OLDUĞUNU BELİRTME, TamirHanem asistanı olarak konuş.`;
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('Gemini API error:', JSON.stringify(data, null, 2));
-      throw new Error(`Gemini API error: ${data.error?.message || 'Unknown error'}`);
+      logError('Gemini API', new Error(JSON.stringify(data)));
+      return errors.badGateway('Yanıt alınamadı. Lütfen tekrar deneyin.');
     }
 
     if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-      console.error('Invalid Gemini response:', JSON.stringify(data, null, 2));
-      throw new Error('Invalid response from Gemini API');
+      logError('Gemini API', new Error('Invalid response structure'));
+      return errors.badGateway('Yanıt alınamadı. Lütfen tekrar deneyin.');
     }
 
     const aiMessage = data.candidates[0].content.parts[0].text;
 
-    return NextResponse.json({ message: aiMessage });
-  } catch (error: any) {
-    console.error('Chat API error:', error.message);
-    return NextResponse.json(
-      { error: 'Bir hata oluştu. Lütfen tekrar deneyin.' },
-      { status: 500 }
-    );
+    return successResponse({ message: aiMessage });
+  } catch (error) {
+    logError('Chat API', error);
+    return errors.internal('Bir hata oluştu. Lütfen tekrar deneyin.');
   }
 }

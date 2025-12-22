@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -9,6 +9,40 @@ export default function Header() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const pathname = usePathname();
   const isHomePage = pathname === '/';
+
+  // Mobile menu scroll lock
+  useEffect(() => {
+    if (isMenuOpen) {
+      // Prevent scrolling when menu is open
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = `-${window.scrollY}px`;
+    } else {
+      // Restore scrolling when menu is closed
+      const scrollY = document.body.style.top;
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      }
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+    };
+  }, [isMenuOpen]);
+
+  // Close menu on route change
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [pathname]);
 
   const navLinks = [
     { href: '/', label: 'Ana Sayfa' },
@@ -25,10 +59,12 @@ export default function Header() {
           title: 'Temel Bilgiler',
           items: [
             { href: '/arac/genel-bakis', label: 'Aracınıza Genel Bakış', desc: 'Aracınızın özelliklerini ve verilerini keşfedin' },
+            { href: '/arac-degeri', label: 'Araç Değeri Hesapla', desc: 'Aracınızın tahmini piyasa değerini öğrenin' },
             { href: '/arac/bakim-tavsiyeleri', label: 'Araç Bakımı Tavsiyeleri', desc: 'Uzman bakım önerileri ve ipuçları' },
             { href: '/arac/ansiklopedi', label: 'Araç Ansiklopedisi', desc: 'Otomotiv sistemleri hakkında detaylı bilgi' },
             { href: '/arac/yedek-parca', label: 'Parça Kütüphanesi', desc: 'Parça bilgileri ve fiyat karşılaştırması' },
             { href: '/arac/lastik-secimi', label: 'Lastik Seçimi', desc: 'Aracınıza uygun lastik bulun' },
+            { href: '/arac/ariza-lambalari', label: 'Araç Arıza Lambaları', desc: 'Gösterge paneli uyarı ışıklarının anlamları' },
           ]
         },
         {
@@ -54,6 +90,7 @@ export default function Header() {
             { href: '/karsilastirma/olustur', label: 'Araba Karşılaştır', desc: 'İki aracı yan yana kıyaslayın (AI)' },
             { href: '/guvenilirlik', label: 'Güvenilirlik Derecelendirmeleri', desc: 'Marka ve model istatistikleri' },
             { href: '/arac/workshop-kilavuzlari', label: 'Workshop Kılavuzları', desc: 'Teknik dökümanlar ve tamir prosedürleri' },
+            { href: '/arac/videolar', label: 'Video İçerik Merkezi', desc: 'Kendin yap video rehberleri' },
           ]
         }
       ]
@@ -157,7 +194,7 @@ export default function Header() {
                                         {item.label}
                                       </p>
                                       {'desc' in item && (
-                                        <p className="text-xs text-secondary-400">{item.desc}</p>
+                                        <p className="text-xs text-secondary-500">{item.desc}</p>
                                       )}
                                     </div>
                                   </Link>

@@ -1,80 +1,96 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { waitlistSchema, validateRequest, formatValidationErrors } from '@/lib/validation';
+import { successResponse, errors, logError } from '@/lib/api-response';
 
 const STRAPI_API = process.env.STRAPI_API_URL || 'https://api.tamirhanem.net/api';
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
 
 export async function POST(request: NextRequest) {
-    try {
-        const body = await request.json();
-        const { email, phone, name } = body;
+  try {
+    const body = await request.json();
 
-        if (!email) {
-            return NextResponse.json(
-                { error: 'Email is required' },
-                { status: 400 }
-            );
-        }
+    // Validate input with Zod
+    const validation = validateRequest(waitlistSchema, body);
 
-        // Server-side token ile email kontrolü (Strapi'de find public değil)
-        const checkResponse = await fetch(
-            `${STRAPI_API}/waitinglists?filters[email][$eq]=${encodeURIComponent(email)}`,
-            { 
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(STRAPI_TOKEN && { 'Authorization': `Bearer ${STRAPI_TOKEN}` })
-                },
-                cache: 'no-store' 
-            }
-        );
-
-        if (checkResponse.ok) {
-            const checkData = await checkResponse.json();
-            if (checkData.data && checkData.data.length > 0) {
-                return NextResponse.json(
-                    { message: 'Already registered', success: true },
-                    { status: 200 }
-                );
-            }
-        }
-
-        // Strapi'ye yeni kayıt ekle (token ile)
-        const createResponse = await fetch(`${STRAPI_API}/waitinglists`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(STRAPI_TOKEN && { 'Authorization': `Bearer ${STRAPI_TOKEN}` })
-            },
-            body: JSON.stringify({
-                data: {
-                    email,
-                    phone: phone || null,
-                    name: name || null,
-                }
-            })
-        });
-
-        if (!createResponse.ok) {
-            const errorText = await createResponse.text();
-            console.error('Strapi waitlist create error:', errorText);
-            
-            // Kullanıcıya hata gösterme, log'a yaz
-            console.log('Waitlist kayıt (fallback):', { email, phone, name });
-            
-            return NextResponse.json(
-                { message: 'Successfully added to waitlist', success: true },
-                { status: 200 }
-            );
-        }
-
-        return NextResponse.json(
-            { message: 'Successfully added to waitlist', success: true },
-            { status: 200 }
-        );
-    } catch (error) {
-        console.error('Waitlist API error:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+    if (!validation.success) {
+      return errors.validation(formatValidationErrors(validation.errors));
     }
+
+    const { email, phone, name } = validation.data;
+
+    // Normalize email for consistent checks
+    const normalizedEmail = email?.toLowerCase().trim();
+
+    if (!normalizedEmail) {
+      return errors.badRequest('E-posta adresi gereklidir');
+    }
+
+    // Check if already registered
+    const checkResponse = await fetch(
+      `${STRAPI_API}/waitinglists?filters[email][$eq]=${encodeURIComponent(normalizedEmail)}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(STRAPI_TOKEN && { Authorization: `Bearer ${STRAPI_TOKEN}` }),
+        },
+        cache: 'no-store',
+      }
+    );
+
+    if (checkResponse.ok) {
+      const checkData = await checkResponse.json();
+      if (checkData.data && checkData.data.length > 0) {
+        return successResponse({
+          message: 'Bu e-posta adresi zaten kayıtlı',
+          alreadyRegistered: true,
+        });
+      }
+    }
+
+    // Normalize phone if provided
+    let normalizedPhone = phone?.replace(/[\s\-\(\)]/g, '') || null;
+    if (normalizedPhone) {
+      if (normalizedPhone.startsWith('0')) {
+        normalizedPhone = '+90' + normalizedPhone.slice(1);
+      } else if (!normalizedPhone.startsWith('+90')) {
+        normalizedPhone = '+90' + normalizedPhone;
+      }
+    }
+
+    // Create new registration
+    const createResponse = await fetch(`${STRAPI_API}/waitinglists`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(STRAPI_TOKEN && { Authorization: `Bearer ${STRAPI_TOKEN}` }),
+      },
+      body: JSON.stringify({
+        data: {
+          email: normalizedEmail,
+          phone: normalizedPhone,
+          name: name?.trim() || null,
+        },
+      }),
+    });
+
+    if (!createResponse.ok) {
+      const errorText = await createResponse.text();
+      logError('Strapi waitlist create', new Error(errorText));
+
+      // Log for manual processing
+      console.log('Waitlist kayıt (fallback):', { email: normalizedEmail, phone: normalizedPhone, name });
+
+      // Don't expose error to user
+      return successResponse({
+        message: 'Bekleme listesine başarıyla eklendiniz',
+      });
+    }
+
+    return successResponse({
+      message: 'Bekleme listesine başarıyla eklendiniz',
+    });
+  } catch (error) {
+    logError('Waitlist API', error);
+    return errors.internal('Kayıt oluşturulamadı');
+  }
 }

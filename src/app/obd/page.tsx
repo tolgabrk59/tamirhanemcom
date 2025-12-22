@@ -108,7 +108,7 @@ export default function ObdPage() {
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                 ) : (
-                  <svg className="w-6 h-6 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 )}
@@ -283,7 +283,7 @@ function ObdResultCard({ obd, compact = false }: { obd: ObdCode; compact?: boole
             <div className="text-2xl font-bold text-primary-600">
               {avgCost.toLocaleString('tr-TR')} ₺
             </div>
-            <div className="text-xs text-secondary-400">
+            <div className="text-xs text-secondary-500">
               {obd.estimatedCostMin?.toLocaleString('tr-TR')} - {obd.estimatedCostMax?.toLocaleString('tr-TR')} ₺
             </div>
           </div>

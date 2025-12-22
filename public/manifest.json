@@ -1,0 +1,71 @@
+{
+  "name": "TamirHanem - Araç Bakım ve Onarım Platformu",
+  "short_name": "TamirHanem",
+  "description": "Aracınız için güvenilir hizmeti birkaç adımda bulun. Şeffaf fiyatlandırma, izlenebilir geçmiş ve kalite güvenceli hizmet.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "tr",
+  "categories": ["auto", "automotive", "business", "utilities"],
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/og-image.jpg",
+      "sizes": "1200x630",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "TamirHanem Ana Sayfa"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Servis Bul",
+      "short_name": "Servisler",
+      "description": "Yakınındaki servisleri bul",
+      "url": "/servisler",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "OBD Kodları",
+      "short_name": "OBD",
+      "description": "Arıza kodlarını sorgula",
+      "url": "/obd",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "AI Arıza Tespit",
+      "short_name": "AI Tespit",
+      "description": "Yapay zeka ile arıza tespit",
+      "url": "/ai/ariza-tespit",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
