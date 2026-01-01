@@ -1,3 +1,7 @@
+---
+description: "Projeyi derle, hataları kontrol et ve Vercel'e deploy et"
+---
+
 # Build ve Deploy
 
 Projeyi derle, hataları kontrol et ve Vercel'e deploy et.

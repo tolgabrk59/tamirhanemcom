@@ -1,3 +1,7 @@
+---
+description: "AI chatbot system prompt'unu güncelle veya yeni konu ekle"
+---
+
 # Chatbot Prompt Güncelle
 
 AI chatbot (Gemini) system prompt'unu güncelle veya yeni konu alanı ekle.

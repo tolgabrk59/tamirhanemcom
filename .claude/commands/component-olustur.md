@@ -1,3 +1,7 @@
+---
+description: "TamirHanem stil rehberine uygun React component oluştur"
+---
+
 # Component Oluştur
 
 TamirHanem stil rehberine uygun React component oluştur.

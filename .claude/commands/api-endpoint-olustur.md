@@ -1,3 +1,7 @@
+---
+description: "Strapi entegrasyonlu Next.js API endpoint oluştur"
+---
+
 # API Endpoint Oluştur
 
 Yeni bir Next.js API Route Handler oluştur (Strapi entegrasyonu ile).

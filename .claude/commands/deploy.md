@@ -1,3 +1,7 @@
+---
+description: "Git kullanmadan doğrudan Vercel'e deploy et"
+---
+
 # Deploy to Vercel
 
 Projeyi git kullanmadan doğrudan Vercel CLI ile deploy et.

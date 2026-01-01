@@ -1,3 +1,7 @@
+---
+description: "SEO meta tag'leri ile yeni sayfa route'u oluştur"
+---
+
 # Sayfa Ekle
 
 Yeni bir sayfa route'u oluştur (SEO meta tags ile).

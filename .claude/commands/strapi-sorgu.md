@@ -1,3 +1,7 @@
+---
+description: "Strapi CMS'den veri çekmek için fetch fonksiyonu oluştur"
+---
+
 # Strapi Sorgu
 
 Strapi CMS'den veri çekmek için hazır fetch fonksiyonu oluştur.

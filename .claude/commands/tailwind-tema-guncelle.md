@@ -1,3 +1,7 @@
+---
+description: "TamirHanem marka renkleri ve tema ayarlarını güncelle"
+---
+
 # Tailwind Tema Güncelle
 
 TamirHanem marka renklerini ve tema ayarlarını güncelle.
