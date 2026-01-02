@@ -3,6 +3,7 @@ import { Inter, Dancing_Script } from 'next/font/google';
 import './globals.css';
 import dynamic from 'next/dynamic';
 import Footer from '@/components/Footer';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const Header = dynamic(() => import('@/components/Header'), { ssr: false });
 const ChatWidget = dynamic(() => import('@/components/ChatWidget'), { ssr: false });
@@ -100,6 +101,7 @@ export default function RootLayout({
           <Footer />
         </div>
         <ChatWidget />
+        <SpeedInsights />
       </body>
     </html>
   );
