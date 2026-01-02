@@ -62,10 +62,10 @@ export default function ChatWidget() {
 
       setMessages([...newMessages, { role: 'assistant', content: data.message }]);
     } catch (error) {
-      console.error('Chat error:', error);
-      setMessages([...newMessages, { 
-        role: 'assistant', 
-        content: 'Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.' 
+      console.error('[ChatWidget] Chat error:', error);
+      setMessages([...newMessages, {
+        role: 'assistant',
+        content: 'Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.'
       }]);
     } finally {
       setIsLoading(false);
@@ -157,10 +157,10 @@ export default function ChatWidget() {
         </div>
       )}
 
-      {/* Floating Button */}
+      {/* Floating Button - positioned above FixedSearchBar */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-full shadow-2xl hover:shadow-primary-500/50 hover:scale-110 transition-all duration-300 flex items-center justify-center z-50 group"
+        className="fixed bottom-36 sm:bottom-24 right-6 w-14 h-14 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-full shadow-2xl hover:shadow-primary-500/50 hover:scale-110 transition-all duration-300 flex items-center justify-center z-50 group"
         aria-label="AI Asistan"
       >
         {isOpen ? (

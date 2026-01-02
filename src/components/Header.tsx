@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [openMobileSubmenu, setOpenMobileSubmenu] = useState<string | null>(null);
   const pathname = usePathname();
   const isHomePage = pathname === '/';
 
@@ -42,6 +43,7 @@ export default function Header() {
   // Close menu on route change
   useEffect(() => {
     setIsMenuOpen(false);
+    setOpenMobileSubmenu(null);
   }, [pathname]);
 
   const navLinks = [
@@ -65,6 +67,7 @@ export default function Header() {
             { href: '/arac/yedek-parca', label: 'Parça Kütüphanesi', desc: 'Parça bilgileri ve fiyat karşılaştırması' },
             { href: '/arac/lastik-secimi', label: 'Lastik Seçimi', desc: 'Aracınıza uygun lastik bulun' },
             { href: '/arac/ariza-lambalari', label: 'Araç Arıza Lambaları', desc: 'Gösterge paneli uyarı ışıklarının anlamları' },
+            { href: '/sarj-istasyonlari', label: 'Şarj İstasyonları', desc: 'Elektrikli araç şarj noktalarını bulun' },
           ]
         },
         {
@@ -125,10 +128,10 @@ export default function Header() {
       <div className="w-full px-4 sm:px-6 lg:px-10">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
-            <span className="text-3xl font-extrabold tracking-tight hover:opacity-90 transition-opacity">
+          <Link href="/" className="flex items-center mt-1">
+            <span className="text-3xl font-extrabold tracking-tight hover:opacity-90 transition-opacity font-[family-name:var(--font-jakarta)]">
               <span className="text-[#454545]">tamirhane</span>
-              <span className={isHomePage ? 'text-white' : 'text-primary-600'}>m</span>
+              <span className="text-[#454545]">m</span>
             </span>
           </Link>
 
@@ -230,7 +233,7 @@ export default function Header() {
                 <div className="bg-white rounded-xl shadow-xl border border-gray-100 p-4 w-64">
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">Hesap Türü Seçin</p>
 
-                  <a href="https://tamirhanem.net/login.html" className="flex items-center gap-3 p-3 rounded-lg hover:bg-primary-50 transition-colors group/item">
+                  <a href="https://app.tamirhanem.com/login.html" className="flex items-center gap-3 p-3 rounded-lg hover:bg-primary-50 transition-colors group/item">
                     <div className="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
                       <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -242,7 +245,7 @@ export default function Header() {
                     </div>
                   </a>
 
-                  <a href="https://tamirhanem.net/esnaf-login.html" className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary-50 transition-colors group/item mt-1">
+                  <a href="https://app.tamirhanem.com/esnaf-login.html" className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary-50 transition-colors group/item mt-1">
                     <div className="w-10 h-10 bg-secondary-100 rounded-lg flex items-center justify-center">
                       <svg className="w-5 h-5 text-secondary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -258,7 +261,7 @@ export default function Header() {
             </div>
 
             {/* Kayıt Ol Button */}
-            <a href="https://tamirhanem.net/register.html" className="bg-secondary-900 text-white px-4 py-2 rounded-lg font-medium text-sm hover:bg-secondary-800 transition-colors">
+            <a href="https://app.tamirhanem.com/register.html" className="bg-secondary-900 text-white px-4 py-2 rounded-lg font-medium text-sm hover:bg-secondary-800 transition-colors">
               Kayıt Ol
             </a>
           </div>
@@ -276,7 +279,7 @@ export default function Header() {
             aria-expanded={isMenuOpen}
             style={{ WebkitTapHighlightColor: 'transparent' }}
           >
-            <svg className={`w-7 h-7 pointer-events-none ${isHomePage ? 'text-white' : 'text-[#454545]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-7 h-7 pointer-events-none text-[#454545]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {isMenuOpen ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
@@ -305,25 +308,74 @@ export default function Header() {
 
             {Object.entries(megaMenus).map(([key, menu]) => (
               <div key={key} className="border-t border-primary-500 pt-3 mt-3">
-                <p className="text-white font-semibold px-3 mb-2">{menu.title}</p>
-                {menu.columns.map((column, idx) => (
-                  <div key={idx} className="mb-3">
-                    <p className="text-primary-200 text-xs font-bold uppercase px-3 mb-1">{column.title}</p>
-                    {column.items.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="flex items-center gap-2 text-primary-50 hover:bg-primary-500 px-3 py-2 rounded-lg text-sm"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setOpenMobileSubmenu(openMobileSubmenu === key ? null : key);
+                  }}
+                  className="w-full flex items-center justify-between text-white font-semibold px-3 py-2 rounded-lg hover:bg-primary-500 active:bg-primary-700 transition-colors touch-manipulation"
+                  style={{ WebkitTapHighlightColor: 'transparent' }}
+                >
+                  <span className="flex items-center gap-2">
+                    {key === 'aracim' && (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                      </svg>
+                    )}
+                    {key === 'rehber' && (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                    )}
+                    {key === 'asistan' && (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    )}
+                    {menu.title}
+                  </span>
+                  <svg
+                    className={`w-5 h-5 transition-transform duration-200 ${openMobileSubmenu === key ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
 
-                        <MenuIcon className="text-primary-200" />
-
-                        {item.label}
-                      </Link>
+                {/* Submenu Content - Accordion */}
+                <div
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                    openMobileSubmenu === key ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
+                  }`}
+                >
+                  <div className="pt-2 pb-1">
+                    {menu.columns.map((column, idx) => (
+                      <div key={idx} className="mb-3">
+                        <p className="text-primary-200 text-xs font-bold uppercase px-3 mb-1">{column.title}</p>
+                        {column.items.map((item) => (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            className="flex items-center gap-2 text-primary-50 hover:bg-primary-500 active:bg-primary-700 px-3 py-2.5 rounded-lg text-sm transition-colors touch-manipulation"
+                            onClick={() => {
+                              setIsMenuOpen(false);
+                              setOpenMobileSubmenu(null);
+                            }}
+                            style={{ WebkitTapHighlightColor: 'transparent' }}
+                          >
+                            <MenuIcon className="text-primary-200" />
+                            {item.label}
+                          </Link>
+                        ))}
+                      </div>
                     ))}
                   </div>
-                ))}
+                </div>
               </div>
             ))}
 
@@ -333,10 +385,10 @@ export default function Header() {
               <div className="bg-white/10 rounded-lg p-3">
                 <p className="text-white text-xs font-semibold mb-2">Araç Sahibi misin?</p>
                 <div className="flex gap-2">
-                  <a href="https://tamirhanem.net/login.html" className="flex-1 bg-white text-[#454545] px-3 py-2 rounded-lg font-medium text-center text-sm" onClick={() => setIsMenuOpen(false)}>
+                  <a href="https://app.tamirhanem.com/login.html" className="flex-1 bg-white text-[#454545] px-3 py-2 rounded-lg font-medium text-center text-sm" onClick={() => setIsMenuOpen(false)}>
                     Giriş
                   </a>
-                  <a href="https://tamirhanem.net/register.html" className="flex-1 bg-primary-700 text-white px-3 py-2 rounded-lg font-medium text-center text-sm" onClick={() => setIsMenuOpen(false)}>
+                  <a href="https://app.tamirhanem.com/register.html" className="flex-1 bg-primary-700 text-white px-3 py-2 rounded-lg font-medium text-center text-sm" onClick={() => setIsMenuOpen(false)}>
                     Kayıt
                   </a>
                 </div>
@@ -346,10 +398,10 @@ export default function Header() {
               <div className="bg-secondary-900/50 rounded-lg p-3">
                 <p className="text-white text-xs font-semibold mb-2">Esnaf mısın?</p>
                 <div className="flex gap-2">
-                  <a href="https://tamirhanem.net/esnaf-login.html" className="flex-1 bg-white text-[#454545] px-3 py-2 rounded-lg font-medium text-center text-sm" onClick={() => setIsMenuOpen(false)}>
+                  <a href="https://app.tamirhanem.com/esnaf-login.html" className="flex-1 bg-white text-[#454545] px-3 py-2 rounded-lg font-medium text-center text-sm" onClick={() => setIsMenuOpen(false)}>
                     Giriş
                   </a>
-                  <a href="https://tamirhanem.net/esnaf-register.html" className="flex-1 bg-secondary-700 text-white px-3 py-2 rounded-lg font-medium text-center text-sm" onClick={() => setIsMenuOpen(false)}>
+                  <a href="https://app.tamirhanem.com/esnaf-register.html" className="flex-1 bg-secondary-700 text-white px-3 py-2 rounded-lg font-medium text-center text-sm" onClick={() => setIsMenuOpen(false)}>
                     Kayıt
                   </a>
                 </div>
