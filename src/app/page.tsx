@@ -12,15 +12,15 @@ import { categoriesData } from '@/data/categories';
 import type { Category } from '@/types';
 import { createLogger } from '@/lib/logger';
 
-// Dynamic imports - Mobile-first optimization
-// Load lightweight mobile version by default, 3D only on desktop
-const HeroSection3D = dynamic(() => import('@/components/HeroSection3D'), {
+// Dynamic imports - Use standard HeroSection for desktop (3D causing issues)
+// Load lightweight mobile version on mobile devices
+const HeroSection = dynamic(() => import('@/components/HeroSection'), {
   ssr: false,
   loading: () => (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center">
       <div className="text-center">
         <div className="w-16 h-16 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-gray-400">3D deneyim yukleniyor...</p>
+        <p className="text-gray-400">Yükleniyor...</p>
       </div>
     </div>
   ),
@@ -86,12 +86,12 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Hero Section - Mobile-First: Lightweight on mobile, 3D on desktop */}
+      {/* Hero Section - Mobile-First: Lightweight on mobile, standard on desktop */}
       <div className="md:hidden">
         <HeroSectionMobile />
       </div>
       <div className="hidden md:block">
-        <HeroSection3D />
+        <HeroSection />
       </div>
 
       {/* Features Section - Light Theme - Hidden on Mobile */}
