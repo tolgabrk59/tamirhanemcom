@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TamirHanem - Davet</title>
+    <link rel="icon" type="image/png" href="favicon/favicon-32x32.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #FBC300 0%, #E5A800 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo svg {
+            width: 50px;
+            height: 50px;
+            fill: white;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .invite-text {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .referrer-name {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .reward-badge {
+            background: linear-gradient(135deg, #00D4AA 0%, #00B894 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }
+
+        .reward-badge .amount {
+            font-size: 32px;
+            font-weight: 800;
+        }
+
+        .reward-badge .text {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .code-box {
+            background: #f5f5f5;
+            border: 2px dashed #ddd;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+
+        .code-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .code-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            letter-spacing: 2px;
+        }
+
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #5a6fd6;
+        }
+
+        .copy-btn.copied {
+            background: #00D4AA;
+        }
+
+        .store-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .store-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+
+        .store-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .store-btn.ios {
+            background: #000;
+        }
+
+        .store-btn.android {
+            background: #00C853;
+        }
+
+        .store-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #eee;
+        }
+
+        .divider span {
+            padding: 0 15px;
+        }
+
+        .web-register {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .web-register:hover {
+            text-decoration: underline;
+        }
+
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-container {
+            text-align: center;
+        }
+
+        .error-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .error-text {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .home-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .steps {
+            text-align: left;
+            background: #f9f9f9;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .steps-title {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Davet kontrol ediliyor...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="error-container hidden">
+            <div class="error-icon">😕</div>
+            <h1>Geçersiz Davet Kodu</h1>
+            <p class="error-text">Bu davet linki geçerli değil veya süresi dolmuş olabilir.</p>
+            <a href="/" class="home-btn">Ana Sayfaya Git</a>
+        </div>
+
+        <!-- Success State -->
+        <div id="success" class="hidden">
+            <div class="logo">
+                <svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>
+            </div>
+
+            <h1>TamirHanem'e Hoş Geldin!</h1>
+            <p class="invite-text">
+                <span class="referrer-name" id="referrerName">-</span> seni davet etti
+            </p>
+
+            <div class="reward-badge">
+                <div class="amount">50₺</div>
+                <div class="text">İlk yıkamanda cüzdanına yüklenecek!</div>
+            </div>
+
+            <div class="code-box">
+                <div class="code-label">Davet Kodu</div>
+                <div class="code-value" id="codeDisplay">-</div>
+                <button class="copy-btn" onclick="copyCode()">📋 Kopyala</button>
+            </div>
+
+            <div class="steps">
+                <div class="steps-title">Nasıl Kullanırım?</div>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <span>Uygulamayı indir</span>
+                </div>
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <span>Kayıt ol ve davet kodunu gir</span>
+                </div>
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <span>İlk yıkamanı yap, 50₺ kazan!</span>
+                </div>
+            </div>
+
+            <div class="store-buttons">
+                <a href="https://apps.apple.com/app/tamirhanem/id123456789" class="store-btn ios" id="iosBtn">
+                    <svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                    App Store
+                </a>
+                <a href="https://play.google.com/store/apps/details?id=com.rapsodi1.appoinxapp" class="store-btn android" id="androidBtn">
+                    <svg viewBox="0 0 24 24"><path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/></svg>
+                    Play Store
+                </a>
+            </div>
+
+            <div class="divider"><span>veya</span></div>
+
+            <a href="/register.html" class="web-register" id="webRegisterLink">Web üzerinden kayıt ol →</a>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://api.tamirhanem.net/api';
+        let referralCode = '';
+
+        // URL'den referral kodunu al
+        function getReferralCode() {
+            const path = window.location.pathname;
+            const match = path.match(/\/ref\/([A-Za-z0-9]+)/);
+            if (match) return match[1].toUpperCase();
+
+            // Query string'den de kontrol et
+            const params = new URLSearchParams(window.location.search);
+            return params.get('code')?.toUpperCase() || '';
+        }
+
+        // Referral kodunu doğrula
+        async function validateCode(code) {
+            try {
+                const response = await fetch(`${API_URL}/referrals/validate/${code}`);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Validation error:', error);
+                return { valid: false };
+            }
+        }
+
+        // Kodu clipboard'a kopyala
+        async function copyCode() {
+            try {
+                await navigator.clipboard.writeText(referralCode);
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = '✓ Kopyalandı!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = '📋 Kopyala';
+                    btn.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = referralCode;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('Kod kopyalandı: ' + referralCode);
+            }
+        }
+
+        // Cihaz tipini algıla
+        function detectDevice() {
+            const ua = navigator.userAgent;
+            if (/iPad|iPhone|iPod/.test(ua)) return 'ios';
+            if (/android/i.test(ua)) return 'android';
+            return 'desktop';
+        }
+
+        // Sayfa yüklendiğinde
+        async function init() {
+            referralCode = getReferralCode();
+
+            if (!referralCode) {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('error').classList.remove('hidden');
+                return;
+            }
+
+            // Kodu localStorage'a kaydet
+            localStorage.setItem('referral_code', referralCode);
+
+            // API'den doğrula
+            const result = await validateCode(referralCode);
+
+            document.getElementById('loading').classList.add('hidden');
+
+            if (result.valid) {
+                document.getElementById('success').classList.remove('hidden');
+                document.getElementById('referrerName').textContent = result.referrer_name || 'Bir arkadaşın';
+                document.getElementById('codeDisplay').textContent = referralCode;
+
+                // Web register linkine kodu ekle
+                document.getElementById('webRegisterLink').href = `/register.html?ref=${referralCode}`;
+
+                // Cihaza göre butonları vurgula
+                const device = detectDevice();
+                if (device === 'ios') {
+                    document.getElementById('iosBtn').style.transform = 'scale(1.05)';
+                    document.getElementById('iosBtn').style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+                } else if (device === 'android') {
+                    document.getElementById('androidBtn').style.transform = 'scale(1.05)';
+                    document.getElementById('androidBtn').style.boxShadow = '0 4px 15px rgba(0,200,83,0.3)';
+                }
+
+                // Otomatik kopyalama dene
+                try {
+                    await navigator.clipboard.writeText(referralCode);
+                    console.log('Referral code copied to clipboard');
+                } catch (e) {
+                    console.log('Auto-copy not available');
+                }
+            } else {
+                document.getElementById('error').classList.remove('hidden');
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
