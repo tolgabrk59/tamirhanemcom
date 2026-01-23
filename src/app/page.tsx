@@ -122,8 +122,8 @@ export default async function HomePage() {
           <div className="lg:max-w-[45%]">
             {/* Left Side - Content & Features */}
             <div>
-              {/* Typewriter Kategori Yazısı - Badge'in üstünde */}
-              <div className="-mt-24 mb-6">
+              {/* Typewriter Kategori Yazısı */}
+              <div className="mb-6">
                 <ServiceCategoriesMarquee />
               </div>
 
