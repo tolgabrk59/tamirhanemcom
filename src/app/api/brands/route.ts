@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
+import { createLogger } from '@/lib/logger';
 
-const STRAPI_API = 'https://api.tamirhanem.net/api/arac-dataveri';
+const logger = createLogger('API_BRANDS');
+
+export const dynamic = 'force-dynamic';
+
+const STRAPI_API = 'https://api.tamirhanem.com/api/arac-dataveri';
 
 // Türkiye pazarında olmayan veya pasif edilecek OTOMOBİL markaları
 // (Kamyon, otobüs, ticari araç markaları da dahil)
@@ -203,10 +208,10 @@ export async function GET(request: Request) {
         
         // Frontend { brand: string } bekliyor
         const formattedBrands = brands.map((b: string) => ({ brand: b }));
-        
+
         return NextResponse.json({ success: true, data: formattedBrands });
     } catch (error) {
-        console.error('Strapi API Error:', error);
+        logger.error({ error }, 'Strapi API Error');
         return NextResponse.json(
             { success: false, error: 'Markalar yüklenemedi' },
             { status: 500 }

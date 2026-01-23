@@ -2,7 +2,7 @@
 
 import { Suspense, useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera, Environment, ContactShadows, Html, useGLTF, Center } from '@react-three/drei';
+import { OrbitControls, PerspectiveCamera, ContactShadows, Html, useGLTF, Center } from '@react-three/drei';
 import Link from 'next/link';
 import * as THREE from 'three';
 
@@ -35,12 +35,7 @@ function PorscheModel({ hoveredPart, setHoveredPart }: { hoveredPart: string | n
   // Clone the scene to avoid sharing materials
   const clonedScene = scene.clone();
   
-  // Auto rotation when not hovering
-  useFrame(() => {
-    if (groupRef.current && !hoveredPart) {
-      groupRef.current.rotation.y += 0.002;
-    }
-  });
+  // No auto rotation - user can manually rotate
 
   // Apply materials and settings to the model
   useEffect(() => {
@@ -226,10 +221,10 @@ export default function Car3DViewer() {
               />
               <pointLight position={[5, 2, 0]} intensity={0.3} color="#FCD34D" />
               <pointLight position={[-5, 2, 0]} intensity={0.3} color="#60A5FA" />
-              
-              {/* HDR Environment for realistic reflections */}
-              <Environment preset="city" />
-              
+
+              {/* Simple hemisphere light instead of external HDR */}
+              <hemisphereLight intensity={0.6} groundColor="#1a1a2e" />
+
               {/* Porsche Model */}
               <PorscheModel hoveredPart={hoveredPart} setHoveredPart={setHoveredPart} />
               
@@ -250,8 +245,8 @@ export default function Car3DViewer() {
                 maxDistance={12}
                 minPolarAngle={Math.PI / 6}
                 maxPolarAngle={Math.PI / 2.1}
-                autoRotate={!hoveredPart}
-                autoRotateSpeed={0.8}
+                autoRotate={false}
+                autoRotateSpeed={0}
               />
             </Canvas>
           </Suspense>

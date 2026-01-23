@@ -145,8 +145,8 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         };
 
         const sizes = {
-            sm: 'w-8 h-8 min-w-[32px] min-h-[32px]',
-            md: 'w-10 h-10 min-w-[44px] min-h-[44px]',
+            sm: 'w-11 h-11 min-w-[44px] min-h-[44px]',
+            md: 'w-11 h-11 min-w-[44px] min-h-[44px]',
             lg: 'w-12 h-12 min-w-[48px] min-h-[48px]',
         };
 

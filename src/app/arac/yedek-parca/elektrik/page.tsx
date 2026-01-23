@@ -75,18 +75,26 @@ export default function ElectricalPartsPage() {
         <div className="bg-secondary-50 min-h-screen">
 
             {/* Hero Section */}
-            <section className="bg-gradient-to-r from-yellow-600 to-yellow-700 text-white py-16">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
-                            <PartIcon type="bulb" className="w-10 h-10 text-white" />
+            <section className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-secondary-600 text-white py-20 overflow-hidden">
+                <div
+                    className="absolute inset-0 bg-cover bg-center opacity-10"
+                    style={{
+                        backgroundImage: 'url(/hero_service_background.png)',
+                        backgroundPosition: 'center',
+                        backgroundSize: 'cover'
+                    }}
+                ></div>
+                
+                <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-3xl">
+                        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+                            <PartIcon type="bulb" className="w-5 h-5" />
+                            <span className="text-sm font-semibold">Yedek Parça Rehberi</span>
                         </div>
-                        <div>
-                            <h1 className="text-4xl md:text-5xl font-bold">Elektrik & Aydınlatma</h1>
-                            <p className="text-xl text-yellow-100 mt-2">
-                                Aracınızın elektrik ve aydınlatma sistemi bileşenleri
-                            </p>
-                        </div>
+                        <h1 className="text-4xl md:text-5xl font-bold mb-4">Elektrik & Aydınlatma</h1>
+                        <p className="text-xl text-primary-100 mb-6">
+                            Aracınızın elektrik ve aydınlatma sistemi bileşenleri hakkında detaylı bilgi.
+                        </p>
                     </div>
                 </div>
             </section>

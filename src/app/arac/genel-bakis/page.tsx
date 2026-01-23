@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { vehicleYears } from '@/data/vehicles';
+import { Icon } from '@/components/ui/Icons';
 
 interface Brand {
     brand: string;
@@ -151,25 +152,25 @@ export default function VehicleOverviewPage() {
         {
             title: 'Kronik Sorunlar',
             desc: 'Her aracın kendine has problemleri vardır. Aracınızın sık karşılaşılan arızalarını öğrenin.',
-            icon: '⚠️',
+            icon: 'warning',
             link: '/kronik-sorunlar'
         },
         {
             title: 'Bakım Maliyetleri',
             desc: 'Yıllık ortalama bakım masrafları ve parça fiyatları hakkında bilgi edinin.',
-            icon: '💰',
+            icon: 'money',
             link: '/fiyat-hesapla'
         },
         {
             title: 'Geri Çağırmalar',
             desc: 'Güvenliğiniz için üretici tarafından yayınlanan geri çağırma bildirimlerini kontrol edin.',
-            icon: '🚨',
+            icon: 'alert',
             link: '/geri-cagrima'
         },
         {
             title: 'Kullanıcı Yorumları',
             desc: 'Diğer araç sahiplerinin deneyimlerini ve tavsiyelerini okuyun.',
-            icon: '💬',
+            icon: 'chat',
             link: '/incelemeler'
         }
     ];
@@ -251,9 +252,9 @@ export default function VehicleOverviewPage() {
 
                                     {/* Validation Warning Banner */}
                                     {isValidating && (
-                                        <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-xl">
-                                            <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                                            <span className="text-sm text-blue-700">Araç bilgisi doğrulanıyor...</span>
+                                        <div className="flex items-center gap-2 p-3 bg-primary-50 border border-primary-200 rounded-xl">
+                                            <div className="w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+                                            <span className="text-sm text-primary-700">Araç bilgisi doğrulanıyor...</span>
                                         </div>
                                     )}
 
@@ -374,7 +375,9 @@ export default function VehicleOverviewPage() {
                                 href={card.link}
                                 className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all group border-b-4 border-transparent hover:border-primary-500"
                             >
-                                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">{card.icon}</div>
+                                <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                                    <Icon id={card.icon} className="w-6 h-6" color="#FBC91D" />
+                                </div>
                                 <h3 className="text-xl font-bold text-secondary-900 mb-2">{card.title}</h3>
                                 <p className="text-secondary-500 text-sm">{card.desc}</p>
                             </Link>

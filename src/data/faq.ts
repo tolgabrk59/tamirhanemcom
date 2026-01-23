@@ -77,22 +77,22 @@ Tüm fiyatlar şeffaf şekilde gösterilir ve sürpriz masraflarla karşılaşma
     answer: `Bu karar bütçenize ve önceliklerinize bağlıdır:
 
 **Orijinal (OEM) Parçalar:**
-✅ Üretici garantisi
-✅ Mükemmel uyum
-✅ Uzun ömür
-❌ Daha pahalı
+• Üretici garantisi
+• Mükemmel uyum
+• Uzun ömür
+– Daha pahalı
 
 **OES (Original Equipment Supplier) Parçalar:**
-✅ Orijinal üretici tarafından yapılmış
-✅ OEM ile aynı kalite
-✅ Daha uygun fiyat
+• Orijinal üretici tarafından yapılmış
+• OEM ile aynı kalite
+• Daha uygun fiyat
 Örnek: Bosch, Valeo, Continental
 
 **Muadil (Aftermarket) Parçalar:**
-✅ Ekonomik
-✅ Geniş seçenek
-❌ Kalite değişkenliği
-❌ Uyum sorunları olabilir
+• Ekonomik
+• Geniş seçenek
+– Kalite değişkenliği
+– Uyum sorunları olabilir
 
 **Tavsiye:** Güvenlik parçaları (fren, süspansiyon) için orijinal veya kaliteli OES tercih edin. Kozmetik parçalarda muadil kullanabilirsiniz.`,
     category: 'Yedek Parça'

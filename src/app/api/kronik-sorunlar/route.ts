@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
+import { createLogger } from '@/lib/logger';
 
-const STRAPI_API = 'https://api.tamirhanem.net/api';
+const logger = createLogger('API_KRONIK_SORUNLAR');
+
+export const dynamic = 'force-dynamic';
+
+const STRAPI_API = 'https://api.tamirhanem.com/api';
 
 export async function GET(request: Request) {
     try {
@@ -76,7 +81,7 @@ export async function GET(request: Request) {
             count: results.length
         });
     } catch (error) {
-        console.error('Kronik Sorunlar API Error:', error);
+        logger.error({ error }, 'Kronik Sorunlar API Error');
         return NextResponse.json(
             { success: false, error: 'Kronik sorunlar araması başarısız oldu', data: [] },
             { status: 500 }

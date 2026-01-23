@@ -64,7 +64,7 @@ export default function AdminDashboard() {
             setRandevuTalepleri(randevuData.data || []);
             setWaitlist(waitlistData.data || []);
         } catch (error) {
-            console.error('Veri çekme hatası:', error);
+            console.error('Veri cekme hatasi:', error);
         } finally {
             setLoading(false);
         }
@@ -84,7 +84,7 @@ export default function AdminDashboard() {
             });
             fetchData();
         } catch (error) {
-            console.error('Güncelleme hatası:', error);
+            console.error('Guncelleme hatasi:', error);
         }
     };
 

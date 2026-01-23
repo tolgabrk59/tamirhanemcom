@@ -1,5 +1,9 @@
 'use client';
 
+import { createLogger } from './logger';
+
+const serviceUtilsLogger = createLogger('SERVICE_UTILS');
+
 // =====================
 // DISTANCE CALCULATION
 // =====================
@@ -253,8 +257,8 @@ export function toggleFavorite(serviceId: number): boolean {
     
     try {
         localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-    } catch {
-        console.error('Favori kaydetme hatası');
+    } catch (error) {
+        serviceUtilsLogger.error({ error, serviceId }, 'Favori kaydetme hatası');
     }
     
     return index === -1; // true = eklendi, false = çıkarıldı

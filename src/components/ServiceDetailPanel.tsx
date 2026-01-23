@@ -89,7 +89,7 @@ export default function ServiceDetailPanel({ service, isOpen, onClose }: Service
                     <div className="relative h-56 bg-gradient-to-br from-gray-100 to-gray-200">
                         {service.pic ? (
                             <Image
-                                src={service.pic.startsWith('http') ? service.pic : `https://api.tamirhanem.net${service.pic}`}
+                                src={service.pic.startsWith('http') ? service.pic : `https://api.tamirhanem.com${service.pic}`}
                                 alt={service.name}
                                 fill
                                 sizes="(max-width: 768px) 100vw, 400px"

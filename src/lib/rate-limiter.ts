@@ -1,4 +1,7 @@
 import Redis from 'ioredis';
+import { createLogger } from './logger';
+
+const rateLimitLogger = createLogger('RATE_LIMIT');
 
 // Redis connection - uses env variable or defaults to localhost
 const redis = process.env.REDIS_URL
@@ -13,7 +16,7 @@ const redis = process.env.REDIS_URL
 
 // Handle connection errors gracefully
 redis.on('error', (err) => {
-  console.error('Redis connection error:', err.message);
+  rateLimitLogger.error({ err: err.message }, 'Redis connection error');
 });
 
 interface RateLimitConfig {
@@ -108,7 +111,7 @@ export async function checkRateLimit(
       resetTime,
     };
   } catch (error) {
-    console.error('Rate limit check error:', error);
+    rateLimitLogger.error({ error }, 'Rate limit check error');
     // Fail open - allow request if Redis is down
     return { success: true, remaining: config.maxRequests, resetTime: now + config.windowMs };
   }

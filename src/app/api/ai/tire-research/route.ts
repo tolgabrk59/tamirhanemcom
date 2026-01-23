@@ -1,13 +1,19 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
+import { createLogger } from '@/lib/logger';
+import type { TireResearchData } from '@/types/external-apis';
 
-// Gemini API Keys
+const logger = createLogger('API_TIRE_RESEARCH');
+
+// Gemini API Keys (6 keys for rotation)
 const geminiKeys = [
   process.env.GEMINI_API_KEY,
   process.env.GEMINI_API_KEY_2,
   process.env.GEMINI_API_KEY_3,
-  process.env.GEMINI_API_KEY_4
+  process.env.GEMINI_API_KEY_4,
+  process.env.GEMINI_API_KEY_5,
+  process.env.GEMINI_API_KEY_7
 ].filter(Boolean) as string[];
 
 // OpenAI API Key
@@ -20,8 +26,8 @@ const grokBaseUrl = "https://api12.codefast.app/v1";
 // OpenAI ile generate
 async function generateWithOpenAI(prompt: string): Promise<string> {
   if (!openaiKey) throw new Error("OpenAI API key not configured");
-  
-  console.log("🔄 Trying OpenAI for tire research...");
+
+  logger.info("Trying OpenAI for tire research");
   const openai = new OpenAI({ apiKey: openaiKey });
   
   const completion = await openai.chat.completions.create({
@@ -35,15 +41,15 @@ async function generateWithOpenAI(prompt: string): Promise<string> {
   });
   
   const text = completion.choices[0]?.message?.content || "";
-  console.log("✅ OpenAI Success");
+  logger.info("OpenAI Success");
   return text;
 }
 
 // Grok ile generate
 async function generateWithGrok(prompt: string): Promise<string> {
   if (!grokKey) throw new Error("Grok API key not configured");
-  
-  console.log("🔄 Trying Grok for tire research...");
+
+  logger.info("Trying Grok for tire research");
   const grok = new OpenAI({ 
     apiKey: grokKey,
     baseURL: grokBaseUrl
@@ -60,7 +66,7 @@ async function generateWithGrok(prompt: string): Promise<string> {
   });
   
   const text = completion.choices[0]?.message?.content || "";
-  console.log("✅ Grok Success");
+  logger.info("Grok Success");
   return text;
 }
 
@@ -70,17 +76,17 @@ async function generateWithRetry(prompt: string, modelName: string) {
   // 1-4: Try all Gemini keys
   for (const key of geminiKeys) {
     try {
-      console.log(`Trying Gemini key ${key.substring(0, 10)} for tire research...`);
+      logger.debug({ keyPrefix: key.substring(0, 10) }, 'Trying Gemini key for tire research');
       const genAI = new GoogleGenerativeAI(key);
       
       try {
           const modelAI = genAI.getGenerativeModel({ model: modelName });
           const result = await modelAI.generateContent(prompt);
           const response = await result.response;
-          console.log(`✅ Gemini Success`);
+          logger.info('Gemini Success');
           return response.text();
       } catch (error: any) {
-          console.warn(`Gemini error: ${error.message}`);
+          logger.warn({ message: error.message }, 'Gemini error');
           if (error.message?.includes('429') || error.message?.includes('quota') || error.message?.includes('503')) {
               lastError = error;
               continue;
@@ -95,25 +101,25 @@ async function generateWithRetry(prompt: string, modelName: string) {
       throw error;
     }
   }
-  
+
   // 5: Try Grok
   if (grokKey) {
-    console.log("⚠️ All Gemini keys failed, trying Grok...");
+    logger.warn("All Gemini keys failed, trying Grok");
     try {
       return await generateWithGrok(prompt);
     } catch (grokError: any) {
-      console.error("Grok also failed:", grokError.message);
+      logger.error({ message: grokError.message }, "Grok also failed");
       lastError = grokError;
     }
   }
-  
+
   // 6: Try OpenAI
   if (openaiKey) {
-    console.log("⚠️ Grok failed, trying OpenAI...");
+    logger.warn("Grok failed, trying OpenAI");
     try {
       return await generateWithOpenAI(prompt);
     } catch (openaiError: any) {
-      console.error("OpenAI also failed:", openaiError.message);
+      logger.error({ message: openaiError.message }, "OpenAI also failed");
       throw openaiError;
     }
   }
@@ -171,15 +177,15 @@ export async function POST(req: Request) {
     `;
 
     const text = await generateWithRetry(prompt, "gemini-2.5-flash");
-    
+
     // Clean up markdown code blocks if present
     const cleanText = text.replace(/```json/g, "").replace(/```/g, "").trim();
-    
-    let data;
+
+    let data: TireResearchData;
     try {
-        data = JSON.parse(cleanText);
+        data = JSON.parse(cleanText) as TireResearchData;
     } catch (jsonError) {
-        console.error("JSON parse error:", jsonError);
+        logger.error({ error: jsonError }, "JSON parse error");
         // Return a fallback response
         data = {
           standard_size: "205/55 R16 91V",
@@ -227,7 +233,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(data);
   } catch (error: any) {
-    console.error("Tire Research Error:", error);
+    logger.error({ error }, "Tire Research Error");
     return NextResponse.json(
       { error: `Failed to generate tire data: ${error.message}` },
       { status: 500 }

@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { validateToken } from '@/lib/admin-auth';
+import { createLogger } from '@/lib/logger';
 
-const STRAPI_API = process.env.STRAPI_API_URL || 'https://api.tamirhanem.net/api';
+const logger = createLogger('API_ADMIN_WAITLIST');
+
+const STRAPI_API = process.env.STRAPI_API_URL || 'https://api.tamirhanem.com/api';
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
 
 // Token doğrulama
@@ -38,11 +41,11 @@ export async function GET() {
         );
 
         if (!response.ok) {
-            console.error('Strapi waitlist çekme hatası:', response.status);
-            return NextResponse.json({ 
-                success: false, 
-                error: 'Veri çekme hatası', 
-                data: [] 
+            logger.error({ status: response.status }, 'Strapi waitlist çekme hatası');
+            return NextResponse.json({
+                success: false,
+                error: 'Veri çekme hatası',
+                data: []
             });
         }
 
@@ -56,10 +59,10 @@ export async function GET() {
 
         return NextResponse.json({ 
             success: true, 
-            data 
+            data
         });
     } catch (error) {
-        console.error('Waitlist çekme hatası:', error);
+        logger.error({ error }, 'Waitlist çekme hatası');
         return NextResponse.json(
             { success: false, error: 'Veri çekme hatası', data: [] },
             { status: 500 }

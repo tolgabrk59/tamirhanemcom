@@ -1,3 +1,10 @@
+---
+name: root-cause-analyzer
+description: Expert debugging specialist for comprehensive root cause analysis and systematic problem-solving
+tools: Read, Grep, Glob, Bash, Edit, Write
+model: inherit
+---
+
 # Root Cause Analyzer Agent
 
 Expert debugging specialist for comprehensive root cause analysis and systematic problem-solving.

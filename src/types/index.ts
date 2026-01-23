@@ -213,6 +213,238 @@ export interface ObdCodeAttributes {
   category: string;
 }
 
+// ============================================
+// Enhanced OBD Types (Teknik Teşhis Derinliği)
+// ============================================
+export interface ObdSymptomDetailed {
+  symptom: string;
+  severity: 'mild' | 'moderate' | 'severe';
+  frequency: 'common' | 'occasional' | 'rare';
+}
+
+export interface ObdCauseDetailed {
+  cause: string;
+  probability: number; // 0-100
+  diagnosticTest?: string;
+}
+
+export interface DiagnosticTreeStep {
+  id: number;
+  question?: string | null;
+  yesNext: number | null;
+  noNext: number | null;
+  action?: string;
+  conclusion?: string;
+  toolRequired?: string;
+}
+
+export interface DiagnosticTree {
+  codeId: string;
+  steps: DiagnosticTreeStep[];
+  estimatedTime?: string; // örn: "15-30 dakika"
+}
+
+export interface TSBReference {
+  tsbNumber: string;
+  brand: string;
+  models?: string[];
+  description: string;
+  date: string;
+  url?: string;
+  isRecall?: boolean;
+}
+
+export interface PartItem {
+  name: string;
+  partNumber?: string;
+  costMin: number;
+  costMax: number;
+  isRequired: boolean;
+  brand?: string; // OEM veya aftermarket
+}
+
+export interface BrandVariation {
+  brand: string;
+  modelPattern?: string; // regex veya wildcard
+  specificCauses?: string[];
+  specificSymptoms?: string[];
+  specificNotes?: string;
+  costMultiplier?: number; // 1.0 = standart, 1.5 = %50 daha pahalı
+  commonYears?: string; // örn: "2010-2018"
+}
+
+export interface ObdCodeEnhanced extends ObdCode {
+  symptomsDetailed?: ObdSymptomDetailed[];
+  causesDetailed?: ObdCauseDetailed[];
+  diagnosticTree?: DiagnosticTree;
+  brandVariations?: BrandVariation[];
+  tsbReferences?: TSBReference[];
+  laborHours?: number;
+  partsList?: PartItem[];
+  relatedCodes?: string[];
+  faqItems?: FAQ[];
+}
+
+// ============================================
+// Live Data PID Types (Canlı Veri Rehberi)
+// ============================================
+export interface LiveDataPID {
+  pidCode: string; // örn: "0106"
+  name: string; // İngilizce
+  nameTr: string; // Türkçe
+  description: string;
+  unit: string; // örn: "%", "°C", "rpm"
+  normalRangeMin: number;
+  normalRangeMax: number;
+  warningMin?: number;
+  warningMax?: number;
+  relatedCodes?: string[];
+  troubleshootingTips?: string[];
+  diagnosticRelevance?: string;
+  category: 'fuel' | 'ignition' | 'emissions' | 'sensors' | 'engine' | 'transmission';
+  chartType: 'gauge' | 'line' | 'bar';
+}
+
+export interface FreezeFrameData {
+  timestamp: string;
+  obdCode: string;
+  data: Record<string, number | string>;
+  vehicleInfo?: {
+    brand?: string;
+    model?: string;
+    year?: number;
+    vin?: string;
+  };
+}
+
+// ============================================
+// OBD Device Integration Types
+// ============================================
+export interface OBDDevice {
+  connected: boolean;
+  deviceName?: string;
+  protocol?: string; // örn: "ISO 9141-2", "CAN 11bit 500kbaud"
+  vin?: string;
+  voltage?: number;
+  lastConnected?: string;
+}
+
+export interface DiagnosticReport {
+  id: string;
+  vehicleVin?: string;
+  brand?: string;
+  model?: string;
+  year?: number;
+  mileage?: number;
+  scanDate: string;
+  codes: ObdCode[];
+  freezeFrame?: FreezeFrameData;
+  liveData?: Record<string, number>;
+  recommendations?: string[];
+  severity?: 'low' | 'medium' | 'high' | 'critical';
+}
+
+// ============================================
+// City-Service SEO Page Types
+// ============================================
+export interface CityServicePage {
+  id: number;
+  city: string;
+  citySlug: string;
+  service: Service;
+  serviceSlug: string;
+  title: string;
+  metaDescription: string;
+  h1Title: string;
+  content: string;
+  localTips?: string;
+  averagePriceLocal?: number;
+  geoLat: number;
+  geoLng: number;
+  faqItems?: FAQ[];
+  relatedObdCodes?: string[];
+  nearbyServices?: ServiceProvider[];
+  lastUpdated?: string;
+}
+
+export interface CityInfo {
+  name: string;
+  slug: string;
+  lat: number;
+  lng: number;
+  population?: number;
+  plateCode?: number; // 34, 06, 35 vb.
+}
+
+// ============================================
+// KVKK / Consent Types
+// ============================================
+export interface ConsentPreferences {
+  essential: boolean; // Her zaman true
+  analytics: boolean;
+  marketing: boolean;
+  personalization: boolean;
+  consentDate: string;
+  consentVersion: string;
+  ipAddress?: string;
+}
+
+export interface ConsentCategory {
+  id: 'essential' | 'analytics' | 'marketing' | 'personalization';
+  name: string;
+  description: string;
+  required: boolean;
+  cookies: string[]; // Bu kategorideki çerezler
+  retentionPeriod: string; // örn: "1 yıl", "oturum sonu"
+}
+
+// ============================================
+// Educational Content Types
+// ============================================
+export interface EducationalGuide {
+  id: number;
+  slug: string;
+  title: string;
+  metaDescription: string;
+  content: string;
+  category: 'karar-rehberi' | 'bakim' | 'ariza' | 'guvenlik';
+  difficulty: 'kolay' | 'orta' | 'zor';
+  estimatedReadTime: number; // dakika
+  relatedObdCodes?: string[];
+  relatedGuides?: string[];
+  videoUrl?: string;
+  steps?: DecisionFlowStep[];
+  lastUpdated: string;
+}
+
+export interface DecisionFlowStep {
+  id: number;
+  question: string;
+  options: {
+    text: string;
+    nextStepId: number | null;
+    action?: string;
+    warning?: string;
+  }[];
+}
+
+// ============================================
+// Payment Flow Types (Yakında)
+// ============================================
+export interface PaymentFlowStep {
+  id: number;
+  title: string;
+  description: string;
+  icon: string;
+  status: 'pending' | 'active' | 'completed';
+}
+
+export interface EscrowInfo {
+  steps: PaymentFlowStep[];
+  disputeResolutionDays: number;
+  guarantees: string[];
+}
+
 // Service Types
 export interface Service {
   id: number;
@@ -313,4 +545,97 @@ export interface VehicleData {
       average: string;
   };
   price?: { average: string }; // Fallback/alias if needed
+}
+
+// ============================================
+// Çıkma Parça Pazaryeri Types
+// ============================================
+export type CikmaParcaCategory =
+  | 'motor'
+  | 'fren'
+  | 'suspansiyon'
+  | 'elektrik'
+  | 'sogutma'
+  | 'sanziman'
+  | 'egzoz'
+  | 'yakit'
+  | 'kaporta'
+  | 'ic-aksesuar'
+  | 'diger';
+
+export type CikmaParcaCondition =
+  | 'cok-iyi'
+  | 'iyi'
+  | 'orta'
+  | 'onarima-ihtiyaci-var';
+
+export type CikmaParcaStatus = 'active' | 'sold' | 'reserved' | 'inactive';
+
+export interface CikmaParca {
+  id: number;
+  title: string;
+  description: string;
+  category: CikmaParcaCategory;
+  brand: string;
+  model: string;
+  yearFrom?: number;
+  yearTo?: number;
+  price: number;
+  condition: CikmaParcaCondition;
+  images: { url: string }[];
+  seller: {
+    id: number;
+    name: string;
+    location: string;
+    phone?: string;
+    rating?: number;
+  };
+  status: CikmaParcaStatus;
+  oemCode?: string;
+  location: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type TeklifStatus = 'pending' | 'read' | 'replied' | 'accepted' | 'rejected';
+
+export interface CikmaParcaTeklif {
+  id: number;
+  parca: { id: number; title: string };
+  senderName: string;
+  senderPhone: string;
+  message: string;
+  offeredPrice?: number;
+  status: TeklifStatus;
+  sellerReply?: string;
+  createdAt: string;
+}
+
+// ============================================
+// Park Mesaj (Hatalı Park Bildirimi) Types
+// ============================================
+export type ParkMesajType = 'cift-park' | 'engel' | 'is-yeri-onunde' | 'diger';
+export type ParkMesajStatus = 'sent' | 'delivered' | 'read' | 'responded';
+
+export interface AracPlaka {
+  id: number;
+  plaka: string;
+  ownerPhone: string;
+  ownerEmail?: string;
+  brand?: string;
+  model?: string;
+  year?: number;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface ParkMesaj {
+  id: number;
+  targetPlaka: string;
+  senderPhone: string;
+  messageType: ParkMesajType;
+  message: string;
+  locationDescription?: string;
+  status: ParkMesajStatus;
+  createdAt: string;
 }

@@ -79,10 +79,25 @@ export default function EncyclopediaPage() {
     return (
         <div className="bg-secondary-50 min-h-screen">
             {/* Hero Section */}
-            <section className="bg-gradient-to-r from-secondary-900 to-secondary-800 text-white py-20">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-6">Yedek Parça Kütüphanesi</h1>
-                    <p className="text-xl text-secondary-300 max-w-2xl mx-auto mb-10">
+            <section className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-secondary-600 text-white py-20 overflow-hidden">
+                <div
+                    className="absolute inset-0 bg-cover bg-center opacity-10"
+                    style={{
+                        backgroundImage: 'url(/hero_service_background.png)',
+                        backgroundPosition: 'center',
+                        backgroundSize: 'cover'
+                    }}
+                ></div>
+                
+                <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+                        </svg>
+                        <span className="text-sm font-semibold">Kapsamlı Parça Bilgisi</span>
+                    </div>
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4">Yedek Parça Kütüphanesi</h1>
+                    <p className="text-xl text-primary-100 max-w-2xl mx-auto mb-10">
                         Aracınızdaki her parçayı tanıyın. Ömrü, maliyeti ve değişim zamanı hakkında bilgi edinin.
                     </p>
 

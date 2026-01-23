@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { validateToken } from '@/lib/admin-auth';
+import { createLogger } from '@/lib/logger';
 
-const STRAPI_API = process.env.STRAPI_API_URL || 'https://api.tamirhanem.net/api';
+const logger = createLogger('API_ADMIN_RANDEVU_TALEPLERI');
+
+const STRAPI_API = process.env.STRAPI_API_URL || 'https://api.tamirhanem.com/api';
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
 
 // Token doğrulama
@@ -38,11 +41,11 @@ export async function GET() {
         );
 
         if (!response.ok) {
-            console.error('Strapi randevu talepleri çekme hatası:', response.status);
-            return NextResponse.json({ 
-                success: false, 
-                error: 'Veri çekme hatası', 
-                data: [] 
+            logger.error({ status: response.status }, 'Strapi randevu talepleri çekme hatası');
+            return NextResponse.json({
+                success: false,
+                error: 'Veri çekme hatası',
+                data: []
             });
         }
 
@@ -59,7 +62,7 @@ export async function GET() {
             data 
         });
     } catch (error) {
-        console.error('Randevu talepleri çekme hatası:', error);
+        logger.error({ error }, 'Randevu talepleri çekme hatası');
         return NextResponse.json(
             { success: false, error: 'Veri çekme hatası', data: [] },
             { status: 500 }
@@ -99,7 +102,7 @@ export async function PATCH(request: Request) {
         });
 
         if (!response.ok) {
-            console.error('Strapi güncelleme hatası:', response.status);
+            logger.error({ status: response.status }, 'Strapi güncelleme hatası');
             return NextResponse.json(
                 { success: false, error: 'Güncelleme hatası' },
                 { status: 500 }
@@ -108,7 +111,7 @@ export async function PATCH(request: Request) {
 
         return NextResponse.json({ success: true, message: 'Durum güncellendi' });
     } catch (error) {
-        console.error('Güncelleme hatası:', error);
+        logger.error({ error }, 'Güncelleme hatası');
         return NextResponse.json(
             { success: false, error: 'Güncelleme hatası' },
             { status: 500 }

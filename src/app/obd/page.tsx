@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import type { ObdCode } from '@/types';
+import { CodeHistoryCompact } from '@/components/obd/CodeHistory';
 
 export default function ObdPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -69,64 +70,191 @@ export default function ObdPage() {
   return (
     <div className="bg-secondary-50 min-h-screen">
       {/* Hero Section - Modern Dark Theme */}
-      <section className="relative py-16 overflow-hidden" style={{ backgroundColor: '#454545' }}>
-        {/* Decorative Elements */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary-400/10 rounded-full blur-2xl"></div>
+      <section className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-secondary-600 text-white py-20 overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-10"
+          style={{
+            backgroundImage: 'url(/hero_service_background.png)',
+            backgroundPosition: 'center',
+            backgroundSize: 'cover'
+          }}
+        ></div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex items-center space-x-2 text-sm text-gray-400 mb-6">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav className="flex items-center space-x-2 text-sm text-primary-200 mb-6">
             <Link href="/" className="hover:text-white transition-colors">
               Ana Sayfa
             </Link>
             <span>/</span>
             <span className="text-white">OBD Kodları</span>
           </nav>
+          
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm font-semibold">Arıza Kod Rehberi</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              OBD-II Arıza Kodları
+            </h1>
+            <p className="text-xl text-primary-100 mb-8">
+              Check Engine lambanız mı yandı? Arıza kodunuzu girin, sorunun ne olduğunu,
+              olası nedenlerini ve tahmini tamir maliyetini öğrenin.
+            </p>
 
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">
-            OBD-II Arıza Kodları
-          </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mb-8">
-            Check Engine lambanız mı yandı? Arıza kodunuzu girin, sorunun ne olduğunu,
-            olası nedenlerini ve tahmini tamir maliyetini öğrenin.
-          </p>
+            {/* Modern Search Box */}
+            <div className="max-w-2xl">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Arıza kodu girin (örn: P0300, P0420, P0171)"
+                  className="w-full px-6 py-4 pr-12 rounded-xl text-secondary-900 placeholder-secondary-400 focus:ring-2 focus:ring-primary-500 focus:outline-none shadow-xl text-lg"
+                />
+                <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                  {loading ? (
+                    <svg className="animate-spin h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  ) : (
+                    <svg className="w-6 h-6 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  )}
+                </div>
+              </div>
 
-          {/* Modern Search Box */}
-          <div className="max-w-2xl">
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Arıza kodu girin (örn: P0300, P0420, P0171)"
-                className="w-full px-6 py-4 pr-12 rounded-xl text-secondary-900 placeholder-secondary-400 focus:ring-2 focus:ring-primary-500 focus:outline-none shadow-xl text-lg"
-              />
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                {loading ? (
-                  <svg className="animate-spin h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              {searchQuery && (
+                <p className="mt-3 text-sm text-primary-200">
+                  {total > 0 ? `${total} sonuç bulundu` : loading ? 'Aranıyor...' : 'Sonuç bulunamadı'}
+                </p>
+              )}
+
+              {/* Action Buttons */}
+              <div className="mt-6 flex flex-col sm:flex-row gap-3 flex-wrap">
+                {/* Bluetooth OBD Cihaz Bağlantı Butonu */}
+                <Link
+                  href="/obd-cihaz"
+                  className="inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-[#0082FC] hover:bg-[#006DD9] text-white rounded-xl font-semibold transition-all shadow-lg shadow-blue-500/30 border border-blue-400/30"
+                >
+                  {/* Bluetooth Logo */}
+                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/>
                   </svg>
-                ) : (
-                  <svg className="w-6 h-6 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  <span>Bluetooth OBD Cihazı Bağla</span>
+                  <span className="ml-1 px-2 py-0.5 bg-white/20 rounded text-xs">BETA</span>
+                </Link>
+
+                {/* Semptom Bazlı Arama Butonu */}
+                <Link
+                  href="/obd/semptom-ara"
+                  className="inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-xl font-semibold transition-all shadow-lg shadow-red-500/30 border border-red-400/30"
+                >
+                  {/* Stethoscope Icon */}
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
-                )}
+                  <span>Semptom Bazlı Ara</span>
+                  <span className="ml-1 px-2 py-0.5 bg-white/20 rounded text-xs">YENİ</span>
+                </Link>
+
+                {/* Canlı Veri Dashboard Butonu */}
+                <Link
+                  href="/obd/canli-veri"
+                  className="inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-xl font-semibold transition-all shadow-lg shadow-emerald-500/30 border border-emerald-400/30"
+                >
+                  {/* Activity/Pulse Icon */}
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  <span>Canlı Veri Rehberi</span>
+                  <span className="ml-1 px-2 py-0.5 bg-white/20 rounded text-xs flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+                    141 PID
+                  </span>
+                </Link>
+              </div>
+
+              {/* Son Baktığınız Kodlar (LocalStorage) */}
+              <div className="mt-6">
+                <CodeHistoryCompact />
               </div>
             </div>
-
-            {searchQuery && (
-              <p className="mt-3 text-sm text-gray-300">
-                {total > 0 ? `${total} sonuç bulundu` : loading ? 'Aranıyor...' : 'Sonuç bulunamadı'}
-              </p>
-            )}
           </div>
         </div>
       </section>
 
-      {/* Info Cards */}
+      {/* OBD Araçları Grid */}
       <section className="py-12 bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-secondary-800 mb-2">OBD Teşhis Araçları</h2>
+            <p className="text-secondary-600">Arıza kodları ile ilgili tüm araçlarımız</p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+            {/* Araç Bazlı Kod Geçmişi */}
+            <Link
+              href="/obd/arac-gecmisi"
+              className="group bg-gradient-to-br from-purple-50 to-white border border-purple-100 rounded-xl p-5 hover:shadow-lg hover:border-purple-300 transition-all"
+            >
+              <div className="w-12 h-12 bg-purple-100 group-hover:bg-purple-500 rounded-xl flex items-center justify-center mb-4 transition-colors">
+                <svg className="w-6 h-6 text-purple-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+              </div>
+              <h3 className="font-bold text-secondary-800 mb-1">Araç Bazlı Arızalar</h3>
+              <p className="text-sm text-secondary-600">Marka ve modele göre sık görülen kodlar</p>
+            </Link>
+
+            {/* Kod Karşılaştırma */}
+            <Link
+              href="/obd/karsilastir"
+              className="group bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 rounded-xl p-5 hover:shadow-lg hover:border-indigo-300 transition-all"
+            >
+              <div className="w-12 h-12 bg-indigo-100 group-hover:bg-indigo-500 rounded-xl flex items-center justify-center mb-4 transition-colors">
+                <svg className="w-6 h-6 text-indigo-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <h3 className="font-bold text-secondary-800 mb-1">Kod Karşılaştır</h3>
+              <p className="text-sm text-secondary-600">2-3 kodu yan yana incele</p>
+            </Link>
+
+            {/* Maliyet Hesaplama */}
+            <Link
+              href="/obd/maliyet-hesapla"
+              className="group bg-gradient-to-br from-green-50 to-white border border-green-100 rounded-xl p-5 hover:shadow-lg hover:border-green-300 transition-all"
+            >
+              <div className="w-12 h-12 bg-green-100 group-hover:bg-green-500 rounded-xl flex items-center justify-center mb-4 transition-colors">
+                <svg className="w-6 h-6 text-green-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h3 className="font-bold text-secondary-800 mb-1">Maliyet Hesapla</h3>
+              <p className="text-sm text-secondary-600">Şehir bazlı tamir maliyeti</p>
+            </Link>
+
+            {/* Teşhis Rehberi */}
+            <Link
+              href="/obd/teshis"
+              className="group bg-gradient-to-br from-orange-50 to-white border border-orange-100 rounded-xl p-5 hover:shadow-lg hover:border-orange-300 transition-all"
+            >
+              <div className="w-12 h-12 bg-orange-100 group-hover:bg-orange-500 rounded-xl flex items-center justify-center mb-4 transition-colors">
+                <svg className="w-6 h-6 text-orange-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+              </div>
+              <h3 className="font-bold text-secondary-800 mb-1">Teşhis Rehberi</h3>
+              <p className="text-sm text-secondary-600">Adım adım arıza tespiti</p>
+            </Link>
+          </div>
+
+          {/* Info Cards */}
           <div className="grid md:grid-cols-3 gap-8">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">

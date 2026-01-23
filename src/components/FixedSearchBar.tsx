@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { turkeyLocations, cityList } from '@/data/turkey-locations';
 
@@ -38,17 +38,22 @@ export default function FixedSearchBar() {
   const [modelsLoading, setModelsLoading] = useState(false);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
 
-  // Visibility state
+  // Visibility state (for mobile)
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // İlçeleri şehre göre al
   const districts = city ? turkeyLocations[city] || [] : [];
 
-  // Scroll handler - hide when scrolling down, show when scrolling up
+  // Scroll handler - hide when scrolling down, show when scrolling stops or up (mobile only)
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
+
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
 
       if (currentScrollY > lastScrollY && currentScrollY > 200) {
         setIsVisible(false);
@@ -56,11 +61,20 @@ export default function FixedSearchBar() {
         setIsVisible(true);
       }
 
+      scrollTimeoutRef.current = setTimeout(() => {
+        setIsVisible(true);
+      }, 500);
+
       setLastScrollY(currentScrollY);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
   }, [lastScrollY]);
 
   // Markaları araç türüne göre MySQL'den çek
@@ -79,7 +93,7 @@ export default function FixedSearchBar() {
           setBrandsLoading(false);
         })
         .catch(err => {
-          console.error('Marka yükleme hatası:', err);
+          console.error('[FixedSearchBar] Brand loading error:', err);
           setBrandsLoading(false);
         });
     } else {
@@ -99,7 +113,7 @@ export default function FixedSearchBar() {
         setCategoriesLoading(false);
       })
       .catch(err => {
-        console.error('Kategori yükleme hatası:', err);
+        console.error('[FixedSearchBar] Category loading error:', err);
         setCategoriesLoading(false);
       });
   }, []);
@@ -118,7 +132,7 @@ export default function FixedSearchBar() {
           setModelsLoading(false);
         })
         .catch(err => {
-          console.error('Model yükleme hatası:', err);
+          console.error('[FixedSearchBar] Model loading error:', err);
           setModelsLoading(false);
         });
     } else {
@@ -137,140 +151,149 @@ export default function FixedSearchBar() {
     router.push(`/servisler/sonuclar?${params.toString()}`);
   };
 
-  return (
-    <div
-      className={`fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ${
-        isVisible ? 'translate-y-0' : 'translate-y-full'
-      }`}
-    >
-      {/* Gradient fade effect */}
-      <div className="absolute -top-8 left-0 right-0 h-8 bg-gradient-to-t from-primary-600/80 to-transparent pointer-events-none"></div>
+  const selectClass = "w-full px-3 py-2 bg-primary-500 border border-primary-400 rounded-lg text-[#454545] text-sm font-medium focus:ring-2 focus:ring-primary-300 focus:border-transparent";
 
-      {/* Main bar */}
-      <div className="bg-primary-600 backdrop-blur-xl border-t border-primary-400/30 shadow-2xl">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          {/* Desktop Layout */}
-          <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }} className="hidden md:flex items-center gap-2" role="search" aria-label="Servis Arama Formu">
-            {/* City Select */}
-            <div className="flex-1 min-w-[120px]">
-              <label htmlFor="fixed-city" className="sr-only">İl Seçin</label>
+  return (
+    <>
+      {/* DESKTOP: Collapsible Left Sidebar */}
+      <div className="hidden lg:flex flex-col fixed top-0 left-0 bottom-0 w-16 hover:w-64 bg-primary-500 z-40 transition-all duration-300 ease-in-out group overflow-hidden">
+        {/* Collapsed State - Search Icon at top, Logo at bottom (visible when not hovered) */}
+        <div className="absolute inset-0 flex flex-col items-center justify-between py-4 group-hover:opacity-0 group-hover:pointer-events-none transition-opacity duration-200 pointer-events-auto">
+          {/* Search Icon - Top */}
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-[#454545] text-xs font-bold" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+              Servis Ara
+            </span>
+            <div className="w-10 h-10 bg-[#454545] rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Slogan + Logo - Bottom (Vertical, rotated 180deg) */}
+          <div className="flex flex-col items-center justify-center mb-12 gap-16">
+            <a href="/" className="flex flex-col items-center ml-2">
+              <span className="text-[#454545] text-3xl text-center" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', fontFamily: 'var(--font-handwriting)' }}>
+                "her araç kıymetlidir"
+              </span>
+            </a>
+            <a href="/" className="flex flex-col items-center">
+              <span className="font-extrabold text-6xl tracking-tight text-[#454545] text-center" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+                tamirhanem
+              </span>
+            </a>
+          </div>
+        </div>
+
+        {/* Expanded Content (visible on hover) */}
+        <div className="opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200 delay-100 flex flex-col h-full min-w-64">
+          {/* Logo */}
+          <div className="px-4 py-4 border-b border-primary-400">
+            <a href="/" className="flex items-center">
+              <span className="text-2xl font-extrabold tracking-tight">
+                <span className="text-[#454545]">tamirhane</span>
+                <span className="text-white">m</span>
+              </span>
+            </a>
+          </div>
+
+          {/* Header */}
+          <div className="px-4 py-3">
+            <h2 className="text-[#454545] font-bold text-lg flex items-center gap-2 whitespace-nowrap">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              Servis Ara
+            </h2>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }} className="flex-1 overflow-y-auto p-4 space-y-4">
+            {/* Location Section */}
+            <div className="space-y-3">
+              <label className="text-[#454545] text-xs font-bold uppercase tracking-wide whitespace-nowrap">Konum</label>
               <select
-                id="fixed-city"
-                name="city"
                 value={city}
-                onChange={(e) => {
-                  setCity(e.target.value);
-                  setDistrict('');
-                }}
-                className="w-full px-3 py-2.5 bg-[#454545] border border-[#5a5a5a] rounded-lg text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                onChange={(e) => { setCity(e.target.value); setDistrict(''); }}
+                className={selectClass}
               >
-                <option value="" className="bg-[#454545] text-white">İl Seçin</option>
+                <option value="">İl Seçin</option>
                 {cityList.map((c) => (
-                  <option key={c} value={c} className="bg-[#454545] text-white">{c}</option>
+                  <option key={c} value={c}>{c}</option>
                 ))}
               </select>
-            </div>
-
-            {/* District Select */}
-            <div className="flex-1 min-w-[120px]">
-              <label htmlFor="fixed-district" className="sr-only">İlçe Seçin</label>
               <select
-                id="fixed-district"
-                name="district"
                 value={district}
                 onChange={(e) => setDistrict(e.target.value)}
                 disabled={!city}
-                className="w-full px-3 py-2.5 bg-[#454545] border border-[#5a5a5a] rounded-lg text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50"
+                className={`${selectClass} disabled:opacity-50`}
               >
-                <option value="" className="bg-[#454545] text-white">İlçe</option>
+                <option value="">İlçe Seçin</option>
                 {districts.map((d) => (
-                  <option key={d} value={d} className="bg-[#454545] text-white">{d}</option>
+                  <option key={d} value={d}>{d}</option>
                 ))}
               </select>
             </div>
 
-            {/* Divider */}
-            <div className="h-8 w-px bg-white/20" aria-hidden="true"></div>
-
-            {/* Vehicle Type Select */}
-            <div className="flex-1 min-w-[120px]">
-              <label htmlFor="fixed-vehicleType" className="sr-only">Araç Türü Seçin</label>
+            {/* Vehicle Section */}
+            <div className="space-y-3">
+              <label className="text-[#454545] text-xs font-bold uppercase tracking-wide whitespace-nowrap">Araç</label>
               <select
-                id="fixed-vehicleType"
-                name="vehicleType"
                 value={vehicleType}
                 onChange={(e) => setVehicleType(e.target.value as 'otomobil' | 'motorsiklet' | '')}
-                className="w-full px-3 py-2.5 bg-[#454545] border border-[#5a5a5a] rounded-lg text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className={selectClass}
               >
-                <option value="" className="bg-[#454545] text-white">Araç Türü</option>
-                <option value="otomobil" className="bg-[#454545] text-white">Otomobil</option>
-                <option value="motorsiklet" className="bg-[#454545] text-white">Motorsiklet</option>
+                <option value="">Araç Türü</option>
+                <option value="otomobil">Otomobil</option>
+                <option value="motorsiklet">Motorsiklet</option>
               </select>
-            </div>
-
-            {/* Brand Select */}
-            <div className="flex-1 min-w-[120px]">
-              <label htmlFor="fixed-brand" className="sr-only">Marka Seçin</label>
               <select
-                id="fixed-brand"
-                name="brand"
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
                 disabled={!vehicleType}
-                className="w-full px-3 py-2.5 bg-[#454545] border border-[#5a5a5a] rounded-lg text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50"
+                className={`${selectClass} disabled:opacity-50`}
               >
-                <option value="" className="bg-[#454545] text-white">Marka</option>
+                <option value="">Marka Seçin</option>
                 {brandsLoading ? (
-                  <option disabled className="bg-[#454545] text-white">Yükleniyor...</option>
+                  <option disabled>Yükleniyor...</option>
                 ) : (
                   brands.map((b) => (
-                    <option key={b.brand} value={b.brand} className="bg-[#454545] text-white">{b.brand}</option>
+                    <option key={b.brand} value={b.brand}>{b.brand}</option>
                   ))
                 )}
               </select>
-            </div>
-
-            {/* Model Select */}
-            <div className="flex-1 min-w-[120px]">
-              <label htmlFor="fixed-model" className="sr-only">Model Seçin</label>
               <select
-                id="fixed-model"
-                name="model"
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
                 disabled={!brand}
-                className="w-full px-3 py-2.5 bg-[#454545] border border-[#5a5a5a] rounded-lg text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50"
+                className={`${selectClass} disabled:opacity-50`}
               >
-                <option value="" className="bg-[#454545] text-white">Model</option>
+                <option value="">Model Seçin</option>
                 {modelsLoading ? (
-                  <option disabled className="bg-[#454545] text-white">Yükleniyor...</option>
+                  <option disabled>Yükleniyor...</option>
                 ) : (
                   models.map((m) => (
-                    <option key={m.model} value={m.model} className="bg-[#454545] text-white">{m.model}</option>
+                    <option key={m.model} value={m.model}>{m.model}</option>
                   ))
                 )}
               </select>
             </div>
 
-            {/* Divider */}
-            <div className="h-8 w-px bg-white/20" aria-hidden="true"></div>
-
-            {/* Category Select */}
-            <div className="flex-1 min-w-[140px]">
-              <label htmlFor="fixed-category" className="sr-only">Hizmet Kategorisi Seçin</label>
+            {/* Category Section */}
+            <div className="space-y-3">
+              <label className="text-[#454545] text-xs font-bold uppercase tracking-wide whitespace-nowrap">Hizmet</label>
               <select
-                id="fixed-category"
-                name="category"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-3 py-2.5 bg-[#454545] border border-[#5a5a5a] rounded-lg text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className={selectClass}
               >
-                <option value="" className="bg-[#454545] text-white">Hizmet Kategorisi</option>
+                <option value="">Kategori Seçin</option>
                 {categoriesLoading ? (
-                  <option disabled className="bg-[#454545] text-white">Yükleniyor...</option>
+                  <option disabled>Yükleniyor...</option>
                 ) : (
                   categories.map((cat) => (
-                    <option key={cat.id} value={cat.name} className="bg-[#454545] text-white">{cat.name}</option>
+                    <option key={cat.id} value={cat.name}>{cat.name}</option>
                   ))
                 )}
               </select>
@@ -279,85 +302,73 @@ export default function FixedSearchBar() {
             {/* Search Button */}
             <button
               type="submit"
-              className="bg-white text-[#454545] px-8 py-2.5 rounded-lg hover:bg-gray-100 transition-all font-bold flex items-center gap-2 shadow-lg hover:shadow-xl btn-interactive"
-              aria-label="Servis Ara"
+              className="w-full bg-[#454545] text-primary-500 px-4 py-3 rounded-lg hover:bg-[#555555] transition-all font-bold flex items-center justify-center gap-2 shadow-lg mt-6 whitespace-nowrap"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <span>Servis Bul</span>
-            </button>
-          </form>
-
-          {/* Mobile Layout */}
-          <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }} className="md:hidden" role="search" aria-label="Mobil Servis Arama">
-            <div className="grid grid-cols-3 gap-2 mb-2">
-              <div>
-                <label htmlFor="mobile-city" className="sr-only">İl Seçin</label>
-                <select
-                  id="mobile-city"
-                  name="city"
-                  value={city}
-                  onChange={(e) => {
-                    setCity(e.target.value);
-                    setDistrict('');
-                  }}
-                  className="w-full px-2 py-2 bg-[#454545] border border-[#5a5a5a] rounded-lg text-[#454545] text-xs focus:ring-2 focus:ring-primary-500"
-                >
-                  <option value="" className="bg-[#454545] text-white">İl</option>
-                  {cityList.map((c) => (
-                    <option key={c} value={c} className="bg-[#454545] text-white">{c}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label htmlFor="mobile-brand" className="sr-only">Marka Seçin</label>
-                <select
-                  id="mobile-brand"
-                  name="brand"
-                  value={brand}
-                  onChange={(e) => setBrand(e.target.value)}
-                  disabled={!vehicleType}
-                  className="w-full px-2 py-2 bg-[#454545] border border-[#5a5a5a] rounded-lg text-[#454545] text-xs focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
-                >
-                  <option value="" className="bg-[#454545] text-white">Marka</option>
-                  {brands.map((b) => (
-                    <option key={b.brand} value={b.brand} className="bg-[#454545] text-white">{b.brand}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label htmlFor="mobile-category" className="sr-only">Kategori Seçin</label>
-                <select
-                  id="mobile-category"
-                  name="category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-2 py-2 bg-[#454545] border border-[#5a5a5a] rounded-lg text-[#454545] text-xs focus:ring-2 focus:ring-primary-500"
-                >
-                  <option value="" className="bg-[#454545] text-white">Kategori</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.name} className="bg-[#454545] text-white">{cat.name}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-white text-[#454545] px-4 py-2.5 rounded-lg font-bold flex items-center justify-center gap-2 shadow-lg btn-interactive hover:bg-gray-100 transition-all"
-              aria-label="Servis Ara"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <span>Servis Bul</span>
+              Servis Bul
             </button>
           </form>
         </div>
       </div>
-    </div>
+
+      {/* MOBILE: Bottom Bar (unchanged) */}
+      <div
+        className={`lg:hidden fixed bottom-0 left-0 right-0 z-40 transition-transform duration-300 ${
+          isVisible ? 'translate-y-0' : 'translate-y-full'
+        }`}
+      >
+        <div className="bg-primary-600 px-4 py-3">
+          <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
+            <div className="grid grid-cols-3 gap-2 mb-2">
+              <select
+                value={city}
+                onChange={(e) => { setCity(e.target.value); setDistrict(''); }}
+                className="w-full px-2 py-3 bg-primary-500 border border-primary-400 rounded-lg text-[#454545] text-sm focus:ring-2 focus:ring-primary-500 min-h-[44px]"
+              >
+                <option value="">İl</option>
+                {cityList.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+
+              <select
+                value={brand}
+                onChange={(e) => setBrand(e.target.value)}
+                disabled={!vehicleType}
+                className="w-full px-2 py-3 bg-primary-500 border border-primary-400 rounded-lg text-[#454545] text-sm focus:ring-2 focus:ring-primary-500 disabled:opacity-50 min-h-[44px]"
+              >
+                <option value="">Marka</option>
+                {brands.map((b) => (
+                  <option key={b.brand} value={b.brand}>{b.brand}</option>
+                ))}
+              </select>
+
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full px-2 py-3 bg-primary-500 border border-primary-400 rounded-lg text-[#454545] text-sm focus:ring-2 focus:ring-primary-500 min-h-[44px]"
+              >
+                <option value="">Kategori</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.name}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-[#454545] text-primary-500 px-4 py-2.5 rounded-lg font-bold flex items-center justify-center gap-2 shadow-lg"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              Servis Bul
+            </button>
+          </form>
+        </div>
+      </div>
+    </>
   );
 }

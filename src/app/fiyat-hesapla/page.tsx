@@ -73,7 +73,7 @@ export default async function FiyatHesaplaPage({ searchParams }: PageProps) {
               </div>
               <div>
                 <h4 className="font-bold text-white mb-2 text-lg">
-                  ⚠️ Önemli Bilgilendirme
+                  Önemli Bilgilendirme
                 </h4>
                 <p className="text-sm text-gray-300 leading-relaxed mb-3">
                   <strong className="text-yellow-300">Bu sayfada gösterilen fiyatlar örnek verilerdir.</strong> Elimizde henüz canlı, güncel servis fiyat verileri bulunmamaktadır.
@@ -221,16 +221,16 @@ export default async function FiyatHesaplaPage({ searchParams }: PageProps) {
               </p>
             </div>
 
-            <div className="bg-gradient-to-br from-blue-50 via-blue-100 to-blue-50 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-blue-200 hover:border-blue-300 transform hover:scale-105">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl flex items-center justify-center mb-5 shadow-xl transform hover:rotate-6 transition-transform">
+            <div className="bg-gradient-to-br from-primary-50 via-primary-100 to-primary-50 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-primary-200 hover:border-primary-300 transform hover:scale-105">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mb-5 shadow-xl transform hover:rotate-6 transition-transform">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="font-bold text-xl mb-3 text-blue-900">
+              <h3 className="font-bold text-xl mb-3 text-primary-900">
                 Parça Seçeneklerini Değerlendirin
               </h3>
-              <p className="text-blue-800 text-sm leading-relaxed">
+              <p className="text-primary-800 text-sm leading-relaxed">
                 OES (orijinal ekipman tedarikçisi) parçalar, orijinal kalitede
                 ancak daha uygun fiyatlı olabilir. Servisinizden seçenekleri sorun.
               </p>

@@ -151,3 +151,105 @@ export type VehicleSelectInput = z.infer<typeof vehicleSelectSchema>;
 export type AIResearchInput = z.infer<typeof aiResearchSchema>;
 export type OBDSearchInput = z.infer<typeof obdSearchSchema>;
 export type AdminLoginInput = z.infer<typeof adminLoginSchema>;
+
+/**
+ * Çıkma Parça Pazaryeri Schemas
+ */
+
+// Turkish license plate validation (format: 34 ABC 123 or 06 A 1234)
+const turkishPlakaRegex = /^(0[1-9]|[1-7][0-9]|8[01])\s?[A-Z]{1,3}\s?\d{1,4}$/i;
+
+export const plakaSchema = z.string()
+  .transform((val) => val.toUpperCase().replace(/\s+/g, ' ').trim())
+  .refine((val) => turkishPlakaRegex.test(val.replace(/\s/g, '')), {
+    message: 'Geçerli bir Türkiye plakası giriniz (örn: 34 ABC 123)',
+  });
+
+// Çıkma Parça kategorileri
+const cikmaParcaCategoryValues = [
+  'motor', 'fren', 'suspansiyon', 'elektrik', 'sogutma',
+  'sanziman', 'egzoz', 'yakit', 'kaporta', 'ic-aksesuar', 'diger'
+] as const;
+
+// Parça durumu
+const parcaConditionValues = ['cok-iyi', 'iyi', 'orta', 'onarima-ihtiyaci-var'] as const;
+
+// Çıkma Parça ilan formu
+export const cikmaParcaSchema = z.object({
+  title: z.string()
+    .min(5, 'Başlık en az 5 karakter olmalıdır')
+    .max(150, 'Başlık en fazla 150 karakter olabilir')
+    .transform((val) => val.trim()),
+  description: z.string()
+    .min(20, 'Açıklama en az 20 karakter olmalıdır')
+    .max(2000, 'Açıklama en fazla 2000 karakter olabilir')
+    .transform((val) => val.trim())
+    .transform((val) => val.replace(/<[^>]*>/g, '')),
+  category: z.enum(cikmaParcaCategoryValues, {
+    message: 'Kategori seçiniz',
+  }),
+  brand: brandSchema,
+  model: modelSchema,
+  yearFrom: z.coerce.number().int().min(1970).max(currentYear + 1).optional(),
+  yearTo: z.coerce.number().int().min(1970).max(currentYear + 1).optional(),
+  price: z.coerce.number()
+    .positive('Fiyat pozitif olmalıdır')
+    .max(10000000, 'Fiyat çok yüksek'),
+  condition: z.enum(parcaConditionValues, {
+    message: 'Parça durumunu seçiniz',
+  }),
+  oemCode: z.string().max(50).optional(),
+  location: citySchema,
+});
+
+// Parça teklif formu
+export const cikmaParcaTeklifSchema = z.object({
+  parcaId: z.coerce.number().int().positive('Geçerli bir parça seçiniz'),
+  senderName: nameSchema,
+  senderPhone: phoneSchema,
+  message: z.string()
+    .min(10, 'Mesaj en az 10 karakter olmalıdır')
+    .max(1000, 'Mesaj en fazla 1000 karakter olabilir')
+    .transform((val) => val.trim())
+    .transform((val) => val.replace(/<[^>]*>/g, '')),
+  offeredPrice: z.coerce.number().positive().optional(),
+});
+
+/**
+ * Park Mesaj (Hatalı Park Bildirimi) Schemas
+ */
+
+const parkMesajTypeValues = ['cift-park', 'engel', 'is-yeri-onunde', 'diger'] as const;
+
+// Park mesajı gönderme formu
+export const parkMesajSchema = z.object({
+  targetPlaka: plakaSchema,
+  senderPhone: phoneSchema,
+  messageType: z.enum(parkMesajTypeValues, {
+    message: 'Mesaj türü seçiniz',
+  }),
+  message: z.string()
+    .min(10, 'Mesaj en az 10 karakter olmalıdır')
+    .max(500, 'Mesaj en fazla 500 karakter olabilir')
+    .transform((val) => val.trim())
+    .transform((val) => val.replace(/<[^>]*>/g, '')),
+  locationDescription: z.string().max(200).optional(),
+});
+
+// Plaka kayıt formu
+export const plakaKayitSchema = z.object({
+  plaka: plakaSchema,
+  ownerPhone: phoneSchema,
+  ownerEmail: emailSchema.optional(),
+  brand: brandSchema.optional(),
+  model: modelSchema.optional(),
+  year: yearSchema.optional(),
+  kvkkConsent: z.boolean().refine((val) => val === true, {
+    message: 'KVKK onayı gereklidir',
+  }),
+});
+
+export type CikmaParcaInput = z.infer<typeof cikmaParcaSchema>;
+export type CikmaParcaTeklifInput = z.infer<typeof cikmaParcaTeklifSchema>;
+export type ParkMesajInput = z.infer<typeof parkMesajSchema>;
+export type PlakaKayitInput = z.infer<typeof plakaKayitSchema>;

@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import { randevuSchema, validateRequest, formatValidationErrors } from '@/lib/validation';
 import { successResponse, errors, logError } from '@/lib/api-response';
+import { createLogger } from '@/lib/logger';
 
-const STRAPI_API = process.env.STRAPI_API_URL || 'https://api.tamirhanem.net/api';
+const logger = createLogger('API_RANDEVU_TALEBI');
+
+const STRAPI_API = process.env.STRAPI_API_URL || 'https://api.tamirhanem.com/api';
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
 
 export async function POST(request: Request) {
@@ -56,7 +59,7 @@ export async function POST(request: Request) {
       logError('Strapi randevu-talebi', new Error(errorText));
 
       // Log for manual processing but don't expose error to user
-      console.log('Randevu talebi (fallback):', JSON.stringify(strapiData));
+      logger.info({ data: strapiData }, 'Randevu talebi (fallback)');
 
       return successResponse({
         id: Date.now(),

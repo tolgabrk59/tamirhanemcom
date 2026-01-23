@@ -1,52 +1,81 @@
 import { NextResponse } from 'next/server';
+import { createLogger } from '@/lib/logger';
 
-const STRAPI_API = 'https://api.tamirhanem.net/api';
+const logger = createLogger('API_STATS');
+
+const STRAPI_API = process.env.STRAPI_API_URL || 'https://api.tamirhanem.com/api';
+const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
+
+const headers = {
+    'Content-Type': 'application/json',
+    ...(STRAPI_TOKEN && { Authorization: `Bearer ${STRAPI_TOKEN}` }),
+};
 
 export async function GET() {
     try {
-        // Strapi'den servis verilerini çek
-        const response = await fetch(`${STRAPI_API}/services?pagination[pageSize]=1000&fields[0]=id&fields[1]=rating`, {
-            next: { revalidate: 300 } // 5 dakika cache
-        });
+        // Strapi'den verileri paralel çek
+        const [servicesRes, usersCountRes, waitlistRes] = await Promise.all([
+            fetch(`${STRAPI_API}/services?pagination[pageSize]=1&pagination[withCount]=true`, {
+                headers,
+                next: { revalidate: 300 }
+            }),
+            fetch(`${STRAPI_API}/users/count`, {
+                headers,
+                next: { revalidate: 300 }
+            }),
+            fetch(`${STRAPI_API}/waitinglists?pagination[pageSize]=1&pagination[withCount]=true`, {
+                headers,
+                next: { revalidate: 300 }
+            })
+        ]);
 
-        if (!response.ok) {
-            throw new Error('Strapi API erişim hatası');
+        let serviceCount = 500;
+        let cityCount = 81; // Türkiye'deki il sayısı sabit
+        let customerCount = 50000;
+
+        if (servicesRes.ok) {
+            const servicesJson = await servicesRes.json();
+            serviceCount = servicesJson.meta?.pagination?.total || serviceCount;
         }
 
-        const json = await response.json();
-        const services = json.data || [];
-        
-        // Servis sayısı
-        const serviceCount = services.length;
-        
-        // Ortalama rating hesapla
-        const ratingsWithValues = services
-            .map((s: any) => s.attributes?.rating || s.rating)
-            .filter((r: number | null) => r !== null && r > 0);
-        
-        const avgRating = ratingsWithValues.length > 0
-            ? (ratingsWithValues.reduce((a: number, b: number) => a + b, 0) / ratingsWithValues.length).toFixed(1)
-            : '4.8';
+        // users/count endpoint'inden kullanıcı sayısını al
+        if (usersCountRes.ok) {
+            const usersCount = await usersCountRes.json();
+            // Strapi users/count doğrudan sayı döner
+            if (typeof usersCount === 'number') {
+                customerCount = usersCount;
+            } else if (usersCount?.count) {
+                customerCount = usersCount.count;
+            }
+        }
 
-        // Müşteri sayısı - tahmini değer
-        const customerCount = 50000;
+        // Waitlist'i de kontrol et
+        if (waitlistRes.ok) {
+            const waitlistJson = await waitlistRes.json();
+            const waitlistCount = waitlistJson.meta?.pagination?.total;
+            if (waitlistCount && waitlistCount > customerCount) {
+                customerCount = waitlistCount;
+            }
+        }
 
         return NextResponse.json({
             success: true,
             data: {
                 serviceCount,
+                cityCount,
                 customerCount,
-                avgRating,
+                avgRating: '4.8',
                 savingsPercent: 30
             }
         });
     } catch (error) {
-        console.error('Stats API Error:', error);
+        logger.error({ error }, 'Stats API Error');
         // Fallback değerler
         return NextResponse.json({
             success: true,
             data: {
                 serviceCount: 500,
+                cityCount: 81,
                 customerCount: 50000,
                 avgRating: '4.8',
                 savingsPercent: 30

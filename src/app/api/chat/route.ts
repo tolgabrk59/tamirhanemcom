@@ -1,12 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { successResponse, errors, logError } from '@/lib/api-response';
+import { getUserContext, saveConversation } from '@/lib/supermemory';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('API_CHAT');
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, history } = await request.json();
+    const { message, history, userId, vehicleInfo } = await request.json();
 
     if (!message || typeof message !== 'string') {
       return errors.badRequest('Mesaj gereklidir');
+    }
+
+    // Generate session ID if userId not provided
+    const sessionId = userId || request.cookies.get('session_id')?.value ||
+      `anon_${request.headers.get('x-forwarded-for') || 'unknown'}_${Date.now()}`;
+
+    // Get relevant memories for context
+    let memoryContext = '';
+    try {
+      memoryContext = await getUserContext(sessionId, message);
+    } catch (e) {
+      // Memory fetch failed, continue without it
+      logger.debug({ error: e }, 'Memory context fetch skipped');
     }
 
     // Pre-filter: Check if question is clearly non-automotive
@@ -104,7 +121,7 @@ KESİN KURALLAR:
 
 ÖNEMLİ: Soru araç ile ilgili değilse, ASLA genel bilgi verme. Sadece yukarıdaki reddetme cevabını ver.
 
-SEN YAPAY ZEKA OLDUĞUNU BELİRTME, TamirHanem asistanı olarak konuş.`;
+SEN YAPAY ZEKA OLDUĞUNU BELİRTME, TamirHanem asistanı olarak konuş.${memoryContext}`;
 
     // Convert chat history to Gemini format
     const contents = [];
@@ -143,12 +160,24 @@ SEN YAPAY ZEKA OLDUĞUNU BELİRTME, TamirHanem asistanı olarak konuş.`;
       },
     };
 
-    // Gemini API endpoint
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      logError('Chat API', new Error('GEMINI_API_KEY not configured'));
+    // Gemini API endpoint - Use rotating keys
+    const apiKeys = [
+      process.env.GEMINI_API_KEY,
+      process.env.GEMINI_API_KEY_2,
+      process.env.GEMINI_API_KEY_3,
+      process.env.GEMINI_API_KEY_4,
+      process.env.GEMINI_API_KEY_5,
+      process.env.GEMINI_API_KEY_7,
+    ].filter(Boolean) as string[];
+    
+    if (apiKeys.length === 0) {
+      logError('Chat API', new Error('No GEMINI_API_KEY configured'));
       return errors.serviceUnavailable('Sohbet servisi geçici olarak kullanılamıyor');
     }
+    
+    // Rotate through keys based on current time (changes every minute)
+    const keyIndex = Math.floor(Date.now() / 60000) % apiKeys.length;
+    const apiKey = apiKeys[keyIndex];
 
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
@@ -173,6 +202,11 @@ SEN YAPAY ZEKA OLDUĞUNU BELİRTME, TamirHanem asistanı olarak konuş.`;
     }
 
     const aiMessage = data.candidates[0].content.parts[0].text;
+
+    // Save conversation to memory (don't await, fire and forget)
+    saveConversation(sessionId, message, aiMessage, vehicleInfo).catch((e) => {
+      logger.debug({ error: e }, 'Memory save skipped');
+    });
 
     return successResponse({ message: aiMessage });
   } catch (error) {

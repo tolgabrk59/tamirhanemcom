@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { createLogger } from '@/lib/logger';
+import type { ArabamPriceResult, ArabamPriceData } from '@/types/external-apis';
+
+const logger = createLogger('API_ARAC_DEGERI');
 
 export const dynamic = 'force-dynamic';
 
@@ -58,25 +62,6 @@ function getModelSlug(brand: string, model: string): string {
     .replace(/[^a-z0-9-]/g, '');
 }
 
-interface PriceResult {
-  success: boolean;
-  data?: {
-    count: number;
-    minPrice: number;
-    maxPrice: number;
-    avgPrice: number;
-    medianPrice: number;
-    priceRange: {
-      low: number;
-      high: number;
-    };
-    source: string;
-    fetchedAt: string;
-    searchUrl: string;
-  };
-  error?: string;
-}
-
 // Dogrudan slug ile cagri
 async function fetchPricesFromArabamDirect(
   brandSlug: string,
@@ -84,7 +69,7 @@ async function fetchPricesFromArabamDirect(
   year: number,
   engineSlug?: string,
   packageSlug?: string
-): Promise<PriceResult> {
+): Promise<ArabamPriceResult> {
   // Yil araligi
   const minYear = year - 1;
   const maxYear = year + 1;
@@ -100,7 +85,7 @@ async function fetchPricesFromArabamDirect(
 
   const url = `https://www.arabam.com/ikinci-el/otomobil/${urlPath}?minYear=${minYear}&maxYear=${maxYear}`;
 
-  console.log('Fetching prices from:', url);
+  logger.info({ url }, 'Fetching prices from arabam.com');
 
   try {
     const response = await axios.get(url, {
@@ -165,7 +150,7 @@ async function fetchPricesFromArabamDirect(
     if (prices.length < 3) {
       // Motor/paket ile az sonuc varsa, onsuz tekrar dene
       if (engineSlug || packageSlug) {
-        console.log('Yeterli ilan yok, daha genel arama yapiliyor...');
+        logger.info({ engineSlug, packageSlug }, 'Yeterli ilan yok, daha genel arama yapiliyor');
         if (packageSlug) {
           // Paket olmadan dene
           return fetchPricesFromArabamDirect(brandSlug, modelSlug, year, engineSlug);
@@ -228,7 +213,7 @@ async function fetchPricesFromArabamDirect(
       },
     };
   } catch (error) {
-    console.error('Scraping error:', error);
+    logger.error({ error }, 'Scraping error');
     return {
       success: false,
       error: 'Fiyat bilgisi alinamadi',
@@ -243,7 +228,7 @@ async function fetchPricesFromArabam(
   year: number,
   engine?: string,
   packageType?: string
-): Promise<PriceResult> {
+): Promise<ArabamPriceResult> {
   const brandSlugVal = brandSlugs[brand] || brand.toLowerCase();
   const modelSlugVal = getModelSlug(brand, model);
 
@@ -266,7 +251,7 @@ async function fetchPricesFromArabam(
 
   const url = `https://www.arabam.com/ikinci-el/otomobil/${urlPath}?minYear=${minYear}&maxYear=${maxYear}`;
 
-  console.log('Fetching prices from:', url);
+  logger.info({ url }, 'Fetching prices from arabam.com (legacy)');
 
   try {
     const response = await axios.get(url, {
@@ -331,7 +316,7 @@ async function fetchPricesFromArabam(
     if (prices.length < 3) {
       // Cok az ilan varsa, motor/paket olmadan tekrar dene
       if (engine || packageType) {
-        console.log('Yeterli ilan yok, genel arama yapiliyor...');
+        logger.info({ engine, packageType }, 'Yeterli ilan yok, genel arama yapiliyor');
         return fetchPricesFromArabam(brand, model, year);
       }
       return {
@@ -388,11 +373,11 @@ async function fetchPricesFromArabam(
       },
     };
   } catch (error) {
-    console.error('Scraping error:', error);
+    logger.error({ error }, 'Scraping error');
 
     // Motor/paket ile hata aldiysa, onsuz dene
     if (engine || packageType) {
-      console.log('Hata alindi, genel arama yapiliyor...');
+      logger.info({ engine, packageType }, 'Hata alindi, genel arama yapiliyor');
       return fetchPricesFromArabam(brand, model, year);
     }
 

@@ -9,4 +9,5 @@ export { default as CostEstimator } from './CostEstimator';
 export { default as ReviewsSection } from './Reviews';
 export { default as FAQSection } from './FAQ';
 export { default as Header } from './Header';
+export { default as Sidebar } from './Sidebar';
 export { default as Footer } from './Footer';

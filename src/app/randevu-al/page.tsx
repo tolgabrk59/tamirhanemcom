@@ -60,7 +60,7 @@ export default function RandevuAlPage() {
                 setCategoriesLoading(false);
             })
             .catch(err => {
-                console.error('Kategori yükleme hatası:', err);
+                console.error('Kategori yukleme hatasi:', err);
                 setCategoriesLoading(false);
             });
     }, []);
@@ -76,7 +76,7 @@ export default function RandevuAlPage() {
                 setBrandsLoading(false);
             })
             .catch(err => {
-                console.error('Marka yükleme hatası:', err);
+                console.error('Marka yukleme hatasi:', err);
                 setBrandsLoading(false);
             });
     }, []);
@@ -95,7 +95,7 @@ export default function RandevuAlPage() {
                     setModelsLoading(false);
                 })
                 .catch(err => {
-                    console.error('Model yükleme hatası:', err);
+                    console.error('Model yukleme hatasi:', err);
                     setModelsLoading(false);
                 });
         } else {
@@ -154,7 +154,7 @@ export default function RandevuAlPage() {
         } catch (error) {
             console.error('Submit error:', error);
             setSubmitStatus('error');
-            setSubmitMessage('Bağlantı hatası. Lütfen tekrar deneyin.');
+            setSubmitMessage('Baglanti hatasi. Lutfen tekrar deneyin.');
         } finally {
             setLoading(false);
         }
@@ -245,6 +245,7 @@ export default function RandevuAlPage() {
                                             setCity(e.target.value);
                                             setDistrict('');
                                         }}
+                                        aria-label="Şehir seçin"
                                         className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white"
                                     >
                                         <option value="">Şehir</option>
@@ -257,6 +258,8 @@ export default function RandevuAlPage() {
                                         value={district}
                                         onChange={(e) => setDistrict(e.target.value)}
                                         disabled={!city}
+                                        aria-label="İlçe seçin"
+                                        aria-disabled={!city}
                                         className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white disabled:bg-white/50"
                                     >
                                         <option value="">İlçe</option>
@@ -271,6 +274,7 @@ export default function RandevuAlPage() {
                                     <select
                                         value={brand}
                                         onChange={(e) => setBrand(e.target.value)}
+                                        aria-label="Araç markası seçin"
                                         className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white"
                                     >
                                         <option value="">Marka</option>
@@ -287,6 +291,8 @@ export default function RandevuAlPage() {
                                         value={model}
                                         onChange={(e) => setModel(e.target.value)}
                                         disabled={!brand}
+                                        aria-label="Araç modeli seçin"
+                                        aria-disabled={!brand}
                                         className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white disabled:bg-white/50"
                                     >
                                         <option value="">Model</option>
@@ -305,6 +311,7 @@ export default function RandevuAlPage() {
                                     <select
                                         value={year}
                                         onChange={(e) => setYear(e.target.value)}
+                                        aria-label="Model yılı seçin"
                                         className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white"
                                     >
                                         <option value="">Model Yılı</option>
@@ -316,6 +323,7 @@ export default function RandevuAlPage() {
                                     <select
                                         value={fuelType}
                                         onChange={(e) => setFuelType(e.target.value)}
+                                        aria-label="Yakıt tipi seçin"
                                         className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white"
                                     >
                                         <option value="">Yakıt Tipi</option>
@@ -329,6 +337,7 @@ export default function RandevuAlPage() {
                                 <select
                                     value={category}
                                     onChange={(e) => setCategory(e.target.value)}
+                                    aria-label="Hizmet kategorisi seçin"
                                     className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white"
                                 >
                                     <option value="">Hizmet Kategorisi</option>
@@ -346,18 +355,25 @@ export default function RandevuAlPage() {
                                 {/* Telefon (Zorunlu) */}
                                 <input
                                     type="tel"
+                                    inputMode="tel"
+                                    autoComplete="tel"
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
                                     placeholder="Telefon Numarası *"
+                                    aria-label="Telefon numarası (zorunlu)"
+                                    aria-required="true"
+                                    required
                                     className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white placeholder-secondary-500"
                                 />
 
                                 {/* Ad Soyad (Opsiyonel) */}
                                 <input
                                     type="text"
+                                    autoComplete="name"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     placeholder="Ad Soyad (Opsiyonel)"
+                                    aria-label="Ad soyad (opsiyonel)"
                                     className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white placeholder-secondary-500"
                                 />
 
@@ -366,24 +382,29 @@ export default function RandevuAlPage() {
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
                                     placeholder="Ek notlar veya açıklamalar (Opsiyonel)"
+                                    aria-label="Ek notlar (opsiyonel)"
                                     rows={2}
                                     className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white placeholder-secondary-500 resize-none"
                                 />
 
                                 {/* Status Message */}
                                 {submitStatus !== 'idle' && (
-                                    <div className={`p-4 rounded-xl ${
-                                        submitStatus === 'success' 
-                                            ? 'bg-green-100 text-green-800 border border-green-300' 
-                                            : 'bg-red-100 text-red-800 border border-red-300'
-                                    }`}>
+                                    <div
+                                        role="alert"
+                                        aria-live="assertive"
+                                        className={`p-4 rounded-xl ${
+                                            submitStatus === 'success'
+                                                ? 'bg-green-100 text-green-800 border border-green-300'
+                                                : 'bg-red-100 text-red-800 border border-red-300'
+                                        }`}
+                                    >
                                         <div className="flex items-center gap-2">
                                             {submitStatus === 'success' ? (
-                                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                                 </svg>
                                             ) : (
-                                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                                                 </svg>
                                             )}

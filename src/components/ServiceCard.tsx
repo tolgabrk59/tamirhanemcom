@@ -51,7 +51,7 @@ export default function ServiceCard({
             <div className="relative h-36 sm:h-40 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
                 {service.pic && !imageError ? (
                     <Image
-                        src={service.pic.startsWith('http') ? service.pic : `https://api.tamirhanem.net${service.pic}`}
+                        src={service.pic.startsWith('http') ? service.pic : `https://api.tamirhanem.com${service.pic}`}
                         alt={service.name}
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

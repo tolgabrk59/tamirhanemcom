@@ -359,13 +359,13 @@ export default function TireSelectionPage() {
                 {/* Pressure */}
                 {tireData.recommended_pressure && (
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                      <p className="text-sm font-medium text-blue-800">Ön Lastik Basıncı</p>
-                      <p className="text-2xl font-bold text-blue-600">{tireData.recommended_pressure.front}</p>
+                    <div className="p-4 bg-primary-50 rounded-lg border border-primary-200">
+                      <p className="text-sm font-medium text-primary-800">Ön Lastik Basıncı</p>
+                      <p className="text-2xl font-bold text-primary-600">{tireData.recommended_pressure.front}</p>
                     </div>
-                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                      <p className="text-sm font-medium text-blue-800">Arka Lastik Basıncı</p>
-                      <p className="text-2xl font-bold text-blue-600">{tireData.recommended_pressure.rear}</p>
+                    <div className="p-4 bg-primary-50 rounded-lg border border-primary-200">
+                      <p className="text-sm font-medium text-primary-800">Arka Lastik Basıncı</p>
+                      <p className="text-2xl font-bold text-primary-600">{tireData.recommended_pressure.rear}</p>
                     </div>
                   </div>
                 )}

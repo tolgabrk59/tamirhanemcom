@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import ServiceTimeline from './ServiceTimeline';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -50,7 +51,7 @@ export default function Header() {
     { href: '/', label: 'Ana Sayfa' },
     { href: '/servisler', label: 'Servis Bul' },
     { href: '/randevu-al', label: 'Randevu Al' },
-    { href: '/fiyat-hesapla', label: 'Fiyat Hesapla' },
+    { href: '/arac/2-el-parca', label: '2.El Parça' },
   ];
 
   const megaMenus = {
@@ -65,6 +66,7 @@ export default function Header() {
             { href: '/arac/bakim-tavsiyeleri', label: 'Araç Bakımı Tavsiyeleri', desc: 'Uzman bakım önerileri ve ipuçları' },
             { href: '/arac/ansiklopedi', label: 'Araç Ansiklopedisi', desc: 'Otomotiv sistemleri hakkında detaylı bilgi' },
             { href: '/arac/yedek-parca', label: 'Parça Kütüphanesi', desc: 'Parça bilgileri ve fiyat karşılaştırması' },
+            { href: '/arac/2-el-parca', label: '2.El Parça Pazaryeri', desc: 'Uygun fiyatlı 2.el parçalar bulun' },
             { href: '/arac/lastik-secimi', label: 'Lastik Seçimi', desc: 'Aracınıza uygun lastik bulun' },
             { href: '/arac/ariza-lambalari', label: 'Araç Arıza Lambaları', desc: 'Gösterge paneli uyarı ışıklarının anlamları' },
             { href: '/sarj-istasyonlari', label: 'Şarj İstasyonları', desc: 'Elektrikli araç şarj noktalarını bulun' },
@@ -78,6 +80,8 @@ export default function Header() {
             { href: '/forum', label: 'Forum', desc: 'Toplulukla deneyimlerinizi paylaşın' },
             { href: '/obd', label: 'OBD-II Kodları', desc: 'Arıza kodlarını anlamlandırın' },
             { href: '/bakim-planlama', label: 'Bakım Planlama', desc: 'Bakım takvimi ve hatırlatıcılar' },
+            { href: '/arac/park-mesaj', label: 'Hatalı Park Bildirimi', desc: 'Hatalı park mesajı gönder' },
+            { href: '/arac/plaka-kayit', label: 'Plakamı Kaydet', desc: 'Mesaj almak için kayıt ol' },
           ]
         }
       ]
@@ -123,6 +127,8 @@ export default function Header() {
 
   return (
     <header className={`${isHomePage ? 'bg-primary-600' : 'bg-white border-b border-secondary-200'} shadow-sm sticky top-0 z-50`}>
+      {/* Service Timeline Top Bar */}
+      <ServiceTimeline />
 
       {/* Main Header */}
       <div className="w-full px-4 sm:px-6 lg:px-10">
@@ -130,8 +136,8 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center mt-1">
             <span className="text-3xl font-extrabold tracking-tight hover:opacity-90 transition-opacity font-[family-name:var(--font-jakarta)]">
-              <span className="text-[#454545]">tamirhane</span>
-              <span className="text-[#454545]">m</span>
+              <span className={isHomePage ? "text-white" : "text-secondary-800"}>tamirhane</span>
+              <span className={isHomePage ? "text-primary-300" : "text-primary-600"}>m</span>
             </span>
           </Link>
 
@@ -141,7 +147,7 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`${isHomePage ? 'text-[#454545] hover:bg-primary-500' : 'text-[#454545] hover:bg-secondary-100'} hover:text-secondary-900 px-3 py-2 rounded-lg font-bold transition-colors text-base`}
+                className={`${isHomePage ? 'text-white hover:bg-primary-500/30' : 'text-secondary-700 hover:bg-secondary-100'} hover:text-secondary-900 px-3 py-2 rounded-lg font-bold transition-colors text-base`}
               >
                 {link.label}
               </Link>
@@ -155,7 +161,11 @@ export default function Header() {
                 onMouseEnter={() => setActiveMenu(key)}
                 onMouseLeave={() => setActiveMenu(null)}
               >
-                <button className={`${isHomePage ? 'text-[#454545] hover:bg-primary-500' : 'text-[#454545] hover:bg-secondary-100'} hover:text-secondary-900 px-3 py-2 rounded-lg font-bold transition-colors flex items-center gap-1 text-base`}>
+                <button
+                  onClick={() => setActiveMenu(activeMenu === key ? null : key)}
+                  onFocus={() => setActiveMenu(key)}
+                  className={`${isHomePage ? 'text-white hover:bg-primary-500/30' : 'text-secondary-700 hover:bg-secondary-100'} hover:text-secondary-900 px-3 py-2 rounded-lg font-bold transition-colors flex items-center gap-1 text-base`}
+                >
                   {key === 'asistan' && (
                     <svg className="w-4 h-4 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -218,7 +228,7 @@ export default function Header() {
           <div className="hidden lg:flex items-center gap-2">
             {/* Giriş Dropdown */}
             <div className="relative group">
-              <button className={`flex items-center gap-1 ${isHomePage ? 'bg-white text-[#454545] hover:bg-gray-50' : 'bg-primary-600 text-[#454545] hover:bg-primary-700'} px-4 py-2 rounded-lg font-medium text-sm transition-colors`}>
+              <button className={`flex items-center gap-1 ${isHomePage ? 'bg-white text-gray-900 hover:bg-gray-50' : 'bg-primary-600 text-white hover:bg-primary-700'} px-4 py-2 rounded-lg font-medium text-sm transition-colors`}>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
@@ -229,7 +239,7 @@ export default function Header() {
               </button>
 
               {/* Dropdown */}
-              <div className="absolute top-full right-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+              <div className="absolute top-full right-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all z-50">
                 <div className="bg-white rounded-xl shadow-xl border border-gray-100 p-4 w-64">
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">Hesap Türü Seçin</p>
 
@@ -279,22 +289,46 @@ export default function Header() {
             aria-expanded={isMenuOpen}
             style={{ WebkitTapHighlightColor: 'transparent' }}
           >
-            <svg className="w-7 h-7 pointer-events-none text-[#454545]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-7 h-7 pointer-events-none" fill="none" viewBox="0 0 24 24">
               {isMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path stroke="#1f2937" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
               ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <path stroke="#1f2937" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
               )}
             </svg>
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       {isMenuOpen && (
-        <div className="lg:hidden bg-primary-600 border-t border-primary-500">
-          <div className="px-4 py-4 space-y-2">
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setIsMenuOpen(false)}
+        />
+      )}
 
+      {/* Mobile Sidebar Menu */}
+      <div
+        className={`lg:hidden fixed top-0 right-0 bottom-0 w-[280px] max-w-[85vw] bg-primary-600 z-50 transform transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col`}
+        style={{ height: '100dvh' }}
+      >
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between p-4 border-b border-primary-500 flex-shrink-0">
+          <span className="text-xl font-bold text-white">Menü</span>
+          <button
+            type="button"
+            onClick={() => setIsMenuOpen(false)}
+            className="p-3 rounded-lg hover:bg-primary-700 text-white min-w-[44px] min-h-[44px] flex items-center justify-center"
+            aria-label="Menüyü kapat"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-2">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -409,7 +443,6 @@ export default function Header() {
             </div>
           </div>
         </div>
-      )}
     </header>
   );
 }

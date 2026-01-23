@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
+import { createLogger } from '@/lib/logger';
 
-const STRAPI_API = 'https://api.tamirhanem.net/api';
+const logger = createLogger('API_OBD_SEARCH');
+
+const STRAPI_API = 'https://api.tamirhanem.com/api';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -63,7 +66,7 @@ export async function GET(request: Request) {
             count: formattedCodes.length
         });
     } catch (error) {
-        console.error('Strapi API Error:', error);
+        logger.error({ error }, 'Strapi API Error');
         return NextResponse.json(
             { success: false, error: 'OBD kodları araması başarısız oldu' },
             { status: 500 }

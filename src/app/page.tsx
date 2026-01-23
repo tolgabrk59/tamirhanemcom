@@ -1,6 +1,10 @@
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import FixedSearchBar from '@/components/FixedSearchBar';
+import ServiceTimeline from '@/components/ServiceTimeline';
+import AiIssueAnalyzer from '@/components/AiIssueAnalyzer';
+import HeroImage from '@/components/HeroImage';
+import RotatingText from '@/components/RotatingText';
 import CategoryCard from '@/components/CategoryCard';
 import ProblemsByModel from '@/components/ProblemsByModel';
 import ObdInfoSection from '@/components/ObdInfoSection';
@@ -8,22 +12,15 @@ import CostEstimator from '@/components/CostEstimator';
 import ReviewsSection from '@/components/Reviews';
 import FAQSection from '@/components/FAQ';
 import WaitlistModal from '@/components/WaitlistModal';
+import SmartAppBanner from '@/components/SmartAppBanner';
 import BusinessDashboard from '@/components/BusinessDashboard';
+import CarBrandLogosWrapper from '@/components/CarBrandLogosWrapper';
+import ScrollCarCategories from '@/components/ScrollCarCategories';
+import ServiceCategoriesMarquee from '@/components/hero/ServiceCategoriesMarquee';
 import { categoriesData } from '@/data/categories';
 import type { Category } from '@/types';
 
-// Dynamic import for 3D viewer to prevent SSR issues
-const Car3DViewer = dynamic(() => import('@/components/Car3DViewer'), {
-  ssr: false,
-  loading: () => (
-    <div className="h-[420px] bg-gradient-to-br from-slate-800/95 to-slate-900/98 rounded-3xl flex items-center justify-center">
-      <div className="text-center">
-        <div className="w-14 h-14 border-4 border-primary-400/30 border-t-primary-400 rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-gray-400">3D Model Yükleniyor...</p>
-      </div>
-    </div>
-  )
-});
+
 
 
 const STRAPI_API = 'https://api.tamirhanem.net/api';
@@ -80,7 +77,12 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero Section - Split Layout */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <section className="relative min-h-screen flex items-center bg-secondary-900 overflow-hidden">
+        {/* Service Timeline - Top Bar */}
+        <div className="absolute top-0 left-0 right-0 z-20">
+          <ServiceTimeline />
+        </div>
+
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-[0.03]" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
@@ -91,172 +93,126 @@ export default async function HomePage() {
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary-600/5 rounded-full blur-3xl"></div>
 
-        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        {/* Mobile Hero Background Image */}
+        <div
+          className="lg:hidden absolute inset-0 opacity-20 pointer-events-none"
+          style={{
+            backgroundImage: 'url(/images/hero-mechanic-final.png)',
+            backgroundPosition: 'right 20%',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: '85%',
+          }}
+        />
+
+        {/* Car Brand Logos Animation */}
+        <CarBrandLogosWrapper />
+
+        {/* Vertical CTA Text - Next to sidebar */}
+        <div className="hidden lg:flex fixed left-20 top-0 pt-4 z-30">
+          <span 
+            className="text-primary-400 text-xs tracking-widest font-medium"
+            style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+          >
+            Hemen İhtiyacınıza Uygun Servisi Aramaya Başlayın
+          </span>
+        </div>
+
+        <div className="relative w-full max-w-7xl ml-0 lg:ml-8 xl:ml-16 mr-auto px-4 sm:px-6 lg:px-8 pt-32 sm:pt-36 md:pt-40 pb-8 md:pb-12">
+
+          <div className="lg:max-w-[45%]">
             {/* Left Side - Content & Features */}
             <div>
+              {/* Typewriter Kategori Yazısı - Badge'in üstünde */}
+              <div className="-mt-24 mb-6">
+                <ServiceCategoriesMarquee />
+              </div>
+
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-500/20 to-primary-400/10 border border-primary-400/30 rounded-full px-4 py-2 mb-6 backdrop-blur-sm">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-500/20 to-primary-400/10 border border-primary-400/30 rounded-full px-4 py-2 mb-4 backdrop-blur-sm">
                 <svg className="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
-                <span className="text-primary-300 font-semibold text-sm">Türkiye&apos;nin Dijital Araç Bakım Platformu</span>
+                <span className="text-primary-300 font-semibold text-sm">Türkiye&apos;nin Dijital Araç Platformu</span>
               </div>
 
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-white">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight text-white">
                 Aracınız İçin
                 <br />
-                <span className="bg-gradient-to-r from-primary-400 via-primary-300 to-primary-400 bg-clip-text text-transparent">Tek Dijital Adres</span>
+                <RotatingText />
               </h1>
-              <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+              <p className="text-xl text-gray-300 mb-6 leading-relaxed">
                 Servis bul, fiyat karşılaştır, arıza tespit et, bakım takibi yap.
                 Tüm araç ihtiyaçlarınız için <strong className="text-white">TamirHanem</strong>.
               </p>
 
-              {/* Feature List */}
-              <div className="grid grid-cols-2 gap-3 mb-8">
-                <Link href="/servisler" className="group flex items-center gap-3 bg-white/5 hover:bg-primary-500/20 border border-white/10 hover:border-primary-400/40 rounded-xl px-4 py-3 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary-500/10">
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg group-hover:shadow-primary-500/30 transition-shadow">
-                    <svg className="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              {/* AI Issue Analyzer */}
+              <AiIssueAnalyzer />
+
+              {/* App Store Badges - Desktop */}
+              <div className="hidden lg:block mt-6">
+                <p className="text-primary-400 text-xs font-semibold mb-2 tracking-wider">YAKINDA</p>
+                <div className="flex items-center gap-3">
+                  {/* App Store */}
+                  <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-2 hover:bg-white/10 transition-colors cursor-pointer">
+                    <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                     </svg>
+                    <div className="text-left">
+                      <p className="text-[10px] text-white/60 leading-none">Download on the</p>
+                      <p className="text-sm font-semibold text-white leading-tight">App Store</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-white font-semibold text-sm group-hover:text-primary-300 transition-colors">Servis Bul</p>
-                    <p className="text-white/50 text-xs">500+ onaylı servis</p>
-                  </div>
-                </Link>
 
-                <Link href="/fiyat-hesapla" className="group flex items-center gap-3 bg-white/5 hover:bg-green-500/20 border border-white/10 hover:border-green-400/40 rounded-xl px-4 py-3 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-green-500/10">
-                  <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg group-hover:shadow-green-500/30 transition-shadow">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  {/* Google Play */}
+                  <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-2 hover:bg-white/10 transition-colors cursor-pointer">
+                    <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
                     </svg>
+                    <div className="text-left">
+                      <p className="text-[10px] text-white/60 leading-none">GET IT ON</p>
+                      <p className="text-sm font-semibold text-white leading-tight">Google Play</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-white font-semibold text-sm group-hover:text-green-300 transition-colors">Fiyat Hesapla</p>
-                    <p className="text-white/50 text-xs">Tamir maliyeti</p>
-                  </div>
-                </Link>
 
-                <Link href="/ai/ariza-tespit" className="group flex items-center gap-3 bg-white/5 hover:bg-purple-500/20 border border-white/10 hover:border-purple-400/40 rounded-xl px-4 py-3 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-purple-500/10">
-                  <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg group-hover:shadow-purple-500/30 transition-shadow">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  {/* AppGallery */}
+                  <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-2 hover:bg-white/10 transition-colors cursor-pointer">
+                    <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
                     </svg>
-                  </div>
-                  <div>
-                    <p className="text-white font-semibold text-sm group-hover:text-purple-300 transition-colors">AI Arıza Tespit</p>
-                    <p className="text-white/50 text-xs">Akıllı tanı sistemi</p>
-                  </div>
-                </Link>
-
-                <Link href="/obd" className="group flex items-center gap-3 bg-white/5 hover:bg-blue-500/20 border border-white/10 hover:border-blue-400/40 rounded-xl px-4 py-3 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/10">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg group-hover:shadow-blue-500/30 transition-shadow">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-white font-semibold text-sm group-hover:text-blue-300 transition-colors">OBD Analizi</p>
-                    <p className="text-white/50 text-xs">Arıza kodu çözümle</p>
-                  </div>
-                </Link>
-
-                <Link href="/arac-degeri" className="group flex items-center gap-3 bg-white/5 hover:bg-teal-500/20 border border-white/10 hover:border-teal-400/40 rounded-xl px-4 py-3 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-teal-500/10">
-                  <div className="w-10 h-10 bg-gradient-to-br from-teal-400 to-teal-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg group-hover:shadow-teal-500/30 transition-shadow">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-white font-semibold text-sm group-hover:text-teal-300 transition-colors">Araç Değeri</p>
-                    <p className="text-white/50 text-xs">Piyasa fiyatı</p>
-                  </div>
-                </Link>
-
-                <Link href="/kronik-sorunlar" className="group flex items-center gap-3 bg-white/5 hover:bg-orange-500/20 border border-white/10 hover:border-orange-400/40 rounded-xl px-4 py-3 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-orange-500/10">
-                  <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg group-hover:shadow-orange-500/30 transition-shadow">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-white font-semibold text-sm group-hover:text-orange-300 transition-colors">Kronik Sorunlar</p>
-                    <p className="text-white/50 text-xs">Model bazlı</p>
-                  </div>
-                </Link>
-              </div>
-
-              {/* Trust Badges */}
-              <div className="flex flex-wrap gap-3">
-                <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-4 py-2 text-sm">
-                  <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-white/80">500+ Onaylı Servis</span>
-                </div>
-                <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-4 py-2 text-sm">
-                  <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-white/80">81 İl Kapsama</span>
-                </div>
-                <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-4 py-2 text-sm">
-                  <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-white/80">Güvenli Ödeme</span>
-                </div>
-              </div>
-
-              {/* Mobile Stats - Only visible on mobile */}
-              <div className="mt-8 lg:hidden">
-                <div className="grid grid-cols-3 gap-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4">
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-white">500+</p>
-                    <p className="text-xs text-gray-400">Onaylı Servis</p>
-                  </div>
-                  <div className="text-center border-x border-white/10">
-                    <p className="text-2xl font-bold text-white">81</p>
-                    <p className="text-xs text-gray-400">İl Kapsama</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-white">50K+</p>
-                    <p className="text-xs text-gray-400">Mutlu Müşteri</p>
+                    <div className="text-left">
+                      <p className="text-[10px] text-white/60 leading-none">EXPLORE IT ON</p>
+                      <p className="text-sm font-semibold text-white leading-tight">AppGallery</p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Right Side - Interactive Car Diagram */}
-            <div className="relative hidden lg:block">
-              <Car3DViewer />
-            </div>
           </div>
 
-          {/* CTA Button */}
-          <div className="mt-12 text-center">
-            <p className="text-white/60 text-sm mb-4">Aşağıdaki formdan hemen servis aramaya başlayın</p>
-            <div className="flex items-center justify-center gap-2 text-primary-400 animate-bounce">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-            </div>
-          </div>
         </div>
 
+        {/* Hero Image - Ekranın sağ alt köşesinde */}
+        <HeroImage />
 
       </section>
 
+      {/* Scroll Animated Categories Section */}
+      <ScrollCarCategories />
+
       {/* Features Section - Light Theme */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 via-white to-gray-100">
+      <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="h-1 w-8 bg-primary-500 rounded-full"></span>
+              <span className="text-primary-600 font-bold tracking-widest uppercase text-xs">Araç Rehberi</span>
+              <span className="h-1 w-8 bg-primary-500 rounded-full"></span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-3">
               Tüm araç ihtiyaçlarınız için tek yer.
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-secondary-600 max-w-2xl mx-auto">
               Aracınızı bakımda tutma, sorunları giderme ve daha fazlası için yardım alın.
             </p>
           </div>
@@ -272,7 +228,7 @@ export default async function HomePage() {
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold mb-2 group-hover:text-primary-600 transition-colors" style={{ color: '#454545' }}>Geri Çağırmalar</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-secondary-800 group-hover:text-primary-600 transition-colors">Geri Çağırmalar</h3>
                   <p className="text-sm text-secondary-600">Aracınızın geri çağırma durumunu kontrol edin</p>
                 </div>
               </div>
@@ -287,7 +243,7 @@ export default async function HomePage() {
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold mb-2 group-hover:text-primary-600 transition-colors" style={{ color: '#454545' }}>Yaygın Problemler</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-secondary-800 group-hover:text-primary-600 transition-colors">Yaygın Problemler</h3>
                   <p className="text-sm text-secondary-600">Araç modelinize özel sorunları keşfedin</p>
                 </div>
               </div>
@@ -304,7 +260,7 @@ export default async function HomePage() {
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold mb-2 group-hover:text-primary-600 transition-colors" style={{ color: '#454545' }}>Lastikler</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-secondary-800 group-hover:text-primary-600 transition-colors">Lastikler</h3>
                   <p className="text-sm text-secondary-600">Lastik seçimi ve bakım rehberi</p>
                 </div>
               </div>
@@ -319,7 +275,7 @@ export default async function HomePage() {
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold mb-2 group-hover:text-primary-600 transition-colors" style={{ color: '#454545' }}>Güvenilirlik</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-secondary-800 group-hover:text-primary-600 transition-colors">Güvenilirlik</h3>
                   <p className="text-sm text-secondary-600">Araç modellerinin güvenilirlik puanları</p>
                 </div>
               </div>
@@ -334,7 +290,7 @@ export default async function HomePage() {
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold mb-2 group-hover:text-primary-600 transition-colors" style={{ color: '#454545' }}>Belirti Rehberi</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-secondary-800 group-hover:text-primary-600 transition-colors">Belirti Rehberi</h3>
                   <p className="text-sm text-secondary-600">Araç sorunlarını belirtilerden tanıyın</p>
                 </div>
               </div>
@@ -349,7 +305,7 @@ export default async function HomePage() {
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold mb-2 group-hover:text-primary-600 transition-colors" style={{ color: '#454545' }}>Bakım Takvimi</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-secondary-800 group-hover:text-primary-600 transition-colors">Bakım Takvimi</h3>
                   <p className="text-sm text-secondary-600">Periyodik bakım zamanlarını takip edin</p>
                 </div>
               </div>
@@ -358,46 +314,14 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Categories Section */}
-      <section className="py-16 bg-white">
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-secondary-900 mb-4">
-              Hizmet Kategorileri
-            </h2>
-            <p className="text-secondary-600 max-w-2xl mx-auto">
-              İhtiyacınıza uygun hizmeti seçin ve anında fiyat teklifi alın
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {categories.slice(0, 12).map((category) => (
-              <CategoryCard key={category.id} category={category} />
-            ))}
-          </div>
-
-          <div className="text-center mt-8">
-            <Link
-              href="/servisler"
-              className="inline-flex items-center text-primary-600 font-medium hover:text-primary-700"
-            >
-              Tüm kategorileri gör
-              <svg className="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* Feature Cards Section */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
-        <div className="px-4 sm:px-6 lg:px-8">
+      <section className="py-16 bg-primary-500">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-4">
               Araç Bakımını Kolaylaştıran Özellikler
             </h2>
-            <p className="text-secondary-600 max-w-2xl mx-auto">
+            <p className="text-secondary-800 max-w-2xl mx-auto">
               TamirHanem ile araç bakımı artık çok daha kolay, güvenli ve şeffaf
             </p>
           </div>
@@ -405,8 +329,8 @@ export default async function HomePage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Güvenli Ödeme Sistemi */}
             <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-secondary-100 group hover:border-primary-300">
-              <div className="w-14 h-14 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
-                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-14 h-14 bg-secondary-800 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <svg className="w-7 h-7 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
@@ -418,8 +342,8 @@ export default async function HomePage() {
 
             {/* Dijital Bakım Karnesi */}
             <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-secondary-100 group hover:border-primary-300">
-              <div className="w-14 h-14 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
-                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-14 h-14 bg-secondary-800 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <svg className="w-7 h-7 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
@@ -431,8 +355,8 @@ export default async function HomePage() {
 
             {/* Vale Hizmeti */}
             <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-secondary-100 group hover:border-primary-300">
-              <div className="w-14 h-14 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
-                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-14 h-14 bg-secondary-800 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <svg className="w-7 h-7 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                 </svg>
               </div>
@@ -444,8 +368,8 @@ export default async function HomePage() {
 
             {/* Acil Yol Yardım */}
             <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-secondary-100 group hover:border-primary-300">
-              <div className="w-14 h-14 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
-                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-14 h-14 bg-secondary-800 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <svg className="w-7 h-7 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414 1 1 0 01-1.414-1.414z" />
                 </svg>
               </div>
@@ -457,8 +381,8 @@ export default async function HomePage() {
 
             {/* Özel Kampanyalar */}
             <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-secondary-100 group hover:border-primary-300">
-              <div className="w-14 h-14 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
-                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-14 h-14 bg-secondary-800 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <svg className="w-7 h-7 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
                 </svg>
               </div>
@@ -470,8 +394,8 @@ export default async function HomePage() {
 
             {/* Misafir Erişimi */}
             <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-secondary-100 group hover:border-primary-300">
-              <div className="w-14 h-14 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
-                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-14 h-14 bg-secondary-800 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <svg className="w-7 h-7 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
@@ -486,7 +410,7 @@ export default async function HomePage() {
       </section>
 
       {/* Common Problems Section */}
-      <div className="bg-blue-50">
+      <div className="bg-secondary-50">
         <ProblemsByModel />
       </div>
 
@@ -494,45 +418,45 @@ export default async function HomePage() {
       <ObdInfoSection />
 
       {/* Trust Badges Section */}
-      <section className="py-12 bg-white border-y border-secondary-100">
+      <section className="py-12 bg-secondary-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-8 items-center">
             {/* KVKK Uyumlu */}
             <div className="flex items-center gap-4 justify-center">
-              <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-14 h-14 bg-primary-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-7 h-7 text-secondary-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
               </div>
               <div>
-                <h4 className="font-bold text-secondary-900">KVKK Uyumlu</h4>
-                <p className="text-sm text-secondary-600">Verileriniz güvende</p>
+                <h4 className="font-bold text-white">KVKK Uyumlu</h4>
+                <p className="text-sm text-secondary-400">Verileriniz güvende</p>
               </div>
             </div>
 
             {/* Güvenli Ödeme */}
             <div className="flex items-center gap-4 justify-center">
-              <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <svg className="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-14 h-14 bg-primary-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-7 h-7 text-secondary-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
               <div>
-                <h4 className="font-bold text-secondary-900">Güvenli Ödeme</h4>
-                <p className="text-sm text-secondary-600">256-bit SSL şifreleme</p>
+                <h4 className="font-bold text-white">Güvenli Ödeme</h4>
+                <p className="text-sm text-secondary-400">256-bit SSL şifreleme</p>
               </div>
             </div>
 
             {/* Şeffaf Takip */}
             <div className="flex items-center gap-4 justify-center">
-              <div className="w-14 h-14 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <svg className="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-14 h-14 bg-primary-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-7 h-7 text-secondary-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                 </svg>
               </div>
               <div>
-                <h4 className="font-bold text-secondary-900">Şeffaf Takip</h4>
-                <p className="text-sm text-secondary-600">Her adımda bilgilendirilirsiniz</p>
+                <h4 className="font-bold text-white">Şeffaf Takip</h4>
+                <p className="text-sm text-secondary-400">Her adımda bilgilendirilirsiniz</p>
               </div>
             </div>
           </div>
@@ -540,7 +464,7 @@ export default async function HomePage() {
       </section>
 
       {/* Cost Estimator CTA Section */}
-      <section className="py-16 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+      <section className="py-16 bg-secondary-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -633,13 +557,13 @@ export default async function HomePage() {
       </section>
 
       {/* TamirHanem Onaylı Section */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
+      <section className="py-16 bg-secondary-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <div className="inline-block bg-primary-100 rounded-full px-6 py-2 mb-4">
               <span className="text-primary-700 font-bold text-sm">✓ TamirHanem Onaylı</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: '#454545' }}>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-secondary-800">
               Herkes İçin Avantajlı
             </h2>
             <p className="text-secondary-600 max-w-2xl mx-auto">
@@ -657,7 +581,7 @@ export default async function HomePage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold" style={{ color: '#454545' }}>Araç Sahipleri</h3>
+                <h3 className="text-2xl font-bold text-secondary-800">Araç Sahipleri</h3>
               </div>
 
               <div className="space-y-4">
@@ -717,7 +641,7 @@ export default async function HomePage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold" style={{ color: '#454545' }}>Servis İşletmeleri</h3>
+                <h3 className="text-2xl font-bold text-secondary-800">Servis İşletmeleri</h3>
               </div>
 
               <div className="space-y-4">
@@ -772,7 +696,7 @@ export default async function HomePage() {
 
           {/* Bottom CTA */}
           <div className="mt-12 text-center bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl p-8">
-            <h3 className="text-2xl font-bold mb-3" style={{ color: '#454545' }}>
+            <h3 className="text-2xl font-bold mb-3 text-secondary-800">
               TamirHanem Ailesine Katılın
             </h3>
             <p className="text-secondary-600 mb-6 max-w-2xl mx-auto">
@@ -797,7 +721,7 @@ export default async function HomePage() {
       </section>
 
       {/* Digital Business Panel Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative overflow-hidden">
+      <section className="py-20 bg-secondary-900 text-white relative overflow-hidden">
         {/* Decorative Elements */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary-500/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary-500/5 rounded-full blur-3xl"></div>
@@ -908,146 +832,16 @@ export default async function HomePage() {
       {/* FAQ Section */}
       <FAQSection />
 
-      {/* Final CTA Section - Dual Audience with Asymmetric Design */}
-      <section className="relative py-16 overflow-hidden" style={{ backgroundColor: '#454545' }}>
-        {/* Diagonal Yellow Shape */}
-        <div className="absolute inset-0">
-          <div
-            className="absolute top-0 right-0 w-2/3 h-full bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700"
-            style={{
-              clipPath: 'polygon(30% 0, 100% 0, 100% 100%, 0% 100%)',
-              transform: 'skewX(-5deg) translateX(5%)'
-            }}
-          ></div>
-        </div>
-
-        {/* Decorative Circles */}
-        <div className="absolute top-10 left-10 w-32 h-32 bg-primary-400/20 rounded-full blur-2xl"></div>
-        <div className="absolute bottom-10 right-20 w-40 h-40 bg-primary-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-white/5 rounded-full blur-xl"></div>
-
-        {/* Curved Accent Line */}
-        <svg className="absolute top-0 left-0 w-full h-full opacity-10" preserveAspectRatio="none">
-          <path d="M 0,100 Q 400,50 800,100 T 1600,100 L 1600,0 L 0,0 Z" fill="white" opacity="0.05" />
-        </svg>
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-              İster Araç Sahibi Olun, İster Servis
-            </h2>
-            <p className="text-gray-200 text-lg max-w-3xl mx-auto">
-              TamirHanem'e katılın ve güvenilir oto bakım hizmetlerinin bir parçası olun
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* Araç Sahibi Card */}
-            <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-secondary-100 hover:scale-105">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold mb-3" style={{ color: '#454545' }}>TamirHanem'in Araç Sahibine Faydaları</h3>
-                <p className="text-secondary-600 mb-6">
-                  Güvenilir servisleri bulur, şeffaf fiyatlarla aracını bakıma alır
-                </p>
-              </div>
-
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center gap-3">
-                  <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm text-secondary-700">Ücretsiz fiyat teklifi alır</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm text-secondary-700">Onaylı servislerden seçim yapar</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm text-secondary-700">Araç geçmişini takip eder</span>
-                </li>
-              </ul>
-
-              <Link
-                href="https://tamirhanem.net/register.html"
-                className="block w-full bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors text-center shadow-lg hover:shadow-xl"
-              >
-                Araç Sahibi Olarak Kayıt Ol
-              </Link>
-            </div>
-
-            {/* Esnaf Card */}
-            <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-secondary-100 hover:scale-105">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold mb-3" style={{ color: '#454545' }}>TamirHanem'in Servis İşletmelerine Faydaları</h3>
-                <p className="text-secondary-600 mb-6">
-                  İşletmesini büyütür, yeni müşterilere ulaşır, güvenilirliğini kanıtlar
-                </p>
-              </div>
-
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center gap-3">
-                  <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm text-secondary-700">Binlerce potansiyel müşteriye ulaşır</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm text-secondary-700">TamirHanem sertifikası kazanır</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm text-secondary-700">TamirHanem'e özel işletme yönetim araçlarını kullanır</span>
-                </li>
-              </ul>
-
-              <Link
-                href="https://tamirhanem.net/register.html"
-                className="block w-full bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors text-center shadow-lg hover:shadow-xl"
-              >
-                Servis Olarak Kayıt Ol
-              </Link>
-            </div>
-          </div>
-
-          {/* Additional Info */}
-          <div className="text-center mt-12">
-            <p className="text-white text-sm">
-              Zaten hesabınız var mı?{' '}
-              <Link href="/giris-yap" className="font-semibold hover:underline text-primary-300">
-                Giriş Yapın
-              </Link>
-            </p>
-          </div>
-        </div>
-      </section >
-
       {/* Waitlist Modal */}
       <WaitlistModal />
+
+      {/* Smart App Banner - Shows based on device */}
+      <SmartAppBanner />
 
       {/* Fixed Bottom Search Bar */}
       <FixedSearchBar />
 
-      {/* Bottom padding for fixed search bar */}
+      {/* Bottom padding for fixed search bar and app banner */}
       <div className="h-20 md:h-16"></div>
     </>
   );

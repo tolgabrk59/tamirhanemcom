@@ -358,7 +358,7 @@ export default function ChronicProblemsPage() {
                                                                     {/* Kategori Badge */}
                                                                     {(() => {
                                                                         let category = 'Kronik Sorun';
-                                                                        let categoryColor = 'bg-blue-100 text-blue-700';
+                                                                        let categoryColor = 'bg-primary-100 text-primary-700';
 
                                                                         if (Number(problem.recall_count) > 0) {
                                                                             category = 'Geri Çağırma';
@@ -370,24 +370,24 @@ export default function ChronicProblemsPage() {
 
                                                                         return (
                                                                             <span className={`inline-flex items-center px-3 py-1 rounded-lg text-sm font-bold shadow-sm ${categoryColor}`}>
-                                                                                📋 {category}
+                                                                                {category}
                                                                             </span>
                                                                         );
                                                                     })()}
 
                                                                     {problem.year_start && problem.year_end && (
                                                                         <span className="inline-flex items-center px-3 py-1 bg-white rounded-lg text-sm font-medium text-secondary-700 shadow-sm">
-                                                                            📅 {problem.year_start}-{problem.year_end}
+                                                                            {problem.year_start}-{problem.year_end}
                                                                         </span>
                                                                     )}
                                                                     {problem.component && (
                                                                         <span className="inline-flex items-center px-3 py-1 bg-white rounded-lg text-sm font-medium text-secondary-700 shadow-sm">
-                                                                            🔧 {problem.component}
+                                                                            {problem.component}
                                                                         </span>
                                                                     )}
                                                                     {problem.risk_level && (
                                                                         <span className={`inline-flex items-center px-3 py-1 rounded-lg text-sm font-bold shadow-sm ${getRiskColor(problem.risk_level)}`}>
-                                                                            ⚠️ {problem.risk_level}
+                                                                            {problem.risk_level}
                                                                         </span>
                                                                     )}
                                                                 </div>
@@ -412,9 +412,9 @@ export default function ChronicProblemsPage() {
 
                                                         {/* Symptoms/Complaints */}
                                                         {complaints.length > 0 && (
-                                                            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                                                            <div className="bg-primary-50 border-l-4 border-primary-500 p-4 rounded-r-lg">
                                                                 <div className="flex items-start gap-2">
-                                                                    <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <svg className="w-5 h-5 text-primary-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                                                         <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
                                                                         <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
                                                                     </svg>

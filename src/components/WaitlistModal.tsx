@@ -56,7 +56,7 @@ export default function WaitlistModal() {
                 setSubmitStatus('error');
             }
         } catch (error) {
-            console.error('Waitlist error:', error);
+            console.error('[WaitlistModal] Waitlist error:', error);
             setSubmitStatus('error');
         } finally {
             setIsSubmitting(false);
@@ -226,6 +226,7 @@ export default function WaitlistModal() {
                                                     <input
                                                         type="text"
                                                         id="name"
+                                                        autoComplete="name"
                                                         value={formData.name}
                                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                                         className="w-full pl-12 pr-4 py-3.5 bg-secondary-50 border-2 border-secondary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:bg-white transition-all text-secondary-900 placeholder-secondary-400"
@@ -249,6 +250,8 @@ export default function WaitlistModal() {
                                                     <input
                                                         type="email"
                                                         id="email"
+                                                        inputMode="email"
+                                                        autoComplete="email"
                                                         value={formData.email}
                                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                                         className="w-full pl-12 pr-4 py-3.5 bg-secondary-50 border-2 border-secondary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:bg-white transition-all text-secondary-900 placeholder-secondary-400"
@@ -272,6 +275,8 @@ export default function WaitlistModal() {
                                                     <input
                                                         type="tel"
                                                         id="phone"
+                                                        inputMode="tel"
+                                                        autoComplete="tel"
                                                         value={formData.phone}
                                                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                                         className="w-full pl-12 pr-4 py-3.5 bg-secondary-50 border-2 border-secondary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:bg-white transition-all text-secondary-900 placeholder-secondary-400"

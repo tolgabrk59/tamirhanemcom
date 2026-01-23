@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import { createLogger } from './logger';
+
+const envLogger = createLogger('ENV');
 
 /**
  * Environment variables schema
@@ -24,6 +27,8 @@ const envSchema = z.object({
   GEMINI_API_KEY_2: z.string().optional(),
   GEMINI_API_KEY_3: z.string().optional(),
   GEMINI_API_KEY_4: z.string().optional(),
+  GEMINI_API_KEY_5: z.string().optional(),
+  GEMINI_API_KEY_7: z.string().optional(),
   OPENAI_API_KEY: z.string().optional(),
   GROK_API_KEY: z.string().optional(),
 
@@ -55,8 +60,7 @@ function validateEnv() {
   const parsed = envSchema.safeParse(process.env);
 
   if (!parsed.success) {
-    console.error('Invalid environment variables:');
-    console.error(parsed.error.format());
+    envLogger.error({ errors: parsed.error.format() }, 'Invalid environment variables');
 
     // In production, throw error; in development, just warn
     if (process.env.NODE_ENV === 'production') {
@@ -96,7 +100,7 @@ export const features = {
 
 // Log feature status in development
 if (env.NODE_ENV === 'development') {
-  console.log('Feature status:', features);
+  envLogger.debug({ features }, 'Feature status');
 }
 
 export type Env = z.infer<typeof envSchema>;

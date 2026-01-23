@@ -149,8 +149,10 @@ function ServiceResultsContent() {
                     });
                 },
                 (error) => {
-                    // Hata olursa sessizce devam et, şehir koordinatları zaten set edildi
-                    console.log('Geolocation not available:', error.message);
+                    // Hata olursa sessizce devam et, sehir koordinatlari zaten set edildi
+                    if (process.env.NODE_ENV === 'development') {
+                        console.log('Geolocation not available:', error.message);
+                    }
                 },
                 { enableHighAccuracy: false, timeout: 3000, maximumAge: 300000 }
             );
@@ -430,11 +432,11 @@ function ServiceResultsContent() {
                         <button
                             onClick={() => setShowRoadsideOnly(!showRoadsideOnly)}
                             className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg border-2 transition-all whitespace-nowrap ${showRoadsideOnly
-                                ? 'bg-blue-50 border-blue-500 text-blue-700'
+                                ? 'bg-orange-50 border-orange-500 text-orange-700'
                                 : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400'
                                 }`}
                         >
-                            <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded border-2 flex items-center justify-center ${showRoadsideOnly ? 'bg-blue-500 border-blue-500' : 'border-gray-400'
+                            <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded border-2 flex items-center justify-center ${showRoadsideOnly ? 'bg-orange-500 border-orange-500' : 'border-gray-400'
                                 }`}>
                                 {showRoadsideOnly && (
                                     <svg className="w-2 h-2 sm:w-3 sm:h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

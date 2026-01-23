@@ -1,12 +1,19 @@
 import type { Metadata } from 'next';
-import { Inter, Dancing_Script } from 'next/font/google';
+import { Inter, Plus_Jakarta_Sans, Caveat } from 'next/font/google';
 import './globals.css';
 import dynamic from 'next/dynamic';
 import Footer from '@/components/Footer';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/next';
+import Script from 'next/script';
 
-const Header = dynamic(() => import('@/components/Header'), { ssr: false });
+const GA_MEASUREMENT_ID = 'G-CG4LCJMQBY';
+
+const Sidebar = dynamic(() => import('@/components/Sidebar'), { ssr: false });
+const FixedSearchBar = dynamic(() => import('@/components/FixedSearchBar'), { ssr: false });
 const ChatWidget = dynamic(() => import('@/components/ChatWidget'), { ssr: false });
 const ToastProvider = dynamic(() => import('@/components/ToastProvider'), { ssr: false });
+const CookieConsentBanner = dynamic(() => import('@/components/consent/CookieConsentBanner'), { ssr: false });
 
 const inter = Inter({
   subsets: ['latin'],
@@ -14,11 +21,27 @@ const inter = Inter({
   preload: true
 });
 
-const dancingScript = Dancing_Script({
+const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-jakarta',
+  display: 'swap'
+});
+
+const caveat = Caveat({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-handwriting',
   display: 'swap'
 });
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: '#2563eb',
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.SITE_URL || 'https://tamirhanem.com'),
@@ -172,15 +195,35 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
         />
+
+        {/* Google Analytics 4 */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}');
+          `}
+        </Script>
       </head>
-      <body className={`${inter.className} ${dancingScript.variable}`} suppressHydrationWarning>
-        {/* Skip to content link - Accessibility */}
-        <a href="#main-content" className="skip-to-content">
-          İçeriğe Atla
+      <body className={`${inter.className} ${plusJakarta.variable} ${caveat.variable}`} suppressHydrationWarning>
+        {/* Skip Navigation Link - Erişilebilirlik için */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:bg-primary-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:font-semibold focus:outline-none"
+        >
+          Ana içeriğe atla
         </a>
 
-        <div className="min-h-screen flex flex-col">
-          <Header />
+        <Sidebar />
+        <FixedSearchBar />
+
+        {/* Main content wrapper - left sidebar (search) + bottom bar (nav) on desktop */}
+        <div className="lg:pl-16 lg:pb-14 pt-14 lg:pt-0 min-h-screen flex flex-col relative">
           <main id="main-content" className="flex-1" role="main">
             {children}
           </main>
@@ -188,6 +231,9 @@ export default function RootLayout({
         </div>
         <ChatWidget />
         <ToastProvider />
+        <CookieConsentBanner />
+        <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );

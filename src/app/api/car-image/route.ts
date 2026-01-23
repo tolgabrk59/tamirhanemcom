@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import fs from 'fs';
 import path from 'path';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('API_CAR_IMAGE');
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
   try {
@@ -75,7 +80,7 @@ export async function GET(req: Request) {
                 }
             }
         } catch (error) {
-            console.error("Serper Image Error:", error);
+            logger.error({ error }, "Serper Image Error");
         }
     }
 
@@ -109,7 +114,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ imageUrl: null });
   } catch (error) {
-    console.error("Car Image API Error:", error);
+    logger.error({ error }, "Car Image API Error");
     return NextResponse.json({ imageUrl: null });
   }
 }

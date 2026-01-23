@@ -129,7 +129,9 @@ const Icon = forwardRef<SVGSVGElement, IconProps>(
         const LucideIcon = icons[iconName];
 
         if (!LucideIcon) {
-            console.warn(`Icon "${name}" not found`);
+            if (process.env.NODE_ENV === 'development') {
+                console.warn(`[Icon] Icon "${name}" not found`);
+            }
             return null;
         }
 

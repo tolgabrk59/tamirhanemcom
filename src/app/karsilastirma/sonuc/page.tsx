@@ -50,9 +50,18 @@ function CarImage({ brand, model, year, alt, className }: { brand: string; model
     return <img src={imageUrl} alt={alt} className={className} />;
 }
 
-export default function ComparisonResultPage() {
+function LoadingFallback() {
+    return (
+        <div className="min-h-screen bg-secondary-900 flex flex-col items-center justify-center text-white px-4">
+            <div className="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mb-6"></div>
+            <h2 className="text-2xl font-bold mb-2">Yükleniyor...</h2>
+        </div>
+    );
+}
+
+function ComparisonResultContent() {
     const searchParams = useSearchParams();
-    
+
     // Car 1 Params
     const brand1 = searchParams.get('brand1');
     const model1 = searchParams.get('model1');
@@ -347,5 +356,13 @@ export default function ComparisonResultPage() {
                 </div>
             </main>
         </div>
+    );
+}
+
+export default function ComparisonResultPage() {
+    return (
+        <Suspense fallback={<LoadingFallback />}>
+            <ComparisonResultContent />
+        </Suspense>
     );
 }

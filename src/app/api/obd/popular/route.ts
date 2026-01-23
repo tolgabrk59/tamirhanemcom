@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
+import { createLogger } from '@/lib/logger';
 
-const STRAPI_API = 'https://api.tamirhanem.net/api';
+const logger = createLogger('API_OBD_POPULAR');
+
+export const dynamic = 'force-dynamic';
+
+const STRAPI_API = 'https://api.tamirhanem.com/api';
 
 export async function GET(request: Request) {
     try {
@@ -52,7 +57,7 @@ export async function GET(request: Request) {
             count: formattedCodes.length
         });
     } catch (error) {
-        console.error('Strapi API Error:', error);
+        logger.error({ error }, 'Strapi API Error');
         return NextResponse.json(
             { success: false, error: 'Popüler OBD kodları yüklenemedi' },
             { status: 500 }

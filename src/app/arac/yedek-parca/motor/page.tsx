@@ -94,18 +94,26 @@ export default function MotorPartsPage() {
     return (
         <div className="bg-secondary-50 min-h-screen">
             {/* Hero Section */}
-            <section className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-16">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
-                            <PartIcon type="gear" className="w-10 h-10 text-white" />
+            <section className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-secondary-600 text-white py-20 overflow-hidden">
+                <div
+                    className="absolute inset-0 bg-cover bg-center opacity-10"
+                    style={{
+                        backgroundImage: 'url(/hero_service_background.png)',
+                        backgroundPosition: 'center',
+                        backgroundSize: 'cover'
+                    }}
+                ></div>
+                
+                <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-3xl">
+                        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+                            <PartIcon type="gear" className="w-5 h-5" />
+                            <span className="text-sm font-semibold">Yedek Parça Rehberi</span>
                         </div>
-                        <div>
-                            <h1 className="text-4xl md:text-5xl font-bold">Motor Parçaları</h1>
-                            <p className="text-xl text-blue-100 mt-2">
-                                Motorunuzun sağlıklı çalışması için gerekli tüm parçalar
-                            </p>
-                        </div>
+                        <h1 className="text-4xl md:text-5xl font-bold mb-4">Motor Parçaları</h1>
+                        <p className="text-xl text-primary-100 mb-6">
+                            Motorunuzun sağlıklı çalışması için gerekli tüm parçalar hakkında detaylı bilgi.
+                        </p>
                     </div>
                 </div>
             </section>
@@ -118,8 +126,8 @@ export default function MotorPartsPage() {
                             <div key={index} className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-secondary-100 overflow-hidden">
                                 <div className="p-8">
                                     <div className="flex items-start gap-6">
-                                        <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center flex-shrink-0">
-                                            <PartIcon type={part.iconType} className="w-10 h-10 text-blue-600" />
+                                        <div className="w-20 h-20 bg-gradient-to-br from-primary-100 to-primary-200 rounded-2xl flex items-center justify-center flex-shrink-0">
+                                            <PartIcon type={part.iconType} className="w-10 h-10 text-primary-600" />
                                         </div>
                                         <div className="flex-1">
                                             <div className="flex items-start justify-between mb-4">
@@ -165,9 +173,9 @@ export default function MotorPartsPage() {
                                                     </ul>
                                                 </div>
 
-                                                <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                                <div className="bg-primary-50 p-4 rounded-xl border border-primary-100">
                                                     <h4 className="font-bold text-secondary-900 mb-2 flex items-center gap-2">
-                                                        <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                         </svg>
                                                         Ne Zaman Değiştirilmeli?
@@ -185,15 +193,15 @@ export default function MotorPartsPage() {
             </section>
 
             {/* CTA Section */}
-            <section className="py-16 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+            <section className="py-16 bg-gradient-to-r from-secondary-800 to-secondary-900 text-white">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h2 className="text-3xl font-bold mb-4">Motor Parçası Değişimi İçin Servis Bulun</h2>
-                    <p className="text-xl text-blue-100 mb-8">
+                    <p className="text-xl text-secondary-200 mb-8">
                         Güvenilir servislerden anında fiyat teklifi alın
                     </p>
                     <Link
                         href="/servisler"
-                        className="inline-flex items-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-xl font-bold hover:bg-gray-100 transition-colors shadow-lg"
+                        className="inline-flex items-center gap-2 bg-primary-500 text-secondary-900 px-8 py-4 rounded-xl font-bold hover:bg-primary-400 transition-colors shadow-lg"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />

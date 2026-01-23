@@ -4,6 +4,14 @@ const { withSentryConfig } = require('@sentry/nextjs');
 const nextConfig = {
   experimental: {
     missingSuspenseWithCSRBailout: false,
+    // Enable optimizePackageImports for better tree-shaking
+    optimizePackageImports: [
+      'three',
+      '@react-three/fiber',
+      '@react-three/drei',
+      'lucide-react',
+      'framer-motion',
+    ],
   },
   // Production'da console.log'ları kaldır
   compiler: {
@@ -11,6 +19,8 @@ const nextConfig = {
       ? { exclude: ['error', 'warn'] }
       : false,
   },
+  // Transpile Three.js packages for better tree-shaking
+  transpilePackages: ['three', '@react-three/fiber', '@react-three/drei'],
   images: {
     // Modern formatları etkinleştir
     formats: ['image/avif', 'image/webp'],
@@ -59,6 +69,30 @@ const nextConfig = {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
           },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains; preload',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(self), interest-cohort=()',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://vercel.live https://static.cloudflareinsights.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "font-src 'self' https://fonts.gstatic.com https://vercel.live data:",
+              "img-src 'self' data: https: blob:",
+              "connect-src 'self' blob: https://api.tamirhanem.net https://generativelanguage.googleapis.com https://www.google-analytics.com https://vitals.vercel-insights.com https://raw.githack.com https://*.sentry.io wss:",
+              "worker-src 'self' blob:",
+              "frame-src 'self' https://www.google.com https://vercel.live https://mcp.tamirhanem.net",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+            ].join('; '),
+          },
         ],
       },
       {
@@ -75,6 +109,38 @@ const nextConfig = {
   env: {
     STRAPI_URL: process.env.STRAPI_URL || 'https://api.tamirhanem.net',
     SITE_URL: process.env.SITE_URL || 'https://tamirhanem.com',
+  },
+  async redirects() {
+    return [
+      {
+        source: '/obd-kodlari',
+        destination: '/obd',
+        permanent: true,
+      },
+      {
+        source: '/obd-kodlari/:code',
+        destination: '/obd/:code',
+        permanent: true,
+      },
+      {
+        source: '/ariza-kodlari',
+        destination: '/obd',
+        permanent: true,
+      },
+      {
+        source: '/ariza-kodlari/:code',
+        destination: '/obd/:code',
+        permanent: true,
+      },
+    ];
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/ref/:code',
+        destination: '/ref/index.html',
+      },
+    ];
   },
 }
 

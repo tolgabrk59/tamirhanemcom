@@ -37,12 +37,18 @@ interface VehicleData {
     image_url?: string;
 }
 
-export default function VehicleAnalysisPage() {
+function LoadingFallback() {
+    return (
+        <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+            <div className="w-16 h-16 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mb-6"></div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Yükleniyor...</h2>
+        </div>
+    );
+}
+
+function VehicleAnalysisContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    
-    // ... existing state and effect code ...
-    // Note: I'm preserving the existing logic, just showing the layout update below
 
     const brand = searchParams?.get('brand');
     const model = searchParams?.get('model');
@@ -381,5 +387,13 @@ export default function VehicleAnalysisPage() {
                 </div>
             </main>
         </div>
+    );
+}
+
+export default function VehicleAnalysisPage() {
+    return (
+        <Suspense fallback={<LoadingFallback />}>
+            <VehicleAnalysisContent />
+        </Suspense>
     );
 }

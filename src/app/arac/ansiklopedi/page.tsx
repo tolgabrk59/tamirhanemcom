@@ -128,7 +128,9 @@ export default function EncyclopediaPage() {
             });
         });
 
-        console.log('Search results:', { query, systemsFound: results.systems.length, componentsFound: results.components.length });
+        if (process.env.NODE_ENV === 'development') {
+            console.log('Search results:', { query, systemsFound: results.systems.length, componentsFound: results.components.length });
+        }
         setSearchResults(results);
         setShowResults(true);
     }, [searchQuery, systems]);

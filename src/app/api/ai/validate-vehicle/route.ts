@@ -1,21 +1,25 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
+import { createLogger } from '@/lib/logger';
+import type {
+  ValidationResult,
+  StrapiCollectionResponse,
+  VehicleValidationAttributes,
+} from '@/types/external-apis';
 
-const STRAPI_API = "https://api.tamirhanem.net/api";
+const logger = createLogger('API_VALIDATE_VEHICLE');
 
-// Gemini API Keys
+const STRAPI_API = "https://api.tamirhanem.com/api";
+
+// Gemini API Keys (6 keys for rotation)
 const geminiKeys = [
   process.env.GEMINI_API_KEY,
   process.env.GEMINI_API_KEY_2,
   process.env.GEMINI_API_KEY_3,
-  process.env.GEMINI_API_KEY_4
+  process.env.GEMINI_API_KEY_4,
+  process.env.GEMINI_API_KEY_5,
+  process.env.GEMINI_API_KEY_7
 ].filter(Boolean) as string[];
-
-interface ValidationResult {
-  valid: boolean;
-  production_years: { start: number; end: number } | null;
-  message: string | null;
-}
 
 // In-memory cache as backup (24 hours)
 const memoryCache = new Map<string, { result: ValidationResult; timestamp: number }>();
@@ -26,29 +30,29 @@ async function getValidationFromStrapi(brand: string, model: string, year: numbe
   try {
     const url = `${STRAPI_API}/vehicle-validations?filters[brand][$eq]=${encodeURIComponent(brand)}&filters[model][$eq]=${encodeURIComponent(model)}&filters[year][$eq]=${year}`;
     const res = await fetch(url, { next: { revalidate: 0 } });
-    
+
     if (!res.ok) {
-      console.log("Strapi vehicle-validations endpoint not available");
+      logger.debug({}, "Strapi vehicle-validations endpoint not available");
       return null;
     }
-    
-    const result = await res.json();
+
+    const result: StrapiCollectionResponse<VehicleValidationAttributes> = await res.json();
     const entry = result.data?.[0];
-    
+
     if (!entry) return null;
-    
-    const attrs = entry.attributes || entry;
-    console.log(`✅ Strapi cache HIT: ${year} ${brand} ${model}`);
-    
+
+    const attrs = entry.attributes;
+    logger.info({ year, brand, model }, 'Strapi cache HIT');
+
     return {
       valid: attrs.valid,
-      production_years: attrs.production_start && attrs.production_end 
+      production_years: attrs.production_start && attrs.production_end
         ? { start: attrs.production_start, end: attrs.production_end }
         : null,
       message: attrs.message || null
     };
   } catch (error) {
-    console.error("Strapi lookup error:", error);
+    logger.error({ error }, "Strapi lookup error");
     return null;
   }
 }
@@ -73,16 +77,16 @@ async function saveValidationToStrapi(brand: string, model: string, year: number
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    
+
     if (!res.ok) {
-      console.error("Strapi save error:", await res.text());
+      logger.error({ errorText: await res.text() }, "Strapi save error");
       return false;
     }
-    
-    console.log(`💾 Saved to Strapi: ${year} ${brand} ${model}`);
+
+    logger.info({ year, brand, model }, 'Saved to Strapi');
     return true;
   } catch (error) {
-    console.error("Strapi save error:", error);
+    logger.error({ error }, "Strapi save error");
     return false;
   }
 }
@@ -131,7 +135,7 @@ KURALLAR:
         message: parsed.message || null
       };
     } catch (error: any) {
-      console.error(`Gemini validation error: ${error.message}`);
+      logger.error({ message: error.message }, 'Gemini validation error');
       if (error.message?.includes('429') || error.message?.includes('quota')) {
         continue;
       }
@@ -166,7 +170,7 @@ export async function POST(req: Request) {
     // 1. Check in-memory cache first (fastest)
     const memoryCached = memoryCache.get(cacheKey);
     if (memoryCached && Date.now() - memoryCached.timestamp < MEMORY_CACHE_TTL) {
-      console.log(`⚡ Memory cache HIT: ${year} ${brand} ${model}`);
+      logger.debug({ year, brand, model }, 'Memory cache HIT');
       return NextResponse.json(memoryCached.result);
     }
 
@@ -179,16 +183,16 @@ export async function POST(req: Request) {
     }
 
     // 3. Call Gemini API
-    console.log(`🔍 Calling Gemini: ${year} ${brand} ${model}`);
+    logger.info({ year, brand, model }, 'Calling Gemini');
     const result = await validateWithGemini(brandUpper, modelUpper, yearNum);
     
     // 4. Save to both caches
     memoryCache.set(cacheKey, { result, timestamp: Date.now() });
     saveValidationToStrapi(brandUpper, modelUpper, yearNum, result); // Fire and forget
-    
+
     return NextResponse.json(result);
   } catch (error: any) {
-    console.error("Validation Error:", error);
+    logger.error({ error }, "Validation Error");
     return NextResponse.json({
       valid: false,
       production_years: null,

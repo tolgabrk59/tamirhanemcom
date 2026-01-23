@@ -2,7 +2,7 @@
 export const symptomDatabase = {
     engine: {
         name: 'Motor',
-        icon: '⚙️',
+        icon: 'motor',
         color: 'red',
         symptoms: [
             {
@@ -100,7 +100,7 @@ export const symptomDatabase = {
 
     brakes: {
         name: 'Frenler',
-        icon: '🛑',
+        icon: 'fren',
         color: 'orange',
         symptoms: [
             {
@@ -183,7 +183,7 @@ export const symptomDatabase = {
 
     suspension: {
         name: 'Süspansiyon',
-        icon: '🔧',
+        icon: 'wrench',
         color: 'blue',
         symptoms: [
             {
@@ -251,7 +251,7 @@ export const symptomDatabase = {
 
     electrical: {
         name: 'Elektrik Sistemi',
-        icon: '⚡',
+        icon: 'elektrik',
         color: 'yellow',
         symptoms: [
             {
@@ -319,7 +319,7 @@ export const symptomDatabase = {
 
     transmission: {
         name: 'Şanzıman',
-        icon: '⚙️',
+        icon: 'sanziman',
         color: 'purple',
         symptoms: [
             {
@@ -387,7 +387,7 @@ export const symptomDatabase = {
 
     cooling: {
         name: 'Soğutma Sistemi',
-        icon: '❄️',
+        icon: 'klima',
         color: 'cyan',
         symptoms: [
             {
@@ -425,7 +425,7 @@ export const symptomDatabase = {
 
     fuel: {
         name: 'Yakıt Sistemi',
-        icon: '⛽',
+        icon: 'motor',
         color: 'green',
         symptoms: [
             {

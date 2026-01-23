@@ -30,7 +30,7 @@ export default function GizlilikPage() {
             <p>
               TamirHanem ("biz", "bize" veya "bizim") olarak, gizliliğinize saygı duyuyor ve 
               kişisel verilerinizi korumayı taahhüt ediyoruz. Bu Gizlilik Politikası, 
-              tamirhanem.net web sitesini ("Site") kullanırken hangi bilgileri topladığımızı, 
+              app.tamirhanem.com web sitesini ("Site") kullanırken hangi bilgileri topladığımızı, 
               nasıl kullandığımızı ve koruduğumuzu açıklamaktadır.
             </p>
 

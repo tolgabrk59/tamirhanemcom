@@ -122,7 +122,7 @@ export default function ResultsMap({ services, hoveredService, onServiceClick }:
                         maxZoom: 14
                     });
                 } catch (e) {
-                    console.error('Error fitting bounds:', e);
+                    console.error('[ResultsMap] Error fitting bounds:', e);
                 }
             }
         }

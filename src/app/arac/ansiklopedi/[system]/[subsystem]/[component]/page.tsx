@@ -187,7 +187,7 @@ export default async function ComponentPage({ params }: PageProps) {
                                     </div>
                                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                                         <p className="text-xs text-yellow-800 leading-relaxed">
-                                            ⚠️ Bu fiyatlar örnek verilerdir. Kesin fiyat için servislerden teklif alınız.
+                                            Bu fiyatlar örnek verilerdir. Kesin fiyat için servislerden teklif alınız.
                                         </p>
                                     </div>
                                 </div>

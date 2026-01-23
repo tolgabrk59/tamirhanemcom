@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { waitlistSchema, validateRequest, formatValidationErrors } from '@/lib/validation';
 import { successResponse, errors, logError } from '@/lib/api-response';
+import { createLogger } from '@/lib/logger';
 
-const STRAPI_API = process.env.STRAPI_API_URL || 'https://api.tamirhanem.net/api';
+const logger = createLogger('API_WAITLIST');
+
+const STRAPI_API = process.env.STRAPI_API_URL || 'https://api.tamirhanem.com/api';
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
 
 export async function POST(request: NextRequest) {
@@ -78,7 +81,7 @@ export async function POST(request: NextRequest) {
       logError('Strapi waitlist create', new Error(errorText));
 
       // Log for manual processing
-      console.log('Waitlist kayıt (fallback):', { email: normalizedEmail, phone: normalizedPhone, name });
+      logger.info({ email: normalizedEmail, phone: normalizedPhone, name }, 'Waitlist kayıt (fallback)');
 
       // Don't expose error to user
       return successResponse({

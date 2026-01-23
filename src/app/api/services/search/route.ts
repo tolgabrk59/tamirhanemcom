@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
+import { createLogger } from '@/lib/logger';
 
-const STRAPI_API = 'https://api.tamirhanem.net/api';
+const logger = createLogger('API_SERVICES_SEARCH');
+
+export const dynamic = 'force-dynamic';
+
+const STRAPI_API = 'https://api.tamirhanem.com/api';
 
 // Resim URL'ini işleyen fonksiyon (HTML'den alındı)
 function getServiceImageUrl(image: any): string | null {
@@ -146,7 +151,7 @@ export async function GET(request: Request) {
             count: formattedServices.length
         });
     } catch (error) {
-        console.error('Strapi API Error:', error);
+        logger.error({ error }, 'Strapi API Error');
         return NextResponse.json(
             { success: false, error: 'Servisler yüklenemedi' },
             { status: 500 }

@@ -56,7 +56,7 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
           setBrandsLoading(false);
         })
         .catch(err => {
-          console.error('Marka yükleme hatası:', err);
+          console.error('[SearchBox] Brand loading error:', err);
           setBrandsLoading(false);
         });
     } else {
@@ -76,7 +76,7 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
         setCategoriesLoading(false);
       })
       .catch(err => {
-        console.error('Kategori yükleme hatası:', err);
+        console.error('[SearchBox] Category loading error:', err);
         setCategoriesLoading(false);
       });
   }, []);
@@ -95,7 +95,7 @@ export default function SearchBox({ vertical = false }: SearchBoxProps) {
           setModelsLoading(false);
         })
         .catch(err => {
-          console.error('Model yükleme hatası:', err);
+          console.error('[SearchBox] Model loading error:', err);
           setModelsLoading(false);
         });
     } else {

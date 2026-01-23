@@ -1,4 +1,7 @@
 import Redis from 'ioredis';
+import { createLogger } from './logger';
+
+const cacheLogger = createLogger('CACHE');
 
 // Redis client with connection handling
 let redis: Redis | null = null;
@@ -25,12 +28,12 @@ function getRedisClient(): Redis | null {
 
     redis.on('connect', () => {
       isConnected = true;
-      console.log('Redis connected');
+      cacheLogger.info('Redis connected');
     });
 
     redis.on('error', (err) => {
       isConnected = false;
-      console.error('Redis error:', err.message);
+      cacheLogger.error({ err: err.message }, 'Redis error');
     });
 
     redis.on('close', () => {
@@ -96,7 +99,7 @@ export async function getCached<T>(
 
     return data;
   } catch (error) {
-    console.error('Cache error:', error);
+    cacheLogger.error({ error }, 'Cache error');
     // Fallback to direct fetch
     return fetcher();
   }
@@ -116,7 +119,7 @@ export async function invalidateCache(key: string): Promise<boolean> {
     await client.del(`cache:${key}`);
     return true;
   } catch (error) {
-    console.error('Cache invalidation error:', error);
+    cacheLogger.error({ error }, 'Cache invalidation error');
     return false;
   }
 }
@@ -147,7 +150,7 @@ export async function invalidateByTag(tag: string): Promise<number> {
 
     return keys.length;
   } catch (error) {
-    console.error('Cache tag invalidation error:', error);
+    cacheLogger.error({ error }, 'Cache tag invalidation error');
     return 0;
   }
 }
@@ -171,7 +174,7 @@ export async function clearAllCache(): Promise<boolean> {
 
     return true;
   } catch (error) {
-    console.error('Cache clear error:', error);
+    cacheLogger.error({ error }, 'Cache clear error');
     return false;
   }
 }
@@ -206,7 +209,7 @@ export async function getCacheStats(): Promise<{
       hitRate: total > 0 ? (hitsNum / total) * 100 : 0,
     };
   } catch (error) {
-    console.error('Cache stats error:', error);
+    cacheLogger.error({ error }, 'Cache stats error');
     return null;
   }
 }

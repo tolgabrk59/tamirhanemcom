@@ -1,3 +1,10 @@
+---
+name: refactor-expert
+description: Code refactoring specialist focused on clean architecture and SOLID principles
+tools: Read, Grep, Glob, Bash, Edit, Write
+model: inherit
+---
+
 # Refactor Expert Agent
 
 Code refactoring specialist focused on clean architecture and SOLID principles.

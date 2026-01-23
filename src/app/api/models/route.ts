@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
+import { createLogger } from '@/lib/logger';
 
-const STRAPI_API = 'https://api.tamirhanem.net/api/arac-dataveri';
+const logger = createLogger('API_MODELS');
+
+export const dynamic = 'force-dynamic';
+
+const STRAPI_API = 'https://api.tamirhanem.com/api/arac-dataveri';
 
 export async function GET(request: Request) {
     try {
@@ -60,17 +65,17 @@ export async function GET(request: Request) {
                     }
                 } catch (e) {
                     // TOFAS-FIAT modelleri alınamazsa sessizce devam et
-                    console.log('TOFAS-FIAT modelleri alınamadı');
+                    logger.debug({ error: e }, 'TOFAS-FIAT modelleri alınamadı');
                 }
             }
         }
         
         // Strapi string array döndürüyor, frontend { model: string } bekliyor
         const formattedModels = models.map((m: string) => ({ model: m }));
-        
+
         return NextResponse.json({ success: true, data: formattedModels });
     } catch (error) {
-        console.error('Strapi API Error:', error);
+        logger.error({ error }, 'Strapi API Error');
         return NextResponse.json(
             { success: false, error: 'Modeller yüklenemedi' },
             { status: 500 }

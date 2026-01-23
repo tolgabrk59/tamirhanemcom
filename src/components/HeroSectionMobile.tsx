@@ -13,7 +13,7 @@ interface CarPart {
   details: string[];
 }
 
-const SITE_YELLOW = '#FBC91D';
+// Use Tailwind classes instead of inline styles
 
 const carParts: CarPart[] = [
   {
@@ -63,10 +63,7 @@ export default function HeroSectionMobile() {
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 2px 2px, ${SITE_YELLOW} 1px, transparent 0)`,
-          backgroundSize: '40px 40px'
-        }} />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_2px_2px,_theme(colors.primary.500)_1px,_transparent_0)] bg-[length:40px_40px]" />
       </div>
 
       {/* Content */}
@@ -80,7 +77,7 @@ export default function HeroSectionMobile() {
         >
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
             Aracınız için
-            <span className="block" style={{ color: SITE_YELLOW }}>
+            <span className="block text-primary-400">
               her şey burada
             </span>
           </h1>
@@ -149,8 +146,7 @@ export default function HeroSectionMobile() {
               >
                 <div className="flex items-start gap-3">
                   <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{ backgroundColor: `${SITE_YELLOW}20` }}
+                    className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-primary-500/20"
                   >
                     <span className="text-2xl">{getIconEmoji(part.icon)}</span>
                   </div>
@@ -196,8 +192,7 @@ export default function HeroSectionMobile() {
         >
           <Link
             href="/servisler"
-            className="inline-block px-8 py-3 rounded-xl font-semibold text-gray-900 transition-all hover:scale-105"
-            style={{ backgroundColor: SITE_YELLOW }}
+            className="inline-block px-8 py-3 rounded-xl font-semibold text-gray-900 bg-primary-500 hover:bg-primary-400 transition-all hover:scale-105"
           >
             Tüm Hizmetleri Gör
           </Link>

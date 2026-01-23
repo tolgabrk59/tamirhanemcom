@@ -1,10 +1,20 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import ObdDetail from '@/components/ObdDetail';
 import { getObdCodeByCodeLocal, obdCodesData } from '@/data/obd-codes';
-import type { ObdCode } from '@/types';
+import type { ObdCode, ObdCodeEnhanced } from '@/types';
+import { createLogger } from '@/lib/logger';
 
-const STRAPI_API = 'https://api.tamirhanem.net/api';
+const logger = createLogger('ObdCodePage');
+
+// Dynamic imports for enhanced OBD components
+const DiagnosticDecisionTree = dynamic(() => import('@/components/obd/DiagnosticDecisionTree'), { ssr: false });
+const BrandVariationTabs = dynamic(() => import('@/components/obd/BrandVariationTabs'), { ssr: false });
+const RelatedCodesSection = dynamic(() => import('@/components/obd/RelatedCodesSection'), { ssr: false });
+const CodeHistoryTracker = dynamic(() => import('@/components/obd/CodeHistoryTracker'), { ssr: false });
+
+const STRAPI_API = 'https://api.tamirhanem.com/api';
 
 interface PageProps {
   params: Promise<{ code: string }>;
@@ -81,7 +91,7 @@ async function getObdCodeData(code: string): Promise<ObdCode | null> {
       }
     }
   } catch (error) {
-    console.error('Failed to fetch OBD code from Strapi:', error);
+    logger.error({ error }, 'Failed to fetch OBD code from Strapi');
   }
   
   // Fallback to local data
@@ -138,10 +148,92 @@ export default async function ObdCodePage({ params }: PageProps) {
     notFound();
   }
 
+  // FAQPage JSON-LD for SEO
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `${obdCode.code} arıza kodu ne anlama gelir?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: obdCode.description || obdCode.title,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `${obdCode.code} kodu nasıl düzeltilir?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: obdCode.fixes?.join('. ') || 'Profesyonel bir servis tarafından teşhis edilmelidir.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `${obdCode.code} arızasının tamir maliyeti ne kadar?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: obdCode.estimatedCostMin && obdCode.estimatedCostMax
+            ? `Tahmini maliyet ${obdCode.estimatedCostMin.toLocaleString('tr-TR')} - ${obdCode.estimatedCostMax.toLocaleString('tr-TR')} TL arasındadır.`
+            : 'Maliyet araca ve arızanın kaynağına göre değişir.',
+        },
+      },
+    ],
+  };
+
+  // HowTo JSON-LD for SEO
+  const howToSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: `${obdCode.code} Arıza Kodu Teşhis Rehberi`,
+    description: `${obdCode.title} arızası için adım adım teşhis rehberi`,
+    totalTime: 'PT30M',
+    step: obdCode.fixes?.map((fix, index) => ({
+      '@type': 'HowToStep',
+      position: index + 1,
+      name: `Adım ${index + 1}`,
+      text: fix,
+    })) || [],
+  };
+
   return (
     <div className="bg-secondary-50 min-h-screen py-8">
+      {/* Code History Tracker - adds viewed code to localStorage */}
+      <CodeHistoryTracker
+        code={obdCode.code}
+        title={obdCode.title}
+        severity={obdCode.severity}
+      />
+
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
+      />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Main OBD Detail */}
         <ObdDetail obd={obdCode} />
+
+        {/* Enhanced Sections */}
+        <div className="mt-8 space-y-8">
+          {/* Interactive Diagnostic Tree */}
+          <DiagnosticDecisionTree obdCode={obdCode.code} />
+
+          {/* Brand-Specific Variations */}
+          <BrandVariationTabs obdCode={obdCode.code} />
+
+          {/* Related Codes */}
+          <RelatedCodesSection
+            currentCode={obdCode.code}
+            category={obdCode.category}
+          />
+        </div>
       </div>
     </div>
   );

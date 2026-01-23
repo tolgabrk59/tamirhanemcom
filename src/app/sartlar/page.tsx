@@ -28,7 +28,7 @@ export default function SartlarPage() {
             
             <h2>1. Kabul</h2>
             <p>
-              tamirhanem.net web sitesini ("Site") kullanarak, bu Kullanım Şartlarını 
+              app.tamirhanem.com web sitesini ("Site") kullanarak, bu Kullanım Şartlarını 
               okuduğunuzu, anladığınızı ve kabul ettiğinizi beyan etmiş olursunuz. 
               Bu şartları kabul etmiyorsanız, Siteyi kullanmayınız.
             </p>

@@ -1,15 +1,26 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
+import { createLogger } from '@/lib/logger';
+import type {
+  VehicleAnalysisData,
+  StrapiCollectionResponse,
+  VehicleAnalysisAttributes,
+  PexelsSearchResponse,
+} from '@/types/external-apis';
 
-const STRAPI_API = "https://api.tamirhanem.net/api";
+const logger = createLogger('API_AI_RESEARCH');
 
-// Gemini API Keys - Environment Variables'dan okunuyor
+const STRAPI_API = "https://api.tamirhanem.com/api";
+
+// Gemini API Keys - Environment Variables'dan okunuyor (6 keys for rotation)
 const geminiKeys = [
   process.env.GEMINI_API_KEY,
   process.env.GEMINI_API_KEY_2,
   process.env.GEMINI_API_KEY_3,
-  process.env.GEMINI_API_KEY_4
+  process.env.GEMINI_API_KEY_4,
+  process.env.GEMINI_API_KEY_5,
+  process.env.GEMINI_API_KEY_7
 ].filter(Boolean) as string[];
 
 // OpenAI API Key
@@ -25,7 +36,7 @@ const CACHE_TTL_DAYS = 30;
 
 
 
-async function fetchCarImage(query: string) {
+async function fetchCarImage(query: string): Promise<string | null> {
   try {
     const pexelsKey = process.env.PEXELS_API_KEY;
     if (!pexelsKey) return null;
@@ -38,57 +49,64 @@ async function fetchCarImage(query: string) {
 
     if (!res.ok) return null;
 
-    const data = await res.json();
+    const data: PexelsSearchResponse = await res.json();
     if (data.photos && data.photos.length > 0) {
       return data.photos[0].src.large2x || data.photos[0].src.large;
     }
     return null;
   } catch (error) {
-    console.error("Pexels Image Error:", error);
+    logger.error({ error }, "Pexels Image Error");
     return null;
   }
 }
 
+interface VehicleCacheResult {
+  expired: boolean;
+  id: number;
+  data: VehicleAnalysisData;
+  cacheAge?: number;
+}
+
 // Strapi'den cache kontrol
-async function getVehicleAnalysisFromStrapi(brand: string, model: string, year: number) {
+async function getVehicleAnalysisFromStrapi(brand: string, model: string, year: number): Promise<VehicleCacheResult | null> {
   try {
     const url = `${STRAPI_API}/vehicle-analyses?filters[brand][$eq]=${encodeURIComponent(brand)}&filters[model][$eq]=${encodeURIComponent(model)}&filters[year][$eq]=${year}&populate=*`;
     const res = await fetch(url, { next: { revalidate: 0 } });
-    
+
     if (!res.ok) {
-      console.log("Strapi vehicle-analyses endpoint not found or error");
+      logger.warn("Strapi vehicle-analyses endpoint not found or error");
       return null;
     }
-    
-    const result = await res.json();
+
+    const result: StrapiCollectionResponse<VehicleAnalysisAttributes> = await res.json();
     const entry = result.data?.[0];
-    
+
     if (!entry) return null;
-    
+
     // Cache expiry kontrolü
-    const updatedAt = new Date(entry.attributes?.updatedAt || entry.updatedAt);
+    const updatedAt = new Date(entry.attributes.updatedAt);
     const now = new Date();
     const daysSinceUpdate = Math.floor((now.getTime() - updatedAt.getTime()) / (1000 * 60 * 60 * 24));
-    
+
     if (daysSinceUpdate >= CACHE_TTL_DAYS) {
-      console.log(`Cache expired (${daysSinceUpdate} days old)`);
-      return { expired: true, id: entry.id, data: entry.attributes?.data || entry.data };
+      logger.info(`Cache expired (${daysSinceUpdate} days old)`);
+      return { expired: true, id: entry.id, data: entry.attributes.data };
     }
-    
-    return { 
-      expired: false, 
-      id: entry.id, 
-      data: entry.attributes?.data || entry.data,
+
+    return {
+      expired: false,
+      id: entry.id,
+      data: entry.attributes.data,
       cacheAge: daysSinceUpdate
     };
   } catch (error) {
-    console.error("Strapi cache lookup error:", error);
+    logger.error({ error }, "Strapi cache lookup error");
     return null;
   }
 }
 
 // Strapi'ye kaydet
-async function saveVehicleAnalysisToStrapi(brand: string, model: string, year: number, analysisData: any, existingId?: number) {
+async function saveVehicleAnalysisToStrapi(brand: string, model: string, year: number, analysisData: VehicleAnalysisData, existingId?: number): Promise<boolean> {
   try {
     const payload = {
       data: {
@@ -116,7 +134,7 @@ async function saveVehicleAnalysisToStrapi(brand: string, model: string, year: n
       if (checkData.data && checkData.data.length > 0) {
         // Entry was created by another parallel request, update instead
         const foundId = checkData.data[0].id;
-        console.log(`Found existing entry (id=${foundId}), updating instead of creating`);
+        logger.info(`Found existing entry (id=${foundId}), updating instead of creating`);
         res = await fetch(`${STRAPI_API}/vehicle-analyses/${foundId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -131,16 +149,17 @@ async function saveVehicleAnalysisToStrapi(brand: string, model: string, year: n
         });
       }
     }
-    
+
     if (!res.ok) {
-      console.error("Strapi save error:", await res.text());
+      const errorText = await res.text();
+      logger.error({ errorText }, "Strapi save error");
       return false;
     }
-    
-    console.log(`Saved to Strapi: ${year} ${brand} ${model}`);
+
+    logger.info(`Saved to Strapi: ${year} ${brand} ${model}`);
     return true;
   } catch (error) {
-    console.error("Strapi save error:", error);
+    logger.error({ error }, "Strapi save error");
     return false;
   }
 }
@@ -150,8 +169,8 @@ async function generateWithOpenAI(prompt: string): Promise<string> {
   if (!openaiKey) {
     throw new Error("OpenAI API key not configured");
   }
-  
-  console.log("🔄 Trying OpenAI...");
+
+  logger.info("Trying OpenAI...");
   const openai = new OpenAI({ apiKey: openaiKey });
   
   const completion = await openai.chat.completions.create({
@@ -163,9 +182,9 @@ async function generateWithOpenAI(prompt: string): Promise<string> {
     temperature: 0.7,
     max_tokens: 4000
   });
-  
+
   const text = completion.choices[0]?.message?.content || "";
-  console.log("✅ OpenAI Success");
+  logger.info("OpenAI Success");
   return text;
 }
 
@@ -174,8 +193,8 @@ async function generateWithGrok(prompt: string): Promise<string> {
   if (!grokKey) {
     throw new Error("Grok API key not configured");
   }
-  
-  console.log("🔄 Trying Grok (Codefast)...");
+
+  logger.info("Trying Grok (Codefast)...");
   const grok = new OpenAI({ 
     apiKey: grokKey,
     baseURL: grokBaseUrl
@@ -190,9 +209,9 @@ async function generateWithGrok(prompt: string): Promise<string> {
     temperature: 0.7,
     max_tokens: 4000
   });
-  
+
   const text = completion.choices[0]?.message?.content || "";
-  console.log("✅ Grok Success");
+  logger.info("Grok Success");
   return text;
 }
 
@@ -203,7 +222,7 @@ async function generateWithRetry(prompt: string, modelName: string) {
   // 1-4: Try all Gemini keys
   for (const key of geminiKeys) {
     try {
-      console.log(`Trying Gemini key ${key.substring(0, 10)}...`);
+      logger.debug(`Trying Gemini key ${key.substring(0, 10)}...`);
       const genAI = new GoogleGenerativeAI(key);
       
       // First try with Google Search
@@ -212,13 +231,14 @@ async function generateWithRetry(prompt: string, modelName: string) {
               model: modelName,
               tools: [{ googleSearch: {} } as any]
           });
-          
+
+
           const result = await modelAI.generateContent(prompt);
           const response = await result.response;
-          console.log(`✅ Gemini Success with key ${key.substring(0, 10)}...`);
+          logger.info(`Gemini Success with key ${key.substring(0, 10)}...`);
           return response.text();
       } catch (toolError: any) {
-          console.warn(`Tool/Search error: ${toolError.message}`);
+          logger.warn(`Tool/Search error: ${toolError.message}`);
           
           // Check if it's a quota/rate limit error - if so, try next key
           if (toolError.message?.includes('429') || toolError.message?.includes('quota') || toolError.message?.includes('503')) {
@@ -231,10 +251,10 @@ async function generateWithRetry(prompt: string, modelName: string) {
               const modelAI = genAI.getGenerativeModel({ model: modelName });
               const result = await modelAI.generateContent(prompt + "\n\n(Not: İnternet araması başarısız oldu, lütfen kendi bilgi birikiminle yanıtla ve fiyatlar için tahmini veriler sun.)");
               const response = await result.response;
-              console.log(`✅ Gemini Success (no tools)`);
+              logger.info(`Gemini Success (no tools)`);
               return response.text();
           } catch (fallbackError: any) {
-              console.warn(`Fallback also failed: ${fallbackError.message}`);
+              logger.warn(`Fallback also failed: ${fallbackError.message}`);
               if (fallbackError.message?.includes('429') || fallbackError.message?.includes('quota') || fallbackError.message?.includes('503')) {
                   lastError = fallbackError;
                   continue; // Try next key
@@ -244,7 +264,7 @@ async function generateWithRetry(prompt: string, modelName: string) {
       }
 
     } catch (error: any) {
-      console.error(`Gemini Error: ${error.message}`);
+      logger.error(`Gemini Error: ${error.message}`);
       lastError = error;
       
       // If it's a rate limit error, continue to next key
@@ -255,25 +275,25 @@ async function generateWithRetry(prompt: string, modelName: string) {
       throw error;
     }
   }
-  
+
   // 5: All Gemini keys failed - try Grok as first fallback (limitsiz)
   if (grokKey) {
-    console.log("⚠️ All Gemini keys failed, falling back to Grok...");
+    logger.warn("All Gemini keys failed, falling back to Grok...");
     try {
       return await generateWithGrok(prompt);
     } catch (grokError: any) {
-      console.error("Grok also failed:", grokError.message);
+      logger.error({ message: grokError.message }, "Grok also failed");
       lastError = grokError;
     }
   }
-  
+
   // 6: Grok failed - try OpenAI as last fallback
   if (openaiKey) {
-    console.log("⚠️ Grok failed, falling back to OpenAI...");
+    logger.warn("Grok failed, falling back to OpenAI...");
     try {
       return await generateWithOpenAI(prompt);
     } catch (openaiError: any) {
-      console.error("OpenAI also failed:", openaiError.message);
+      logger.error({ message: openaiError.message }, "OpenAI also failed");
       throw openaiError;
     }
   }
@@ -298,17 +318,17 @@ export async function POST(req: Request) {
 
     // 1. Check Strapi Cache
     const cached = await getVehicleAnalysisFromStrapi(brand, model, yearNum);
-    
+
     if (cached && !cached.expired) {
-      console.log(`✅ Cache HIT for ${year} ${brand} ${model} (age: ${cached.cacheAge} days)`);
+      logger.info(`Cache HIT for ${year} ${brand} ${model} (age: ${cached.cacheAge} days)`);
       return NextResponse.json(cached.data);
     }
 
     // Log cache status
     if (cached?.expired) {
-      console.log(`⏰ Cache EXPIRED for ${year} ${brand} ${model}, refreshing...`);
+      logger.info(`Cache EXPIRED for ${year} ${brand} ${model}, refreshing...`);
     } else {
-      console.log(`❌ Cache MISS for ${year} ${brand} ${model}, calling AI...`);
+      logger.info(`Cache MISS for ${year} ${brand} ${model}, calling AI...`);
     }
 
     const prompt = `
@@ -372,21 +392,21 @@ export async function POST(req: Request) {
     
     // Clean up markdown code blocks if present
     const cleanText = text.replace(/```json/g, "").replace(/```/g, "").trim();
-    
-    let data;
+
+    let data: VehicleAnalysisData;
     try {
-        data = JSON.parse(cleanText);
+        data = JSON.parse(cleanText) as VehicleAnalysisData;
     } catch (jsonError) {
         // Fallback: Try without tools (Pure AI)
-        console.error("JSON parse error, retrying...");
+        logger.error("JSON parse error, retrying...");
         const fallbackGenAI = new GoogleGenerativeAI(geminiKeys[0]);
         const modelAI = fallbackGenAI.getGenerativeModel({ model: "gemini-2.5-flash" });
         const result = await modelAI.generateContent(prompt + "\n\n(Not: JSON format hatası alındı, lütfen sadece geçerli JSON döndür.)");
         const response = await result.response;
         const fallbackText = response.text().replace(/```json/g, "").replace(/```/g, "").trim();
-        data = JSON.parse(fallbackText);
+        data = JSON.parse(fallbackText) as VehicleAnalysisData;
     }
-    
+
     // Add image url to data
     data.image_url = imageUrl;
 
@@ -395,7 +415,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(data);
   } catch (error: any) {
-    console.error("AI Research Error:", error);
+    logger.error({ error }, "AI Research Error");
     return NextResponse.json(
       { error: `Failed to generate research data: ${error.message}` },
       { status: 500 }

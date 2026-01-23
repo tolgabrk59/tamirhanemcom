@@ -11,15 +11,27 @@ export default function IletisimPage() {
   return (
     <div className="min-h-screen bg-secondary-50">
       {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary-400/10 rounded-full blur-3xl" />
+      <section className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-secondary-600 text-white py-20 overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-10"
+          style={{
+            backgroundImage: 'url(/hero_service_background.png)',
+            backgroundPosition: 'center',
+            backgroundSize: 'cover'
+          }}
+        ></div>
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+            </svg>
+            <span className="text-sm font-semibold">Bize Ulaşın</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
             İletişim
           </h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <p className="text-xl text-primary-100 max-w-2xl mx-auto">
             Sorularınız, önerileriniz veya iş birliği teklifleriniz için bizimle iletişime geçin
           </p>
         </div>
@@ -45,6 +57,7 @@ export default function IletisimPage() {
                     <input
                       type="text"
                       required
+                      autoComplete="name"
                       className="w-full px-4 py-3 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Adınız Soyadınız"
                     />
@@ -56,6 +69,8 @@ export default function IletisimPage() {
                     <input
                       type="email"
                       required
+                      inputMode="email"
+                      autoComplete="email"
                       className="w-full px-4 py-3 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       placeholder="ornek@email.com"
                     />

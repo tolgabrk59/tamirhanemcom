@@ -16,6 +16,9 @@ export interface ApiResponse<T = unknown> {
   };
 }
 
+// Import logger functions (will be used for enhanced logging)
+// These are optional and work with the new logger.ts
+
 /**
  * Create a successful response
  */
@@ -165,10 +168,35 @@ export function sanitizeErrorMessage(error: unknown): string {
 /**
  * Log error securely - full details for server logs, sanitized for response
  */
-export function logError(context: string, error: unknown): void {
-  console.error(`[${context}]`, {
-    message: error instanceof Error ? error.message : String(error),
-    stack: error instanceof Error ? error.stack : undefined,
-    timestamp: new Date().toISOString(),
-  });
+export function logError(context: string, error: unknown, requestId?: string): void {
+  // Try to use the enhanced logger if available
+  try {
+    const { logError: enhancedLogError } = require('./logger');
+    enhancedLogError({
+      error,
+      context,
+      requestId,
+    });
+  } catch {
+    // Fallback to console.log if logger not available
+    console.error(`[${context}]`, {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString(),
+      requestId,
+    });
+  }
+}
+
+/**
+ * Generate a unique request ID
+ */
+export function generateRequestId(): string {
+  try {
+    // Try to use crypto.randomUUID() (Node 19+)
+    return crypto.randomUUID();
+  } catch {
+    // Fallback to simple ID generation
+    return `req_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+  }
 }

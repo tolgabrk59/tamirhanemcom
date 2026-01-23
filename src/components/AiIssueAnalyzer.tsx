@@ -84,11 +84,16 @@ export default function AiIssueAnalyzer() {
       <div className={`grid gap-6 ${result ? 'lg:grid-cols-2' : 'grid-cols-1'}`}>
         {/* Input Section */}
         <div className="space-y-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary-500/20 text-primary-400 text-sm font-medium">
-              <Car className="w-4 h-4" />
-              AI Arıza Analizi
+          <div className="mb-3">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary-500/20 text-primary-400 text-sm font-medium">
+                <Car className="w-4 h-4" />
+                AI Arıza Analizi
+              </div>
             </div>
+            <p className="text-white/70 text-sm leading-relaxed">
+              Yapay zeka destekli arıza analizi modülümüz ile aracınızdaki sorunu kısaca anlatın, sizi doğru servise yönlendirelim.
+            </p>
           </div>
 
           <textarea
@@ -119,7 +124,7 @@ export default function AiIssueAnalyzer() {
             ) : (
               <>
                 <Wrench className="w-5 h-5" />
-                Sorunu Analiz Edelim & Doğru Ustayı Bulalım
+                Sorununuzu Analiz Edelim & Doğru Servise Yönlendirelim
               </>
             )}
           </button>

@@ -1,4 +1,7 @@
 import mysql, { Pool, PoolOptions } from 'mysql2/promise';
+import { createLogger } from './logger';
+
+const dbLogger = createLogger('DATABASE');
 
 // Singleton pool instance
 let pool: Pool | null = null;
@@ -34,14 +37,14 @@ export function getPool(): Pool {
     pool = mysql.createPool(poolConfig);
 
     // Log pool creation
-    console.log('Database connection pool created');
+    dbLogger.info('Database connection pool created');
 
     // Handle pool errors
     pool.on('connection', (connection) => {
-      console.log('New database connection established');
+      dbLogger.debug('New database connection established');
 
       connection.on('error', (err) => {
-        console.error('Database connection error:', err.message);
+        dbLogger.error({ err: err.message }, 'Database connection error');
       });
     });
   }
@@ -128,7 +131,7 @@ export async function healthCheck(): Promise<boolean> {
     await pool.query('SELECT 1');
     return true;
   } catch (error) {
-    console.error('Database health check failed:', error);
+    dbLogger.error({ error }, 'Database health check failed');
     return false;
   }
 }
@@ -140,14 +143,14 @@ export async function closePool(): Promise<void> {
   if (pool) {
     await pool.end();
     pool = null;
-    console.log('Database connection pool closed');
+    dbLogger.info('Database connection pool closed');
   }
 }
 
 // Graceful shutdown handlers
 if (typeof process !== 'undefined') {
   const shutdown = async () => {
-    console.log('Shutting down database pool...');
+    dbLogger.info('Shutting down database pool...');
     await closePool();
   };
 

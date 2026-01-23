@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
+import { createLogger } from '@/lib/logger';
 
-const STRAPI_API = 'https://api.tamirhanem.net/api/arac-dataveri';
+const logger = createLogger('API_PACKAGES');
+
+export const dynamic = 'force-dynamic';
+
+const STRAPI_API = 'https://api.tamirhanem.com/api/arac-dataveri';
 
 export async function GET(request: Request) {
     try {
@@ -31,7 +36,7 @@ export async function GET(request: Request) {
         // Strapi zaten { id, brand, model, paket, full_model } formatında döndürüyor
         return NextResponse.json({ success: true, data: packages });
     } catch (error) {
-        console.error('Strapi API Error:', error);
+        logger.error({ error }, 'Strapi API Error');
         return NextResponse.json(
             { success: false, error: 'Paketler yüklenemedi' },
             { status: 500 }

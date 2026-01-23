@@ -23,21 +23,38 @@ export default function HakkimizdaPage() {
   return (
     <div className="bg-secondary-50 min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-600 to-primary-800 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-secondary-600 text-white py-20 overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-10"
+          style={{
+            backgroundImage: 'url(/hero_service_background.png)',
+            backgroundPosition: 'center',
+            backgroundSize: 'cover'
+          }}
+        ></div>
+        
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex items-center space-x-2 text-sm text-primary-200 mb-6">
             <Link href="/" className="hover:text-white">Ana Sayfa</Link>
             <span>/</span>
             <span className="text-white">Hakkımızda</span>
           </nav>
-
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 max-w-3xl">
-            Araç sahiplerini güvenilir servislerle buluşturuyoruz
-          </h1>
-          <p className="text-xl text-primary-100 max-w-2xl">
-            TamirHanem, araç bakım ve onarım sürecini şeffaf, güvenilir ve
-            kolay hale getirmek için kuruldu.
-          </p>
+          
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm font-semibold">TamirHanem Hikayesi</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Araç sahiplerini güvenilir servislerle buluşturuyoruz
+            </h1>
+            <p className="text-xl text-primary-100">
+              TamirHanem, araç bakım ve onarım sürecini şeffaf, güvenilir ve
+              kolay hale getirmek için kuruldu.
+            </p>
+          </div>
         </div>
       </section>
 
