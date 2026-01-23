@@ -124,7 +124,7 @@ export default function AiIssueAnalyzer() {
             ) : (
               <>
                 <Wrench className="w-5 h-5" />
-                Sorununuzu Analiz Edelim & Doğru Servise Yönlendirelim
+                Ücretsiz Arıza Analizi
               </>
             )}
           </button>

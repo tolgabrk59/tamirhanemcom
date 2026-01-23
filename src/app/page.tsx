@@ -123,7 +123,7 @@ export default async function HomePage() {
             {/* Left Side - Content & Features */}
             <div>
               {/* Typewriter Kategori Yazısı */}
-              <div className="mb-6">
+              <div className="-mt-8 mb-6">
                 <ServiceCategoriesMarquee />
               </div>
 
