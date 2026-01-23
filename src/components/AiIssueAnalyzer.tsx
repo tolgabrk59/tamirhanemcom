@@ -119,7 +119,7 @@ export default function AiIssueAnalyzer() {
           />
 
           <p className="text-red-400 text-xs">
-            *Kişiselleştirilmiş sonuçlar için <span className="font-bold underline">üye girişi</span> yapmalısınız.
+            *Kişiselleştirilmiş sonuçlar için <a href="https://app.tamirhanem.com/login.html" className="font-bold underline hover:text-red-300 transition">üye girişi</a> yapmalısınız.
           </p>
 
           {error && (
