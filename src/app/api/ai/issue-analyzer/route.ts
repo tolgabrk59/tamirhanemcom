@@ -19,36 +19,36 @@ export async function POST(request: NextRequest) {
     const systemPrompt = `Sen tamirhanem.com platformunun yapay zeka asistanısın.
 
 ÖNEMLİ KURAL - KESİNLİKLE UYULMASI GEREKEN:
-Sen SADECE ve SADECE araç (otomobil, motosiklet, kamyon vb.) arızaları, bakımları ve teknik sorunları hakkında yardımcı olabilirsin.
-Araç dışındaki HİÇBİR konuda (sağlık, hukuk, finans, genel sohbet, kişisel sorular, teknoloji, yazılım vb.) ASLA cevap verme.
+Sen SADECE ve SADECE araç (otomobil, motosiklet, kamyon vb.) ile ilgili konularda yardımcı olabilirsin:
+- Arıza ve sorunlar
+- Teknik özellikler (lastik ebatı, motor, yakıt tüketimi vb.)
+- Bakım bilgileri
+- Yedek parça bilgileri
+- Araç karşılaştırma
+
+Araç dışındaki HİÇBİR konuda (sağlık, hukuk, finans, genel sohbet, kişisel sorular, yazılım vb.) ASLA cevap verme.
 
 Eğer kullanıcının sorusu araç/otomotiv ile ilgili DEĞİLSE, şu JSON'u döndür:
 {
-    "off_topic": true,
+    "type": "off_topic",
     "message": "Tamirhanem AI altyapısı sadece araçlar ile ilgili bilgilendirme amacı ile eğitilmiştir. Bu sorunuza cevap verememekteyim."
 }
 
-Eğer soru araç ile ilgiliyse, sorunu analiz edip tamirhanem.com üzerindeki EN UYGUN servis kategorisine yönlendir.
-
-Mevcut Kategoriler:
-1. Periyodik Bakım (Yağ, filtre değişimi vb.)
-2. Motor Mekanik (Motor arızaları, yürüyen aksam, ağır bakım)
-3. Kaporta Boya (Hasar, çizik, göçük, boya)
-4. Oto Elektrik & Elektronik (Akü, lamba, beyin, gösterge, tesisat)
-5. Lastik & Jant (Lastik değişimi, balans, tamir)
-6. Fren Sistemi (Balata, disk, hidrolik)
-7. Şanzıman (Vites kutusu, debriyaj, diferansiyel)
-8. Egzoz & Emisyon (Egzoz patlağı, katalizör, muayene)
-9. Klima Servisi (Gaz dolumu, kompresör, ısıtma/soğutma)
-10. Oto Kuaför & Detaylı Temizlik
-11. Oto Ekspertiz (Alım satım öncesi kontrol)
-
-Araç sorusu için yanıtını şu JSON formatında ver:
+Eğer soru ARIZA/SORUN ile ilgiliyse (motor arızası, ses geliyor, titriyor, çalışmıyor vb.), şu JSON formatında cevap ver:
 {
-    "category": "Yukarıdaki listeden en uygun kategori ismi",
-    "urgency": "Sürüş güvenliği açısından aciliyet (Düşük / Orta / Yüksek)",
-    "urgency_color": "Aciliyet rengi (green / yellow / red)",
+    "type": "issue",
+    "category": "En uygun kategori (Periyodik Bakım / Motor Mekanik / Kaporta Boya / Oto Elektrik & Elektronik / Lastik & Jant / Fren Sistemi / Şanzıman / Egzoz & Emisyon / Klima Servisi / Oto Kuaför & Detaylı Temizlik / Oto Ekspertiz)",
+    "urgency": "Düşük / Orta / Yüksek",
+    "urgency_color": "green / yellow / red",
     "analysis": "Sorunun olası teknik nedenleri ve kullanıcıya kısa tavsiye (maks 2 cümle)."
+}
+
+Eğer soru BİLGİ SORGUSU ise (lastik ebatı, motor özellikleri, yakıt tüketimi, teknik detay vb.), şu JSON formatında cevap ver:
+{
+    "type": "info",
+    "title": "Kısa başlık (örn: Renault Clio 4 Lastik Ebatları)",
+    "answer": "Detaylı ve faydalı cevap (2-4 cümle). Bilgiyi net ve anlaşılır şekilde ver.",
+    "related_category": "İlgili servis kategorisi varsa (örn: Lastik & Jant), yoksa null"
 }
 
 Sadece saf JSON döndür. Markdown bloğu kullanma.`;
@@ -70,19 +70,36 @@ Sadece saf JSON döndür. Markdown bloğu kullanma.`;
     const data = JSON.parse(jsonString);
 
     // Araç dışı soru kontrolü
-    if (data.off_topic === true) {
+    if (data.type === 'off_topic') {
       return NextResponse.json(
         { error: data.message || 'Tamirhanem AI altyapısı sadece araçlar ile ilgili bilgilendirme amacı ile eğitilmiştir. Bu sorunuza cevap verememekteyim.' },
         { status: 400 }
       );
     }
 
+    // Bilgi sorgusu
+    if (data.type === 'info') {
+      return NextResponse.json({
+        type: 'info',
+        title: data.title,
+        answer: data.answer,
+        related_category: data.related_category || null
+      });
+    }
+
+    // Arıza/sorun yanıtı (varsayılan)
     // Validate response structure
     if (!data.category || !data.urgency || !data.urgency_color || !data.analysis) {
       throw new Error('Geçersiz yanıt formatı');
     }
 
-    return NextResponse.json(data);
+    return NextResponse.json({
+      type: 'issue',
+      category: data.category,
+      urgency: data.urgency,
+      urgency_color: data.urgency_color,
+      analysis: data.analysis
+    });
   } catch (error) {
     console.error('AI Issue Analyzer Error:', error);
 

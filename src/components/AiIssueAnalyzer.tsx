@@ -1,14 +1,24 @@
 'use client';
 
 import { useState } from 'react';
-import { MapPin, FileText, Loader2, Car, AlertTriangle, Wrench, RotateCcw } from 'lucide-react';
+import { MapPin, FileText, Loader2, Car, AlertTriangle, Wrench, RotateCcw, Info } from 'lucide-react';
 
-interface AnalysisResult {
+interface IssueResult {
+  type: 'issue';
   category: string;
   urgency: string;
   urgency_color: 'green' | 'yellow' | 'red';
   analysis: string;
 }
+
+interface InfoResult {
+  type: 'info';
+  title: string;
+  answer: string;
+  related_category: string | null;
+}
+
+type AnalysisResult = IssueResult | InfoResult;
 
 const categorySlugMap: Record<string, string> = {
   'Periyodik Bakım': 'motor-bakim',
@@ -78,11 +88,9 @@ export default function AiIssueAnalyzer() {
     }
   };
 
-  const handleCategoryClick = () => {
-    if (result) {
-      const slug = categorySlugMap[result.category] || 'motor-bakim';
-      window.location.href = `/servisler?kategori=${slug}`;
-    }
+  const handleCategoryClick = (category: string) => {
+    const slug = categorySlugMap[category] || 'motor-bakim';
+    window.location.href = `/servisler?kategori=${slug}`;
   };
 
   return (
@@ -139,8 +147,8 @@ export default function AiIssueAnalyzer() {
         </div>
       )}
 
-      {/* Result Section - Sadece sonuç varken göster */}
-      {result && (
+      {/* Issue Result Section */}
+      {result && result.type === 'issue' && (
         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/20 animate-fadeInUp">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -186,12 +194,50 @@ export default function AiIssueAnalyzer() {
           </div>
 
           <button
-            onClick={handleCategoryClick}
+            onClick={() => handleCategoryClick(result.category)}
             className="w-full py-3 bg-primary-500 hover:bg-primary-600 text-secondary-900 rounded-xl font-bold transition shadow-md flex items-center justify-center gap-2"
           >
             <MapPin className="w-4 h-4" />
             Bu Kategorideki Servisleri Listele
           </button>
+        </div>
+      )}
+
+      {/* Info Result Section */}
+      {result && result.type === 'info' && (
+        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/20 animate-fadeInUp">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+                <Info className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="text-white font-bold">{result.title}</h3>
+                <p className="text-white/50 text-xs">AI tarafından yanıtlandı</p>
+              </div>
+            </div>
+            <button
+              onClick={resetAnalysis}
+              className="flex items-center gap-1 text-white/60 hover:text-white text-sm transition"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Yeni Soru
+            </button>
+          </div>
+
+          <div className="bg-white/5 p-4 rounded-xl border border-white/10 mb-4">
+            <p className="text-white/90 text-sm leading-relaxed">{result.answer}</p>
+          </div>
+
+          {result.related_category && (
+            <button
+              onClick={() => handleCategoryClick(result.related_category!)}
+              className="w-full py-3 bg-primary-500 hover:bg-primary-600 text-secondary-900 rounded-xl font-bold transition shadow-md flex items-center justify-center gap-2"
+            >
+              <MapPin className="w-4 h-4" />
+              {result.related_category} Servisleri
+            </button>
+          )}
         </div>
       )}
     </div>
