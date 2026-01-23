@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, MapPin, FileText, Loader2, Car, AlertTriangle, Wrench } from 'lucide-react';
+import { MapPin, FileText, Loader2, Car, AlertTriangle, Wrench, RotateCcw } from 'lucide-react';
 
 interface AnalysisResult {
   category: string;
@@ -61,6 +61,12 @@ export default function AiIssueAnalyzer() {
     }
   };
 
+  const resetAnalysis = () => {
+    setResult(null);
+    setIssue('');
+    setError(null);
+  };
+
   const getUrgencyStyle = (color: string) => {
     switch (color) {
       case 'red':
@@ -81,8 +87,8 @@ export default function AiIssueAnalyzer() {
 
   return (
     <div className="w-full">
-      <div className={`grid gap-6 ${result ? 'lg:grid-cols-2' : 'grid-cols-1'}`}>
-        {/* Input Section */}
+      {/* Input Section - Sadece sonuç yokken göster */}
+      {!result && (
         <div className="space-y-4">
           <div className="mb-3">
             <div className="flex items-center gap-2 mb-2">
@@ -131,11 +137,13 @@ export default function AiIssueAnalyzer() {
             </button>
           </div>
         </div>
+      )}
 
-        {/* Result Section */}
-        {result && (
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/20 animate-fadeInUp lg:order-first">
-            <div className="flex items-center gap-2 mb-4">
+      {/* Result Section - Sadece sonuç varken göster */}
+      {result && (
+        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/20 animate-fadeInUp">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
               <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center">
                 <Wrench className="w-5 h-5 text-secondary-900" />
               </div>
@@ -144,41 +152,48 @@ export default function AiIssueAnalyzer() {
                 <p className="text-white/50 text-xs">AI tarafından değerlendirildi</p>
               </div>
             </div>
-
-            <div className="flex items-center justify-between mb-4 p-3 bg-white/5 rounded-xl">
-              <div>
-                <h4 className="text-xs font-bold text-white/50 uppercase tracking-wider mb-1">Kategori</h4>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-500 text-secondary-900 rounded-lg font-bold text-sm">
-                  <Car className="w-4 h-4" />
-                  {result.category}
-                </div>
-              </div>
-              <div className="text-right">
-                <h4 className="text-xs font-bold text-white/50 uppercase tracking-wider mb-1">Aciliyet</h4>
-                <span className={`px-3 py-1.5 rounded-full text-sm font-bold border ${getUrgencyStyle(result.urgency_color)}`}>
-                  {result.urgency}
-                </span>
-              </div>
-            </div>
-
-            <div className="bg-white/5 p-4 rounded-xl border border-white/10 mb-4">
-              <h4 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
-                <FileText className="w-4 h-4 text-primary-400" />
-                Uzman Görüşü
-              </h4>
-              <p className="text-white/80 text-sm leading-relaxed">{result.analysis}</p>
-            </div>
-
             <button
-              onClick={handleCategoryClick}
-              className="w-full py-3 bg-primary-500 hover:bg-primary-600 text-secondary-900 rounded-xl font-bold transition shadow-md flex items-center justify-center gap-2"
+              onClick={resetAnalysis}
+              className="flex items-center gap-1 text-white/60 hover:text-white text-sm transition"
             >
-              <MapPin className="w-4 h-4" />
-              Bu Kategorideki Servisleri Listele
+              <RotateCcw className="w-4 h-4" />
+              Yeni Analiz
             </button>
           </div>
-        )}
-      </div>
+
+          <div className="flex items-center justify-between mb-4 p-3 bg-white/5 rounded-xl">
+            <div>
+              <h4 className="text-xs font-bold text-white/50 uppercase tracking-wider mb-1">Kategori</h4>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-500 text-secondary-900 rounded-lg font-bold text-sm">
+                <Car className="w-4 h-4" />
+                {result.category}
+              </div>
+            </div>
+            <div className="text-right">
+              <h4 className="text-xs font-bold text-white/50 uppercase tracking-wider mb-1">Aciliyet</h4>
+              <span className={`px-3 py-1.5 rounded-full text-sm font-bold border ${getUrgencyStyle(result.urgency_color)}`}>
+                {result.urgency}
+              </span>
+            </div>
+          </div>
+
+          <div className="bg-white/5 p-4 rounded-xl border border-white/10 mb-4">
+            <h4 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-primary-400" />
+              Uzman Görüşü
+            </h4>
+            <p className="text-white/80 text-sm leading-relaxed">{result.analysis}</p>
+          </div>
+
+          <button
+            onClick={handleCategoryClick}
+            className="w-full py-3 bg-primary-500 hover:bg-primary-600 text-secondary-900 rounded-xl font-bold transition shadow-md flex items-center justify-center gap-2"
+          >
+            <MapPin className="w-4 h-4" />
+            Bu Kategorideki Servisleri Listele
+          </button>
+        </div>
+      )}
     </div>
   );
 }
