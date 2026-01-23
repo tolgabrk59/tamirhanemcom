@@ -118,6 +118,10 @@ export default function AiIssueAnalyzer() {
             placeholder="Örnek: Araç 80 km hızı geçince direksiyon titriyor ve frene basınca ses geliyor..."
           />
 
+          <p className="text-red-400 text-xs">
+            *Kişiselleştirilmiş sonuçlar için <span className="font-bold underline">üye girişi</span> yapmalısınız.
+          </p>
+
           {error && (
             <div className="flex items-center gap-2 text-red-400 text-sm">
               <AlertTriangle className="w-4 h-4" />
