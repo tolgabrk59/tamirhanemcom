@@ -315,7 +315,7 @@
                 </div>
                 <div class="message-content">
                     <div class="message-bubble">
-                        Merhaba! Ben Tamirhanem AI asistaniyim. Arac bakimi, servis randevusu veya herhangi bir konuda size yardimci olabilirim.
+                        Merhaba! Ben Tamirhanem AI asistanıyım. Araç bakımı, servis randevusu veya herhangi bir konuda size yardımcı olabilirim.
                     </div>
                     <div class="message-time">Simdi</div>
                 </div>
@@ -330,7 +330,7 @@
             <button class="quick-action" onclick="sendQuickMessage('Yakindaki servisleri goster')">
                 <i class="ri-map-pin-line"></i> Yakin Servisler
             </button>
-            <button class="quick-action" onclick="sendQuickMessage('Arac bakim onerileri')">
+            <button class="quick-action" onclick="sendQuickMessage('Araç bakım önerileri')">
                 <i class="ri-tools-line"></i> Bakim Onerileri
             </button>
             <button class="quick-action" onclick="sendQuickMessage('Fiyat teklifi al')">
@@ -398,7 +398,7 @@
             const user = auth.getUser();
             debugLog('success', 'Kullanici authenticated', { id: user?.id, phone: user?.phone });
         } else {
-            debugLog('warn', 'Auth modulu yuklenemedi');
+            debugLog('warn', 'Auth modülü yüklenemedi');
         }
 
         function handleKeyDown(e) {

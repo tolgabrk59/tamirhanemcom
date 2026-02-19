@@ -316,14 +316,14 @@
         <div class="wallet-balance-value" id="wallet-balance">₺0,00</div>
         <div class="wallet-balance-actions">
           <button class="btn-wallet btn-wallet-primary" onclick="openAddMoneyModal()"><i class="ri-add-circle-line"></i>
-            Para Yukle</button>
-          <button class="btn-wallet btn-wallet-secondary" onclick="showToast('Para cekme ozelligi yakinda!', false)"><i
-              class="ri-bank-line"></i> Para Cek</button>
+            Para Yükle</button>
+          <button class="btn-wallet btn-wallet-secondary" onclick="showToast('Para çekme özelliği yakında!', false)"><i
+              class="ri-bank-line"></i> Para Çek</button>
         </div>
       </div>
 
       <div class="section-card">
-        <h2 class="section-title"><i class="ri-history-line"></i> Islem Gecmisi</h2>
+        <h2 class="section-title"><i class="ri-history-line"></i> İşlem Geçmişi</h2>
         <div id="transactions-list">
           <div class="empty-state">
             <div class="empty-state-icon"><i class="ri-loader-4-line"></i></div>
@@ -365,7 +365,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="submit-btn" onclick="confirmAddMoney()"><i class="ri-check-line"></i> Para Yukle</button>
+        <button class="submit-btn" onclick="confirmAddMoney()"><i class="ri-check-line"></i> Para Yükle</button>
       </div>
     </div>
   </div>
@@ -398,7 +398,7 @@
         document.getElementById('wallet-balance').textContent = `₺${formattedBalance}`;
         document.getElementById('navbar-wallet-balance').textContent = `₺${formattedBalance}`;
         loadTransactions();
-      } catch (error) { console.error('Cuzdan yuklenemedi:', error); document.getElementById('wallet-balance').textContent = '₺0,00'; document.getElementById('navbar-wallet-balance').textContent = '₺0,00'; loadTransactions(); }
+      } catch (error) { console.error('Cüzdan yüklenemedi:', error); document.getElementById('wallet-balance').textContent = '₺0,00'; document.getElementById('navbar-wallet-balance').textContent = '₺0,00'; loadTransactions(); }
     }
 
     async function loadTransactions() {
@@ -406,7 +406,7 @@
       try {
         const response = await api.getTransactions();
         const transactions = response.data || [];
-        if (transactions.length === 0) { container.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><i class="ri-exchange-dollar-line"></i></div><h3>Henuz islem yok</h3><p>Ilk isleminizi yaparak baslayin</p></div>`; return; }
+        if (transactions.length === 0) { container.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><i class="ri-exchange-dollar-line"></i></div><h3>Henüz işlem yok</h3><p>İlk işleminizi yaparak başlayın</p></div>`; return; }
         container.innerHTML = transactions.map(tx => {
           const attrs = tx.attributes || tx;
           const isCredit = attrs.direction === 'CREDIT';
@@ -415,10 +415,10 @@
           const amount = Number(attrs.amount || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
           return `<div class="transaction-item"><div class="transaction-icon ${isCredit ? 'credit' : 'debit'}"><i class="${isCredit ? 'ri-arrow-left-down-line' : 'ri-arrow-right-up-line'}"></i></div><div class="transaction-info"><div class="transaction-title">${typeTitle}</div><div class="transaction-date">${dateStr}</div></div><div class="transaction-amount ${isCredit ? 'credit' : 'debit'}">${isCredit ? '+' : '-'}₺${amount}</div></div>`;
         }).join('');
-      } catch (error) { console.error('Islemler yuklenemedi:', error); container.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><i class="ri-exchange-dollar-line"></i></div><h3>Henuz islem yok</h3><p>Ilk isleminizi yaparak baslayin</p></div>`; }
+      } catch (error) { console.error('İşlemler yüklenemedi:', error); container.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><i class="ri-exchange-dollar-line"></i></div><h3>Henüz işlem yok</h3><p>İlk işleminizi yaparak başlayın</p></div>`; }
     }
 
-    function getTransactionTitle(type) { const titles = { 'DEPOSIT_PAYMENT': 'Para Yukleme', 'REFUND': 'Iade', 'NO_SHOW_FORFEIT': 'Iptal Ucreti', 'APPOINTMENT_PAYMENT': 'Randevu Odemesi' }; return titles[type] || type || 'Islem'; }
+    function getTransactionTitle(type) { const titles = { 'DEPOSIT_PAYMENT': 'Para Yükleme', 'REFUND': 'İade', 'NO_SHOW_FORFEIT': 'İptal Ücreti', 'APPOINTMENT_PAYMENT': 'Randevu Ödemesi' }; return titles[type] || type || 'İşlem'; }
 
     function openAddMoneyModal() { document.getElementById('addMoneyModal').classList.add('show'); }
     function closeAddMoneyModal() { document.getElementById('addMoneyModal').classList.remove('show'); selectedAmount = 0; document.getElementById('custom-amount').value = ''; document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('selected')); }
@@ -429,11 +429,11 @@
 
     async function confirmAddMoney() {
       const amount = selectedAmount || parseFloat(document.getElementById('custom-amount').value);
-      if (!amount || amount < 10) { showToast('Minimum yukleme tutari ₺10\'dur', true); return; }
-      if (amount > 10000) { showToast('Maksimum yukleme tutari ₺10.000\'dir', true); return; }
-      showToast(`₺${amount.toLocaleString('tr-TR')} yukleme islemi baslatildi`, false);
+      if (!amount || amount < 10) { showToast('Minimum yükleme tutarı ₺10\'dur', true); return; }
+      if (amount > 10000) { showToast('Maksimum yükleme tutarı ₺10.000\'dir', true); return; }
+      showToast(`₺${amount.toLocaleString('tr-TR')} yükleme işlemi başlatıldı`, false);
       closeAddMoneyModal();
-      setTimeout(() => { showToast('Para yukleme basarili!', false); loadWallet(); }, 1500);
+      setTimeout(() => { showToast('Para yükleme başarılı!', false); loadWallet(); }, 1500);
     }
 
     function showToast(message, isError = false) {
