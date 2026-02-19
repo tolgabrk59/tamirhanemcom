@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Kampanyalı Servisler - TamirHanem">
+  <title>Kampanyalı Servisler | TamirHanem</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+
+  <!-- Global Dashboard CSS -->
+  <link rel="stylesheet" href="/css/global-dashboard.css">
+
+  <!-- Config (API URL) -->
+  <script src="/js/config.js"></script>
+
+  <style>
+    /* Page Specific Styles */
+    body {
+      padding-bottom: 100px;
+    }
+
+    .page-header {
+      margin-bottom: 24px;
+    }
+
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--neutral-900);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .page-title i {
+      color: #ef4444;
+    }
+
+    .page-subtitle {
+      font-size: 0.9rem;
+      color: var(--neutral-500);
+    }
+
+    /* Services Grid */
+    #services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 24px;
+    }
+
+    /* Campaign Service Card */
+    .campaign-service-card {
+      background: var(--white);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      border: 2px solid transparent;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+
+    .campaign-service-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(239, 68, 68, 0.15);
+      border-color: #ef4444;
+    }
+
+    /* Campaign Ribbon */
+    .campaign-ribbon {
+      position: absolute;
+      top: 20px;
+      left: -35px;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      padding: 8px 40px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      transform: rotate(-45deg);
+      z-index: 10;
+      box-shadow: 0 2px 10px rgba(239, 68, 68, 0.4);
+    }
+
+    .service-img-wrapper {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .service-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      cursor: pointer;
+      transition: transform 0.5s;
+    }
+
+    .campaign-service-card:hover .service-img {
+      transform: scale(1.05);
+    }
+
+    .service-content {
+      padding: 20px;
+    }
+
+    .service-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .service-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+      flex-shrink: 0;
+    }
+
+    .service-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .service-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 4px;
+      cursor: pointer;
+      transition: color 0.3s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .service-title:hover {
+      color: var(--primary-dark);
+    }
+
+    .service-loc {
+      font-size: 0.8rem;
+      color: var(--neutral-500);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .service-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .rating-badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(251, 199, 7, 0.15);
+      color: var(--primary-dark);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .rating-badge i {
+      color: var(--primary);
+    }
+
+    /* Campaign Section in Card */
+    .campaign-section {
+      background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(239, 68, 68, 0.15);
+    }
+
+    .campaign-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+
+    .campaign-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .campaign-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+    }
+
+    .campaign-badge-text {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #991b1b;
+    }
+
+    .campaign-toggle {
+      background: white;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      color: #dc2626;
+    }
+
+    .campaign-toggle:hover {
+      background: #fecaca;
+    }
+
+    .campaign-toggle i {
+      transition: transform 0.3s;
+    }
+
+    .campaign-toggle.expanded i {
+      transform: rotate(180deg);
+    }
+
+    /* Expandable Campaign Details */
+    .campaign-expand {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+
+    .campaign-expand.expanded {
+      max-height: 400px;
+    }
+
+    .campaign-image {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+
+    .campaign-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #991b1b;
+      margin-bottom: 8px;
+    }
+
+    .campaign-description {
+      font-size: 0.85rem;
+      color: #7f1d1d;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .campaign-dates {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: #b91c1c;
+      margin-bottom: 12px;
+    }
+
+    .campaign-more-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #dc2626;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .campaign-more-btn:hover {
+      background: #b91c1c;
+      transform: translateY(-2px);
+    }
+
+    /* Service Actions */
+    .service-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-appointment,
+    .btn-detail {
+      flex: 1;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-appointment {
+      background: var(--primary);
+      color: var(--custom-dark);
+    }
+
+    .btn-appointment:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(251, 199, 7, 0.4);
+    }
+
+    .btn-detail {
+      background: var(--neutral-100);
+      color: var(--neutral-700);
+    }
+
+    .btn-detail:hover {
+      background: var(--neutral-200);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--neutral-500);
+      grid-column: 1 / -1;
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      margin-bottom: 16px;
+      opacity: 0.3;
+      color: #ef4444;
+    }
+
+    .empty-state h3 {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+      color: var(--neutral-700);
+    }
+
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 300px;
+      grid-column: 1 / -1;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid var(--neutral-100);
+      border-top-color: #ef4444;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      #services-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Sidebar Appointment Widget CSS */
+    .sidebar-section #active-appointment-widget .appt-bar {
+      background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%);
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(255, 193, 7, 0.3);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-section #active-appointment-widget .appt-bar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.5) 50%, transparent 100%);
+      transform: skewX(-25deg);
+      animation: shimmer 3s infinite;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 200%; }
+    }
+
+    .sidebar-section #active-appointment-widget .appt-bar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+    }
+
+    .sidebar-section #active-appointment-widget .appt-bar-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      white-space: normal;
+      flex: 1;
+      display: flex;
+    }
+
+    .sidebar-section #active-appointment-widget .appt-badge-prefix {
+      font-size: 9px;
+      padding: 3px 6px;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border-radius: 4px;
+      align-self: flex-start;
+    }
+
+    .sidebar-section #active-appointment-widget .appt-bar-text {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      width: 100%;
+      white-space: normal;
+      display: flex;
+    }
+
+    .sidebar-section #active-appointment-widget .appt-badge-date {
+      font-size: 1rem;
+      padding: 0;
+      width: 100%;
+      justify-content: flex-start;
+      background: transparent;
+      border: none;
+      color: #222222;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+    }
+
+    .sidebar-section #active-appointment-widget .appt-badge-service {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #222222;
+      opacity: 0.9;
+      line-height: 1.3;
+    }
+
+    .sidebar-section #active-appointment-widget .appt-bar-action {
+      position: static;
+      margin-left: auto;
+      background: #FFFFFF;
+      color: #222222;
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-section #active-appointment-widget .appt-bar-action:hover {
+      transform: scale(1.1);
+    }
+
+    /* Sidebar kesilmemesi için - Dashboard'daki :has() çözümü */
+    .dashboard-main,
+    .dashboard-main > .container,
+    .dashboard-layout {
+      overflow: visible !important;
+    }
+
+    /* Dashboard Layout */
+    .dashboard-layout {
+      display: flex;
+      gap: 24px;
+      margin-top: 0;
+      position: relative;
+      align-items: flex-start;
+    }
+
+    .dashboard-sidebar {
+      width: 320px;
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-right: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 24px;
+      position: sticky;
+      top: var(--nav-height) !important;
+      margin-top: -73px;
+      height: auto;
+      min-height: fit-content;
+      overflow-y: visible;
+      overflow-x: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border-radius: 16px;
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .main-content-area {
+      flex: 1;
+      padding-top: 24px;
+      min-width: 0;
+    }
+
+    .loyalty-bar-wrapper {
+      overflow: visible !important;
+      z-index: 1101 !important;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Global Header + Loyalty Bar will be injected here -->
+
+  <main class="dashboard-main">
+    <div class="container">
+      <div class="dashboard-layout" id="main-layout">
+        <!-- Global Sidebar will be injected here -->
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="main-content-area">
+          <!-- Page Header -->
+          <div class="page-header">
+            <h1 class="page-title">
+              <i class="ri-percent-fill"></i>
+              Kampanyalı Servisler
+            </h1>
+            <p class="page-subtitle">Aktif kampanyası olan servisler</p>
+          </div>
+
+          <!-- Services Grid -->
+          <div id="services-grid">
+            <div class="spinner-container">
+              <div class="spinner"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Nav will be injected here by bottom-nav.js -->
+
+  <!-- Global Components -->
+  <script src="/components/global-header.js"></script>
+  <script src="/components/global-sidebar.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/components/footer.js"></script>
+  <script src="/js/components/bottom-nav.js"></script>
+
+  <script>
+    // Inject sidebar
+    document.addEventListener('DOMContentLoaded', () => {
+      injectGlobalSidebar('#main-layout');
+      loadCampaignServices();
+      // Load appointment widget
+      setTimeout(() => {
+        if (typeof loadActiveAppointment === 'function') {
+          loadActiveAppointment();
+        }
+      }, 500);
+    });
+
+    // Get service type from URL params
+    function getServiceType() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('type') || 'industrial';
+    }
+
+    // Load services with active campaigns
+    async function loadCampaignServices() {
+      const grid = document.getElementById('services-grid');
+      const serviceType = getServiceType();
+
+      try {
+        const token = localStorage.getItem('tamirhanem_token');
+
+        // Fetch all services with campaigns populated - Strapi v4 format
+        let url = `${CONFIG.API_BASE_URL}/services?populate=ProfilePicture,campaigns`;
+
+        if (serviceType === 'carwash') {
+          url += '&filters[service_type]=car_wash';
+        } else {
+          url += '&filters[service_type]=industrial';
+        }
+
+        console.log('Campaign services URL:', url);
+
+        const response = await fetch(url, {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+
+        if (!response.ok) {
+          console.error('Response status:', response.status);
+          throw new Error('Failed to load services');
+        }
+
+        const result = await response.json();
+        console.log('Campaign services result:', result);
+        const allServices = result.data || [];
+
+        // Filter services that have at least one campaign
+        const services = allServices.filter(service => {
+          const attrs = service.attributes || service;
+          const campaigns = attrs.campaigns?.data || attrs.campaigns || [];
+          return campaigns.length > 0;
+        });
+
+        if (services.length === 0) {
+          grid.innerHTML = `
+            <div class="empty-state">
+              <i class="ri-percent-line"></i>
+              <h3>Kampanyalı Servis Bulunamadı</h3>
+              <p>Bu kategoride aktif kampanyası olan servis bulunmuyor.</p>
+            </div>
+          `;
+          return;
+        }
+
+        grid.innerHTML = services.map(service => renderCampaignCard(service)).join('');
+
+      } catch (error) {
+        console.error('Error loading campaign services:', error);
+        grid.innerHTML = `
+          <div class="empty-state">
+            <i class="ri-error-warning-line"></i>
+            <h3>Bir Hata Oluştu</h3>
+            <p>Servisler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.</p>
+          </div>
+        `;
+      }
+    }
+
+    // Render campaign service card
+    function renderCampaignCard(service) {
+      const attrs = service.attributes || service;
+      const id = service.id;
+      const name = attrs.name || 'Servis';
+      const location = attrs.district && attrs.city
+        ? `${attrs.district}, ${attrs.city}`
+        : attrs.city || 'İstanbul';
+      const rating = attrs.rating || attrs.averageRating || 4.5;
+      const reviewCount = attrs.reviewCount || attrs.ratingCount || 0;
+
+      // Get profile image - same logic as dashboard
+      let imageUrl = null;
+      const baseUrl = CONFIG.API_BASE_URL.replace(/\/api$/, '');
+
+      // First try ProfilePicture
+      if (attrs.ProfilePicture?.data) {
+        if (Array.isArray(attrs.ProfilePicture.data)) {
+          imageUrl = attrs.ProfilePicture.data[0]?.attributes?.url;
+        } else {
+          imageUrl = attrs.ProfilePicture.data.attributes?.url;
+        }
+      }
+
+      // Fallback to logo
+      if (!imageUrl && attrs.logo?.data) {
+        if (Array.isArray(attrs.logo.data)) {
+          imageUrl = attrs.logo.data[0]?.attributes?.url;
+        } else {
+          imageUrl = attrs.logo.data.attributes?.url;
+        }
+      }
+
+      // Construct full URL
+      if (imageUrl && imageUrl.startsWith('/')) {
+        imageUrl = `${baseUrl}${imageUrl}`;
+      } else if (!imageUrl || !imageUrl.startsWith('http')) {
+        imageUrl = '/images/logo.png';
+      }
+
+      // Get campaign info
+      const campaigns = attrs.campaigns?.data || attrs.campaigns || [];
+      const campaign = campaigns[0];
+      const campaignAttrs = campaign?.attributes || campaign || {};
+      const campaignTitle = campaignAttrs.title || campaignAttrs.name || 'Özel Kampanya';
+      const campaignDesc = campaignAttrs.description || 'Bu serviste özel indirim fırsatı!';
+      const campaignId = campaign?.id || '';
+
+      // Campaign dates
+      const startDate = campaignAttrs.startDate ? new Date(campaignAttrs.startDate).toLocaleDateString('tr-TR') : '';
+      const endDate = campaignAttrs.endDate ? new Date(campaignAttrs.endDate).toLocaleDateString('tr-TR') : '';
+      const dateRange = startDate && endDate ? `${startDate} - ${endDate}` : 'Süresiz';
+
+      // Campaign image
+      let campaignImage = '';
+      if (campaignAttrs.image?.data?.attributes?.url) {
+        campaignImage = campaignAttrs.image.data.attributes.url;
+        if (!campaignImage.startsWith('http')) {
+          campaignImage = CONFIG.API_BASE_URL.replace(/\/api$/, '') + campaignImage;
+        }
+      }
+
+      return `
+        <div class="campaign-service-card" data-service-id="${id}">
+          <div class="campaign-ribbon">KAMPANYA</div>
+          <div class="service-img-wrapper">
+            <img src="${imageUrl}" alt="${name}" class="service-img"
+                 onclick="goToService(${id})"
+                 onerror="this.onerror=null; this.src='/images/logo.png'">
+          </div>
+          <div class="service-content">
+            <div class="service-header">
+              <img src="${imageUrl}" alt="${name}" class="service-avatar"
+                   onerror="this.onerror=null; this.src='/images/logo.png'">
+              <div class="service-info">
+                <h3 class="service-title" onclick="goToService(${id})">${name}</h3>
+                <div class="service-loc">
+                  <i class="ri-map-pin-line"></i>
+                  ${location}
+                </div>
+              </div>
+            </div>
+
+            <div class="service-meta">
+              <span class="rating-badge">
+                <i class="ri-star-fill"></i>
+                ${rating.toFixed(1)}
+              </span>
+              <span style="font-size: 0.8rem; color: var(--neutral-500);">(${reviewCount} değerlendirme)</span>
+            </div>
+
+            <div class="campaign-section">
+              <div class="campaign-header" onclick="toggleCampaignExpand(this)">
+                <div class="campaign-header-left">
+                  <div class="campaign-icon">
+                    <i class="ri-percent-fill"></i>
+                  </div>
+                  <span class="campaign-badge-text">Kampanyayı Gör</span>
+                </div>
+                <button class="campaign-toggle">
+                  <i class="ri-arrow-down-s-line"></i>
+                </button>
+              </div>
+
+              <div class="campaign-expand">
+                ${campaignImage ? `<img src="${campaignImage}" alt="${campaignTitle}" class="campaign-image" onerror="this.style.display='none'">` : ''}
+                <h4 class="campaign-title">${campaignTitle}</h4>
+                <p class="campaign-description">${campaignDesc.substring(0, 200)}${campaignDesc.length > 200 ? '...' : ''}</p>
+                <div class="campaign-dates">
+                  <i class="ri-calendar-line"></i>
+                  ${dateRange}
+                </div>
+                <button class="campaign-more-btn" onclick="goToCampaignDetail(${campaignId}, event)">
+                  <i class="ri-arrow-right-line"></i>
+                  Daha Fazla
+                </button>
+              </div>
+            </div>
+
+            <div class="service-actions">
+              <button class="btn-appointment" onclick="goToAppointment(${id})">
+                <i class="ri-calendar-check-line"></i>
+                Randevu Al
+              </button>
+              <button class="btn-detail" onclick="goToService(${id})">
+                <i class="ri-information-line"></i>
+                Detay
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Toggle campaign expand
+    function toggleCampaignExpand(header) {
+      const section = header.closest('.campaign-section');
+      const toggle = section.querySelector('.campaign-toggle');
+      const expand = section.querySelector('.campaign-expand');
+
+      toggle.classList.toggle('expanded');
+      expand.classList.toggle('expanded');
+    }
+
+    // Navigation functions
+    function goToService(id) {
+      window.location.href = `/pages/service-detail.html?id=${id}`;
+    }
+
+    function goToAppointment(id) {
+      window.location.href = `/pages/create-appointment.html?serviceId=${id}`;
+    }
+
+    function goToCampaignDetail(campaignId, event) {
+      if (event) event.stopPropagation();
+      window.location.href = `/dashboard.html#campaigns?id=${campaignId}`;
+    }
+
+    // --- ACTIVE APPOINTMENT WIDGET ---
+    async function loadActiveAppointment() {
+      const widget = document.getElementById('active-appointment-widget');
+      const container = document.getElementById('active-appointment-card');
+
+      if (!widget || !container) return;
+
+      try {
+        if (typeof api === 'undefined') return;
+
+        const response = await api.getAppointments();
+        const appointments = Array.isArray(response) ? response : (response.data || []);
+
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+
+        const activeAppointments = appointments.filter(app => {
+          const attr = app.attributes || app;
+          let appDateStr = null;
+
+          if (attr.date && typeof attr.date === 'object' && attr.date.date) appDateStr = attr.date.date;
+          else if (attr.date && typeof attr.date === 'string') appDateStr = attr.date;
+          else if (attr.matchedDate && attr.matchedDate[0]) {
+            appDateStr = typeof attr.matchedDate[0] === 'object' ? attr.matchedDate[0].date : attr.matchedDate[0];
+          }
+
+          if (!appDateStr) return false;
+
+          const appDate = new Date(appDateStr + 'T00:00:00');
+          const status = attr.status;
+          const activeStatuses = ['PENDING', 'CONFIRMED', 'APPROVED', 'IN_PROGRESS', 'Beklemede', 'Onaylandı', 'Onaylı', 'Serviste'];
+
+          return activeStatuses.includes(status) && appDate >= now;
+        });
+
+        activeAppointments.sort((a, b) => {
+          return new Date(a.attributes?.createdAt || a.createdAt) - new Date(b.attributes?.createdAt || b.createdAt);
+        });
+
+        const nextAppointment = activeAppointments[0];
+
+        if (nextAppointment) {
+          renderActiveAppointment(nextAppointment, container);
+          widget.classList.remove('hidden');
+          widget.style.display = 'block';
+        } else {
+          widget.classList.add('hidden');
+        }
+      } catch (error) {
+        widget.classList.add('hidden');
+      }
+    }
+
+    function renderActiveAppointment(appointment, container) {
+      const attr = appointment.attributes || appointment;
+      const isServiceOwner = localStorage.getItem('isServiceOwner') === 'true';
+      const selectedServiceId = localStorage.getItem('selectedServiceId');
+
+      let displayName = '';
+      if (isServiceOwner && selectedServiceId) {
+        const user = appointment.user || attr.user?.data?.attributes || attr.user || {};
+        const userName = user.name || user.username || 'Müşteri';
+        const userSurname = user.surname || '';
+        displayName = `${userName} ${userSurname}`.trim();
+      } else {
+        displayName = attr.service?.data?.attributes?.name || attr.service?.name || attr.service || 'Genel Servis';
+      }
+
+      let dateStr = null;
+      if (attr.date && typeof attr.date === 'object' && attr.date.date) dateStr = attr.date.date;
+      else if (attr.date && typeof attr.date === 'string') dateStr = attr.date;
+      else if (attr.matchedDate && attr.matchedDate[0]) {
+        dateStr = typeof attr.matchedDate[0] === 'object' ? attr.matchedDate[0].date : attr.matchedDate[0];
+      }
+
+      const dateObj = new Date(dateStr);
+      const day = dateObj.getDate();
+      const monthShort = dateObj.toLocaleDateString('tr-TR', { month: 'short' }).toUpperCase();
+
+      let time = '--:--';
+      if (attr.time) time = attr.time.substring(0, 5);
+      else if (attr.date?.timeSlot) time = attr.date.timeSlot;
+      else if (attr.matchedDate?.[0]?.timeSlot) time = attr.matchedDate[0].timeSlot;
+
+      container.innerHTML = `
+        <div class="appt-bar" onclick="window.location.href='/pages/my-appointments.html?appointmentId=${appointment.id}'">
+            <div class="appt-bar-content">
+                <span class="appt-badge-prefix">Sıradaki Randevu:</span>
+                <span class="appt-bar-text">
+                  <span class="appt-badge-service" style="color: #5a5a5a;">${displayName}</span>
+                  <span class="appt-badge-date">
+                    <span style="margin-right: 8px; font-size: 1.4rem;">📅</span>
+                    <span style="color: #5a5a5a;">${day} ${monthShort} ${time}</span>
+                  </span>
+                </span>
+            </div>
+            <div class="appt-bar-action">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+
+</html>

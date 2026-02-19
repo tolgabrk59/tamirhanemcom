@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Degerlendirmelerim - TamirHanem">
+  <title>Degerlendirmelerim | TamirHanem</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="/favicon/site.webmanifest">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+
+  <!-- Global Dashboard CSS -->
+  <link rel="stylesheet" href="/css/global-dashboard.css">
+
+  <!-- Config (API URL) -->
+  <script src="/js/config.js"></script>
+
+  <style>
+    /* --- PAGE SPECIFIC STYLES --- */
+    /* Footer altı boşluk fix */
+    html { height: 100%; }
+    body { min-height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; }
+    .dashboard-main { flex: 1 0 auto; padding-top: 20px; padding-bottom: 100px; }
+    .dashboard-footer { flex-shrink: 0; margin-bottom: 0 !important; }
+
+    /* Page Header */
+    .page-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+    .page-header-left { display: flex; flex-direction: column; }
+    .page-header-left h1, .page-header h1 { font-size: 1.5rem; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; color: #2d2d2d; font-weight: 700; }
+    .page-header-left h1 i, .page-header h1 i { color: #fbc707; font-size: 1.5rem; }
+    .page-header-left p, .page-header p { font-size: 0.9rem; color: #64748b; margin: 0; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; border: none; font-family: inherit; }
+    .btn-primary { background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%); color: #2d2d2d; box-shadow: 0 4px 12px rgba(251, 199, 7, 0.3); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(251, 199, 7, 0.4); }
+
+    /* Form Elements */
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 0.85rem; font-weight: 600; color: #454545; margin-bottom: 8px; }
+    .form-input, .form-select { width: 100%; padding: 14px 16px; border: 2px solid #eee; border-radius: 10px; font-family: inherit; font-size: 0.95rem; color: #2d2d2d; background: #f8f9fa; transition: all 0.2s; box-sizing: border-box; }
+    .form-input:focus, .form-select:focus { border-color: #fbc707; background: #fff; box-shadow: 0 0 0 4px rgba(251, 199, 7, 0.15); outline: none; }
+    .form-input::placeholder { color: #aaa; }
+    .form-row { display: flex; gap: 16px; }
+    .form-row .form-group { flex: 1; }
+
+    /* Empty State - Modern Design */
+    .empty-state {
+      text-align: center;
+      padding: 60px 24px;
+      background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border: 1px solid rgba(251, 199, 7, 0.15);
+      margin: 20px 0;
+    }
+    .empty-state-icon {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 2.5rem;
+      color: #2d2d2d;
+      box-shadow: 0 8px 24px rgba(251, 199, 7, 0.3);
+    }
+    .empty-state h3 {
+      font-size: 1.3rem;
+      margin-bottom: 12px;
+      color: #5a5a5a;
+      font-weight: 700;
+    }
+    .empty-state p {
+      color: #5a5a5a;
+      max-width: 320px;
+      margin: 0 auto 24px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .btn-explore {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%);
+      color: #2d2d2d;
+      border: none;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 20px rgba(251, 199, 7, 0.35);
+    }
+    .btn-explore:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(251, 199, 7, 0.45);
+    }
+    .btn-explore i {
+      font-size: 1.1rem;
+    }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1e293b; color: white; padding: 12px 24px; border-radius: 50px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 10000; opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); font-weight: 600; font-size: 0.9rem; }
+    .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    .toast.error { background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); }
+    .toast i { font-size: 1.25rem; }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Page Header */
+
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+    }
+
+    .stat-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(251, 199, 7, 0.15);
+      transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      margin: 0 auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: var(--primary-dark);
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--neutral-900);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--neutral-500);
+      margin-top: 2px;
+    }
+
+    /* Tabs */
+    .tabs-container {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      background: var(--white);
+      padding: 6px;
+      border-radius: 50px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      background: transparent;
+      border-radius: 50px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--neutral-500);
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--primary) 0%, #eeb902 100%);
+      color: var(--neutral-900);
+      box-shadow: 0 4px 12px rgba(251, 199, 7, 0.3);
+    }
+
+    .tab-btn:not(.active):hover {
+      background: var(--neutral-100);
+    }
+
+    /* Reviews List */
+    .reviews-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Review Card */
+    .review-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(251, 199, 7, 0.1);
+      transition: all 0.3s;
+    }
+
+    .review-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 199, 7, 0.12);
+      border-color: var(--primary);
+    }
+
+    .review-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .service-image {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+      flex-shrink: 0;
+    }
+
+    .service-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .service-name-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .service-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .stars-container {
+      display: flex;
+      gap: 2px;
+    }
+
+    .star-icon {
+      font-size: 0.9rem;
+    }
+
+    .star-filled {
+      color: var(--primary);
+    }
+
+    .star-empty {
+      color: #ddd;
+    }
+
+    .service-location {
+      font-size: 0.8rem;
+      color: var(--neutral-500);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 2px;
+    }
+
+    .review-date {
+      font-size: 0.75rem;
+      color: var(--neutral-500);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .review-comment {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.04));
+      border-radius: var(--radius-md);
+      padding: 14px;
+      border-left: 3px solid var(--success);
+    }
+
+    .comment-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .comment-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(16, 185, 129, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .comment-icon i {
+      font-size: 0.8rem;
+      color: var(--success);
+    }
+
+    .comment-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--success);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .comment-text {
+      font-size: 0.9rem;
+      color: var(--neutral-700);
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    /* Like Card */
+    .like-icon-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--error-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .like-icon-box i {
+      color: var(--error);
+      font-size: 1.1rem;
+    }
+
+    /* Empty State */
+
+
+    /* Loading */
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      gap: 14px;
+    }
+
+
+    /* Bottom Nav */
+  </style>
+</head>
+
+<body>
+  <!-- Header and Loyalty Bar will be injected by global-header.js -->
+
+  <!-- Main Content -->
+  <main class="dashboard-main">
+    <div class="container">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div>
+          <h1><i class="ri-star-fill"></i> Degerlendirmelerim</h1>
+          <p>Verdiginiz puanlar ve yorumlar</p>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="ri-star-fill"></i></div>
+          <div class="stat-value" id="totalRatings">0</div>
+          <div class="stat-label">Toplam Puan</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="ri-bar-chart-fill"></i></div>
+          <div class="stat-value" id="avgRating">0.0</div>
+          <div class="stat-label">Ortalama</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="ri-heart-fill"></i></div>
+          <div class="stat-value" id="totalLikes">0</div>
+          <div class="stat-label">Begeni</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs-container">
+        <button class="tab-btn active" id="ratingsTab" onclick="switchTab('ratings')">
+          <i class="ri-star-line"></i> Puanlarim
+        </button>
+        <button class="tab-btn" id="likesTab" onclick="switchTab('likes')">
+          <i class="ri-heart-line"></i> Begenilerim
+        </button>
+      </div>
+
+      <!-- Content Container -->
+      <div id="content-container">
+        <div class="loading-container">
+          <div class="spinner"></div>
+          <p style="color: var(--neutral-500); font-size: 0.9rem;">Degerlendirmeler yukleniyor...</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Nav -->
+
+
+  <!-- Global Header Component -->
+  <script src="/components/global-header.js"></script>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/components/footer.js"></script>
+  <script src="/js/components/bottom-nav.js"></script>
+  <script>
+    let allRatings = [];
+    let allLikes = [];
+    let activeTab = 'ratings';
+    let isServiceOwner = false;
+    let selectedServiceId = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!auth.isAuthenticated()) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      // Check if service owner
+      isServiceOwner = localStorage.getItem('isServiceOwner') === 'true';
+      selectedServiceId = localStorage.getItem('selectedServiceId');
+
+      // Update page title and description for service owner
+      if (isServiceOwner && selectedServiceId) {
+        document.querySelector('.page-header h1').innerHTML = '<i class="ri-star-fill"></i> Müşteri Yorumları';
+        document.querySelector('.page-header p').textContent = 'Servisinize gelen puanlar ve yorumlar';
+        document.getElementById('ratingsTab').innerHTML = '<i class="ri-star-line"></i> Gelen Puanlar';
+        document.getElementById('likesTab').innerHTML = '<i class="ri-heart-line"></i> Beğeniler';
+      }
+
+      await loadData();
+    });
+
+    async function loadData() {
+      try {
+        const user = auth.getUser();
+        if (!user) throw new Error('Kullanici bulunamadi');
+
+        const token = auth.getToken();
+        if (!token) throw new Error('Oturum bulunamadi');
+
+        let ratingsUrl;
+        let likesUrl;
+
+        if (isServiceOwner && selectedServiceId) {
+          // Servis kullanıcısı: servise gelen yorumları getir
+          ratingsUrl = `${CONFIG.API_BASE_URL}/ratings?filters[service][id][$eq]=${selectedServiceId}&populate=user,service,service.ProfilePicture,appointment&sort=createdAt:desc`;
+          likesUrl = `${CONFIG.API_BASE_URL}/likes?filters[service][id][$eq]=${selectedServiceId}&populate=user,service,service.ProfilePicture&sort=createdAt:desc`;
+        } else {
+          // Normal kullanıcı: verdiği yorumları getir
+          ratingsUrl = `${CONFIG.API_BASE_URL}/ratings?filters[user][id][$eq]=${user.id}&populate=service,service.ProfilePicture,appointment&sort=createdAt:desc`;
+          likesUrl = `${CONFIG.API_BASE_URL}/likes?filters[user][id][$eq]=${user.id}&populate=service,service.ProfilePicture&sort=createdAt:desc`;
+        }
+
+        // Fetch ratings
+        const ratingsResponse = await fetch(ratingsUrl, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (ratingsResponse.ok) {
+          const ratingsData = await ratingsResponse.json();
+          allRatings = ratingsData.data || [];
+          calculateStats();
+        }
+
+        // Fetch likes
+        try {
+          const likesResponse = await fetch(likesUrl, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (likesResponse.ok) {
+            const likesData = await likesResponse.json();
+            allLikes = likesData.data || [];
+            document.getElementById('totalLikes').textContent = allLikes.length;
+          }
+        } catch (e) {
+          // Likes endpoint bulunamadı
+        }
+
+        renderContent();
+
+      } catch (error) {
+        document.getElementById('content-container').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="ri-error-warning-line"></i></div>
+            <h3>Bir Hata Olustu</h3>
+            <p>${error.message}</p>
+            <button class="btn-explore" onclick="loadData()">
+              <i class="ri-refresh-line"></i> Tekrar Dene
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    function calculateStats() {
+      const totalRatings = allRatings.length;
+      let totalScore = 0;
+
+      allRatings.forEach(rating => {
+        const value = rating.attributes?.value || 0;
+        totalScore += value;
+      });
+
+      const avgRating = totalRatings > 0 ? (totalScore / totalRatings).toFixed(1) : '0.0';
+
+      document.getElementById('totalRatings').textContent = totalRatings;
+      document.getElementById('avgRating').textContent = avgRating;
+    }
+
+    function switchTab(tab) {
+      activeTab = tab;
+      document.getElementById('ratingsTab').classList.toggle('active', tab === 'ratings');
+      document.getElementById('likesTab').classList.toggle('active', tab === 'likes');
+      renderContent();
+    }
+
+    function renderContent() {
+      const container = document.getElementById('content-container');
+      const items = activeTab === 'ratings' ? allRatings : allLikes;
+
+      if (items.length === 0) {
+        let emptyMessage;
+        if (isServiceOwner) {
+          emptyMessage = activeTab === 'ratings'
+            ? { icon: 'ri-star-line', title: 'Henüz Değerlendirme Almadınız', text: 'Müşterileriniz henüz değerlendirme yapmamış. Kaliteli hizmet sunarak yorum almaya başlayın.' }
+            : { icon: 'ri-heart-line', title: 'Henüz Beğeni Almadınız', text: 'Müşterileriniz henüz servisinizi beğenmemiş.' };
+        } else {
+          emptyMessage = activeTab === 'ratings'
+            ? { icon: 'ri-star-line', title: 'Henuz Degerlendirme Yapmadiniz', text: 'Hizmet aldiginiz servisleri puanlayarak deneyimlerinizi paylasabilirsiniz.' }
+            : { icon: 'ri-heart-line', title: 'Henuz Begeni Yapmadiniz', text: 'Begendiginiz servisleri kalp ikonuna basarak listeleyebilirsiniz.' };
+        }
+
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="${emptyMessage.icon}"></i></div>
+            <h3>${emptyMessage.title}</h3>
+            <p>${emptyMessage.text}</p>
+            ${!isServiceOwner ? `<button class="btn-explore" onclick="window.location.href='/dashboard.html'">
+              <i class="ri-compass-3-line"></i> Servisleri Kesfet
+            </button>` : ''}
+          </div>
+        `;
+        return;
+      }
+
+      let html = '<div class="reviews-list">';
+
+      if (activeTab === 'ratings') {
+        items.forEach(rating => {
+          const service = rating.attributes?.service?.data?.attributes || {};
+          const user = rating.attributes?.user?.data?.attributes || {};
+          const value = rating.attributes?.value || 0;
+          const comment = rating.attributes?.comment || '';
+          const createdAt = rating.attributes?.createdAt;
+          const serviceImage = getServiceImageUrl(rating.attributes?.service?.data?.attributes?.ProfilePicture);
+
+          // Servis kullanıcısı için müşteri adını, normal kullanıcı için servis adını göster
+          const displayName = isServiceOwner ? (user.name || user.username || 'Müşteri') : (service.name || 'Servis Adi');
+          const displaySubtext = isServiceOwner ? 'Müşteri' : (service.location || '');
+
+          html += `
+            <div class="review-card">
+              <div class="review-header">
+                <img src="${serviceImage}" class="service-image" onerror="this.src='/assets/images/placeholder.jpg'">
+                <div class="service-info">
+                  <div class="service-name-row">
+                    <span class="service-name">${displayName}</span>
+                    <div class="stars-container">${renderStars(value)}</div>
+                  </div>
+                  ${displaySubtext ? `<div class="service-location"><i class="${isServiceOwner ? 'ri-user-line' : 'ri-map-pin-2-fill'}"></i> ${displaySubtext}</div>` : ''}
+                  <div class="review-date"><i class="ri-time-line"></i> ${formatDate(createdAt)}</div>
+                </div>
+              </div>
+              ${comment ? `
+                <div class="review-comment">
+                  <div class="comment-header">
+                    <div class="comment-icon"><i class="ri-chat-quote-fill"></i></div>
+                    <span class="comment-label">Yorum</span>
+                  </div>
+                  <p class="comment-text">"${comment}"</p>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        });
+      } else {
+        // Likes
+        items.forEach(like => {
+          const service = like.attributes?.service?.data?.attributes || {};
+          const user = like.attributes?.user?.data?.attributes || {};
+          const createdAt = like.attributes?.createdAt;
+          const serviceImage = getServiceImageUrl(like.attributes?.service?.data?.attributes?.ProfilePicture);
+
+          // Servis kullanıcısı için müşteri adını, normal kullanıcı için servis adını göster
+          const displayName = isServiceOwner ? (user.name || user.username || 'Müşteri') : (service.name || 'Servis Adi');
+          const displaySubtext = isServiceOwner ? 'Müşteri' : (service.location || '');
+
+          html += `
+            <div class="review-card">
+              <div class="review-header">
+                <img src="${serviceImage}" class="service-image" onerror="this.src='/assets/images/placeholder.jpg'">
+                <div class="service-info">
+                  <div class="service-name-row">
+                    <span class="service-name">${displayName}</span>
+                    <div class="like-icon-box"><i class="ri-heart-fill"></i></div>
+                  </div>
+                  ${displaySubtext ? `<div class="service-location"><i class="${isServiceOwner ? 'ri-user-line' : 'ri-map-pin-2-fill'}"></i> ${displaySubtext}</div>` : ''}
+                  <div class="review-date"><i class="ri-time-line"></i> ${formatDate(createdAt)}</div>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    function getServiceImageUrl(image) {
+      if (!image) return '/assets/images/placeholder.jpg';
+      if (image.data?.attributes?.url) {
+        const url = image.data.attributes.url;
+        return url.startsWith('http') ? url : `https://api.tamirhanem.net${url}`;
+      }
+      if (image.url) {
+        return image.url.startsWith('http') ? image.url : `https://api.tamirhanem.net${image.url}`;
+      }
+      return '/assets/images/placeholder.jpg';
+    }
+
+    function renderStars(rating) {
+      let html = '';
+      for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+          html += '<i class="ri-star-fill star-icon star-filled"></i>';
+        } else {
+          html += '<i class="ri-star-line star-icon star-empty"></i>';
+        }
+      }
+      return html;
+    }
+
+    function formatDate(dateString) {
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('tr-TR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+      } catch {
+        return 'Bilinmeyen tarih';
+      }
+    }
+  </script>
+</body>
+
+</html>

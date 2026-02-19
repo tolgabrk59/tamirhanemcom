@@ -1,0 +1,2244 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servis Profili Düzenle | TamirHanem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/main.css">
+
+
+    <style>
+        :root {
+            --primary: #FFC507;
+            --primary-dark: #e0ac00;
+            --primary-light: #fff8db;
+            --text-dark: #5a5a5a;
+            --text-light: #888888;
+            --bg-light: #f8f9fa;
+            --white: #ffffff;
+            --danger: #ff4d4f;
+            --success: #52c41a;
+            --border-radius: 16px;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            padding-bottom: 80px;
+        }
+
+        /* Header Styling */
+        .page-header {
+            background: linear-gradient(135deg, #FFC507 0%, #FFD700 100%);
+            padding: 40px 20px 60px;
+            text-align: center;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(255, 197, 7, 0.2);
+            margin-bottom: -30px;
+            z-index: 1;
+        }
+
+        .page-header h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #2c3e50;
+            margin: 0 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .page-header p {
+            color: #4a5568;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.25rem;
+            color: #2c3e50;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            background: #fff;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .container {
+            padding: 0 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Form Styling */
+        .edit-form {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+            font-size: 1.4rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid transparent;
+            background-color: #f3f4f6;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            color: #2c3e50;
+            transition: var(--transition);
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            background-color: var(--white);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 197, 7, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #a0aec0;
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .code-input {
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .form-hint {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* Checkbox Styling */
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-checkbox {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+        }
+
+        /* Profile Picture Upload */
+        .image-upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .image-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #f3f4f6;
+            border: 4px solid var(--white);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            color: #a0aec0;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview i {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .image-preview p {
+            font-size: 0.8rem;
+            margin: 0;
+        }
+
+        .image-upload-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            /* Center buttons horizontally */
+            width: 100%;
+            /* Ensure full width for centering context */
+        }
+
+        /* Google Maps */
+        .map-container {
+            margin-top: 15px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            background: #fff;
+            padding: 5px;
+            border: 1px solid #eee;
+        }
+
+        .google-map {
+            width: 100%;
+            height: 400px;
+            border-radius: 12px;
+            background-color: #f3f4f6;
+        }
+
+        .map-instructions {
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* Categories Grid */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .category-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background-color: #f8f9fa;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .category-item:hover {
+            background-color: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        .category-name {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        /* Conditional Fields */
+        .conditional-fields {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+            border: 1px solid #eee;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #FFC507 0%, #FFD700 100%);
+            color: #2c3e50;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(255, 197, 7, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 197, 7, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: #2c3e50;
+            border: 2px solid #e2e8f0;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .btn-danger {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* States */
+        .loading-state,
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin-top: 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--bg-light);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .error-icon {
+            font-size: 3rem;
+            color: var(--danger);
+            margin-bottom: 15px;
+        }
+
+        .btn-retry {
+            background: var(--primary);
+            color: #2c3e50;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .edit-form {
+                padding: 20px;
+            }
+
+            .image-upload-container {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* Toggle Switch Styles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            flex-shrink: 0;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--success);
+        }
+
+        input:not(:checked)+.slider {
+            background-color: var(--danger);
+        }
+
+        input:focus+.slider {
+            box-shadow: 0 0 1px var(--success);
+        }
+
+        input:checked+.slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px 0;
+        }
+
+        .status-text {
+            font-weight: 600;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .status-text.active {
+            color: var(--success);
+        }
+
+        .status-text.inactive {
+            color: var(--danger);
+        }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none;
+            /* Allow clicks to pass through container */
+        }
+
+        .toast {
+            background: rgba(40, 40, 40, 0.95);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 50px;
+            margin-bottom: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transform: translateY(-30px) scale(0.9);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            min-width: 300px;
+            max-width: 90vw;
+            justify-content: center;
+            font-weight: 500;
+            pointer-events: auto;
+            /* Re-enable clicks on toasts */
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .toast-success {
+            background: rgba(39, 174, 96, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .toast-error {
+            background: rgba(231, 76, 60, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .toast-info {
+            background: rgba(52, 152, 219, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Tabbed Interface Styles */
+        .profile-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            background-color: rgba(255, 197, 7, 0.1);
+            color: var(--primary-dark);
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: #2c3e50;
+            box-shadow: 0 4px 12px rgba(255, 197, 7, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
+<body>
+    <div class="page-header">
+        <button class="back-btn" onclick="window.history.back()">
+            <i class="ri-arrow-left-line"></i>
+        </button>
+        <h1><i class="ri-settings-3-line"></i> Servis Profili Düzenle</h1>
+        <p>Servis bilgilerinizi güncelleyin</p>
+    </div>
+
+    <div class="container">
+        <!-- Loading State -->
+        <div id="loading-state" class="loading-state">
+            <div class="loading-spinner"></div>
+            <h2>Yükleniyor...</h2>
+            <p>Servis bilgileri getiriliyor</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="error-state" style="display: none;">
+            <div class="error-icon"><i class="ri-error-warning-line"></i></div>
+            <h2>Bir Hata Oluştu</h2>
+            <p id="error-message"></p>
+            <button class="btn-retry" onclick="ServiceProfileManager.init()">
+                <i class="ri-refresh-line"></i> Tekrar Dene
+            </button>
+        </div>
+
+        <!-- Edit Form -->
+        <div id="edit-form" class="edit-form" style="display: none;">
+            <form id="service-form" onsubmit="ServiceProfileManager.updateService(event)">
+
+                <!-- Tab Navigation -->
+                <div class="profile-tabs">
+                    <button type="button" class="tab-btn active" onclick="ServiceProfileManager.switchTab('general')">
+                        <i class="ri-information-line"></i> Genel Bilgiler
+                    </button>
+                    <button type="button" class="tab-btn" onclick="ServiceProfileManager.switchTab('location')">
+                        <i class="ri-map-pin-line"></i> Konum & Saatler
+                    </button>
+                    <button type="button" class="tab-btn" onclick="ServiceProfileManager.switchTab('services')">
+                        <i class="ri-tools-line"></i> Hizmet Detayları
+                    </button>
+                    <button type="button" class="tab-btn" onclick="ServiceProfileManager.switchTab('media')">
+                        <i class="ri-image-line"></i> Medya & Belgeler
+                    </button>
+                </div>
+
+                <!-- TAB 1: GENERAL INFO -->
+                <div id="tab-general" class="tab-content active">
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <!-- Profile Picture Section -->
+                        <div class="form-section" style="flex: 1; min-width: 300px;">
+                            <h3 class="section-title"><i class="ri-image-line"></i> Profil Fotoğrafı</h3>
+                            <div class="image-upload-container">
+                                <div id="image-preview" class="image-preview"
+                                    onclick="document.getElementById('profile-picture-input').click()"
+                                    style="cursor: pointer;" title="Fotoğraf değiştirmek için tıklayın">
+                                    <i class="ri-image-add-line"></i>
+                                    <p>Fotoğraf Seç</p>
+                                </div>
+                                <div class="image-upload-actions">
+                                    <input type="file" id="profile-picture-input" accept="image/*"
+                                        style="display: none;">
+                                    <button type="button" class="btn-secondary"
+                                        onclick="document.getElementById('profile-picture-input').click()">
+                                        <i class="ri-upload-2-line"></i> Fotoğraf Seç
+                                    </button>
+                                    <button type="button" id="remove-picture-btn" class="btn-danger"
+                                        style="display: none;" onclick="ServiceProfileManager.removeProfilePicture()">
+                                        <i class="ri-delete-bin-line"></i> Kaldır
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Logo Section (NEW) -->
+                        <div class="form-section" style="flex: 1; min-width: 300px;">
+                            <h3 class="section-title"><i class="ri-shield-star-line"></i> Logo</h3>
+                            <div class="image-upload-container">
+                                <div id="logo-preview" class="image-preview"
+                                    onclick="document.getElementById('logo-input').click()" style="cursor: pointer;"
+                                    title="Logo değiştirmek için tıklayın">
+                                    <i class="ri-image-add-line"></i>
+                                    <p>Logo Seç</p>
+                                </div>
+                                <div class="image-upload-actions">
+                                    <input type="file" id="logo-input" accept="image/*" style="display: none;">
+                                    <button type="button" class="btn-secondary"
+                                        onclick="document.getElementById('logo-input').click()">
+                                        <i class="ri-upload-2-line"></i> Logo Seç
+                                    </button>
+                                    <button type="button" id="remove-logo-btn" class="btn-danger" style="display: none;"
+                                        onclick="ServiceProfileManager.removeLogo()">
+                                        <i class="ri-delete-bin-line"></i> Kaldır
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Basic Information -->
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="ri-information-line"></i> Temel Bilgiler</h3>
+
+                        <div class="form-group">
+                            <label class="form-label">Servis Adı *</label>
+                            <input type="text" id="service-name" class="form-input" placeholder="Servis adınız"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Telefon</label>
+                            <input type="tel" id="service-phone" class="form-input" placeholder="5XX XXX XX XX"
+                                maxlength="10">
+                            <small class="form-hint">10 haneli telefon numarası (5 ile başlamalı)</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Hakkımızda</label>
+                            <textarea id="service-info" class="form-input" rows="4"
+                                placeholder="Servisiniz hakkında bilgi"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Social Media Section (Moved to Tab 1) -->
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="ri-share-line"></i> Sosyal Medya</h3>
+
+                        <div class="form-group">
+                            <label class="form-label"><i class="ri-instagram-line"></i> Instagram</label>
+                            <input type="url" id="social-instagram" class="form-input"
+                                placeholder="https://instagram.com/servisiniz">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label"><i class="ri-facebook-line"></i> Facebook</label>
+                            <input type="url" id="social-facebook" class="form-input"
+                                placeholder="https://facebook.com/servisiniz">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label"><i class="ri-twitter-line"></i> Twitter / X</label>
+                            <input type="url" id="social-twitter" class="form-input"
+                                placeholder="https://twitter.com/servisiniz">
+                        </div>
+                    </div>
+
+                    <!-- Status (Moved to Tab 1) -->
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="ri-store-2-line"></i> Durum</h3>
+
+                        <div class="form-group">
+                            <div class="status-container">
+                                <label class="switch">
+                                    <input type="checkbox" id="service-available"
+                                        onchange="ServiceProfileManager.updateStatusUI(this.checked)">
+                                    <span class="slider round"></span>
+                                </label>
+                                <span id="status-text" class="status-text">Servis Durumu</span>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- End Tab 1 -->
+
+                <!-- TAB 2: LOCATION & HOURS -->
+                <div id="tab-location" class="tab-content">
+                    <!-- Location with Google Maps -->
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="ri-map-pin-line"></i> Konum ve Adres</h3>
+
+                        <div class="form-group">
+                            <label class="form-label">Adres</label>
+                            <textarea id="service-location" class="form-input address-input" rows="3"
+                                placeholder="Servis adresi (haritadan seçebilirsiniz)"></textarea>
+                            <small class="form-hint">Aşağıdaki haritadan konumunuzu seçebilirsiniz</small>
+                        </div>
+
+                        <!-- Hidden coordinate inputs -->
+                        <input type="hidden" id="service-latitude">
+                        <input type="hidden" id="service-longitude">
+
+                        <!-- Google Maps Container -->
+                        <div class="map-container">
+                            <div id="google-map" class="google-map"></div>
+                            <div class="map-instructions">
+                                <i class="ri-information-line"></i>
+                                <span>Haritaya tıklayın veya marker'ı sürükleyin</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Working Hours Section -->
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="ri-time-line"></i> Çalışma Saatleri</h3>
+                        <div id="working-hours-container">
+                            <!-- Days will be dynamically generated -->
+                        </div>
+                    </div>
+                </div> <!-- End Tab 2 -->
+
+                <!-- TAB 3: SERVICE DETAILS -->
+                <div id="tab-services" class="tab-content">
+                    <!-- Service Type -->
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="ri-tools-line"></i> Servis Tipi</h3>
+
+                        <div class="form-group">
+                            <label class="form-label">Servis Türü</label>
+                            <select id="service-type" class="form-input">
+                                <option value="all">Tümü</option>
+                                <option value="industrial">Sanayi</option>
+                                <option value="car_wash">Oto Yıkama</option>
+                                <option value="roadside">Çekici</option>
+                                <option value="car_rental">Araç Kiralama</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="ri-list-check"></i> Hizmet Kategorileri</h3>
+                        <div id="categories-container" class="categories-grid">
+                            <p class="loading-text">Kategoriler yükleniyor...</p>
+                        </div>
+                    </div>
+
+                    <!-- Roadside Assistance -->
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="ri-roadster-line"></i> Yol Yardımı Hizmeti</h3>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="provides-roadside" class="form-checkbox"
+                                    onchange="ServiceProfileManager.toggleRoadsideFields()">
+                                <span>Yol yardımı hizmeti sunuyorum</span>
+                            </label>
+                        </div>
+
+                        <div id="roadside-fields" class="conditional-fields" style="display: none;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Müdahale Süresi (Dakika)</label>
+                                    <input type="number" id="roadside-response-time" class="form-input" placeholder="30"
+                                        min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Hizmet Alanı Yarıçapı (KM)</label>
+                                    <input type="number" id="service-area-radius" class="form-input" placeholder="50"
+                                        min="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vehicle Support -->
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="ri-car-line"></i> Araç Desteği</h3>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="supports-all-vehicles" class="form-checkbox"
+                                    onchange="ServiceProfileManager.toggleVehicleFields()">
+                                <span>Tüm araç markalarına hizmet veriyorum</span>
+                            </label>
+                        </div>
+
+                        <div id="vehicle-fields" class="conditional-fields" style="display: none;">
+                            <div class="form-group">
+                                <label class="form-label">Desteklenen Markalar</label>
+                                <div id="vehicle-brands-grid"
+                                    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 10px;">
+                                    <!-- Checkboxes will be populated from arac-datasi API -->
+                                    <p class="text-muted">Markalar yükleniyor...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- End Tab 3 -->
+
+                <!-- TAB 4: MEDIA & DOCS -->
+                <div id="tab-media" class="tab-content">
+                    <!-- Gallery Section -->
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="ri-gallery-line"></i> Fotoğraf Galerisi</h3>
+                        <p class="form-hint">Servisinizin iç ve dış fotoğraflarını yükleyin (maksimum 10 fotoğraf)</p>
+                        <div class="form-group">
+                            <input type="file" id="gallery-input" accept="image/*" multiple style="display: none;">
+                            <button type="button" class="btn-secondary"
+                                onclick="document.getElementById('gallery-input').click()">
+                                <i class="ri-upload-2-line"></i> Fotoğraf Ekle
+                            </button>
+                        </div>
+                        <div id="gallery-preview"
+                            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-top: 15px;">
+                            <!-- Gallery images will be displayed here -->
+                        </div>
+                    </div>
+
+                    <!-- Certificates Section -->
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="ri-file-shield-line"></i> Sertifikalar ve Belgeler</h3>
+                        <p class="form-hint">Servis sertifikalarınızı ve belgelerinizi yükleyin (PDF veya resim
+                            formatında)
+                        </p>
+                        <div class="form-group">
+                            <input type="file" id="certificates-input" accept="image/*,.pdf" multiple
+                                style="display: none;">
+                            <button type="button" class="btn-secondary"
+                                onclick="document.getElementById('certificates-input').click()">
+                                <i class="ri-upload-2-line"></i> Belge Ekle
+                            </button>
+                        </div>
+                        <div id="certificates-preview" style="margin-top: 15px;">
+                            <!-- Certificates will be displayed here -->
+                        </div>
+                    </div>
+                </div> <!-- End Tab 4 -->
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-primary" id="submit-btn">
+                    <i class="ri-save-line"></i> <span>Değişiklikleri Kaydet</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/config.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        // Check authentication
+        if (!auth.requireAuth()) {
+            // Redirect handled
+        }
+
+        // Google Maps instance
+        let map;
+        let marker;
+        let geocoder;
+        const GOOGLE_MAPS_API_KEY = 'AIzaSyBGpJv72kNcGsjFgHGPccYBYqrdolB9c9o';
+
+        // Load Google Maps dynamically
+        function loadGoogleMaps() {
+            return new Promise((resolve, reject) => {
+                if (window.google && window.google.maps) {
+                    resolve();
+                    return;
+                }
+
+                const script = document.createElement('script');
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&v=weekly`;
+                script.async = true;
+                script.defer = true;
+                script.onerror = () => reject(new Error('Google Maps yüklenemedi'));
+
+                script.onload = () => {
+                    resolve();
+                };
+
+                document.head.appendChild(script);
+            });
+        }
+
+        // Service Profile Manager
+        const ServiceProfileManager = {
+            serviceId: null,
+            serviceData: null,
+            categories: [],
+            profilePictureId: null,
+            logoId: null,
+            galleryIds: [],
+            certificateIds: [],
+
+            switchTab(tabId) {
+                // Hide all tabs
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+
+                // Deactivate all buttons
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                // Show selected tab
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+
+                // Activate button
+                const btnIndex = ['general', 'location', 'services', 'media'].indexOf(tabId);
+                if (btnIndex !== -1) {
+                    document.querySelectorAll('.tab-btn')[btnIndex].classList.add('active');
+                }
+
+                // Handle map resize if location tab is shown
+                if (tabId === 'location' && map) {
+                    setTimeout(() => {
+                        const center = map.getCenter();
+                        google.maps.event.trigger(map, 'resize');
+                        map.setCenter(center);
+                    }, 100);
+                }
+            },
+
+            async discoverUserService() {
+                try {
+                    const token = localStorage.getItem('tamirhanem_token');
+                    const user = Utils.storage.get('tamirhanem_user');
+
+                    console.log('🔍 [SERVICE DISCOVERY] Starting...', { user });
+
+                    if (!user || !token) {
+                        console.error('❌ [SERVICE DISCOVERY] No user or token');
+                        return null;
+                    }
+
+                    // 1. Check /users/me
+                    console.log('🔍 [SERVICE DISCOVERY] Fetching /users/me...');
+                    const meRes = await fetch(`${CONFIG.API_BASE_URL}/users/me?populate=service`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    const meData = await meRes.json();
+                    console.log('📋 [SERVICE DISCOVERY] /users/me response:', meData);
+
+                    if (meData.service && meData.service.id) {
+                        console.log('✅ [SERVICE DISCOVERY] Found via /users/me:', meData.service.id);
+                        localStorage.setItem('selectedServiceId', meData.service.id.toString());
+                        localStorage.setItem('isServiceOwner', 'true');
+                        return meData.service.id;
+                    }
+
+                    // 2. Search services by owner
+                    console.log('🔍 [SERVICE DISCOVERY] Searching by owner ID:', user.id);
+                    const searchRes = await fetch(`${CONFIG.API_BASE_URL}/services?filters[owner][id][$eq]=${user.id}`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    const searchData = await searchRes.json();
+                    console.log('📋 [SERVICE DISCOVERY] Search response:', searchData);
+
+                    if (searchData.data && searchData.data.length > 0) {
+                        const sId = searchData.data[0].id;
+                        console.log('✅ [SERVICE DISCOVERY] Found via search:', sId);
+                        localStorage.setItem('selectedServiceId', sId.toString());
+                        localStorage.setItem('isServiceOwner', 'true');
+                        return sId;
+                    }
+
+                    console.warn('❌ [SERVICE DISCOVERY] No service found for this user');
+                    return null;
+                } catch (error) {
+                    console.error('❌ [SERVICE DISCOVERY] Error:', error);
+                    return null;
+                }
+            },
+
+            async init() {
+                console.log('🚀 [INIT] Starting edit-service-profile initialization...');
+
+                // First, ensure we have a service ID
+                let serviceId = localStorage.getItem('selectedServiceId');
+                console.log('📍 [INIT] Initial serviceId from localStorage:', serviceId);
+
+                // Clean up invalid service IDs
+                if (serviceId === 'null' || serviceId === 'undefined' || !serviceId) {
+                    console.warn('⚠️ [INIT] Invalid/missing serviceId, attempting discovery...');
+                    serviceId = await this.discoverUserService();
+                }
+
+                console.log('🎯 [INIT] Final serviceId:', serviceId);
+
+                if (!serviceId) {
+                    this.showError('Servis bulunamadı. Lütfen tekrar giriş yapın.');
+                    return;
+                }
+
+                // Store it for fetchServiceData to use
+                this.serviceId = serviceId;
+
+                await this.fetchCategories();
+                await this.fetchVehicleBrands(); // NEW: Fetch vehicle brands
+                await this.fetchServiceData();
+                this.setupImageUpload();
+                this.setupLogoUpload();
+                this.setupGalleryUpload();
+                this.setupCertificatesUpload();
+                this.setupPhoneInput();
+                this.setupWorkingHours();
+                await this.initializeMap();
+            },
+
+            setupPhoneInput() {
+                const phoneInput = document.getElementById('service-phone');
+                phoneInput.addEventListener('input', (e) => {
+                    let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+
+                    // Remove leading 0 if present
+                    if (value.startsWith('0')) {
+                        value = value.substring(1);
+                    }
+
+                    // Limit to 10 digits
+                    if (value.length > 10) {
+                        value = value.substring(0, 10);
+                    }
+
+                    e.target.value = value;
+                });
+            },
+
+            async initializeMap() {
+                try {
+                    // Load Google Maps API dynamically
+                    await loadGoogleMaps();
+
+                    // Get coordinates from hidden inputs or use default (Istanbul)
+                    const lat = parseFloat(document.getElementById('service-latitude').value) || 41.0082;
+                    const lng = parseFloat(document.getElementById('service-longitude').value) || 28.9784;
+
+                    // Initialize geocoder
+                    geocoder = new google.maps.Geocoder();
+
+                    // Create map with modern API
+                    const mapElement = document.getElementById('google-map');
+                    map = new google.maps.Map(mapElement, {
+                        center: { lat, lng },
+                        zoom: 15,
+                        mapTypeControl: true,
+                        streetViewControl: false,
+                        fullscreenControl: false
+                    });
+
+                    // Create draggable marker
+                    marker = new google.maps.Marker({
+                        position: { lat, lng },
+                        map: map,
+                        draggable: true,
+                        title: 'Servis Konumu'
+                    });
+
+                    // Map click event
+                    map.addListener('click', (event) => {
+                        this.updateMarkerPosition(event.latLng);
+                    });
+
+                    // Marker drag event
+                    marker.addListener('dragend', (event) => {
+                        this.updateMarkerPosition(event.latLng);
+                    });
+                } catch (error) {
+                    console.error('Google Maps initialization error:', error);
+                    // Show error in map container
+                    const mapContainer = document.getElementById('google-map');
+                    mapContainer.innerHTML = `
+            <div style="padding: 40px; text-align: center; color: #ff4d4f;">
+              <i class="ri-map-pin-line" style="font-size: 3rem; margin-bottom: 10px; display: block;"></i>
+              <p><strong>Harita yüklenemedi</strong></p>
+              <p style="font-size: 0.9rem; color: #888;">Koordinatları manuel girebilirsiniz</p>
+            </div>
+          `;
+                    // Don't prevent form from working - user can still enter coordinates
+                }
+            },
+
+            updateMarkerPosition(latLng) {
+                marker.setPosition(latLng);
+                map.panTo(latLng);
+
+                // Update hidden inputs
+                document.getElementById('service-latitude').value = latLng.lat();
+                document.getElementById('service-longitude').value = latLng.lng();
+
+                // Reverse geocode to get address
+                this.reverseGeocode(latLng);
+            },
+
+            reverseGeocode(latLng) {
+                if (!geocoder) return; // Skip if geocoder not initialized
+
+                geocoder.geocode({ location: latLng }, (results, status) => {
+                    if (status === 'OK' && results[0]) {
+                        document.getElementById('service-location').value = results[0].formatted_address;
+                    } else if (status === 'ZERO_RESULTS') {
+                        // Ocean or remote area - just show coordinates
+                        document.getElementById('service-location').value = `Koordinat: ${latLng.lat().toFixed(6)}, ${latLng.lng().toFixed(6)}`;
+                    }
+                });
+            },
+
+            setupImageUpload() {
+                const input = document.getElementById('profile-picture-input');
+                input.addEventListener('change', (e) => {
+                    if (e.target.files && e.target.files[0]) {
+                        this.previewImage(e.target.files[0]);
+                    }
+                });
+            },
+
+            previewImage(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const preview = document.getElementById('image-preview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                    document.getElementById('remove-picture-btn').style.display = 'inline-flex';
+                };
+                reader.readAsDataURL(file);
+            },
+
+            // Logo Upload Setup
+            setupLogoUpload() {
+                const input = document.getElementById('logo-input');
+                input.addEventListener('change', (e) => {
+                    if (e.target.files && e.target.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            document.getElementById('logo-preview').innerHTML = `<img src="${e.target.result}" alt="Logo">`;
+                            document.getElementById('remove-logo-btn').style.display = 'inline-flex';
+                        };
+                        reader.readAsDataURL(e.target.files[0]);
+                    }
+                });
+            },
+
+            async removeLogo() {
+                if (!confirm('Logoyu kaldırmak istediğinizden emin misiniz?')) return;
+                try {
+                    const token = localStorage.getItem('tamirhanem_token');
+                    await fetch(`${CONFIG.API_BASE_URL}/services/${this.serviceId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ data: { logo: null } })
+                    });
+                    this.logoId = null;
+                    document.getElementById('logo-preview').innerHTML = '<i class="ri-image-add-line"></i><p>Logo Seç</p>';
+                    document.getElementById('remove-logo-btn').style.display = 'none';
+                    document.getElementById('logo-input').value = '';
+                    Utils.showToast('Logo kaldırıldı', 'success');
+                } catch (error) {
+                    Utils.showToast('Logo kaldırılamadı', 'error');
+                }
+            },
+
+            // Gallery Upload Setup
+            setupGalleryUpload() {
+                const input = document.getElementById('gallery-input');
+                input.addEventListener('change', async (e) => {
+                    const files = Array.from(e.target.files);
+                    const currentCount = this.galleryIds.length;
+
+                    if (currentCount + files.length > 10) {
+                        Utils.showToast('Maksimum 10 fotoğraf yükleyebilirsiniz', 'warning');
+                        return;
+                    }
+
+                    for (const file of files) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const preview = document.getElementById('gallery-preview');
+                            const div = document.createElement('div');
+                            div.style.cssText = 'position: relative; border-radius: 12px; overflow: hidden; aspect-ratio: 1;';
+                            div.innerHTML = `
+                                <img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">
+                                <button type="button" onclick="this.parentElement.remove()" 
+                                    style="position: absolute; top: 5px; right: 5px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                    <i class="ri-close-line"></i>
+                                </button>
+                            `;
+                            preview.appendChild(div);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            },
+
+            // Certificates Upload Setup
+            setupCertificatesUpload() {
+                const input = document.getElementById('certificates-input');
+                input.addEventListener('change', (e) => {
+                    const files = Array.from(e.target.files);
+                    const preview = document.getElementById('certificates-preview');
+
+                    files.forEach(file => {
+                        const div = document.createElement('div');
+                        div.style.cssText = 'display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8f9fa; border-radius: 12px; margin-bottom: 8px;';
+
+                        const isPDF = file.type === 'application/pdf';
+                        const icon = isPDF ? 'ri-file-pdf-line' : 'ri-image-line';
+
+                        div.innerHTML = `
+                            <i class="${icon}" style="font-size: 2rem; color: var(--primary);"></i>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">${file.name}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-light);">${(file.size / 1024).toFixed(1)} KB</div>
+                            </div>
+                            <button type="button" onclick="this.parentElement.remove()" class="btn-danger" style="padding: 8px 12px;">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        `;
+                        preview.appendChild(div);
+                    });
+                });
+            },
+
+            // Working Hours Setup
+            setupWorkingHours() {
+                const days = [
+                    { key: 'monday', label: 'Pazartesi', icon: 'ri-calendar-line' },
+                    { key: 'tuesday', label: 'Salı', icon: 'ri-calendar-line' },
+                    { key: 'wednesday', label: 'Çarşamba', icon: 'ri-calendar-line' },
+                    { key: 'thursday', label: 'Perşembe', icon: 'ri-calendar-line' },
+                    { key: 'friday', label: 'Cuma', icon: 'ri-calendar-line' },
+                    { key: 'saturday', label: 'Cumartesi', icon: 'ri-calendar-check-line' },
+                    { key: 'sunday', label: 'Pazar', icon: 'ri-calendar-close-line' }
+                ];
+
+                const container = document.getElementById('working-hours-container');
+                container.innerHTML = `
+                    <style>
+                        .hours-card {
+                            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+                            border: 2px solid #e9ecef;
+                            border-radius: 16px;
+                            padding: 20px;
+                            margin-bottom: 16px;
+                            transition: all 0.3s ease;
+                            position: relative;
+                            overflow: hidden;
+                        }
+                        
+                        .hours-card:hover {
+                            border-color: #eab308;
+                            box-shadow: 0 4px 12px rgba(234, 179, 8, 0.1);
+                            transform: translateY(-2px);
+                        }
+                        
+                        .hours-card.closed {
+                            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                            opacity: 0.7;
+                        }
+                        
+                        .hours-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 16px;
+                        }
+                        
+                        .hours-day-info {
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                        }
+                        
+                        .hours-day-icon {
+                            width: 40px;
+                            height: 40px;
+                            background: linear-gradient(135deg, #eab308 0%, #f59e0b 100%);
+                            border-radius: 12px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-size: 1.2rem;
+                        }
+                        
+                        .hours-day-label {
+                            font-size: 1.1rem;
+                            font-weight: 600;
+                            color: #1e293b;
+                        }
+                        
+                        .hours-toggle {
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                        }
+                        
+                        .toggle-switch {
+                            position: relative;
+                            width: 60px;
+                            height: 32px;
+                            background: #cbd5e1;
+                            border-radius: 16px;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                        }
+                        
+                        .toggle-switch.active {
+                            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        }
+                        
+                        .toggle-switch::after {
+                            content: '';
+                            position: absolute;
+                            width: 24px;
+                            height: 24px;
+                            background: white;
+                            border-radius: 50%;
+                            top: 4px;
+                            left: 4px;
+                            transition: all 0.3s ease;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                        }
+                        
+                        .toggle-switch.active::after {
+                            left: 32px;
+                        }
+                        
+                        .toggle-label {
+                            font-size: 0.9rem;
+                            font-weight: 600;
+                            color: #64748b;
+                        }
+                        
+                        .toggle-label.active {
+                            color: #10b981;
+                        }
+                        
+                        .hours-inputs {
+                            display: flex;
+                            gap: 16px;
+                            align-items: center;
+                        }
+                        
+                        .hours-inputs.hidden {
+                            display: none;
+                        }
+                        
+                        .time-input-group {
+                            flex: 1;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 8px;
+                        }
+                        
+                        .time-input-label {
+                            font-size: 0.75rem;
+                            font-weight: 600;
+                            color: #64748b;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                        }
+                        
+                        .time-input {
+                            padding: 12px 16px;
+                            border: 2px solid #e2e8f0;
+                            border-radius: 12px;
+                            font-size: 1rem;
+                            font-weight: 600;
+                            color: #1e293b;
+                            transition: all 0.3s ease;
+                            background: white;
+                        }
+                        
+                        .time-input:focus {
+                            outline: none;
+                            border-color: #eab308;
+                            box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.1);
+                        }
+                        
+                        .time-separator {
+                            font-size: 1.5rem;
+                            font-weight: 700;
+                            color: #cbd5e1;
+                            margin-top: 24px;
+                        }
+                        
+                        .closed-badge {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 6px;
+                            padding: 8px 16px;
+                            background: #fee2e2;
+                            color: #dc2626;
+                            border-radius: 8px;
+                            font-size: 0.9rem;
+                            font-weight: 600;
+                        }
+                    </style>
+                    ${days.map(day => `
+                        <div class="hours-card" id="wh-${day.key}-card">
+                            <div class="hours-header">
+                                <div class="hours-day-info">
+                                    <div class="hours-day-icon">
+                                        <i class="${day.icon}"></i>
+                                    </div>
+                                    <div class="hours-day-label">${day.label}</div>
+                                </div>
+                                <div class="hours-toggle">
+                                    <span class="toggle-label active" id="wh-${day.key}-status">Açık</span>
+                                    <div class="toggle-switch active" id="wh-${day.key}-toggle" onclick="ServiceProfileManager.toggleDayHours('${day.key}')">
+                                        <input type="checkbox" id="wh-${day.key}-closed" style="display: none;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hours-inputs" id="wh-${day.key}-inputs">
+                                <div class="time-input-group">
+                                    <label class="time-input-label">Açılış</label>
+                                    <input type="time" id="wh-${day.key}-open" class="time-input" value="09:00">
+                                </div>
+                                <div class="time-separator">→</div>
+                                <div class="time-input-group">
+                                    <label class="time-input-label">Kapanış</label>
+                                    <input type="time" id="wh-${day.key}-close" class="time-input" value="18:00">
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+            },
+
+            toggleDayHours(day) {
+                const checkbox = document.getElementById(`wh-${day}-closed`);
+                const toggle = document.getElementById(`wh-${day}-toggle`);
+                const inputs = document.getElementById(`wh-${day}-inputs`);
+                const card = document.getElementById(`wh-${day}-card`);
+                const status = document.getElementById(`wh-${day}-status`);
+
+                // Toggle checkbox state
+                checkbox.checked = !checkbox.checked;
+
+                // Update UI
+                if (checkbox.checked) {
+                    toggle.classList.remove('active');
+                    inputs.classList.add('hidden');
+                    card.classList.add('closed');
+                    status.textContent = 'Kapalı';
+                    status.classList.remove('active');
+                } else {
+                    toggle.classList.add('active');
+                    inputs.classList.remove('hidden');
+                    card.classList.remove('closed');
+                    status.textContent = 'Açık';
+                    status.classList.add('active');
+                }
+            },
+
+            async fetchCategories() {
+                try {
+                    const response = await fetch(`${CONFIG.API_BASE_URL}/categories`);
+                    const data = await response.json();
+                    this.categories = data.data || [];
+                    this.renderCategories();
+                } catch (error) {
+                    console.error('Categories fetch error:', error);
+                    document.getElementById('categories-container').innerHTML = '<p class="error-text">Kategoriler yüklenemedi</p>';
+                }
+            },
+
+            renderCategories() {
+                const container = document.getElementById('categories-container');
+                if (this.categories.length === 0) {
+                    container.innerHTML = '<p class="empty-text">Kategori bulunamadı</p>';
+                    return;
+                }
+
+                container.innerHTML = this.categories.map(cat => `
+          <label class="category-item">
+            <input type="checkbox" class="form-checkbox" value="${cat.id}" data-category-id="${cat.id}">
+            <span class="category-name">${cat.attributes.name}</span>
+          </label>
+        `).join('');
+            },
+
+            async fetchVehicleBrands() {
+                try {
+                    const token = localStorage.getItem('tamirhanem_token');
+                    console.log('Fetching vehicle brands from:', `${CONFIG.API_BASE_URL}/arac-datasi/unique-brands`);
+
+                    // Use the same endpoint as mobile app
+                    const response = await fetch(`${CONFIG.API_BASE_URL}/arac-datasi/unique-brands`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('Vehicle data from API:', data); // DEBUG
+
+                    // The unique-brands endpoint returns { data: ["BMW", "AUDI", ...] }
+                    this.vehicleBrands = (data.data || []).sort(); // Already unique, just sort
+                    console.log('Unique brands:', this.vehicleBrands); // DEBUG
+                    this.renderVehicleBrands();
+                } catch (error) {
+                    console.error('Vehicle brands fetch error:', error);
+                    console.error('Error details:', error.message, error.stack);
+                    document.getElementById('vehicle-brands-grid').innerHTML = `<p class="error-text">Markalar yüklenemedi: ${error.message}</p>`;
+                }
+            },
+
+            renderVehicleBrands() {
+                const container = document.getElementById('vehicle-brands-grid');
+                if (!this.vehicleBrands || this.vehicleBrands.length === 0) {
+                    container.innerHTML = '<p class="text-muted">Marka bulunamadı</p>';
+                    return;
+                }
+
+                container.innerHTML = this.vehicleBrands.map(brandName => `
+                    <label class="checkbox-label" style="background: #f8f9fa; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer;">
+                        <input type="checkbox" class="form-checkbox vehicle-brand-checkbox" value="${brandName}">
+                        <span style="font-weight: 500;">${brandName}</span>
+                    </label>
+                `).join('');
+            },
+
+            async fetchServiceData() {
+                try {
+                    this.showLoading();
+
+                    const token = localStorage.getItem('tamirhanem_token');
+                    const userData = Utils.storage.get('tamirhanem_user');
+
+                    console.log('🔍 [DEBUG] Token exists:', !!token);
+                    console.log('🔍 [DEBUG] userData:', userData);
+
+                    // Try to get serviceId from multiple sources
+                    let serviceId = null;
+
+                    // 1. Check userData.serviceId
+                    if (userData && userData.serviceId) {
+                        serviceId = userData.serviceId;
+                        console.log('✅ [DEBUG] ServiceId from userData:', serviceId);
+                    }
+
+                    // 2. Check localStorage selectedServiceId
+                    if (!serviceId) {
+                        serviceId = localStorage.getItem('selectedServiceId');
+                        console.log('✅ [DEBUG] ServiceId from localStorage:', serviceId);
+                    }
+
+                    console.log('🎯 [DEBUG] Final serviceId:', serviceId);
+
+                    if (!token || !serviceId) {
+                        console.error('❌ [DEBUG] Missing:', { token: !!token, serviceId });
+                        throw new Error('Yetkilendirme bilgileri eksik veya servis seçilmemiş.');
+                    }
+
+                    this.serviceId = serviceId;
+
+                    const response = await fetch(
+                        `${CONFIG.API_BASE_URL}/services/${this.serviceId}?populate=*`,
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        }
+                    );
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error?.message || 'Servis bilgileri yüklenemedi.');
+                    }
+
+                    const data = await response.json();
+                    this.serviceData = data.data.attributes;
+
+                    this.populateForm();
+                    this.showForm();
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    this.showError(error.message);
+                }
+            },
+
+            populateForm() {
+                // Basic fields
+                document.getElementById('service-name').value = this.serviceData.name || '';
+                document.getElementById('service-phone').value = this.serviceData.phone?.toString() || '';
+                document.getElementById('service-location').value = this.serviceData.location || '';
+                document.getElementById('service-info').value = this.serviceData.service_info || '';
+
+                // Location coordinates
+                const lat = this.serviceData.latitude || 41.0082;
+                const lng = this.serviceData.longitude || 28.9784;
+                document.getElementById('service-latitude').value = lat;
+                document.getElementById('service-longitude').value = lng;
+
+                // Service type
+                document.getElementById('service-type').value = this.serviceData.service_type || 'industrial';
+
+                // Status
+                const available = this.serviceData.available !== false;
+                document.getElementById('service-available').checked = available;
+                this.updateStatusUI(available);
+
+                // Roadside assistance
+                const providesRoadside = this.serviceData.provides_roadside_assistance || false;
+                document.getElementById('provides-roadside').checked = providesRoadside;
+                if (providesRoadside) {
+                    document.getElementById('roadside-fields').style.display = 'block';
+                    document.getElementById('roadside-response-time').value = this.serviceData.roadside_response_time_minutes || 30;
+                    document.getElementById('service-area-radius').value = this.serviceData.service_area_radius_km || 50;
+                }
+
+                // Vehicle support
+                const supportsAll = this.serviceData.supports_all_vehicles !== false;
+                document.getElementById('supports-all-vehicles').checked = supportsAll;
+                if (!supportsAll) {
+                    document.getElementById('vehicle-fields').style.display = 'block';
+
+                    // Parse and check brand checkboxes
+                    let vehiclesData = this.serviceData.supported_vehicles;
+                    if (typeof vehiclesData === 'string') {
+                        try { vehiclesData = JSON.parse(vehiclesData); } catch (e) { }
+                    }
+
+                    let brandsList = [];
+                    if (Array.isArray(vehiclesData)) {
+                        brandsList = vehiclesData;
+                    } else if (vehiclesData && Array.isArray(vehiclesData.brands)) {
+                        brandsList = vehiclesData.brands.map(v => typeof v === 'string' ? v : v.brand).filter(Boolean);
+                    }
+
+                    // Check the matching checkboxes
+                    brandsList.forEach(brandName => {
+                        const checkbox = document.querySelector(`.vehicle-brand-checkbox[value="${brandName}"]`);
+                        if (checkbox) checkbox.checked = true;
+                    });
+                }
+
+
+                // Categories
+                if (this.serviceData.categories?.data) {
+                    const selectedCategoryIds = this.serviceData.categories.data.map(c => c.id);
+                    selectedCategoryIds.forEach(id => {
+                        const checkbox = document.querySelector(`input[data-category-id="${id}"]`);
+                        if (checkbox) checkbox.checked = true;
+                    });
+                }
+
+                // Profile picture
+                if (this.serviceData.ProfilePicture?.data) {
+                    const picData = this.serviceData.ProfilePicture.data;
+                    this.profilePictureId = picData.id;
+                    const picUrl = `https://api.tamirhanem.net${picData.attributes.url}`;
+                    document.getElementById('image-preview').innerHTML = `<img src="${picUrl}" alt="Profile">`;
+                    document.getElementById('remove-picture-btn').style.display = 'inline-flex';
+                }
+
+                // Logo (NEW)
+                if (this.serviceData.logo?.data) {
+                    const logoData = this.serviceData.logo.data;
+                    this.logoId = logoData.id;
+                    const logoUrl = `https://api.tamirhanem.net${logoData.attributes.url}`;
+                    document.getElementById('logo-preview').innerHTML = `<img src="${logoUrl}" alt="Logo">`;
+                    document.getElementById('remove-logo-btn').style.display = 'inline-flex';
+                }
+
+                // Working Hours (NEW)
+                if (this.serviceData.working_hours) {
+                    const hours = this.serviceData.working_hours;
+                    Object.keys(hours).forEach(day => {
+                        const dayData = hours[day];
+                        const checkbox = document.getElementById(`wh-${day}-closed`);
+                        const toggle = document.getElementById(`wh-${day}-toggle`);
+                        const inputs = document.getElementById(`wh-${day}-inputs`);
+                        const card = document.getElementById(`wh-${day}-card`);
+                        const status = document.getElementById(`wh-${day}-status`);
+                        const openInput = document.getElementById(`wh-${day}-open`);
+                        const closeInput = document.getElementById(`wh-${day}-close`);
+
+                        if (dayData.closed) {
+                            if (checkbox) checkbox.checked = true;
+                            if (toggle) toggle.classList.remove('active');
+                            if (inputs) inputs.classList.add('hidden');
+                            if (card) card.classList.add('closed');
+                            if (status) {
+                                status.textContent = 'Kapalı';
+                                status.classList.remove('active');
+                            }
+                        } else if (openInput && closeInput && dayData.open && dayData.close) {
+                            // Extract HH:mm from Strapi format (HH:mm:ss.SSS)
+                            openInput.value = dayData.open.substring(0, 5) || '09:00';
+                            closeInput.value = dayData.close.substring(0, 5) || '18:00';
+                        }
+                    });
+                }
+
+                // Gallery (NEW)
+                if (this.serviceData.gallery?.data) {
+                    const galleryData = Array.isArray(this.serviceData.gallery.data) ? this.serviceData.gallery.data : [this.serviceData.gallery.data];
+                    this.galleryIds = galleryData.map(img => img.id);
+                    const preview = document.getElementById('gallery-preview');
+                    galleryData.forEach(img => {
+                        const imgUrl = `https://api.tamirhanem.net${img.attributes.url}`;
+                        const div = document.createElement('div');
+                        div.style.cssText = 'position: relative; border-radius: 12px; overflow: hidden; aspect-ratio: 1;';
+                        div.innerHTML = `
+                            <img src="${imgUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+                            <button type="button" onclick="this.parentElement.remove()" 
+                                style="position: absolute; top: 5px; right: 5px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                <i class="ri-close-line"></i>
+                            </button>
+                        `;
+                        preview.appendChild(div);
+                    });
+                }
+
+                // Social Media (NEW)
+                if (this.serviceData.social_media) {
+                    const social = this.serviceData.social_media;
+                    document.getElementById('social-instagram').value = social.instagram || '';
+                    document.getElementById('social-facebook').value = social.facebook || '';
+                    document.getElementById('social-twitter').value = social.twitter || '';
+                }
+
+                // Certificates (NEW)
+                if (this.serviceData.certificates?.data) {
+                    const certsData = Array.isArray(this.serviceData.certificates.data) ? this.serviceData.certificates.data : [this.serviceData.certificates.data];
+                    this.certificateIds = certsData.map(cert => cert.id);
+                    const preview = document.getElementById('certificates-preview');
+                    certsData.forEach(cert => {
+                        const certUrl = `https://api.tamirhanem.net${cert.attributes.url}`;
+                        const isPDF = cert.attributes.mime === 'application/pdf';
+                        const icon = isPDF ? 'ri-file-pdf-line' : 'ri-image-line';
+                        const div = document.createElement('div');
+                        div.style.cssText = 'display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8f9fa; border-radius: 12px; margin-bottom: 8px;';
+                        div.innerHTML = `
+                            <i class="${icon}" style="font-size: 2rem; color: var(--primary);"></i>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">${cert.attributes.name}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-light);">${(cert.attributes.size / 1024).toFixed(1)} KB</div>
+                            </div>
+                            <a href="${certUrl}" target="_blank" class="btn-secondary" style="padding: 8px 12px; text-decoration: none;">
+                                <i class="ri-eye-line"></i>
+                            </a>
+                        `;
+                        preview.appendChild(div);
+                    });
+                }
+            },
+
+            updateStatusUI(isActive) {
+                const statusText = document.getElementById('status-text');
+                if (isActive) {
+                    statusText.textContent = 'Servis Aktif (Müşterilere açık)';
+                    statusText.className = 'status-text active';
+                } else {
+                    statusText.textContent = 'Servis Kapalı (Müşterilere kapalı)';
+                    statusText.className = 'status-text inactive';
+                }
+            },
+
+            toggleRoadsideFields() {
+                const checked = document.getElementById('provides-roadside').checked;
+                document.getElementById('roadside-fields').style.display = checked ? 'block' : 'none';
+            },
+
+            toggleVehicleFields() {
+                const checked = document.getElementById('supports-all-vehicles').checked;
+                document.getElementById('vehicle-fields').style.display = checked ? 'none' : 'block';
+            },
+
+            async uploadProfilePicture(file) {
+                try {
+                    const token = localStorage.getItem('tamirhanem_token');
+                    const formData = new FormData();
+                    formData.append('files', file);
+
+                    const uploadResponse = await fetch(`${CONFIG.API_BASE_URL}/upload`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+
+                    if (!uploadResponse.ok) {
+                        throw new Error('Fotoğraf yüklenemedi');
+                    }
+
+                    const uploadData = await uploadResponse.json();
+                    return uploadData[0].id;
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    throw error;
+                }
+            },
+
+            async removeProfilePicture() {
+                if (!confirm('Profil fotoğrafını kaldırmak istediğinizden emin misiniz?')) {
+                    return;
+                }
+
+                try {
+                    const token = localStorage.getItem('tamirhanem_token');
+
+                    const response = await fetch(
+                        `${CONFIG.API_BASE_URL}/services/${this.serviceId}`,
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                data: {
+                                    ProfilePicture: null
+                                }
+                            })
+                        }
+                    );
+
+                    if (!response.ok) {
+                        throw new Error('Fotoğraf kaldırılamadı');
+                    }
+
+                    this.profilePictureId = null;
+                    document.getElementById('image-preview').innerHTML = '<i class="ri-image-add-line"></i><p>Fotoğraf Seç</p>';
+                    document.getElementById('remove-picture-btn').style.display = 'none';
+                    document.getElementById('profile-picture-input').value = '';
+
+                    Utils.showToast('Profil fotoğrafı kaldırıldı', 'success');
+                } catch (error) {
+                    Utils.showToast(error.message, 'error');
+                }
+            },
+
+            async updateService(event) {
+                event.preventDefault();
+
+                const name = document.getElementById('service-name').value.trim();
+                const phone = document.getElementById('service-phone').value.trim();
+                const location = document.getElementById('service-location').value.trim();
+                const serviceInfo = document.getElementById('service-info').value.trim();
+                const latitude = document.getElementById('service-latitude').value;
+                const longitude = document.getElementById('service-longitude').value;
+                const serviceType = document.getElementById('service-type').value;
+                const available = document.getElementById('service-available').checked;
+                const providesRoadside = document.getElementById('provides-roadside').checked;
+                const supportsAllVehicles = document.getElementById('supports-all-vehicles').checked;
+
+                // Validation
+                if (!name) {
+                    Utils.showToast('Servis adı boş olamaz', 'error');
+                    return;
+                }
+
+                if (phone) {
+                    // Phone validation: must be 10 digits and start with 5
+                    if (phone.length !== 10 || !phone.startsWith('5')) {
+                        Utils.showToast('Telefon numarası 10 haneli olmalı ve 5 ile başlamalıdır (Örn: 5XX...)', 'error');
+                        return;
+                    }
+                } else {
+                    // Optional but if entered must be valid? 
+                    // Actually requirement says "telefon giriş inputu telefon formatında başında 0 olmadan yazılmalıdır"
+                    // If it's optional in backend but user entered something invalid (though input mask prevents most)
+                }
+
+                try {
+                    const submitBtn = document.getElementById('submit-btn');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="ri-loader-4-line"></i> Kaydediliyor...';
+
+                    const token = localStorage.getItem('tamirhanem_token');
+
+                    // Handle profile picture upload
+                    const fileInput = document.getElementById('profile-picture-input');
+                    let profilePictureId = this.profilePictureId;
+
+                    if (fileInput.files && fileInput.files[0]) {
+                        profilePictureId = await this.uploadProfilePicture(fileInput.files[0]);
+                    }
+
+                    // Get selected categories
+                    const selectedCategories = Array.from(document.querySelectorAll('input[data-category-id]:checked'))
+                        .map(cb => parseInt(cb.value));
+
+                    // Build request body
+                    const requestBody = {
+                        data: {
+                            name,
+                            location,
+                            service_info: serviceInfo,
+                            service_type: serviceType,
+                            available,
+                            provides_roadside_assistance: providesRoadside,
+                            supports_all_vehicles: supportsAllVehicles
+                        }
+                    };
+
+                    // Add optional fields
+                    if (phone) {
+                        requestBody.data.phone = parseInt(phone);
+                    }
+
+                    // Validate and add coordinates
+                    if (latitude && !isNaN(parseFloat(latitude))) {
+                        requestBody.data.latitude = parseFloat(latitude);
+                    }
+
+                    if (longitude && !isNaN(parseFloat(longitude))) {
+                        requestBody.data.longitude = parseFloat(longitude);
+                    }
+                    if (profilePictureId) {
+                        requestBody.data.ProfilePicture = profilePictureId;
+                    }
+
+                    if (selectedCategories.length > 0) {
+                        requestBody.data.categories = selectedCategories;
+                    }
+
+                    // Roadside assistance fields
+                    if (providesRoadside) {
+                        const responseTime = document.getElementById('roadside-response-time').value;
+                        const areaRadius = document.getElementById('service-area-radius').value;
+
+                        if (responseTime) {
+                            requestBody.data.roadside_response_time_minutes = parseInt(responseTime);
+                        }
+                        if (areaRadius) {
+                            requestBody.data.service_area_radius_km = parseInt(areaRadius);
+                        }
+                    } else {
+                        // Explicitly reset to defaults when roadside assistance is disabled
+                        requestBody.data.roadside_response_time_minutes = 30;
+                        requestBody.data.service_area_radius_km = 50;
+                    }
+
+                    // Vehicle support
+                    if (!supportsAllVehicles) {
+                        // Collect checked brand checkboxes
+                        const checkedBrands = Array.from(document.querySelectorAll('.vehicle-brand-checkbox:checked'))
+                            .map(cb => cb.value)
+                            .filter(Boolean);
+
+                        if (checkedBrands.length > 0) {
+                            // Save as simple array of brand names
+                            requestBody.data.supported_vehicles = checkedBrands;
+                        } else {
+                            requestBody.data.supported_vehicles = [];
+                        }
+                    } else {
+                        requestBody.data.supported_vehicles = null;
+                    }
+
+
+                    // Logo Upload (NEW)
+                    const logoInput = document.getElementById('logo-input');
+                    if (logoInput.files && logoInput.files[0]) {
+                        const logoId = await this.uploadProfilePicture(logoInput.files[0]);
+                        requestBody.data.logo = logoId;
+                    } else if (this.logoId) {
+                        requestBody.data.logo = this.logoId;
+                    }
+
+                    // Working Hours (NEW)
+                    const workingHours = {};
+                    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                    days.forEach(day => {
+                        const closedCheckbox = document.getElementById(`wh-${day}-closed`);
+                        const openInput = document.getElementById(`wh-${day}-open`);
+                        const closeInput = document.getElementById(`wh-${day}-close`);
+
+                        // Skip if elements don't exist (component not rendered yet)
+                        if (!closedCheckbox || !openInput || !closeInput) {
+                            return;
+                        }
+
+                        const closed = closedCheckbox.checked;
+                        if (closed) {
+                            workingHours[day] = { closed: true };
+                        } else {
+                            // Convert HH:mm to HH:mm:ss.SSS format for Strapi time field
+                            const openTime = openInput.value + ':00.000';
+                            const closeTime = closeInput.value + ':00.000';
+
+                            workingHours[day] = {
+                                open: openTime,
+                                close: closeTime,
+                                closed: false
+                            };
+                        }
+                    });
+                    requestBody.data.working_hours = workingHours;
+
+                    // Gallery Upload (NEW)
+                    const galleryInput = document.getElementById('gallery-input');
+                    if (galleryInput.files && galleryInput.files.length > 0) {
+                        const galleryIds = [];
+                        for (const file of galleryInput.files) {
+                            const id = await this.uploadProfilePicture(file);
+                            galleryIds.push(id);
+                        }
+                        requestBody.data.gallery = [...this.galleryIds, ...galleryIds];
+                    } else if (this.galleryIds.length > 0) {
+                        requestBody.data.gallery = this.galleryIds;
+                    }
+
+                    // Social Media (NEW)
+                    const instagram = document.getElementById('social-instagram').value.trim();
+                    const facebook = document.getElementById('social-facebook').value.trim();
+                    const twitter = document.getElementById('social-twitter').value.trim();
+                    if (instagram || facebook || twitter) {
+                        requestBody.data.social_media = { instagram, facebook, twitter };
+                    }
+
+                    // Certificates Upload (NEW)
+                    const certsInput = document.getElementById('certificates-input');
+                    if (certsInput.files && certsInput.files.length > 0) {
+                        const certIds = [];
+                        for (const file of certsInput.files) {
+                            const id = await this.uploadProfilePicture(file);
+                            certIds.push(id);
+                        }
+                        requestBody.data.certificates = [...this.certificateIds, ...certIds];
+                    } else if (this.certificateIds.length > 0) {
+                        requestBody.data.certificates = this.certificateIds;
+                    }
+
+                    const response = await fetch(
+                        `${CONFIG.API_BASE_URL}/services/${this.serviceId}`,
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(requestBody)
+                        }
+                    );
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error?.message || 'Güncelleme başarısız');
+                    }
+
+                    Utils.showToast('Servis bilgileri başarıyla güncellendi', 'success');
+
+                    // Refresh data
+                    await this.fetchServiceData();
+                } catch (error) {
+                    console.error('Update error:', error);
+                    Utils.showToast(error.message || 'Güncelleme başarısız', 'error');
+                } finally {
+                    const submitBtn = document.getElementById('submit-btn');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="ri-save-line"></i> <span>Değişiklikleri Kaydet</span>';
+                }
+            },
+
+            showLoading() {
+                document.getElementById('loading-state').style.display = 'block';
+                document.getElementById('error-state').style.display = 'none';
+                document.getElementById('edit-form').style.display = 'none';
+            },
+
+            showError(message) {
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('error-state').style.display = 'block';
+                document.getElementById('edit-form').style.display = 'none';
+                document.getElementById('error-message').textContent = message;
+            },
+
+            showForm() {
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('error-state').style.display = 'none';
+                document.getElementById('edit-form').style.display = 'block';
+            }
+        };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            ServiceProfileManager.init();
+        });
+    </script>
+</body>
+
+</html>

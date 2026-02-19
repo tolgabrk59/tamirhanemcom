@@ -1,0 +1,3850 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="TamirHanem Dashboard - Randevularınızı yönetin, servisleri keşfedin">
+  <title>Dashboard | TamirHanem</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="/favicon/site.webmanifest">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/global-dashboard.css">
+  <!-- SortableJS for drag-and-drop widget reordering -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+  <style>
+  </style>
+
+</head>
+
+<body>
+  <nav class="dashboard-navbar">
+    <div class="container dashboard-navbar-container"><a href="/dashboard.html" class="dashboard-logo"><img
+          src="/images/logo.png" alt="TamirHanem" style="height: 200px; width: auto; object-fit: contain;"></a>
+      <div class="dashboard-search">
+        <div class="search-input-wrapper">
+          <input type="text" class="search-input" placeholder="Servis, kategori veya kampanya ara..." id="search-input"
+            autocomplete="off">
+          <i class="ri-search-line search-icon"></i>
+        </div>
+        <div class="search-dropdown" id="search-dropdown" style="display: none;">
+          <div class="search-dropdown-body" id="search-dropdown-body">
+            <div class="search-empty"><i class="ri-search-line"></i> Aramak için yazın...</div>
+          </div>
+        </div>
+      </div>
+      <div class="dashboard-actions">
+        <div style="position: relative;"><button class="action-btn" id="notifications-btn"><i
+              class="ri-notification-3-line"></i><span class="notification-badge" id="notifications-badge"
+              style="display:none;">0</span></button>
+          <div class="notification-dropdown" id="notification-dropdown">
+            <div class="notification-dropdown-header"><span class="notification-dropdown-title">Bildirimler</span><a
+                href="/pages/notifications.html"
+                style="font-size: 0.85rem; color: var(--primary-dark); font-weight: 600;">Tümü</a></div>
+            <div class="notification-dropdown-body" id="notification-dropdown-body">
+              <div class="notification-empty"><i class="ri-notification-off-line"
+                  style="font-size: 2rem; opacity: 0.3; display: block; margin-bottom: 10px;"></i>Bildiriminiz yok
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="position: relative;"><button class="action-btn" id="favourites-btn"><i
+              class="ri-heart-3-line"></i></button>
+          <div class="favourite-dropdown" id="favourite-dropdown">
+            <div class="favourite-dropdown-header"><span class="favourite-dropdown-title">Favorilerim</span></div>
+            <div class="favourite-dropdown-body" id="favourite-dropdown-body">
+              <div class="favourite-empty"><i class="ri-heart-line"
+                  style="font-size: 2rem; opacity: 0.3; display: block; margin-bottom: 10px;"></i>Henüz favori
+                eklemediniz </div>
+            </div>
+          </div>
+        </div>
+        <!-- Wallet Balance Display -->
+        <div id="navbar-wallet" class="navbar-wallet" onclick="window.location.href='/pages/wallet.html'"><i
+            class="ri-wallet-3-fill"></i><span id="navbar-wallet-balance"
+            class="wallet-balance-text">Yükleniyor...</span><button class="wallet-add-btn"
+            onclick="event.stopPropagation(); window.location.href='/pages/wallet-topup.html'"><i
+              class="ri-add-fill"></i></button></div>
+        <div class="user-profile-mini" id="user-menu-toggle" onclick="window.location.href='/dashboard.html#profile'">
+          <div class="user-avatar" id="user-avatar">K</div>
+          <div class="user-info"><span class="user-name" id="user-name">Kullanıcı</span><span class="user-role"
+              id="user-role">Müşteri</span></div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Loyalty Bar Container (sticky below navbar, aligned with dashboard) -->
+  <div class="loyalty-bar-wrapper">
+    <div class="container">
+      <div class="loyalty-bar-layout">
+        <!-- Sidebar Spacer (matches dashboard sidebar width) -->
+        <div class="loyalty-sidebar-spacer"></div>
+
+        <!-- Loyalty Bar (aligned with main content) -->
+        <div class="loyalty-sticky-widget" id="loyalty-widget" style="display: flex;">
+          <div class="loyalty-container">
+            <div class="loyalty-progress-track">
+              <div class="progress-segments">
+                <div class="segment" data-index="0">
+                  <div class="segment-fill"></div>
+                </div>
+                <div class="segment" data-index="1">
+                  <div class="segment-fill"></div>
+                </div>
+                <div class="segment" data-index="2">
+                  <div class="segment-fill"></div>
+                </div>
+                <div class="segment" data-index="3">
+                  <div class="segment-fill"></div>
+                </div>
+                <div class="segment" data-index="4">
+                  <div class="segment-fill"></div>
+                </div>
+              </div>
+              <div class="milestone-markers">
+                <div class="milestone start-point" data-step="0"></div>
+                <div class="milestone" data-step="1"><i class="ri-tools-fill"></i><span class="milestone-label">1.
+                    Randevu</span></div>
+                <div class="milestone" data-step="2"><i class="ri-tools-fill"></i><span class="milestone-label">2.
+                    Randevu</span></div>
+                <div class="milestone" data-step="3"><i class="ri-tools-fill"></i><span class="milestone-label">3.
+                    Randevu</span></div>
+                <div class="milestone" data-step="4"><i class="ri-tools-fill"></i><span class="milestone-label">4.
+                    Randevu</span></div>
+                <div class="progress-car" id="loyalty-car" style="left: 0%;">
+                  <div class="car-wrapper"><img src="/images/goalcar.png" alt="Car"></div>
+                </div>
+              </div>
+              <button id="loyalty-reward-btn" class="milestone final-step" disabled>
+                <img src="/images/goalwash.png" alt="Goal"><span class="reward-text">Ücretsiz Yıkama</span>
+                <div class="pulse-ring"></div>
+              </button>
+            </div>
+            <div class="info-btn-wrapper">
+              <div class="info-btn" id="loyalty-info-btn"><i class="ri-information-line"></i></div>
+              <div class="info-tooltip" id="loyalty-info-tooltip">
+                <div class="info-tooltip-header">
+                  <div class="info-tooltip-title"><i class="ri-shield-check-line"></i>Hizmet Şartları</div>
+                </div>
+                <div class="info-tooltip-body">
+                  <p><strong>Program Kapsamı:</strong> TamirHanem üzerinden alınan belirli hizmetler için geçerlidir.
+                  </p>
+                  <p><strong>Puan Kazanımı:</strong> Her tamamlanan randevu 1 sadakat puanı kazandırır.</p>
+                  <p><strong>Ödül:</strong> 5 puan toplandığında "Ücretsiz İç-Dış Yıkama" kazanılır.</p>
+                  <p style="margin-bottom: 0; font-size: 0.8rem; color: #64748b; margin-top: 8px;">Detaylar için
+                    tıklayın...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="dashboard-main">
+    <div class="container">
+      <div class="tab-content active" id="home-tab">
+
+        <!-- Dashboard Layout with Sidebar -->
+        <div class="dashboard-layout" id="main-layout">
+          <!-- Global Sidebar will be injected here by global-sidebar.js -->
+
+          <!-- Main Content Area -->
+          <div class="main-content-area">
+
+            <!-- Content Wrapper (Dashboard Content) -->
+            <div class="content-wrapper">
+
+              <!-- Dashboard Content (default view) -->
+              <div class="dashboard-content">
+                <!-- Dashboard Widgets Container - ALL Draggable Sections -->
+                <div id="dashboard-widgets-container">
+
+                  <!-- Widget: Active Appointment -->
+
+
+                  <!-- Widget: Service Type Switcher -->
+                  <div class="dashboard-widget" data-widget-id="service-switcher"
+                    style="background: transparent; box-shadow: none; padding: 0;">
+                    <div class="service-type-switcher">
+                      <h3 class="switcher-title">Hangi hizmeti arıyorsunuz?</h3>
+                      <div class="switcher-grid"><button class="type-btn active" data-type="all"><i
+                            class="ri-apps-2-line"></i>Tümü
+                        </button><button class="type-btn" data-type="industrial"><i class="ri-tools-fill"></i>Oto Tamir
+                        </button><button class="type-btn" data-type="car_wash"><i class="ri-drop-fill"></i>Oto Yıkama
+                        </button><button class="type-btn" data-type="roadside"><i class="ri-truck-line"></i>Çekici
+                        </button><button class="type-btn" data-type="car_rental"><i class="ri-roadster-line"></i>Araç
+                          Kiralama
+                        </button></div>
+                    </div>
+                  </div>
+
+
+                  <!-- Service Panel Card (Dynamic - rendered via JS if user is service owner) -->
+                  <div id="service-panel-widget-placeholder"></div>
+                  <!-- Widget: My Vehicles (Dynamic) -->
+                  <div id="my-vehicles-widget-placeholder"></div>
+
+                  <!-- Widget: Campaigns -->
+                  <div class="dashboard-widget" data-widget-id="campaigns">
+                    <div class="section-header">
+                      <div style="display: flex; align-items: center;">
+                        <h2 class="section-title"><i class="ri-fire-fill" style="color: var(--error);"></i>Güncel
+                          Fırsatlar
+                        </h2>
+                        <div class="drag-handle-group"><i class="ri-hand-paper-fill"></i><i
+                            class="ri-drag-move-2-fill"></i>
+                        </div>
+                      </div><a href="#campaigns" class="section-action">Tümünü Gör <i
+                          class="ri-arrow-right-s-line"></i></a>
+                    </div>
+                    <div class="campaigns-carousel-wrapper">
+                      <div id="campaigns-carousel" class="campaigns-carousel">
+                        <div class="campaign-card">
+                          <div class="campaign-content">
+                            <h3 class="campaign-title">Yükleniyor...</h3>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Widget: Official Services (PREMIUM) -->
+                  <div class="dashboard-widget" data-widget-id="official-services"
+                    style="background: transparent; box-shadow: none; padding: 0;">
+                    <div class="official-services-section" id="official-services-section" style="display:none;">
+                      <div class="official-services-header">
+                        <h2 class="official-services-title">
+                          <i class="ri-shield-check-fill"></i>
+                          Yetkili Servisler
+                        </h2>
+                        <p class="official-services-subtitle">Sertifikalı ve güvenilir markalar</p>
+                      </div>
+                      <div class="official-services-grid" id="official-services-grid">
+                        <!-- Loaded via JS -->
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Widget: Nearby Services -->
+                  <div class="dashboard-widget" data-widget-id="nearby">
+                    <!-- Yakındaki Tamirhaneler Bölümü -->
+                    <div class="section-header">
+                      <div style="display: flex; align-items: center;">
+                        <h2 class="section-title"><i class="ri-map-pin-fill"
+                            style="color: var(--primary);"></i>Yakındaki
+                          Tamirhaneler</h2>
+                        <div class="drag-handle-group"><i class="ri-hand-paper-fill"></i><i
+                            class="ri-drag-move-2-fill"></i>
+                        </div>
+                      </div><button id="location-permission-btn" class="btn btn-sm btn-outline" style="display:none;"><i
+                          class="ri-map-pin-line"></i>Konumu Etkinleştir </button>
+                    </div>
+                    <div id="location-status" class="location-status" style="display:none;"></div>
+                    <div class="grid-cards" id="nearby-services-grid">
+                      <div class="service-card" style="height:200px; justify-content:center; align-items:center;">
+                        <div class="spinner"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Widget: Featured Services (En Beğenilen Tamirhaneler) -->
+                <div class="dashboard-widget" data-widget-id="featured" style="margin-top: 24px;">
+                  <div class="section-header">
+                    <div style="display: flex; align-items: center;">
+                      <h2 class="section-title"><i class="ri-star-fill" style="color: var(--primary);"></i>En Beğenilen
+                        Tamirhaneler</h2>
+                      <div class="drag-handle-group"><i class="ri-thumb-up-fill"></i><i class="ri-drag-move-2-fill"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="grid-cards" id="services-grid">
+                    <div class="service-card" style="height:200px; justify-content:center; align-items:center;">
+                      <div class="spinner"></div>
+                    </div>
+                  </div>
+                </div>
+              </div><!-- Close dashboard-widgets-container -->
+
+            </div><!-- Close dashboard-content -->
+
+            <!-- Category View (Hidden by default) -->
+            <div id="category-view" class="category-view hidden">
+              <div class="category-header">
+                <button class="category-back-btn" onclick="returnToDashboard()">
+                  <i class="ri-arrow-left-line"></i> Anasayfa
+                </button>
+                <h1 class="category-title" id="category-title">Kategori Servisleri</h1>
+              </div>
+
+              <div class="category-content">
+                <!-- En Yakın Servisler -->
+                <section class="service-section">
+                  <div class="section-header-simple">
+                    <h2 class="section-title-md" id="nearest-title">En Yakın Servisler</h2>
+                  </div>
+                  <div class="service-grid" id="nearest-services-grid">
+                    <!-- Services will be loaded here -->
+                  </div>
+                </section>
+
+                <!-- Beğenilen Servisler -->
+                <section class="service-section">
+                  <div class="section-header-simple">
+                    <h2 class="section-title-md">Beğenilen Servisler</h2>
+                  </div>
+                  <div class="service-grid" id="liked-services-grid">
+                    <!-- Services will be loaded here -->
+                  </div>
+                </section>
+
+                <!-- Hızlı Dönüş Yapanlar -->
+                <section class="service-section">
+                  <div class="section-header-simple">
+                    <h2 class="section-title-md">Hızlı Dönüş Yapanlar</h2>
+                  </div>
+                  <div class="service-grid" id="fast-services-grid">
+                    <!-- Services will be loaded here -->
+                  </div>
+                </section>
+              </div>
+            </div><!-- Close category-view -->
+
+            <!-- Article Detail View (Hidden by default) -->
+            <div id="article-view" class="article-view hidden">
+              <div class="category-header">
+                <button class="category-back-btn" onclick="returnFromArticle()">
+                  <i class="ri-arrow-left-line"></i> Anasayfa
+                </button>
+                <h1 class="category-title" id="article-detail-title"></h1>
+              </div>
+
+              <p class="article-subtitle" id="article-detail-subtitle"></p>
+
+              <div class="article-image-container">
+                <img id="article-detail-image" class="article-detail-image" alt="" />
+              </div>
+
+              <div class="article-content">
+                <div class="article-body" id="article-detail-body">
+                  <!-- Article content will be inserted here -->
+                </div>
+              </div>
+
+              <div class="related-services-section">
+                <h3 class="related-services-title">
+                  <i class="ri-tools-fill"></i>
+                  Bu Sorunla İlgili Servisler
+                </h3>
+                <div class="related-services-grid" id="related-services-grid">
+                  <!-- Related service cards will be inserted here -->
+                </div>
+              </div>
+            </div>
+
+          </div><!-- Close content-wrapper -->
+
+        </div><!-- Close main-content-area -->
+
+      </div><!-- Close dashboard-layout -->
+
+      <!-- Articles Section (full-width, inside home-tab) -->
+      <div id="articles-section-container" class="articles-section">
+        <div class="articles-section-header">
+          <h2 class="articles-section-title">
+            <i class="ri-article-line"></i>
+            Hangi Durumlarda Servise Gitmeliyim?
+          </h2>
+          <p class="articles-section-subtitle">
+            Aracınızla ilgili yaşayabileceğiniz sorunları tanıyın ve ne zaman profesyonel yardım almanız gerektiğini
+            öğrenin
+          </p>
+        </div>
+
+        <div class="articles-grid" id="articles-grid">
+          <!-- Article cards will be inserted here by JavaScript -->
+        </div>
+      </div>
+
+    </div><!-- Close home-tab -->
+    <div class="tab-content hidden" id="appointments-tab">
+      <div class="section-header">
+        <h2 class="section-title">Randevularım</h2><button class="btn btn-primary btn-sm"
+          onclick="window.location.href='/pages/create-appointment.html'"><i class="ri-add-line"></i>Yeni Randevu
+        </button>
+      </div>
+      <div id="appointments-content">
+        <div class="empty-state"><i class="ri-calendar-todo-line empty-icon"></i>
+          <h3 style="margin-bottom: 10px;">Henüz randevunuz yok</h3>
+          <p class="empty-text">İlk randevunuzu oluşturmak için servisleri inceleyin.</p><button class="btn btn-primary"
+            onclick="window.location.href='/pages/create-appointment.html'">Randevu
+            Oluştur</button>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content hidden" id="campaigns-tab">
+      <div class="section-header">
+        <h2 class="section-title">Tüm Kampanyalar</h2>
+      </div>
+      <div class="grid-cards" id="campaigns-grid">
+        <div class="empty-state">
+          <div class="spinner"></div>
+          <p>Yükleniyor...</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content hidden" id="assistant-tab">
+      <!-- Modern AI Layout - Floating Bubbles Left, Chat Right -->
+      <div class="ai-assistant-layout">
+        <!-- AI Background Effects -->
+        <div class="ai-bg-effects">
+          <div class="ai-orb ai-orb-1"></div>
+          <div class="ai-orb ai-orb-2"></div>
+          <div class="ai-orb ai-orb-3"></div>
+          <div class="ai-particles"></div>
+        </div>
+
+        <!-- Left: Floating AI Suggestion Bubbles -->
+        <div class="ai-floating-zone">
+          <div class="ai-zone-header">
+            <div class="ai-brain-icon">
+              <i class="ri-brain-line"></i>
+              <div class="ai-pulse-ring"></div>
+              <div class="ai-pulse-ring delay-1"></div>
+            </div>
+            <h2>AI Asistan</h2>
+            <p>Bir konu seçin veya sorunuzu yazın</p>
+          </div>
+
+          <!-- Floating Bubbles Container - Scattered Layout -->
+          <div class="ai-bubbles-container">
+            <!-- AI Brain Background -->
+            <div class="ai-brain-bg">
+              <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <!-- Brain outline -->
+                <path class="brain-path" d="M100,15
+                  C60,15 35,35 30,60
+                  C25,75 28,90 35,100
+                  C25,110 20,130 30,150
+                  C40,175 70,185 100,185
+                  C130,185 160,175 170,150
+                  C180,130 175,110 165,100
+                  C172,90 175,75 170,60
+                  C165,35 140,15 100,15Z" />
+                <!-- Brain details - left hemisphere -->
+                <path class="brain-detail" d="M50,50 Q60,70 50,90 Q40,110 55,130" />
+                <path class="brain-detail" d="M65,40 Q80,60 70,85 Q60,105 75,125 Q85,145 75,165" />
+                <path class="brain-detail" d="M85,35 Q95,55 88,80 Q82,100 92,120 Q100,140 90,160" />
+                <!-- Brain details - right hemisphere -->
+                <path class="brain-detail" d="M150,50 Q140,70 150,90 Q160,110 145,130" />
+                <path class="brain-detail" d="M135,40 Q120,60 130,85 Q140,105 125,125 Q115,145 125,165" />
+                <path class="brain-detail" d="M115,35 Q105,55 112,80 Q118,100 108,120 Q100,140 110,160" />
+                <!-- Center connection -->
+                <path class="brain-detail" d="M100,30 L100,170" />
+                <!-- Neural nodes -->
+                <circle class="neural-node" cx="50" cy="70" r="4" />
+                <circle class="neural-node" cx="70" cy="55" r="3" />
+                <circle class="neural-node" cx="85" cy="75" r="5" />
+                <circle class="neural-node" cx="100" cy="50" r="4" />
+                <circle class="neural-node" cx="115" cy="75" r="5" />
+                <circle class="neural-node" cx="130" cy="55" r="3" />
+                <circle class="neural-node" cx="150" cy="70" r="4" />
+                <circle class="neural-node" cx="60" cy="110" r="4" />
+                <circle class="neural-node" cx="90" cy="100" r="5" />
+                <circle class="neural-node" cx="110" cy="100" r="5" />
+                <circle class="neural-node" cx="140" cy="110" r="4" />
+                <circle class="neural-node" cx="75" cy="145" r="3" />
+                <circle class="neural-node" cx="100" cy="130" r="4" />
+                <circle class="neural-node" cx="125" cy="145" r="3" />
+              </svg>
+              <!-- AI Processor Chip in Center -->
+              <div class="ai-processor-chip">
+                <div class="chip-pins top"></div>
+                <div class="chip-pins right"></div>
+                <div class="chip-pins bottom"></div>
+                <div class="chip-pins left"></div>
+                <div class="chip-core">
+                  <div class="chip-glow"></div>
+                  <span class="chip-text">TamirHanem AI</span>
+                </div>
+              </div>
+            </div>
+            <div class="ai-floating-bubble pos-1 float-1"
+              onclick="sendQuickAssistantMessage('Randevu almak istiyorum')">
+              <div class="bubble-glow-bg"></div>
+              <i class="ri-calendar-check-line"></i>
+              <span>Randevu Al</span>
+            </div>
+
+            <div class="ai-floating-bubble pos-2 float-2"
+              onclick="sendQuickAssistantMessage('Yakındaki servisleri göster')">
+              <div class="bubble-glow-bg"></div>
+              <i class="ri-map-pin-line"></i>
+              <span>Yakın Servisler</span>
+            </div>
+
+            <div class="ai-floating-bubble pos-3 float-3"
+              onclick="sendQuickAssistantMessage('Aracım garip bir ses çıkarıyor')">
+              <div class="bubble-glow-bg"></div>
+              <i class="ri-volume-up-line"></i>
+              <span>Ses Problemi</span>
+            </div>
+
+            <div class="ai-floating-bubble pos-4 float-4" onclick="sendQuickAssistantMessage('Araç bakım önerileri')">
+              <div class="bubble-glow-bg"></div>
+              <i class="ri-tools-line"></i>
+              <span>Bakım Önerileri</span>
+            </div>
+
+            <div class="ai-floating-bubble pos-5 float-5"
+              onclick="sendQuickAssistantMessage('Fiyat teklifi almak istiyorum')">
+              <div class="bubble-glow-bg"></div>
+              <i class="ri-price-tag-3-line"></i>
+              <span>Fiyat Teklifi</span>
+            </div>
+
+            <div class="ai-floating-bubble pos-6 float-6"
+              onclick="sendQuickAssistantMessage('Motor uyarı lambası yandı ne yapmalıyım')">
+              <div class="bubble-glow-bg"></div>
+              <i class="ri-alarm-warning-line"></i>
+              <span>Uyarı Lambaları</span>
+            </div>
+
+            <div class="ai-floating-bubble pos-7 float-7"
+              onclick="sendQuickAssistantMessage('Lastik basıncı ne olmalı')">
+              <div class="bubble-glow-bg"></div>
+              <i class="ri-steering-line"></i>
+              <span>Lastik Bilgisi</span>
+            </div>
+
+            <div class="ai-floating-bubble pos-8 float-8"
+              onclick="sendQuickAssistantMessage('Yağ değişimi ne zaman yapılmalı')">
+              <div class="bubble-glow-bg"></div>
+              <i class="ri-drop-line"></i>
+              <span>Yağ Değişimi</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Chat Window -->
+        <div class="ai-chat-column">
+          <div class="assistant-wrapper">
+            <div class="assistant-header">
+              <div class="ai-avatar"><i class="ri-robot-2-fill"></i></div>
+              <div class="ai-info">
+                <h2>TamirHanem AI</h2>
+                <p><i class="ri-checkbox-blank-circle-fill" style="font-size: 8px;"></i> Çevrimiçi</p>
+              </div>
+              <button class="assistant-debug-toggle" id="assistantDebugToggle" onclick="toggleAssistantDebug()"
+                title="Debug Modu">
+                <i class="ri-bug-line"></i>
+              </button>
+            </div>
+            <div class="assistant-debug-panel" id="assistantDebugPanel"></div>
+            <div class="ai-training-notice">
+              <i class="ri-information-line"></i>
+              <p>AI Asistanımız 50 milyon dökümanlık bir eğitim aşamasındadır ve şu an size sadece temel konularda
+                yardımcı olabilir. Eğitim süreci tamamlandığında tam kapasite ile kullanabilirsiniz. Güncellemeleri
+                takip edin.</p>
+            </div>
+            <div class="assistant-messages" id="assistantChatMessages">
+              <div class="msg-bubble msg-ai" id="assistant-welcome">
+                Merhaba! 👋 Ben Tamirhanem AI asistanıyım. Aracınızla ilgili sorularınızı yazılı, sesli veya görüntülü
+                olarak bana iletebilirsiniz.
+              </div>
+            </div>
+            <div class="assistant-input-area">
+              <div class="media-preview-bar" id="assistantMediaPreview"></div>
+              <div class="input-row">
+                <input type="file" id="assistantFileInput" accept="image/*,video/*,audio/*" multiple
+                  style="display: none;" onchange="handleAssistantFileSelect(event)">
+                <button class="btn-attach" onclick="document.getElementById('assistantFileInput').click()"
+                  title="Dosya Ekle">
+                  <i class="ri-attachment-2"></i>
+                </button>
+                <input type="text" class="ai-input" id="assistantMessageInput" placeholder="Mesajınızı yazın..."
+                  autocomplete="off"
+                  onkeypress="if(event.key==='Enter'){event.preventDefault();sendAssistantMessage();}">
+                <button class="btn-send" onclick="sendAssistantMessage()">
+                  <i class="ri-send-plane-2-fill"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content hidden" id="profile-tab">
+      <div class="profile-member-card" style="margin-top: 20px;">
+        <!-- Crown Badge -->
+        <div class="pm-crown-badge">
+          <i class="ri-vip-crown-fill"></i>
+        </div>
+
+        <!-- Profile Header with Avatar -->
+        <div class="pm-profile-header">
+          <div class="pm-avatar-wrapper">
+            <div class="pm-avatar-glow"></div>
+            <div id="profile-avatar-display" class="pm-avatar">T</div>
+          </div>
+          <div class="pm-user-info">
+            <div class="pm-value" id="profile-fullname">-</div>
+            <div class="pm-member-badge" id="profile-member-level">
+              <i class="ri-medal-line"></i>
+              <span>Yeni Uye</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="pm-loyalty-stats">
+          <div class="pm-stat-card">
+            <div class="pm-stat-icon">
+              <i class="ri-calendar-check-line"></i>
+            </div>
+            <div class="pm-stat-value" id="profile-total-appointments">0</div>
+            <div class="pm-stat-label">Randevu</div>
+          </div>
+          <div class="pm-stat-card">
+            <div class="pm-stat-icon">
+              <i class="ri-checkbox-circle-line"></i>
+            </div>
+            <div class="pm-stat-value" id="profile-completed-services">0</div>
+            <div class="pm-stat-label">Tamamlanan</div>
+          </div>
+          <div class="pm-stat-card">
+            <div class="pm-stat-icon">
+              <i class="ri-star-line"></i>
+            </div>
+            <div class="pm-stat-value" id="profile-loyalty-points">0</div>
+            <div class="pm-stat-label">Puan</div>
+          </div>
+          <div class="pm-stat-card">
+            <div class="pm-stat-icon">
+              <i class="ri-wallet-3-line"></i>
+            </div>
+            <div class="pm-stat-value" id="profile-wallet-balance">0</div>
+            <div class="pm-stat-label">Bakiye</div>
+          </div>
+        </div>
+
+        <!-- Contact Info Footer -->
+        <div class="pm-user-details">
+          <div class="pm-footer">
+            <div class="pm-footer-item">
+              <div class="pm-footer-icon">
+                <i class="ri-mail-line"></i>
+              </div>
+              <div class="pm-footer-text">
+                <p>E-POSTA</p>
+                <h5 id="profile-email">-</h5>
+              </div>
+            </div>
+            <div class="pm-footer-item">
+              <div class="pm-footer-icon">
+                <i class="ri-phone-line"></i>
+              </div>
+              <div class="pm-footer-text">
+                <p>TELEFON</p>
+                <h5 id="profile-phone">-</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Profile menu container - Dinamik olarak doldurulacak -->
+      <div class="modern-menu-container" id="profile-menu-container">
+        <div class="spinner" style="margin: 40px auto;"></div>
+      </div>
+      <div class="logout-zone"><button class="btn-modern-logout" id="logout-btn"><i class="ri-logout-box-line"></i>Çıkış
+          Yap </button></div>
+      <div style="height: 40px;"></div>
+    </div>
+    </div>
+  </main>
+  <script src="/js/components/bottom-nav.js"></script>
+  <div id="global-loading">
+    <div class="spinner"></div>
+  </div>
+  <script src="/js/config.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/store.js"></script>
+  <script src="/js/dashboard.js"></script>
+  <script src="/components/global-header.js"></script>
+  <script src="/components/global-sidebar.js"></script>
+  <script src="/components/global-footer.js"></script>
+  <script>
+    // Safety script to ensure widgets are visible
+    document.addEventListener('DOMContentLoaded', () => {
+      // Inject global sidebar
+      injectGlobalSidebar('#main-layout');
+      // Inject global footer
+      injectGlobalFooter();
+
+      setTimeout(() => {
+        // Force Active Appointment check
+        if (typeof loadActiveAppointment === 'function') {
+          loadActiveAppointment();
+        }
+      }, 1000); // Wait for other scripts to settle
+    });
+  </script>
+
+  <!-- Sidebar Menu Functions -->
+  <script>
+    // Toggle sidebar main menu
+    function toggleSidebarMenu(menuId) {
+      const menuItems = document.getElementById('menu-' + menuId);
+      const menuSection = document.querySelector(`[data-menu="${menuId}"]`);
+      const header = menuSection?.querySelector('.sidebar-menu-header');
+
+      if (menuItems && header) {
+        const isExpanded = menuItems.classList.contains('expanded');
+
+        // Close all other menus
+        document.querySelectorAll('.sidebar-menu-items').forEach(item => {
+          item.classList.remove('expanded');
+        });
+        document.querySelectorAll('.sidebar-menu-header').forEach(h => {
+          h.classList.remove('active');
+        });
+
+        // Toggle current menu
+        if (!isExpanded) {
+          menuItems.classList.add('expanded');
+          header.classList.add('active');
+        }
+      }
+    }
+
+    // Toggle sidebar submenu (for expandable items like "Hizmetler")
+    function toggleSidebarSubmenu(button, event) {
+      event.stopPropagation();
+      const subItems = button.nextElementSibling;
+      const isExpanded = subItems.classList.contains('expanded');
+
+      // Close other submenus in the same parent
+      const parentMenu = button.closest('.sidebar-menu-items');
+      if (parentMenu) {
+        parentMenu.querySelectorAll('.sidebar-sub-items').forEach(item => {
+          if (item !== subItems) {
+            item.classList.remove('expanded');
+            item.previousElementSibling?.classList.remove('active');
+          }
+        });
+      }
+
+      // Toggle current
+      if (isExpanded) {
+        subItems.classList.remove('expanded');
+        button.classList.remove('active');
+      } else {
+        subItems.classList.add('expanded');
+        button.classList.add('active');
+      }
+    }
+
+    // Coming Soon Modal
+    function showComingSoonModal() {
+      // Check if modal already exists
+      let modal = document.getElementById('coming-soon-modal');
+
+      if (!modal) {
+        // Create modal
+        modal = document.createElement('div');
+        modal.id = 'coming-soon-modal';
+        modal.className = 'coming-soon-modal-overlay';
+        modal.innerHTML = `
+          <div class="coming-soon-modal-content">
+            <div class="coming-soon-icon">
+              <i class="ri-rocket-2-line"></i>
+            </div>
+            <h3>Yakında Geliyor!</h3>
+            <p>Bu özellik üzerinde çalışıyoruz. Çok yakında sizlerle olacak!</p>
+            <button class="coming-soon-close-btn" onclick="closeComingSoonModal()">
+              <i class="ri-check-line"></i> Tamam
+            </button>
+          </div>
+        `;
+        document.body.appendChild(modal);
+
+        // Add styles if not already added
+        if (!document.getElementById('coming-soon-modal-styles')) {
+          const style = document.createElement('style');
+          style.id = 'coming-soon-modal-styles';
+          style.textContent = `
+            .coming-soon-modal-overlay {
+              position: fixed;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: rgba(0, 0, 0, 0.5);
+              backdrop-filter: blur(8px);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              z-index: 9999;
+              opacity: 0;
+              animation: fadeInOverlay 0.3s forwards;
+            }
+            @keyframes fadeInOverlay {
+              to { opacity: 1; }
+            }
+            .coming-soon-modal-content {
+              background: white;
+              padding: 40px;
+              border-radius: 24px;
+              text-align: center;
+              max-width: 360px;
+              width: 90%;
+              box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+              transform: scale(0.8);
+              animation: popIn 0.3s forwards;
+            }
+            @keyframes popIn {
+              to { transform: scale(1); }
+            }
+            .coming-soon-icon {
+              width: 80px;
+              height: 80px;
+              background: linear-gradient(135deg, #fbc707, #f59e0b);
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin: 0 auto 24px;
+              animation: rocketBounce 2s infinite;
+            }
+            @keyframes rocketBounce {
+              0%, 100% { transform: translateY(0); }
+              50% { transform: translateY(-10px); }
+            }
+            .coming-soon-icon i {
+              font-size: 2.5rem;
+              color: white;
+            }
+            .coming-soon-modal-content h3 {
+              font-size: 1.5rem;
+              font-weight: 800;
+              color: #1f2937;
+              margin-bottom: 12px;
+            }
+            .coming-soon-modal-content p {
+              color: #6b7280;
+              font-size: 0.95rem;
+              margin-bottom: 24px;
+              line-height: 1.6;
+            }
+            .coming-soon-close-btn {
+              background: linear-gradient(135deg, #fbc707, #f59e0b);
+              border: none;
+              padding: 12px 32px;
+              border-radius: 12px;
+              font-weight: 700;
+              font-size: 0.95rem;
+              color: #1f2937;
+              cursor: pointer;
+              display: inline-flex;
+              align-items: center;
+              gap: 8px;
+              transition: all 0.2s;
+            }
+            .coming-soon-close-btn:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 6px 20px rgba(251, 199, 7, 0.4);
+            }
+          `;
+          document.head.appendChild(style);
+        }
+      }
+
+      modal.style.display = 'flex';
+      setTimeout(() => {
+        modal.style.opacity = '1';
+      }, 10);
+    }
+
+    function closeComingSoonModal() {
+      const modal = document.getElementById('coming-soon-modal');
+      if (modal) {
+        modal.style.opacity = '0';
+        setTimeout(() => {
+          modal.style.display = 'none';
+        }, 300);
+      }
+    }
+
+    // Close modal on overlay click
+    document.addEventListener('click', (e) => {
+      const modal = document.getElementById('coming-soon-modal');
+      if (modal && e.target === modal) {
+        closeComingSoonModal();
+      }
+    });
+  </script>
+
+  <script> // Authentication Check
+
+    if (!auth.requireAuth()) {
+      // Redirect handled by auth.js
+    }
+
+    // Load user data into UI
+    const user = auth.getUser();
+    // Note: global-header.js auto-detects existing header and calls initHeaderFunctionality()
+
+    if (user) {
+      // Profile Tab Data
+      const fullName = `${user.name || ''} ${user.surname || ''}`.trim() || user.username;
+      document.getElementById('profile-fullname').textContent = fullName;
+      document.getElementById('profile-email').textContent = user.email;
+      document.getElementById('profile-phone').textContent = user.phone || '-';
+
+      // Profile Avatar in Profile Card
+      const profileAvatarDisplay = document.getElementById('profile-avatar-display');
+
+      if (profileAvatarDisplay) {
+        // Check for avatar in various locations
+        const avatarData = user.avatar || user.profilePicture || user.ProfilePicture || user.profile_picture;
+
+        if (avatarData) {
+          const imageUrl = Utils.getImageUrl(avatarData);
+          profileAvatarDisplay.innerHTML = `<img src="${imageUrl}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" onerror="this.onerror=null; this.parentElement.textContent='${(user.name || user.username || 'U').charAt(0).toUpperCase()}'; this.remove();">`;
+        } else {
+          const initial = (user.name || user.username || 'U').charAt(0).toUpperCase();
+          profileAvatarDisplay.textContent = initial;
+        }
+      }
+
+      // Loyalty Metrics - Fetch from user object or API
+      const loyaltyData = user.loyalty || user.Loyalty || {};
+      const totalAppointments = loyaltyData.totalAppointments || user.totalAppointments || 0;
+      const completedServices = loyaltyData.completedServices || user.completedServices || loyaltyData.completedAppointments || 0;
+      const loyaltyPoints = loyaltyData.points || loyaltyData.loyaltyPoints || user.loyaltyPoints || 0;
+      const walletBalance = user.walletBalance || user.wallet?.balance || loyaltyData.walletBalance || 0;
+
+      // Update UI
+      const totalAppEl = document.getElementById('profile-total-appointments');
+      const completedEl = document.getElementById('profile-completed-services');
+      const pointsEl = document.getElementById('profile-loyalty-points');
+      const balanceEl = document.getElementById('profile-wallet-balance');
+
+      if (totalAppEl) totalAppEl.textContent = totalAppointments;
+      if (completedEl) completedEl.textContent = completedServices;
+      if (pointsEl) pointsEl.textContent = loyaltyPoints;
+      if (balanceEl) balanceEl.textContent = `₺${walletBalance.toLocaleString('tr-TR')}`;
+
+      // Member Level Badge
+      const memberLevelEl = document.getElementById('profile-member-level');
+      if (memberLevelEl) {
+        let levelText = 'Yeni Üye';
+        let levelIcon = 'ri-medal-line';
+
+        if (completedServices >= 10) {
+          levelText = 'VIP Üye';
+          levelIcon = 'ri-vip-crown-fill';
+        } else if (completedServices >= 5) {
+          levelText = 'Gold Üye';
+          levelIcon = 'ri-medal-fill';
+        } else if (completedServices >= 2) {
+          levelText = 'Üye';
+          levelIcon = 'ri-medal-line';
+        }
+
+        memberLevelEl.innerHTML = `<i class="${levelIcon}"></i><span>${levelText}</span>`;
+      }
+
+      // Fetch loyalty metrics from API
+      loadProfileLoyaltyMetrics();
+    }
+
+    // Fetch and display loyalty metrics from API
+    async function loadProfileLoyaltyMetrics() {
+      try {
+        // Fetch wallet data
+        let walletBalance = 0;
+        try {
+          const walletResponse = await api.getWallet();
+          // Handle different response formats
+          if (walletResponse) {
+            walletBalance = walletResponse?.data?.attributes?.balance
+              || walletResponse?.attributes?.balance
+              || walletResponse?.balance
+              || walletResponse?.data?.balance
+              || 0;
+          }
+        } catch (e) {
+          // Wallet fetch failed silently
+        }
+
+        // Fetch appointments data
+        let totalAppointments = 0;
+        let completedServices = 0;
+        try {
+          const appointmentsResponse = await api.getAppointments();
+          // Handle different response formats
+          const appointments = appointmentsResponse?.data || appointmentsResponse || [];
+          totalAppointments = Array.isArray(appointments) ? appointments.length : 0;
+          completedServices = Array.isArray(appointments) ? appointments.filter(apt => {
+            const status = apt?.attributes?.status || apt?.status;
+            return status === 'completed' || status === 'done' || status === 'finished' || status === 'tamamlandi';
+          }).length : 0;
+        } catch (e) {
+          // Appointments fetch failed silently
+        }
+
+        // Calculate loyalty points (example: 10 points per completed service)
+        const loyaltyPoints = completedServices * 10;
+
+        // Update UI
+        const totalAppEl = document.getElementById('profile-total-appointments');
+        const completedEl = document.getElementById('profile-completed-services');
+        const pointsEl = document.getElementById('profile-loyalty-points');
+        const balanceEl = document.getElementById('profile-wallet-balance');
+
+        if (totalAppEl) totalAppEl.textContent = totalAppointments;
+        if (completedEl) completedEl.textContent = completedServices;
+        if (pointsEl) pointsEl.textContent = loyaltyPoints;
+        if (balanceEl) balanceEl.textContent = `₺${Number(walletBalance).toLocaleString('tr-TR')}`;
+
+        // Update member level based on completed services
+        const memberLevelEl = document.getElementById('profile-member-level');
+        if (memberLevelEl) {
+          let levelText = 'Yeni Üye';
+          let levelIcon = 'ri-medal-line';
+
+          if (completedServices >= 10) {
+            levelText = 'VIP Üye';
+            levelIcon = 'ri-vip-crown-fill';
+          } else if (completedServices >= 5) {
+            levelText = 'Gold Üye';
+            levelIcon = 'ri-medal-fill';
+          } else if (completedServices >= 2) {
+            levelText = 'Üye';
+            levelIcon = 'ri-medal-line';
+          }
+
+          memberLevelEl.innerHTML = `<i class="${levelIcon}"></i><span>${levelText}</span>`;
+        }
+      } catch (error) {
+        // Profile metrics loading failed silently
+      }
+    }
+
+    // Refresh user data with avatar from API
+    async function refreshUserWithAvatar() {
+      try {
+        const token = localStorage.getItem('jwt');
+        if (!token) return;
+
+        const response = await fetch(
+          `${CONFIG.API_BASE_URL}/users/me?populate[0]=avatar`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+
+        if (!response.ok) return;
+
+        const userData = await response.json();
+
+        // Update avatar in profile card
+        const profileAvatarDisplay = document.getElementById('profile-avatar-display');
+        if (profileAvatarDisplay && userData.avatar) {
+          const imageUrl = Utils.getImageUrl(userData.avatar);
+          profileAvatarDisplay.innerHTML = `<img src="${imageUrl}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" onerror="this.onerror=null; this.parentElement.textContent='${(userData.name || userData.username || 'U').charAt(0).toUpperCase()}'; this.remove();">`;
+        }
+
+        // Also update navbar avatar
+        const navbarAvatar = document.getElementById('user-avatar');
+        if (navbarAvatar && userData.avatar) {
+          const imageUrl = Utils.getImageUrl(userData.avatar);
+          navbarAvatar.innerHTML = `<img src="${imageUrl}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" onerror="this.onerror=null; this.parentElement.textContent='${(userData.name || userData.username || 'U').charAt(0).toUpperCase()}'; this.remove();">`;
+        }
+
+        // Update localStorage
+        const existingUser = JSON.parse(localStorage.getItem('userData') || '{}');
+        const updatedUser = { ...existingUser, ...userData };
+        localStorage.setItem('userData', JSON.stringify(updatedUser));
+
+      } catch (error) {
+        // Avatar refresh failed silently
+      }
+    }
+
+    // Load Profile Menu based on user type
+    function loadProfileMenu() {
+      const container = document.getElementById('profile-menu-container');
+      if (!container) return;
+
+      const user = auth.getUser();
+
+      if (!user) {
+        container.innerHTML = '<div class="empty-state"><p>Kullanıcı bilgisi bulunamadı</p></div>';
+        return;
+      }
+
+      // Check if user logged in as service owner (selectedServiceId exists)
+      const isServiceOwner = localStorage.getItem('isServiceOwner') === 'true';
+      const selectedServiceId = localStorage.getItem('selectedServiceId');
+
+      let menuHTML = '';
+
+      if (isServiceOwner && selectedServiceId) {
+        // Servis Kullanıcısı Menüleri
+        menuHTML = `
+          <!-- Servis Paneli Büyük Buton -->
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/service-panel.html'" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border: none; margin-bottom: 20px;">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box" style="background: rgba(255,255,255,0.2);"><i class="ri-dashboard-line" style="color: var(--neutral-900);"></i></div>
+              <div class="menu-text"><h4 style="color: var(--neutral-900);">Servis Paneli</h4><p style="color: var(--neutral-900); opacity: 0.8;">Randevularınızı ve işlemlerinizi yönetin</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line" style="color: var(--neutral-900);"></i>
+          </div>
+
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/edit-service-profile.html'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-building-line"></i></div>
+              <div class="menu-text"><h4>Servis Bilgileri</h4><p>Servis profilinizi düzenleyin</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line" style="color:#ccc;"></i>
+          </div>
+
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/my-appointments.html'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-calendar-check-line"></i></div>
+              <div class="menu-text"><h4>Geçmiş Servis Randevuları</h4><p>Müşteri randevularınızı görüntüleyin</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line" style="color:#ccc;"></i>
+          </div>
+
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/my-appointments.html?tab=offers'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-file-list-line"></i></div>
+              <div class="menu-text"><h4>Geçmiş Servis Teklifleri</h4><p>Teklif geçmişinizi görüntüleyin</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line" style="color:#ccc;"></i>
+          </div>
+
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/technician-management.html'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-user-settings-line"></i></div>
+              <div class="menu-text"><h4>Teknisyen Yönetimi</h4><p>Ekibinizi yönetin</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line" style="color:#ccc;"></i>
+          </div>
+
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/my-reviews.html'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-star-line"></i></div>
+              <div class="menu-text"><h4>Müşteri Yorumları</h4><p>Değerlendirmelerinizi görüntüleyin</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line" style="color:#ccc;"></i>
+          </div>
+
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/my-questions.html'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-question-answer-line"></i></div>
+              <div class="menu-text"><h4>Soru ve Yanıtlarım</h4><p>Müşteri sorularına yanıt verin</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line" style="color:#ccc;"></i>
+          </div>
+
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/notifications.html'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-notification-3-line"></i></div>
+              <div class="menu-text"><h4>Bildirimler</h4><p>Bildirim ayarları</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line" style="color:#ccc;"></i>
+          </div>
+
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/payment-methods.html'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-bank-card-line"></i></div>
+              <div class="menu-text"><h4>Ödeme Yöntemleri</h4><p>Kart bilgilerinizi yönetin</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line" style="color:#ccc;"></i>
+          </div>
+
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/help-support.html'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-customer-service-line"></i></div>
+              <div class="menu-text"><h4>Yardım Merkezi</h4><p>Destek alın</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line" style="color:#ccc;"></i>
+          </div>
+        `;
+      }
+
+      else {
+        // Normal Kullanıcı Menüleri - Organized with sections
+        menuHTML = `
+          <!-- Hesap Bölümü -->
+          <div class="menu-section-title">Hesabım</div>
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/edit-profile.html'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-user-line"></i></div>
+              <div class="menu-text"><h4>Profili Düzenle</h4><p>Kişisel bilgilerinizi güncelleyin</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line"></i>
+          </div>
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/my-vehicles.html'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-roadster-line"></i></div>
+              <div class="menu-text"><h4>Araçlarım</h4><p>Kayıtlı araçları yönetin</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line"></i>
+          </div>
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/favorite-services.html'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-heart-line"></i></div>
+              <div class="menu-text"><h4>Favori Servislerim</h4><p>Beğendiğiniz servislere hızlı erişim</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line"></i>
+          </div>
+
+          <!-- Finansal Bölüm -->
+          <div class="menu-section-title">Finans & Ödemeler</div>
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/wallet.html'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-wallet-3-line"></i></div>
+              <div class="menu-text"><h4>TamirHanem Cüzdan</h4><p>Bakiye ve ödemeler</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line"></i>
+          </div>
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/payment-methods.html'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-bank-card-line"></i></div>
+              <div class="menu-text"><h4>Ödeme Yöntemleri</h4><p>Kayıtlı kartlarınızı yönetin</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line"></i>
+          </div>
+
+          <!-- Aktiviteler Bölümü -->
+          <div class="menu-section-title">Aktivitelerim</div>
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/my-appointments.html'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-calendar-check-line"></i></div>
+              <div class="menu-text"><h4>Randevularım</h4><p>Geçmiş ve gelecek randevular</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line"></i>
+          </div>
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/my-appointments.html?tab=offers'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-file-list-line"></i></div>
+              <div class="menu-text"><h4>Tekliflerim</h4><p>Aldığınız teklifleri görüntüleyin</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line"></i>
+          </div>
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/my-reviews.html'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-star-line"></i></div>
+              <div class="menu-text"><h4>Değerlendirmelerim</h4><p>Verdiğiniz puanlar ve yorumlar</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line"></i>
+          </div>
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/my-questions.html'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-question-answer-line"></i></div>
+              <div class="menu-text"><h4>Soru & Cevaplarım</h4><p>Sorularınız ve yanıtlar</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line"></i>
+          </div>
+
+          <!-- Ayarlar & Destek Bölümü -->
+          <div class="menu-section-title">Ayarlar & Destek</div>
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/notifications.html'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-notification-3-line"></i></div>
+              <div class="menu-text"><h4>Bildirimler</h4><p>Bildirim tercihlerinizi yönetin</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line"></i>
+          </div>
+          <div class="modern-menu-btn" onclick="window.location.href='/pages/help-support.html'">
+            <div class="modern-menu-left">
+              <div class="menu-icon-box"><i class="ri-customer-service-line"></i></div>
+              <div class="menu-text"><h4>Yardım Merkezi</h4><p>Sıkça sorulan sorular ve destek</p></div>
+            </div>
+            <i class="ri-arrow-right-s-line"></i>
+          </div>
+        `;
+      }
+
+      container.innerHTML = menuHTML;
+    }
+
+    // --- TAB LOGIC ---
+    const tabs = document.querySelectorAll('.tab-link');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    function switchTab(targetTab) {
+      if (!targetTab) return;
+
+      // Update Active State UI
+      tabs.forEach(t => {
+        t.classList.remove('active');
+        const icon = t.querySelector('i');
+
+        // Swap to line icon for inactive
+        if (icon.className.includes('-fill')) {
+          icon.className = icon.className.replace('-fill', '-line');
+        }
+      });
+
+      // Find and activate the target tab
+      const activeTab = Array.from(tabs).find(t => t.getAttribute('data-tab') === targetTab);
+
+      if (activeTab) {
+        activeTab.classList.add('active');
+        // Swap to fill icon for active
+        const activeIcon = activeTab.querySelector('i');
+
+        if (activeIcon.className.includes('-line')) {
+          activeIcon.className = activeIcon.className.replace('-line', '-fill');
+        }
+      }
+
+      // Switch Content
+      tabContents.forEach(content => {
+        content.classList.add('hidden');
+        content.classList.remove('active');
+      });
+
+      const targetContent = document.getElementById(`${targetTab}-tab`);
+
+      if (targetContent) {
+        targetContent.classList.remove('hidden');
+        targetContent.classList.add('active');
+      }
+
+      // Lazy Load Logic
+      if (targetTab === 'appointments') {
+        loadDashboardAppointments();
+      }
+
+      if (targetTab === 'profile') {
+        loadProfileMenu();
+        refreshUserWithAvatar(); // Fetch fresh user data with avatar
+      }
+
+      // Reload active appointment widget when returning to home
+      if (targetTab === 'home') {
+        loadActiveAppointment();
+      }
+
+      // Articles section sadece home tab'da görünsün
+      const articlesSection = document.getElementById('articles-section-container');
+      if (articlesSection) {
+        if (targetTab === 'home') {
+          articlesSection.classList.remove('hidden');
+          articlesSection.style.display = '';
+        } else {
+          articlesSection.classList.add('hidden');
+          articlesSection.style.display = 'none';
+        }
+      }
+
+      // Toggle loyalty bar layout based on tab (center for tabs without sidebar)
+      if (targetTab === 'home') {
+        // Home has sidebar, remove no-sidebar class
+        document.body.classList.remove('no-sidebar');
+      } else {
+        // Other tabs don't have sidebar, add no-sidebar class to hide spacer and center
+        document.body.classList.add('no-sidebar');
+      }
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        const targetTab = tab.getAttribute('data-tab');
+        if (!targetTab) return;
+
+        e.preventDefault();
+        switchTab(targetTab);
+
+        // Update URL hash
+        window.location.hash = targetTab;
+      });
+    });
+
+    // Check URL hash on page load and switch to that tab
+    function checkHashAndSwitchTab() {
+      const hash = window.location.hash.replace('#', '');
+      const validTabs = ['home',
+        'appointments',
+        'campaigns',
+        'assistant',
+        'profile'];
+
+      if (hash && validTabs.includes(hash)) {
+        switchTab(hash);
+      }
+
+      else {
+        // Default to home if no valid hash
+        switchTab('home');
+      }
+    }
+
+    // Run on page load - ensure DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', checkHashAndSwitchTab);
+    }
+
+    else {
+      checkHashAndSwitchTab();
+    }
+
+    // Listen for hash changes (back/forward buttons)
+    window.addEventListener('hashchange', checkHashAndSwitchTab);
+
+    // --- DASHBOARD WIDGET REORDERING ---
+    const DashboardWidgets = {
+      init() {
+        this.checkAndRenderServicePanel();
+        this.initializeSortable();
+        this.loadWidgetOrder();
+      }
+
+      ,
+
+      // Check if user is service owner and render service panel card
+      checkAndRenderServicePanel() {
+        const userData = Utils.storage.get('tamirhanem_user');
+        const isServiceOwner = userData && (userData.serviceId || userData.role === 'service_owner');
+
+        if (isServiceOwner) {
+          const placeholder = document.getElementById('service-panel-widget-placeholder');
+          placeholder.innerHTML = ` <div class="dashboard-widget service-panel-widget"><div class="service-panel-card"><div class="sp-content"><div class="sp-info"><div class="sp-icon-box"><i class="ri-dashboard-3-line"></i></div><div class="sp-text"><h3>Servis Paneli</h3><p>İşlemleri yönetin</p></div></div><a href="/pages/service-panel.html" class="sp-btn">Panele Git <i class="ri-arrow-right-s-line"></i></a></div></div></div>`;
+        }
+      }
+
+      ,
+
+      // Initialize SortableJS for draggable widgets
+      initializeSortable() {
+        const container = document.getElementById('dashboard-widgets-container');
+        // Disable on mobile (width < 768px)
+        if (!container || !window.Sortable || window.innerWidth < 768) return;
+
+        new Sortable(container, {
+          animation: 150,
+          // No handle - drag from anywhere
+          draggable: '.dashboard-widget:not(.service-panel-widget)', // Exclude service panel
+
+          ghostClass: 'widget-dragging',
+          chosenClass: 'widget-chosen',
+          onEnd: () => {
+            this.saveWidgetOrder();
+          }
+        });
+      }
+
+      ,
+
+      // Save widget order to localStorage
+      saveWidgetOrder() {
+        const widgets = document.querySelectorAll('.dashboard-widget[data-widget-id]');
+        const order = Array.from(widgets).map(w => w.getAttribute('data-widget-id'));
+        localStorage.setItem('dashboard_widget_order', JSON.stringify(order));
+      }
+
+      ,
+
+      // Load widget order from localStorage and apply
+      loadWidgetOrder() {
+        const savedOrder = localStorage.getItem('dashboard_widget_order');
+        if (!savedOrder) return;
+
+        try {
+          const order = JSON.parse(savedOrder);
+          const container = document.getElementById('dashboard-widgets-container');
+          const servicePanelWidget = container.querySelector('.service-panel-widget')?.parentElement;
+
+          // Reorder widgets based on saved order
+          order.forEach(widgetId => {
+            const widget = container.querySelector(`[data-widget-id="${widgetId}"]`);
+
+            if (widget) {
+              container.appendChild(widget);
+            }
+          });
+
+          // Keep service panel at top if it exists
+          if (servicePanelWidget) {
+            container.prepend(servicePanelWidget);
+          }
+        }
+
+        catch (error) {
+        }
+      }
+    }
+
+      ;
+
+    // Initialize dashboard widgets on DOM ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => DashboardWidgets.init());
+    }
+
+    else {
+      DashboardWidgets.init();
+    }
+
+    // --- ACTIVE APPOINTMENT WIDGET LOGIC (Injected for reliability) ---
+    async function loadActiveAppointment() {
+      const widget = document.getElementById('active-appointment-widget');
+      const container = document.getElementById('active-appointment-card');
+
+      if (!widget || !container) {
+        return;
+      }
+
+      try {
+        if (typeof api === 'undefined') {
+          return;
+        }
+
+        const response = await api.getAppointments();
+
+        const appointments = Array.isArray(response) ? response : (response.data || []);
+
+        // Filter for active appointments (future & not cancelled)
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+
+        const activeAppointments = appointments.filter(app => {
+          const attr = app.attributes || app;
+          let appDateStr = null;
+
+          if (attr.date && typeof attr.date === 'object' && attr.date.date) appDateStr = attr.date.date;
+          else if (attr.date && typeof attr.date === 'string') appDateStr = attr.date;
+          else if (attr.matchedDate && attr.matchedDate[0]) {
+            appDateStr = typeof attr.matchedDate[0] === 'object' ? attr.matchedDate[0].date : attr.matchedDate[0];
+          }
+
+          if (!appDateStr) return false;
+
+          const appDate = new Date(appDateStr + 'T00:00:00');
+          const status = attr.status;
+          const activeStatuses = ['PENDING', 'CONFIRMED', 'APPROVED', 'IN_PROGRESS', 'Beklemede', 'Onaylandı', 'Onaylı', 'Serviste'];
+
+          return activeStatuses.includes(status) && appDate >= now;
+        });
+
+
+        // Sort by date
+        activeAppointments.sort((a, b) => {
+          // Simplified sort for robustness
+          return new Date(a.attributes?.createdAt || a.createdAt) - new Date(b.attributes?.createdAt || b.createdAt);
+        });
+
+        const nextAppointment = activeAppointments[0];
+
+        if (nextAppointment) {
+          renderActiveAppointment(nextAppointment, container);
+          widget.classList.remove('hidden');
+          widget.style.display = 'block'; // Force display
+        } else {
+          widget.classList.add('hidden');
+        }
+      } catch (error) {
+        widget.classList.add('hidden');
+      }
+    }
+
+    function renderActiveAppointment(appointment, container) {
+      const attr = appointment.attributes || appointment;
+
+      // Check if user is service owner
+      const isServiceOwner = localStorage.getItem('isServiceOwner') === 'true';
+      const selectedServiceId = localStorage.getItem('selectedServiceId');
+
+      let displayName = '';
+
+      if (isServiceOwner && selectedServiceId) {
+        // Show customer name for service owners
+        const user = appointment.user || attr.user?.data?.attributes || attr.user || {};
+        const userName = user.name || user.username || 'Müşteri';
+        const userSurname = user.surname || '';
+        displayName = `${userName} ${userSurname}`.trim();
+      } else {
+        // Show service name for regular users
+        displayName = attr.service?.data?.attributes?.name || attr.service?.name || attr.service || 'Genel Servis';
+      }
+
+      let dateStr = null;
+      if (attr.date && typeof attr.date === 'object' && attr.date.date) dateStr = attr.date.date;
+      else if (attr.date && typeof attr.date === 'string') dateStr = attr.date;
+      else if (attr.matchedDate && attr.matchedDate[0]) {
+        dateStr = typeof attr.matchedDate[0] === 'object' ? attr.matchedDate[0].date : attr.matchedDate[0];
+      }
+
+      const dateObj = new Date(dateStr);
+      const day = dateObj.getDate();
+      const monthShort = dateObj.toLocaleDateString('tr-TR', { month: 'short' }).toUpperCase();
+
+      let time = '--:--';
+      if (attr.time) time = attr.time.substring(0, 5);
+      else if (attr.date?.timeSlot) time = attr.date.timeSlot;
+      else if (attr.matchedDate?.[0]?.timeSlot) time = attr.matchedDate[0].timeSlot;
+
+      let vehicleInfo = 'Araç Bilgisi Yok';
+      if (attr.vehicle) {
+        const v = attr.vehicle.data?.attributes || attr.vehicle;
+        vehicleInfo = `${v.brand || ''} ${v.model || ''}`.trim();
+      }
+
+      const statusMap = {
+        'PENDING': { text: 'Onay Bekliyor', badgeClass: 'badge-warning' },
+        'CONFIRMED': { text: 'Onaylandı', badgeClass: 'badge-success' },
+        'APPROVED': { text: 'Onaylandı', badgeClass: 'badge-success' },
+        'IN_PROGRESS': { text: 'Serviste', badgeClass: 'badge-info' },
+        'Beklemede': { text: 'Onay Bekliyor', badgeClass: 'badge-warning' },
+        'Onaylandı': { text: 'Onaylandı', badgeClass: 'badge-success' },
+        'Onaylı': { text: 'Onaylandı', badgeClass: 'badge-success' },
+        'Serviste': { text: 'Serviste', badgeClass: 'badge-info' }
+      };
+      const statusInfo = statusMap[attr.status] || { text: attr.status, badgeClass: 'badge-secondary' };
+
+      container.innerHTML = `
+        <div class="appt-bar" onclick="window.location.href='/pages/my-appointments.html?appointmentId=${appointment.id}'">
+            <div class="appt-bar-content">
+                <span class="appt-badge-prefix">Sıradaki Randevu:</span>
+                <span class="appt-bar-text">
+                  <span class="appt-badge-service" style="color: #5a5a5a;">${displayName}</span>
+                  <span class="appt-badge-date">
+                    <span style="margin-right: 8px; font-size: 1.4rem;">📅</span> 
+                    <span style="color: #5a5a5a;">${day} ${monthShort} ${time}</span>
+                  </span>
+                </span>
+            </div>
+            <div class="appt-bar-action">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+      `;
+    }
+
+    // Call it immediately
+    loadActiveAppointment();
+
+    function hideActiveAppointment() {
+      const widget = document.getElementById('active-appointment-widget');
+      if (widget) {
+        // Add transition for smooth fade-out
+        widget.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        widget.style.opacity = '0';
+        widget.style.transform = 'translateY(-10px)';
+
+        // Wait for animation to complete before hiding
+        setTimeout(() => {
+          widget.style.display = 'none';
+          // Store in localStorage to persist the state
+          localStorage.setItem('hideActiveAppointment', 'true');
+        }, 400);
+      }
+    }
+
+    // ============================================================================
+    // 🏆 LOYALTY SYSTEM LOGIC
+    // ============================================================================
+
+    const LoyaltySystem = {
+      widget: null,
+      currentStatus: null,
+
+      async init() {
+        this.widget = document.getElementById('loyalty-widget');
+        if (!this.widget) return;
+
+        await this.loadStatus();
+        this.setupButton();
+        this.setupScrollEffect();
+        this.setupModal();
+      },
+
+      setupScrollEffect() {
+
+        const maxScroll = 100; // Maximum scroll distance for full effect (in pixels)
+
+        window.addEventListener('scroll', () => {
+          const scrollY = window.scrollY;
+
+          // Calculate progress from 0 to 1 based on scroll amount
+          // 0px scroll = 0, 100px scroll = 1 (clamped)
+          const progress = Math.min(scrollY / maxScroll, 1);
+
+          // Update CSS custom property for smooth, progressive scaling
+          this.widget.style.setProperty('--scroll-progress', progress);
+        });
+      },
+
+      setupModal() {
+
+        // Wait a bit to ensure DOM is fully ready
+        setTimeout(() => {
+          const infoBtn = document.getElementById('loyalty-info-btn');
+          const modal = document.getElementById('terms-modal');
+          const tooltip = document.getElementById('loyalty-info-tooltip');
+
+          if (!infoBtn) {
+            return;
+          }
+
+          if (!modal) {
+            return;
+          }
+
+          const closeBtn = modal.querySelector('.close-modal-btn');
+          if (!closeBtn) {
+            return;
+          }
+
+
+          // === CLICK EVENT FOR MODAL (Only this, CSS handles hover) ===
+          infoBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            modal.classList.add('active');
+          });
+
+          // === CLOSE MODAL ===
+          closeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            modal.classList.remove('active');
+          });
+
+          modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+              modal.classList.remove('active');
+            }
+          });
+
+
+          // Add manual test function to window for debugging
+          window.testInfoButton = () => {
+            infoBtn.click();
+          };
+
+          window.testTooltip = () => {
+            if (tooltip) {
+              tooltip.classList.add('show');
+            }
+          };
+
+        }, 200); // Increased timeout to ensure DOM is ready
+      },
+
+      setupHoverTooltip(infoBtn) {
+        // This method is no longer needed, integrated into setupModal
+      },
+
+      async loadStatus() {
+        try {
+          // Default status in case of error or loading
+          this.currentStatus = {
+            currentAppointments: 0,
+            goalTarget: 5,
+            goalMet: false,
+            rewardAvailable: false,
+            rewardClaimed: false,
+            progress: 0
+          };
+
+          const token = Utils.storage.get('tamirhanem_token');
+          if (!token) return;
+
+          const apiBase = CONFIG?.API_BASE_URL || 'https://api.tamirhanem.net/api';
+
+          // Correct endpoint: /api/users/me/loyalty-status
+          const loyaltyResponse = await fetch(`${apiBase}/users/me/loyalty-status`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+
+          if (loyaltyResponse.ok) {
+            const loyaltyData = await loyaltyResponse.json();
+            const loyalty = loyaltyData.data?.attributes || loyaltyData.data || loyaltyData || {};
+
+            // Map loyalty data to expected format
+            const completedAppointments = loyalty.completedAppointments || 0;
+            const goalTarget = 5;
+            const progress = Math.min((completedAppointments / goalTarget) * 100, 100);
+
+            this.currentStatus = {
+              currentAppointments: completedAppointments,
+              goalTarget: goalTarget,
+              goalMet: completedAppointments >= goalTarget,
+              rewardAvailable: completedAppointments >= goalTarget && (loyalty.availableRewards || 0) > 0,
+              rewardClaimed: (loyalty.totalRewardsUsed || 0) > 0,
+              progress: progress
+            };
+          }
+        } catch (error) {
+          // Keep defaults
+        } finally {
+          this.updateUI();
+        }
+      },
+
+      updateUI() {
+        if (!this.currentStatus) return;
+
+        const {
+          currentAppointments,
+          goalTarget,
+          goalMet,
+          rewardAvailable,
+          rewardClaimed,
+          progress,
+        } = this.currentStatus;
+
+        // Show widget
+        this.widget.style.display = 'flex';
+
+        // Update segments
+        const segments = document.querySelectorAll('.segment');
+        const progressPerSegment = 100 / 5; // 20% per segment
+
+        segments.forEach((segment, index) => {
+          const segmentFill = segment.querySelector('.segment-fill');
+
+          const segmentStart = index * progressPerSegment;
+          const segmentEnd = (index + 1) * progressPerSegment;
+
+          let fillPercentage = 0;
+
+          // Reset classes
+          segment.classList.remove('filled', 'active-target');
+
+          if (progress >= segmentEnd) {
+            fillPercentage = 100;
+            segment.classList.add('filled');
+          } else if (progress > segmentStart) {
+            fillPercentage = ((progress - segmentStart) / progressPerSegment) * 100;
+            // This is the current active segment being filled
+            segment.classList.add('active-target');
+          } else if (index === Math.floor(progress / 20)) {
+            // Also mark as active target if it's the current step even if 0% filled
+            segment.classList.add('active-target');
+          } else {
+            fillPercentage = 0;
+          }
+
+          segmentFill.style.width = `${fillPercentage}% `;
+        });
+
+        // Animate car position with nitro effect
+        const car = document.getElementById('loyalty-car');
+        const currentLeft = parseFloat(car.style.left) || 0;
+
+        // Adjust car position logic if needed, but percentage based works fine with absolute positioning
+        if (currentLeft !== progress) {
+          car.classList.add('moving');
+          car.style.left = `${progress}% `;
+
+          setTimeout(() => {
+            car.classList.remove('moving');
+          }, 1000);
+        }
+
+        // Update milestones
+        // Select all milestones including start point and final step
+        const allMilestones = document.querySelectorAll('.milestone-markers .milestone');
+
+        allMilestones.forEach((milestone, index) => {
+          // Skip start point visual update (it's invisible)
+          if (milestone.classList.contains('start-point')) return;
+
+          // Index 0 is start point. 
+          // Step 1 is Index 1. 
+          // If currentAppointments is 1, we want Index 1 to be active/completed.
+
+          if (index <= currentAppointments) {
+            if (index < currentAppointments) {
+              milestone.classList.add('completed');
+              if (!milestone.classList.contains('final-step')) {
+                // Only update icon class, preserve label
+                const icon = milestone.querySelector('i');
+                if (icon) icon.className = 'ri-check-line';
+              }
+            } else {
+              // Current step (active)
+              milestone.classList.add('active');
+              if (!milestone.classList.contains('final-step')) {
+                // Only update icon class, preserve label
+                const icon = milestone.querySelector('i');
+                if (icon) icon.className = 'ri-calendar-check-line';
+              }
+            }
+          } else {
+            milestone.classList.remove('completed', 'active');
+            if (!milestone.classList.contains('final-step')) {
+              // Only update icon class, preserve label
+              const icon = milestone.querySelector('i');
+              if (icon) icon.className = 'ri-tools-fill'; // Default icon
+            }
+          }
+        });
+
+        // Update Reward Button (Final Step)
+        const btn = document.getElementById('loyalty-reward-btn');
+
+        if (rewardClaimed) {
+          // Already claimed
+          btn.disabled = true;
+          btn.classList.add('completed');
+        } else if (rewardAvailable) {
+          // Ready to claim
+          btn.disabled = false;
+        } else {
+          // Still working
+          btn.disabled = true;
+        }
+      },
+
+      setupButton() {
+        // Reward Button
+        const btn = document.getElementById('loyalty-reward-btn');
+        btn.addEventListener('click', async () => {
+          if (btn.disabled) return;
+
+          try {
+            // Generate secure token
+            const tokenResponse = await fetch(`${API_BASE_URL} /users/me / generate - reward - token`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${Utils.storage.get('tamirhanem_token')} `,
+              },
+            });
+
+            if (!tokenResponse.ok) {
+              throw new Error('Failed to generate token');
+            }
+
+            const { token } = await tokenResponse.json();
+
+            // Store token in session
+            sessionStorage.setItem('reward_access_token', token);
+
+            // Redirect to reward page
+            window.location.href = '/pages/reward-car-wash.html';
+          } catch (error) {
+            alert('Ödül talep edilirken bir hata oluştu. Lütfen tekrar deneyin.');
+          }
+        });
+
+        // Info Button logic is handled by setupModal()
+        // Removed legacy infoPopup code
+      },
+    }
+
+    // Initialize loyalty system on page load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        LoyaltySystem.init();
+        loadOfficialServices(); // Load official services
+        refreshUserWithAvatar(); // Load user avatar
+      });
+    } else {
+      LoyaltySystem.init();
+      loadOfficialServices(); // Load official services
+      refreshUserWithAvatar(); // Load user avatar
+    }
+
+
+    // --- SERVICE TYPE SWITCHER ---
+    const serviceTypeButtons = document.querySelectorAll('.type-btn');
+    // Assuming serviceTypeActions exists in your store.js or utility
+    const selectedType = serviceTypeActions?.getServiceType() || 'all';
+
+    serviceTypeButtons.forEach(btn => {
+      if (btn.getAttribute('data-type') === selectedType) {
+        btn.classList.add('active');
+      }
+
+      btn.addEventListener('click', () => {
+        const type = btn.getAttribute('data-type');
+
+        serviceTypeButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        if (serviceTypeActions) serviceTypeActions.setServiceType(type);
+
+        loadCategories(type);
+        loadServices(type);
+        loadCampaigns(type);
+        loadNearbyServices(null, type); // Yakındaki servisleri de filtrele
+      });
+    });
+
+    // --- DATA LOADING FUNCTIONS (Refined HTML Generation) ---
+
+    async function loadDashboardAppointments() {
+      const container = document.getElementById('appointments-content');
+
+      try {
+        container.innerHTML = '<div style="text-align:center; padding:20px;"><div class="spinner"></div></div>';
+
+        const response = await api.getAppointments();
+        const appointments = Array.isArray(response) ? response : (response.data || []);
+
+        if (appointments.length === 0) {
+          container.innerHTML = ` <div class="empty-state" ><i class="ri-calendar-todo-line empty-icon"></i><h3 style="margin-bottom: 10px;">Henüz randevunuz yok</h3><p class="empty-text">İlk randevunuzu oluşturmak için bir servis seçin</p><button class="btn btn-primary" onclick="window.location.href='/pages/create-appointment.html'">Randevu Oluştur</button></div> `;
+          return;
+        }
+
+        const recentAppointments = appointments.slice(0, 5);
+
+        container.innerHTML = recentAppointments.map(apt => {
+          const attrs = apt.attributes || apt;
+          const service = attrs.service?.data?.attributes || attrs.service;
+          const vehicle = attrs.vehicle?.data?.attributes || attrs.vehicle;
+
+          let dateStr = 'Belirtilmemiş';
+
+          if (attrs.preferredDateTime) {
+            const dt = new Date(attrs.preferredDateTime);
+            dateStr = Utils.formatDate(dt, 'DD.MM.YYYY HH:mm');
+          }
+
+          const statusClass = attrs.status === 'Beklemede' || attrs.status === 'PENDING' ? 'badge-warning' : attrs.status === 'Onaylandı' || attrs.status === 'CONFIRMED' ? 'badge-success' : attrs.status === 'Tamamlandı' || attrs.status === 'COMPLETED' ? 'badge-success' : 'badge-error';
+
+          return `
+        <div class="appointment-card" onclick = "window.location.href='/pages/my-appointments.html'" >
+              <div class="apt-left">
+                ${service && service.ProfilePicture ?
+              `<img src="${Utils.getImageUrl(service.ProfilePicture)}" class="apt-img" alt="${service.name}">` :
+              `<div class="apt-img" style="display:flex; align-items:center; justify-content:center;"><i class="ri-store-2-line"></i></div>`
+            }
+                <div class="apt-info">
+                  <h4>${service ? service.name : 'Randevu #' + apt.id}</h4>
+                  <div class="apt-date"><i class="ri-time-line"></i> ${dateStr}</div>
+                </div>
+              </div>
+              <span class="badge-status ${statusClass}">${attrs.status}</span>
+            </div>
+        `;
+        }).join('') + `<div style = "text-align:center; margin-top:15px;" > <a href="#appointments" class="btn btn-outline btn-sm">Tümünü Gör</a></div> `;
+
+      }
+
+      catch (error) {
+        container.innerHTML = `<div class="empty-state text-error" > <p>Randevular yüklenemedi.</p></div> `;
+      }
+    }
+
+    // Category icon mapping
+    const categoryIcons = {
+      'Fren Sistemi': 'ri-forbid-2-line',
+      'Motor Bakım': 'ri-settings-3-line',
+      'Elektrik': 'ri-flashlight-line',
+      'Kaporta': 'ri-car-line',
+      'Lastik': 'ri-contrast-drop-2-line',
+      'Yağ Değişimi': 'ri-drop-line',
+      'Klima': 'ri-temp-cold-line',
+      'Egzoz': 'ri-cloud-line',
+      'Cam Filmi': 'ri-sun-line',
+      'Detaylı Temizlik': 'ri-brush-line',
+      'Boya': 'ri-paint-brush-line',
+      'Tampon': 'ri-car-washing-line',
+      'Aküsafdasd': 'ri-battery-charge-line',
+      'Balata': 'ri-speed-line',
+    }
+
+      ;
+
+    function getCategoryIcon(name) {
+
+      // Try exact match first
+      if (categoryIcons[name]) {
+        return categoryIcons[name];
+      }
+
+      // Try partial match
+      const lowerName = name.toLowerCase();
+
+      for (const [key, icon] of Object.entries(categoryIcons)) {
+        if (lowerName.includes(key.toLowerCase()) || key.toLowerCase().includes(lowerName)) {
+          return icon;
+        }
+      }
+
+      // Default icon
+      return 'ri-tools-fill';
+    }
+
+    async function loadCategories(serviceType = null, isExpanded = false) {
+      try {
+        const categories = await servicesActions.loadCategories(serviceType);
+        const grid = document.getElementById('categories-grid-sidebar');
+
+        if (categories && categories.length > 0) {
+          // Dynamic calculation: determine how many categories fit in the available space
+          let maxCategories;
+
+          if (!isExpanded) {
+            // Calculate available height for categories in sidebar
+            const sidebarSection = grid.closest('.sidebar-section');
+
+            if (sidebarSection) {
+              // Get the sidebar section's parent container height
+              const sidebarContainer = document.querySelector('.dashboard-sidebar');
+
+              if (sidebarContainer) {
+                // Get total available height
+                const containerHeight = sidebarContainer.clientHeight;
+
+                // Calculate space used by other elements
+                const otherSections = Array.from(document.querySelectorAll('.sidebar-section'))
+                  .filter(section => section !== sidebarSection);
+
+                let usedHeight = 0;
+                otherSections.forEach(section => {
+                  usedHeight += section.offsetHeight;
+                });
+
+                // Add space for the title of categories section
+                const titleElement = sidebarSection.querySelector('.sidebar-section-title');
+                if (titleElement) {
+                  usedHeight += titleElement.offsetHeight;
+                }
+
+                // Calculate available height for category list
+                const availableHeight = containerHeight - usedHeight - 40; // 40px buffer for padding
+
+                // Each category item is approximately 36px (8px padding + content)
+                const categoryItemHeight = 36;
+
+                // Calculate how many fit
+                maxCategories = Math.floor(availableHeight / categoryItemHeight);
+
+                // Ensure all categories show by default (set high minimum)
+                maxCategories = Math.max(20, maxCategories);
+              } else {
+                maxCategories = 10; // Fallback
+              }
+            } else {
+              maxCategories = 10; // Fallback
+            }
+          } else {
+            maxCategories = categories.length; // Show all when expanded
+          }
+
+          let displayCategories = categories;
+          let showExpandButton = false;
+
+          // Always show all categories, don't limit
+          // if (!isExpanded && categories.length > maxCategories) {
+          //   displayCategories = categories.slice(0, maxCategories);
+          //   showExpandButton = true;
+          // }
+
+          let html = displayCategories.map(cat => {
+            const attrs = cat.attributes;
+            const iconClass = getCategoryIcon(attrs.name);
+            const animationClass = isExpanded ? 'animate-fade-in' : '';
+
+            return ` <div class="category-card ${animationClass}" onclick = "filterByCategory(${cat.id})" > <div class="category-icon-box"> <i class="${iconClass}"></i> </div> <h3 class="category-name">${attrs.name
+              }
+
+              </h3> </div> `;
+          }).join('');
+
+          // Never show expand button
+          // if (showExpandButton) {
+          //   html += ` <div class="category-card" onclick = "loadCategories('${serviceType || ''}', true)" ><div class="category-icon-box" style="background: var(--neutral-100); color: var(--neutral-500);"><i class="ri-arrow-down-s-line"></i></div><h3 class="category-name">Tümü</h3></div> `;
+          // }
+
+          grid.innerHTML = html;
+        }
+
+        else {
+          grid.innerHTML = '<div class="empty-state"><p>Kategori bulunamadı</p></div>';
+        }
+      }
+
+      catch (e) {
+      }
+    }
+
+    async function loadServices(serviceType = null) {
+      try {
+        const filters = {
+          serviceType: serviceType || selectedType, pageSize: 6
+        }
+
+          ;
+        const services = await servicesActions.loadServices(filters);
+        const grid = document.getElementById('services-grid');
+
+        if (services && services.length > 0) {
+          grid.innerHTML = services.map(service => {
+            const imgUrl = Utils.getImageUrl(service.attributes.ProfilePicture);
+
+            // Premium Badge Logic (Mock: if rating >= 4.5 or specific IDs)
+            const isPremium = (service.attributes.rating >= 4.5) || (service.id % 2 === 0);
+            const premiumBadge = isPremium ? `<div class="premium-badge" > <i class="ri-vip-crown-2-fill"></i> PREMIUM</div> ` : '';
+
+            return `
+        <div class="service-card">
+          ${premiumBadge}
+      <img src="${imgUrl}" class="service-img" alt="${service.attributes.name}" onerror="this.src='https://placehold.co/600x400?text=No+Image'" onclick="window.location.href='/pages/service-detail.html?id=${service.id}'" style="cursor: pointer;">
+        <div class="service-content">
+          <h3 class="service-title" onclick="window.location.href='/pages/service-detail.html?id=${service.id}'" style="cursor: pointer;">${service.attributes.name}</h3>
+          <div class="service-loc"><i class="ri-map-pin-line"></i> ${service.attributes.location || 'İstanbul'}</div>
+          <div class="service-meta">
+            <div class="rating-badge">
+              <i class="ri-star-fill"></i> ${(service.attributes.rating || 4.5).toFixed(1)}
+              <span style="font-weight:400; color:var(--neutral-700); margin-left:2px;">(${service.attributes.reviewCount || 0})</span>
+            </div>
+          </div>
+          <div class="service-actions" style="display: flex; gap: 6px; margin-top: 10px;">
+            <button class="btn-appointment" onclick="event.stopPropagation(); window.location.href='/pages/create-appointment.html?serviceId=${service.id}'" style="flex: 1; background: #FFD700; color: #222; border: none; padding: 6px 8px; border-radius: 6px; font-weight: 600; font-size: 0.7rem; cursor: pointer; transition: all 0.3s;">
+              <i class="ri-calendar-line"></i> Randevu
+            </button>
+            <button class="btn-quote" onclick="event.stopPropagation(); window.location.href='/pages/create-appointment.html?serviceId=${service.id}&mode=quote'" style="flex: 1; background: #FF8C00; color: white; border: none; padding: 6px 8px; border-radius: 6px; font-weight: 600; font-size: 0.7rem; cursor: pointer; transition: all 0.3s;">
+              <i class="ri-money-dollar-circle-line"></i> Teklif
+            </button>
+          </div>
+        </div>
+      </div>
+      `;
+          }).join('');
+        }
+
+        else {
+          grid.innerHTML = '<div class="empty-state"><p>Servis bulunamadı</p></div>';
+        }
+      }
+
+      catch (e) {
+      }
+    }
+
+    let campaignSliderInterval = null;
+    let currentCampaignIndex = 0;
+    let activeCampaignsGlobal = [];
+
+    async function loadCampaigns(serviceType = null) {
+      try {
+        const campaigns = await campaignsActions.loadCampaigns({
+          serviceType: serviceType || selectedType
+        });
+        const carousel = document.getElementById('campaigns-carousel');
+
+        if (!campaigns || campaigns.length === 0) {
+          carousel.innerHTML = ` <div class="campaign-card" > <div class="campaign-content"><h3 class="campaign-title">Şu anda kampanya bulunmuyor</h3><p class="campaign-desc">Yakında yeni fırsatlar için takipte kalın !</p></div></div> `;
+          return;
+        }
+
+        // Filter active campaigns (same logic as Home.tsx)
+        const now = new Date();
+
+        const activeCampaigns = campaigns.filter(campaign => {
+          const attrs = campaign.attributes || campaign;
+
+          // Must be published
+          if (!attrs.publishedAt) {
+            return false;
+          }
+
+          // Check if campaign has not ended
+          if (attrs.end_date) {
+            try {
+              const endDate = new Date(attrs.end_date);
+              return endDate > now;
+            }
+
+            catch (e) {
+              return true;
+            }
+          }
+
+          return true;
+        });
+
+        if (activeCampaigns && activeCampaigns.length > 0) {
+          activeCampaignsGlobal = activeCampaigns;
+
+          // Render all campaigns
+          carousel.innerHTML = activeCampaigns.map(campaign => {
+            const attrs = campaign.attributes || campaign;
+
+            // Get campaign image URL
+            let imageUrl = 'https://via.placeholder.com/800x400/fbc707/5a5a5a?text=Kampanya';
+
+            if (attrs.campaign_image) {
+              imageUrl = Utils.getImageUrl(attrs.campaign_image);
+            }
+
+            return ` <div class="campaign-card" > <div class="campaign-content"> <h3 class="campaign-title">${attrs.title || attrs.name || 'Kampanya'
+              }
+
+            </h3> <p class="campaign-desc">${attrs.description || ''
+              }
+
+            </p> <button class="campaign-btn">RANDEVU AL</button> </div> <div class="campaign-image-container"> <img src="${imageUrl}" class="campaign-img" alt="${attrs.title || 'Kampanya'}"> </div> </div> `;
+          }).join('');
+
+          // Start auto slider if more than 1 campaign
+          if (activeCampaigns.length > 1) {
+            startCampaignSlider();
+          }
+        }
+
+        else {
+          carousel.innerHTML = ` <div class="campaign-card" > <div class="campaign-content"><h3 class="campaign-title">Şu anda aktif kampanya bulunmuyor</h3><p class="campaign-desc">Yakında yeni fırsatlar için takipte kalın !</p></div></div> `;
+        }
+      }
+
+      catch (e) {
+        document.getElementById('campaigns-carousel').innerHTML = ` <div class="campaign-card" > <div class="campaign-content"><h3 class="campaign-title">Kampanyalar yüklenemedi</h3><p class="campaign-desc">Lütfen daha sonra tekrar deneyin</p></div></div> `;
+      }
+    }
+
+    function startCampaignSlider() {
+
+      // Clear existing interval
+      if (campaignSliderInterval) {
+        clearInterval(campaignSliderInterval);
+      }
+
+      // Auto slide every 3 seconds
+      campaignSliderInterval = setInterval(() => {
+        if (!activeCampaignsGlobal || activeCampaignsGlobal.length <= 1) {
+          return;
+        }
+
+        currentCampaignIndex = (currentCampaignIndex + 1) % activeCampaignsGlobal.length;
+        const carousel = document.getElementById('campaigns-carousel');
+
+        if (carousel) {
+          carousel.style.transform = `translateX(-${currentCampaignIndex * 100}%)`;
+        }
+      }, 6000);
+    }
+
+    // --- LOCATION & NEARBY SERVICES ---
+    let userLocation = null;
+
+    async function requestLocationPermission() {
+      const statusEl = document.getElementById('location-status');
+      const btn = document.getElementById('location-permission-btn');
+
+      if (!navigator.geolocation) {
+        statusEl.innerHTML = '<i class="ri-error-warning-line"></i> Tarayıcınız konum servisi desteklemiyor.';
+        statusEl.className = 'location-status error';
+        statusEl.style.display = 'flex';
+        btn.style.display = 'inline-flex';
+        loadOfficialServices(); // Load official services
+        loadNearbyServices(); // Load default services
+        return;
+      }
+
+      try {
+        navigator.geolocation.getCurrentPosition((position) => {
+          userLocation = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          }
+
+            ;
+
+          statusEl.innerHTML = `<i class="ri-map-pin-fill" ></i> Konumunuz: ${userLocation.latitude.toFixed(4)
+            }
+
+            , ${userLocation.longitude.toFixed(4)
+            }
+
+      `;
+          statusEl.className = 'location-status success';
+          statusEl.style.display = 'flex';
+          btn.style.display = 'none';
+          localStorage.setItem('userLocation', JSON.stringify(userLocation));
+          loadNearbyServices(userLocation);
+        }
+
+          ,
+          (error) => {
+            let errorMsg = 'Konum izni reddedildi.';
+
+            if (error.code === error.PERMISSION_DENIED) {
+              errorMsg = 'Konum izni reddedildi. Lütfen tarayıcı ayarlarınızdan izin verin.';
+            }
+
+            else if (error.code === error.POSITION_UNAVAILABLE) {
+              errorMsg = 'Konum bilgisi alınamadı.';
+            }
+
+            else if (error.code === error.TIMEOUT) {
+              errorMsg = 'Konum alma zaman aşımına uğradı.';
+            }
+
+            statusEl.innerHTML = `<i class="ri-error-warning-line" ></i> ${errorMsg
+              }
+
+      `;
+            statusEl.className = 'location-status error';
+            statusEl.style.display = 'flex';
+            btn.style.display = 'inline-flex';
+            loadOfficialServices(); // Load official services
+            loadNearbyServices(); // Load default services
+          });
+      }
+
+      catch (error) {
+        loadNearbyServices(); // Load default services
+      }
+    }
+
+    // Global navigation function to avoid inline URL issues
+    window.navigateToService = function (serviceId) {
+      if (!serviceId) return;
+      window.location.href = `/pages/service-detail.html?id=${serviceId}`;
+    };
+
+    // Load Official Services (Premium)
+    async function loadOfficialServices() {
+      const section = document.getElementById('official-services-section');
+      const grid = document.getElementById('official-services-grid');
+
+
+      try {
+        // Fetch ALL services with proper pagination
+        const response = await api.getServices({
+          'pagination[pageSize]': 100,
+          'populate': '*'
+        });
+
+        let allServices = response.data || response || [];
+
+
+        // Debug: Check each service WITH FULL DATA
+        allServices.forEach((service, index) => {
+          const attr = service.attributes || service;
+        });
+
+        // Filter for official services
+        const services = allServices.filter(service => {
+          const attr = service.attributes || service;
+          return attr.isOfficialService === true;
+        });
+
+
+        if (services.length === 0) {
+          section.style.display = 'none';
+          return;
+        }
+
+        // Show section
+        section.style.display = 'block';
+
+        // Render cards - take up to 3
+        grid.innerHTML = services.slice(0, 3).map((service, idx) => {
+          const attr = service.attributes || service;
+
+          // Get correct service ID
+          const serviceId = service.id || service.attributes?.id || attr.id;
+
+          // Handle ProfilePicture URL
+          let logoUrl = null;
+
+          // First try ProfilePicture
+          if (attr.ProfilePicture?.data) {
+            if (Array.isArray(attr.ProfilePicture.data)) {
+              logoUrl = attr.ProfilePicture.data[0]?.attributes?.url;
+            } else {
+              logoUrl = attr.ProfilePicture.data.attributes?.url;
+            }
+          }
+
+          // Fallback to logo
+          if (!logoUrl && attr.logo?.data) {
+            if (Array.isArray(attr.logo.data)) {
+              logoUrl = attr.logo.data[0]?.attributes?.url;
+            } else {
+              logoUrl = attr.logo.data.attributes?.url;
+            }
+          }
+
+
+          // Construct full URL properly
+          // CONFIG.API_BASE_URL = https://api.tamirhanem.net/api
+          // We need https://api.tamirhanem.net for uploads (remove ONLY trailing /api)
+          const baseUrl = CONFIG.API_BASE_URL.replace(/\/api$/, ''); // Regex to remove only ending /api
+
+          const fullLogoUrl = logoUrl && logoUrl.startsWith('/')
+            ? `${baseUrl}${logoUrl}`
+            : (logoUrl && logoUrl.startsWith('http') ? logoUrl : 'https://via.placeholder.com/150');
+
+
+          const categories = attr.categories?.data || [];
+          const categoryNames = categories.map(cat => cat.attributes?.name || cat.name).filter(Boolean).slice(0, 2);
+
+          return `
+            <div class="official-service-card" onclick="navigateToService(${serviceId})">
+              <div class="official-service-badge">
+                <i class="ri-verified-badge-fill"></i>
+                Yetkili
+              </div>
+              <div class="official-service-image-wrapper">
+                <img src="${fullLogoUrl}" alt="${attr.name}" class="official-service-image" onerror="if(this.src!='https://via.placeholder.com/150'){this.src='https://via.placeholder.com/150'}">
+              </div>
+              <div class="official-service-content">
+                <h3 class="official-service-name">${attr.name}</h3>
+                <div class="official-service-location">
+                  <i class="ri-map-pin-line"></i>
+                  ${attr.location || 'İstanbul'}
+                </div>
+                ${attr.rating ? `
+                  <div class="official-service-rating">
+                    <i class="ri-star-fill"></i>
+                    <span class="official-service-rating-value">${attr.rating.toFixed(1)}</span>
+                    <span class="official-service-rating-count">(${attr.ratingCount || 0})</span>
+                  </div>
+                ` : ''}
+                ${categoryNames.length > 0 ? `
+                  <div class="official-service-categories">
+                    ${categoryNames.map(cat => `<span class="official-service-category-tag">${cat}</span>`).join('')}
+                  </div>
+                ` : ''}
+                <button class="official-service-cta" onclick="event.stopPropagation(); navigateToService(${serviceId})">
+                  Detayları Gör
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+
+      } catch (error) {
+        section.style.display = 'none';
+      }
+    }
+
+    async function loadNearbyServices(location = null, serviceType = null) {
+      const grid = document.getElementById('nearby-services-grid');
+
+      try {
+        // Güncel servis tipini al
+        const currentType = serviceType || serviceTypeActions?.getServiceType() || 'all';
+        // Servisleri yükle
+        const services = await servicesActions.loadServices({ serviceType: currentType });
+
+        let displayServices = services;
+
+        // Eğer konum varsa, mesafeye göre sırala
+        if (location && services && services.length > 0) {
+          displayServices = services.map(service => {
+            const attrs = service.attributes || service;
+            // Basit mesafe hesaplama (gerçek uygulamada backend'den gelmeli)
+            const distance = Math.random() * 15; // 0-15 km arası
+
+            return { ...service, distance };
+          }).sort((a, b) => a.distance - b.distance);
+        }
+
+        // İlk 6 servisi göster
+        const nearbyServices = displayServices.slice(0, 6);
+
+        if (nearbyServices && nearbyServices.length > 0) {
+          grid.innerHTML = nearbyServices.map(service => {
+            const attrs = service.attributes || service;
+            const imgUrl = Utils.getImageUrl(attrs.ProfilePicture);
+            const rating = attrs.rating || 4.5;
+            const reviewCount = attrs.reviewCount || Math.floor(Math.random() * 300);
+            const isPremium = rating >= 4.5;
+
+            return `
+          <div class="service-card">
+            ${isPremium ? '<div class="premium-badge"><i class="ri-vip-crown-fill"></i> Premium</div>' : ''}
+            <img src="${imgUrl}" class="service-img" alt="${attrs.name}" onerror="this.src='/assets/placeholder-service.jpg'" onclick="window.location.href='/pages/service-detail.html?id=${service.id}'" style="cursor: pointer;">
+            <div class="service-content">
+              <h3 class="service-title" onclick="window.location.href='/pages/service-detail.html?id=${service.id}'" style="cursor: pointer;">${attrs.name}</h3>
+              <div class="service-loc">
+                <i class="ri-map-pin-line"></i> 
+                ${attrs.city || attrs.location || 'İstanbul'}
+              </div>
+              <div class="service-meta">
+                <div class="rating-badge">
+                  <i class="ri-star-fill"></i> ${rating.toFixed(1)}
+                  <span style="font-weight:400; color:var(--neutral-700); margin-left:4px;">(${reviewCount})</span>
+                </div>
+              </div>
+              <div class="service-actions" style="display: flex; gap: 6px; margin-top: 10px;">
+                <button class="btn-appointment" onclick="event.stopPropagation(); window.location.href='/pages/create-appointment.html?serviceId=${service.id}'" style="flex: 1; background: #FFD700; color: #222; border: none; padding: 6px 8px; border-radius: 6px; font-weight: 600; font-size: 0.7rem; cursor: pointer; transition: all 0.3s;">
+                  <i class="ri-calendar-line"></i> Randevu
+                </button>
+                <button class="btn-quote" onclick="event.stopPropagation(); window.location.href='/pages/create-appointment.html?serviceId=${service.id}&mode=quote'" style="flex: 1; background: #FF8C00; color: white; border: none; padding: 6px 8px; border-radius: 6px; font-weight: 600; font-size: 0.7rem; cursor: pointer; transition: all 0.3s;">
+                  <i class="ri-money-dollar-circle-line"></i> Teklif
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+          }).join('');
+        } else {
+          grid.innerHTML = '<div class="empty-state"><p>Yakınınızda servis bulunamadı</p></div>';
+        }
+      } catch (e) {
+        grid.innerHTML = '<div class="empty-state"><p>Servisler yüklenemedi</p></div>';
+      }
+    }
+
+    // Sayfa yüklendiğinde konum izni kontrol et
+    const savedLocation = localStorage.getItem('userLocation');
+
+    if (savedLocation) {
+      try {
+        userLocation = JSON.parse(savedLocation);
+        loadNearbyServices(userLocation);
+      }
+
+      catch (e) {
+        requestLocationPermission();
+      }
+    }
+
+    else {
+      requestLocationPermission();
+    }
+
+    // Location permission button click handler
+    document.getElementById('location-permission-btn')?.addEventListener('click', requestLocationPermission);
+
+    // Initialize
+    loadCategories(selectedType);
+    loadServices(selectedType);
+    loadCampaigns(selectedType);
+
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      if (confirm('Çıkış yapmak istediğinize emin misiniz?')) auth.logout();
+    });
+
+    // --- NOTIFICATION & FAVOURITE DROPDOWNS ---
+    // Handled by global-header.js - no duplicate handlers needed
+
+    // --- ASSISTANT LOGIC (Modern with Debug Mode) ---
+    let assistantSelectedFiles = [];
+    const assistantAPI_URL = 'https://mcp.tamirhanem.net/api/chat';
+    let assistantInitialized = false;
+    let assistantDebugMode = false;
+
+    // Debug logging function
+    function assistantDebugLog(type, message, data = null) {
+      const panel = document.getElementById('assistantDebugPanel');
+      if (!panel) return;
+
+      const time = new Date().toLocaleTimeString();
+      const logDiv = document.createElement('div');
+      logDiv.className = `log ${type}`;
+      logDiv.innerHTML = `<strong>[${time}]</strong> ${message}`;
+      if (data) {
+        logDiv.innerHTML += `<pre style="margin-top:4px;font-size:0.65rem;opacity:0.8;white-space:pre-wrap;max-height:80px;overflow:auto;">${JSON.stringify(data, null, 2)}</pre>`;
+      }
+      panel.appendChild(logDiv);
+      panel.scrollTop = panel.scrollHeight;
+
+      // Also log to console
+      const consoleMethod = type === 'error' ? 'error' : type === 'warn' ? 'warn' : 'log';
+      console[consoleMethod](`[ASSISTANT ${type.toUpperCase()}] ${message}`, data || '');
+    }
+
+    // Toggle debug mode
+    function toggleAssistantDebug() {
+      assistantDebugMode = !assistantDebugMode;
+      const panel = document.getElementById('assistantDebugPanel');
+      const toggle = document.getElementById('assistantDebugToggle');
+      if (panel) panel.classList.toggle('active', assistantDebugMode);
+      if (toggle) toggle.classList.toggle('active', assistantDebugMode);
+      assistantDebugLog('info', 'Debug modu ' + (assistantDebugMode ? 'açıldı' : 'kapandı'));
+    }
+
+    // Quick message sender
+    function sendQuickAssistantMessage(text) {
+      const input = document.getElementById('assistantMessageInput');
+      if (input) {
+        input.value = text;
+        sendAssistantMessage();
+      }
+    }
+
+    // Init on tab click
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        if (tab.getAttribute('data-tab') === 'assistant' && !assistantInitialized) {
+          initializeAssistant();
+        }
+      });
+    });
+
+    function initializeAssistant() {
+      assistantInitialized = true;
+      assistantDebugLog('success', 'Asistan başlatıldı');
+
+      const messageInput = document.getElementById('assistantMessageInput');
+      const sendButton = document.getElementById('assistantSendButton');
+      const attachBtn = document.getElementById('assistantAttachBtn');
+      const fileInput = document.getElementById('assistantFileInput');
+      const debugToggle = document.getElementById('assistantDebugToggle');
+
+      if (messageInput) {
+        messageInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendAssistantMessage();
+          }
+        });
+      }
+
+      if (sendButton) sendButton.addEventListener('click', sendAssistantMessage);
+      if (attachBtn) attachBtn.addEventListener('click', () => fileInput?.click());
+      if (fileInput) fileInput.addEventListener('change', handleAssistantFileSelect);
+      if (debugToggle) debugToggle.addEventListener('click', toggleAssistantDebug);
+
+      // Log user info
+      if (user) {
+        assistantDebugLog('success', 'Kullanıcı bilgisi mevcut', { id: user.id, phone: user.phone, name: user.name });
+      } else {
+        assistantDebugLog('warn', 'Kullanıcı bilgisi bulunamadı');
+      }
+    }
+
+    function handleAssistantFileSelect(event) {
+      const files = Array.from(event.target.files);
+      assistantDebugLog('info', `${files.length} dosya seçildi`, files.map(f => ({ name: f.name, type: f.type, size: f.size })));
+      assistantSelectedFiles = assistantSelectedFiles.concat(files);
+      updateAssistantMediaPreview();
+      event.target.value = '';
+    }
+
+    function updateAssistantMediaPreview() {
+      const preview = document.getElementById('assistantMediaPreview');
+      if (!preview) return;
+      preview.innerHTML = '';
+
+      assistantSelectedFiles.forEach((file, index) => {
+        const item = document.createElement('div');
+        item.className = 'preview-item';
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'preview-remove';
+        removeBtn.innerHTML = '×';
+        removeBtn.onclick = () => {
+          assistantSelectedFiles.splice(index, 1);
+          updateAssistantMediaPreview();
+        };
+
+        let mediaEl;
+        const url = URL.createObjectURL(file);
+
+        if (file.type.startsWith('image/')) {
+          mediaEl = document.createElement('img');
+          mediaEl.src = url;
+        } else if (file.type.startsWith('video/')) {
+          mediaEl = document.createElement('video');
+          mediaEl.src = url;
+        } else {
+          mediaEl = document.createElement('div');
+          mediaEl.innerHTML = '<i class="ri-volume-up-line" style="font-size:1.5rem;color:var(--primary);"></i>';
+          mediaEl.style.display = 'flex';
+          mediaEl.style.alignItems = 'center';
+          mediaEl.style.justifyContent = 'center';
+          mediaEl.style.height = '100%';
+          mediaEl.style.background = '#f0f0f0';
+        }
+
+        item.appendChild(mediaEl);
+        item.appendChild(removeBtn);
+        preview.appendChild(item);
+      });
+    }
+
+    async function sendAssistantMessage() {
+      const messageInput = document.getElementById('assistantMessageInput');
+      const sendButton = document.querySelector('#assistant-tab .btn-send');
+      const message = messageInput?.value?.trim() || '';
+
+      if (!message && assistantSelectedFiles.length === 0) {
+        assistantDebugLog('warn', 'Boş mesaj gönderilmeye çalışıldı');
+        return;
+      }
+
+      assistantDebugLog('info', 'Mesaj gönderiliyor...', { message, fileCount: assistantSelectedFiles.length });
+
+      // Kullanıcı bilgisini taze olarak çek
+      const currentUser = (typeof auth !== 'undefined' && auth.getUser) ? auth.getUser() : user;
+
+      if (!currentUser || !currentUser.phone) {
+        assistantDebugLog('error', 'Telefon numarası eksik', currentUser);
+        addAssistantMessage('❌ Telefon numaranız eksik. Lütfen profil ayarlarınızı güncelleyin.', 'ai', false, true);
+        return;
+      }
+
+      // Show user message
+      addAssistantMessage(message, 'user', false, false, assistantSelectedFiles);
+      if (messageInput) messageInput.value = '';
+
+      // Process Files
+      let mediaData = [];
+      try {
+        mediaData = await Promise.all(assistantSelectedFiles.map(async (file) => {
+          assistantDebugLog('info', `Dosya işleniyor: ${file.name}`);
+          return {
+            type: file.type.split('/')[0],
+            mimeType: file.type,
+            data: await fileToBase64(file),
+            name: file.name
+          };
+        }));
+        if (mediaData.length > 0) {
+          assistantDebugLog('success', `${mediaData.length} dosya hazırlandı`);
+        }
+      } catch (err) {
+        assistantDebugLog('error', 'Dosya işleme hatası', err.message);
+      }
+
+      assistantSelectedFiles = [];
+      updateAssistantMediaPreview();
+
+      // Loading State
+      const loadingId = addAssistantMessage('', 'ai', true);
+      if (sendButton) {
+        sendButton.disabled = true;
+      }
+
+      // Prepare request
+      const requestBody = {
+        from: currentUser.phone + '@s.whatsapp.net',
+        text: message,
+        media: mediaData
+      };
+
+      assistantDebugLog('info', 'API isteği hazırlandı', {
+        url: assistantAPI_URL,
+        from: requestBody.from,
+        textLength: message.length,
+        mediaCount: mediaData.length
+      });
+
+      try {
+        const startTime = Date.now();
+        assistantDebugLog('info', 'API isteği gönderiliyor...');
+
+        const response = await fetch(assistantAPI_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestBody)
+        });
+
+        const elapsed = Date.now() - startTime;
+        assistantDebugLog('info', `API yanıtı alındı (${elapsed}ms)`, {
+          status: response.status,
+          statusText: response.statusText
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        assistantDebugLog('success', 'API yanıtı parse edildi', data);
+
+        removeAssistantMessage(loadingId);
+
+        if (data.success) {
+          addAssistantMessage(data.response, 'ai', false, false, null, data.tool_used);
+          assistantDebugLog('success', 'Mesaj gösterildi', { tool: data.tool_used });
+        } else {
+          const errorMsg = data.error || data.message || 'Bilinmeyen hata';
+          assistantDebugLog('error', 'API hata döndü', data);
+          addAssistantMessage('❌ ' + errorMsg, 'ai', false, true);
+        }
+      } catch (error) {
+        assistantDebugLog('error', 'İstek başarısız', {
+          name: error.name,
+          message: error.message
+        });
+        removeAssistantMessage(loadingId);
+
+        let errorMessage = error.message;
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+          errorMessage = 'Ağ bağlantısı hatası. İnternet bağlantınızı kontrol edin.';
+        } else if (error.message.includes('CORS')) {
+          errorMessage = 'CORS hatası. Sunucu yapılandırmasını kontrol edin.';
+        }
+
+        addAssistantMessage('❌ Bağlantı hatası: ' + errorMessage, 'ai', false, true);
+      } finally {
+        if (sendButton) {
+          sendButton.disabled = false;
+        }
+      }
+    }
+
+    function addAssistantMessage(text, type, isLoading = false, isError = false, mediaFiles = null, tool = null) {
+      const chatContainer = document.getElementById('assistantChatMessages');
+      if (!chatContainer) return null;
+
+      const msgDiv = document.createElement('div');
+      const msgId = 'msg-' + Date.now();
+      msgDiv.id = msgId;
+      msgDiv.className = `msg-bubble msg-${type}${isError ? ' msg-error' : ''}`;
+
+      let content = '';
+
+      if (isLoading) {
+        content = `<div class="typing-dots"><span></span><span></span><span></span></div>`;
+      } else {
+        content = text ? text.replace(/\n/g, '<br>') : '';
+      }
+
+      if (mediaFiles && mediaFiles.length) {
+        content += `<div style="margin-top:10px; font-size:0.8rem; opacity:0.7; display:flex; align-items:center; gap:4px;">
+          <i class="ri-attachment-line"></i> ${mediaFiles.length} dosya eklendi
+        </div>`;
+      }
+
+      if (tool) {
+        content += `<div style="margin-top:10px;">
+          <span style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; padding:4px 10px; border-radius:20px; font-size:0.7rem; font-weight:600; display:inline-flex; align-items:center; gap:4px;">
+            <i class="ri-tools-line"></i> ${tool}
+          </span>
+        </div>`;
+      }
+
+      msgDiv.innerHTML = content;
+      chatContainer.appendChild(msgDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      return msgId;
+    }
+
+    function removeAssistantMessage(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Note: Search is handled by global-header.js (global search dropdown)
+
+    function viewService(id) {
+      window.location.href = `/pages/service-detail.html?id=${id}`;
+    }
+
+    // ============================================================================
+    // 📂 CATEGORY VIEW SYSTEM
+    // ============================================================================
+
+    let currentView = 'dashboard'; // 'dashboard' or 'category'
+    let currentCategory = null;
+
+    async function filterByCategory(categoryId) {
+
+      try {
+        // Get category details
+        const categories = await servicesActions.loadCategories();
+
+        const category = categories.find(cat => cat.id === categoryId);
+
+        if (!category) {
+          Utils.showToast('Kategori bulunamadı', 'error');
+          return;
+        }
+
+        currentCategory = category;
+
+        // Switch to category view FIRST (so user sees something)
+        switchToCategoryView(category);
+
+        // Then load services (with loading indicators)
+        try {
+          await loadCategoryServices(categoryId, category.attributes.name);
+        } catch (serviceError) {
+          // Show error but keep category view visible
+          Utils.showToast('Bazı servisler yüklenemedi', 'warning');
+        }
+
+      } catch (error) {
+        Utils.showToast('Kategori sayfası açılamadı', 'error');
+        // Return to dashboard on error
+        returnToDashboard();
+      }
+    }
+
+    function switchToCategoryView(category) {
+
+      const dashboardContent = document.querySelector('.dashboard-content');
+      const categoryView = document.getElementById('category-view');
+      const categoryTitle = document.getElementById('category-title');
+      const articlesSection = document.getElementById('articles-section-container');
+      const articleView = document.getElementById('article-view');
+
+      if (!dashboardContent) {
+        return;
+      }
+
+      if (!categoryView) {
+        return;
+      }
+
+      // Update title
+      const titleText = `${category.attributes.name} Servisleri`;
+      categoryTitle.textContent = titleText;
+
+      // Clear article ID from URL if present
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('articleId')) {
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.delete('articleId');
+        window.history.pushState({}, '', newUrl);
+        currentArticleId = null;
+      }
+
+      // Fade out dashboard and article view
+      dashboardContent.classList.add('fade-out');
+      if (articlesSection) articlesSection.style.opacity = '0';
+      if (articleView) {
+        articleView.classList.remove('active');
+        articleView.style.opacity = '0';
+      }
+
+      // After fade out, show category view
+      setTimeout(() => {
+        dashboardContent.classList.add('hidden');
+        if (articlesSection) articlesSection.classList.add('hidden');
+        if (articleView) articleView.classList.add('hidden');
+
+        categoryView.classList.remove('hidden');
+
+        // Small delay before activating for animation
+        setTimeout(() => {
+          categoryView.classList.add('active');
+          currentView = 'category';
+        }, 50);
+      }, 400);
+    }
+
+    function returnToDashboard() {
+
+      const dashboardContent = document.querySelector('.dashboard-content');
+      const categoryView = document.getElementById('category-view');
+      const articlesSection = document.getElementById('articles-section-container');
+
+      if (!categoryView) {
+        return;
+      }
+
+      // Fade out category view
+      categoryView.classList.remove('active');
+
+      // After fade out, show dashboard
+      setTimeout(() => {
+        categoryView.classList.add('hidden');
+        if (dashboardContent) {
+          dashboardContent.classList.remove('hidden', 'fade-out');
+        }
+        if (articlesSection) {
+          articlesSection.classList.remove('hidden');
+        }
+
+        // Small delay before activating for animation
+        setTimeout(() => {
+          if (dashboardContent) {
+            dashboardContent.classList.add('active');
+          }
+          if (articlesSection) {
+            articlesSection.style.opacity = '1';
+          }
+          currentView = 'dashboard';
+          currentCategory = null;
+        }, 50);
+      }, 300);
+    }
+
+    async function loadCategoryServices(categoryId, categoryName) {
+
+      try {
+        // Show loading state
+        ['nearest-services-grid', 'liked-services-grid', 'fast-services-grid'].forEach(gridId => {
+          const grid = document.getElementById(gridId);
+          if (grid) {
+            grid.innerHTML = '<div class="empty-state"><div class="spinner"></div><p>Servisler yükleniyor...</p></div>';
+          }
+        });
+
+        // Fetch services for this category
+        // Note: API might not support categoryId filter, so we'll get all services
+        // and filter client-side
+        const filters = {
+          pageSize: 100 // Get more for filtering
+        };
+
+        const allServices = await servicesActions.loadServices(filters);
+
+        if (!allServices || allServices.length === 0) {
+          // Show empty state in all grids
+          ['nearest-services-grid', 'liked-services-grid', 'fast-services-grid'].forEach(gridId => {
+            const grid = document.getElementById(gridId);
+            if (grid) {
+              grid.innerHTML = '<div class="empty-state"><p>Bu kategoride henüz servis bulunmuyor</p></div>';
+            }
+          });
+          return;
+        }
+
+        // Filter services by category (client-side for now)
+        // Include services that match the selected category OR have "Tüm Kategoriler" (all categories)
+        const categoryServices = allServices.filter(service => {
+          const serviceCategories = service.attributes?.categories?.data || [];
+
+          // Check if service belongs to the selected category
+          const hasSelectedCategory = serviceCategories.some(cat => cat.id === categoryId);
+
+          // Check if service has "Tüm Kategoriler" option
+          const hasAllCategories = serviceCategories.some(cat => {
+            const catName = cat.attributes?.name || '';
+            return catName.toLowerCase().includes('tüm') || catName.toLowerCase().includes('tum');
+          });
+
+          return hasSelectedCategory || hasAllCategories;
+        });
+
+
+        if (categoryServices.length === 0) {
+          // Show empty state
+          ['nearest-services-grid', 'liked-services-grid', 'fast-services-grid'].forEach(gridId => {
+            const grid = document.getElementById(gridId);
+            if (grid) {
+              grid.innerHTML = '<div class="empty-state"><p>Bu kategoride servis bulunamadı</p></div>';
+            }
+          });
+          return;
+        }
+
+        // Sort services for different sections
+        const nearestServices = [...categoryServices].sort((a, b) => {
+          // Sort by distance (random for now, replace with actual distance calculation)
+          return Math.random() - 0.5;
+        }).slice(0, 12);
+
+        const likedServices = [...categoryServices].sort((a, b) => {
+          const ratingA = a.attributes?.rating || 0;
+          const ratingB = b.attributes?.rating || 0;
+          return ratingB - ratingA;
+        }).slice(0, 12);
+
+        const fastServices = [...categoryServices].sort((a, b) => {
+          // Sort by response time (random for now)
+          return Math.random() - 0.5;
+        }).slice(0, 12);
+
+
+        // Render services in each section
+        renderServiceSection('nearest-services-grid', nearestServices, 'near');
+        renderServiceSection('liked-services-grid', likedServices, 'liked');
+        renderServiceSection('fast-services-grid', fastServices, 'fast');
+
+        // Update section titles with category name
+        const nearestTitle = document.getElementById('nearest-title');
+        if (nearestTitle) {
+          nearestTitle.textContent = `En Yakın ${categoryName} Servisleri`;
+        }
+
+
+      } catch (error) {
+        // Show error state
+        ['nearest-services-grid', 'liked-services-grid', 'fast-services-grid'].forEach(gridId => {
+          const grid = document.getElementById(gridId);
+          if (grid) {
+            grid.innerHTML = '<div class="empty-state"><p>Servisler yüklenirken hata oluştu</p></div>';
+          }
+        });
+        throw error; // Re-throw to be caught by caller
+      }
+    }
+
+    function renderServiceSection(gridId, services, badgeType) {
+
+      const grid = document.getElementById(gridId);
+      if (!grid) {
+        return;
+      }
+
+      if (services.length === 0) {
+        grid.innerHTML = '<div class="empty-state"><p>Servis bulunamadı</p></div>';
+        return;
+      }
+
+      const badgeConfig = {
+        near: { text: 'Yakın', bgColor: '#dcfce7', color: '#166534' },
+        liked: { text: 'Popüler', bgColor: '#fef9c3', color: '#854d0e' },
+        fast: { text: 'Hızlı', bgColor: '#dbeafe', color: '#1e40af' }
+      };
+
+      const badge = badgeConfig[badgeType];
+
+      grid.innerHTML = services.map(service => {
+        const attrs = service.attributes;
+        const imgUrl = Utils.getImageUrl(attrs.ProfilePicture);
+        const rating = attrs.rating || 4.5;
+        const isPremium = rating >= 4.5;
+
+        return `
+          <div class="service-card">
+            ${isPremium ? '<div class="premium-badge"><i class="ri-vip-crown-fill"></i> Premium</div>' : ''}
+            <div style="position: absolute; top: 8px; left: 8px; background: ${badge.bgColor}; color: ${badge.color}; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; z-index: 2;">
+              ${badge.text}
+            </div>
+            <img src="${imgUrl}" alt="${attrs.name}" class="service-img" onerror="this.src='/assets/placeholder-service.jpg'" onclick="window.location.href='/pages/service-detail.html?id=${service.id}'">
+            <div class="service-content">
+              <h3 class="service-title" onclick="window.location.href='/pages/service-detail.html?id=${service.id}'" style="cursor: pointer;">${attrs.name}</h3>
+              <p class="service-loc">
+                <i class="ri-map-pin-line"></i>
+                ${attrs.location || attrs.city || 'İstanbul'}
+              </p>
+              <div class="service-meta">
+                <div class="rating-badge">
+                  <i class="ri-star-fill"></i> ${rating.toFixed(1)}
+                </div>
+              </div>
+              <div class="service-actions" style="display: flex; gap: 6px; margin-top: 10px;">
+                <button class="btn-appointment" onclick="event.stopPropagation(); window.location.href='/pages/create-appointment.html?serviceId=${service.id}'" style="flex: 1; background: #FFD700; color: #222; border: none; padding: 6px 8px; border-radius: 6px; font-weight: 600; font-size: 0.7rem; cursor: pointer; transition: all 0.3s;">
+                  <i class="ri-calendar-line"></i> Randevu
+                </button>
+                <button class="btn-quote" onclick="event.stopPropagation(); window.location.href='/pages/create-appointment.html?serviceId=${service.id}&mode=quote'" style="flex: 1; background: #FF8C00; color: white; border: none; padding: 6px 8px; border-radius: 6px; font-weight: 600; font-size: 0.7rem; cursor: pointer; transition: all 0.3s;">
+                  <i class="ri-money-dollar-circle-line"></i> Teklif
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+    }
+
+    async function loadMyVehiclesWidget() {
+      const container = document.getElementById('my-vehicles-widget-placeholder');
+      if (!container) return;
+
+      // Servis sahibi ise araçlarım bölümünü gösterme
+      const isServiceOwner = localStorage.getItem('isServiceOwner') === 'true';
+
+      if (isServiceOwner) {
+        container.innerHTML = '';
+        return;
+      }
+
+      try {
+        const response = await api.getVehicles();
+        const vehicles = response.data || [];
+
+        if (vehicles.length > 0) {
+          container.innerHTML = `
+        <div class="dashboard-widget" data-widget-id="my-vehicles" >
+              <div class="section-header">
+                <div style="display: flex; align-items: center;">
+                  <h2 class="section-title"><i class="ri-roadster-fill" style="color: var(--primary);"></i>Araçlarım</h2>
+                  <div class="drag-handle-group"><i class="ri-hand-paper-fill"></i><i class="ri-drag-move-2-fill"></i></div>
+                </div>
+                <a href="/pages/my-vehicles.html" class="section-action">Yönet</a>
+              </div>
+              <div class="vehicle-list">
+                ${vehicles.slice(0, 3).map(v => {
+            const attrs = v.attributes || v;
+            return `
+                    <div class="vehicle-mini-card" onclick="window.location.href='/pages/my-vehicles.html'">
+                      <div class="vehicle-icon"><i class="ri-car-fill"></i></div>
+                      <div class="vehicle-info">
+                        <h4>${attrs.brand} ${attrs.model}</h4>
+                        <p>${attrs.plateNumber}</p>
+                      </div>
+                    </div>
+                  `;
+          }).join('')}
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      catch (e) {
+      }
+    }
+
+    // Load vehicles widget - DISABLED: Araçlarım bölümü dashboard'da gözükmesin
+    // loadMyVehiclesWidget();
+
+    // ===== ARTICLES SYSTEM =====
+    const articlesData = [
+      {
+        id: 1,
+        title: "Motor Sesi ve Titreşim",
+        subtitle: "Alışılmadık motor sesleri ve titreşimler ciddi sorunların habercisi olabilir. Zamanında müdahale önemlidir.",
+        image: "/assets/articles/engine_noise.png",
+        categoryId: 1, // Mekanik Tamir
+        content: `
+          <h3>Ne Zaman Endişelenmelisiniz?</h3>
+          <p>Motor bölgesinden gelen alışılmadık sesler ve titreşimler genellikle ciddi bir sorunun habercisidir. Normal çalışma koşullarında motorunuz sessiz ve yumuşak çalışmalıdır.</p>
+          
+          <h3>Dikkat Edilmesi Gereken Belirtiler</h3>
+          <ul>
+            <li><strong>Tıkırtı Sesi:</strong> Motor içinden gelen tıkırtı sesleri, yağ eksikliği veya motor parçalarının aşınmasını işaret edebilir.</li>
+            <li><strong>Çarpma/Vurma Sesi:</strong> Ağır çarpma sesleri, krank mili yataklarında veya pistonlarda sorun olduğunu gösterebilir.</li>
+            <li><strong>Tiz Çığlık Sesi:</strong> Kayışlardan kaynaklanan tiz sesler, kayış gerginliği veya aşınmış rulmanları işaret eder.</li>
+            <li><strong>Şiddetli Titreşim:</strong> Motordan gelen anormal titreşimler, motor takozlarında veya ateşleme sisteminde sorun olabileceğini gösterir.</li>
+          </ul>
+
+          <h3>Servise Ne Zaman Gitmelisiniz?</h3>
+          <p>Yukarıdaki belirtilerden herhangi birini fark ettiğinizde, aracınızı kullanmaya devam etmek yerine derhal bir servise götürmeniz önerilir. Motor hasarları kademeli olarak artar ve erken müdahale hem güvenliğinizi hem de cüzdanınızı korur.</p>
+
+          <p><strong>Önemli Not:</strong> Motor ışığı yanıyorsa veya performans kaybı yaşıyorsanız, aracı çalıştırmadan önce profesyonel destek alın.</p>
+        `
+      },
+      {
+        id: 2,
+        title: "Fren Sistemleri",
+        subtitle: "Fren sistemi güvenliğiniz için kritik öneme sahiptir. Fren sorunlarını asla ihmal etmeyin.",
+        image: "/assets/articles/brake_system.png",
+        categoryId: 1, // Mekanik Tamir
+        content: `
+          <h3>Fren Sistemi Neden Önemlidir?</h3>
+          <p>Fren sistemi, aracınızın en kritik güvenlik özelliğidir. Çalışmayan veya zayıf frenler, sizi ve çevrenizdeki diğer sürücüleri tehlikeye atar.</p>
+          
+          <h3>Servise Gitmenizi Gerektiren Belirtiler</h3>
+          <ul>
+            <li><strong>Gıcırtı veya Cırlama Sesi:</strong> Fren balataları aşınmış olabilir ve değiştirilmesi gerekiyor olabilir.</li>
+            <li><strong>Fren Pedalında Titreşim:</strong> Fren diskleri çarpık veya aşınmış olabilir.</li>
+            <li><strong>Yumuşak Pedal Hissi:</strong> Fren sıvısı eksik olabilir veya sistemde hava olabilir.</li>
+            <li><strong>Fren Lambası Yanıyor:</strong> Fren sıvısı seviyesi düşük veya ABS sisteminde sorun var demektir.</li>
+            <li><strong>Tek Tarafa Çekme:</strong> Fren kaliperlerinde veya balatalarda eşitsiz aşınma olabilir.</li>
+            <li><strong>Uzun Fren Mesafesi:</strong> Fren sistemi genel olarak zayıflamış olabilir.</li>
+          </ul>
+
+          <h3>Acil Durum Ne Yapmalısınız?</h3>
+          <p>Eğer fren pedalı sünger gibi hissettiriyorsa veya tamamen yere kadar iniyorsa, aracı park edin ve çektirme hizmeti alın. Fren sistemi olmadan kesinlikle sürmeyin.</p>
+
+          <p><strong>Düzenli Bakım:</strong> Fren sıvısı her 2 yılda bir, fren balatası ise yaklaşık 40.000-60.000 km'de bir değiştirilmelidir. Düzenli kontroller ile büyük sorunları önleyebilirsiniz.</p>
+        `
+      },
+      {
+        id: 3,
+        title: "Periyodik Bakım Zamanı",
+        subtitle: "Düzenli bakım, aracınızın ömrünü uzatır ve beklenmedik arızaları önler. Periyodik bakımı ihmal etmeyin.",
+        image: "/assets/articles/periodic_maintenance.png",
+        categoryId: 2, // Periyodik Bakım
+        content: `
+          <h3>Periyodik Bakım Nedir?</h3>
+          <p>Periyodik bakım, aracınızın üretici tarafından önerilen belirli kilometre veya zaman aralıklarında yapılması gereken rutin kontrol ve yedek parça değişimlerini kapsar.</p>
+          
+          <h3>Hangi Durumlarda Servise Gitmelisiniz?</h3>
+          <ul>
+            <li><strong>Kilometre Aralıkları:</strong> Genellikle her 10.000, 15.000 veya 20.000 km'de (araç modeline göre değişir)</li>
+            <li><strong>Zaman Bazlı:</strong> Kilometre yapmamış olsanız bile yılda en az bir kez</li>
+            <li><strong>Mevsimsel Geçişler:</strong> Kış/yaz lastik değişimleri ve mevsimsel kontroller</li>
+            <li><strong>Garanti Koşulları:</strong> Garantinin devamı için belirtilen aralarda</li>
+          </ul>
+
+          <h3>Standart Periyodik Bakım İçeriği</h3>
+          <ul>
+            <li>Motor yağı ve yağ filtresi değişimi</li>
+            <li>Hava filtresi kontrolü/değişimi</li>
+            <li>Polen filtresi kontrolü/değişimi</li>
+            <li>Fren sıvısı kontrolü</li>
+            <li>Motor soğutma sıvısı kontrolü</li>
+            <li>Ateşleme sistemı kontrolü (buji vb.)</li>
+            <li>Fren balata/disk kontrolü</li>
+            <li>Lastik hava basıncı ve dış yüzey kontrolü</li>
+            <li>Süspansiyon ve rot/balans kontrolü</li>
+            <li>Elektrik sistem kontrolü</li>
+          </ul>
+
+          <h3>Neden Bu Kadar Önemli?</h3>
+          <p>Düzenli periyodik bakım, aracınızın performansını optimumda tutar, yakıt tüketimini azaltır ve olası büyük arızaları erkenden tespit ederek pahalı tamirlerden kaçınmanızı sağlar. Ayrıca, aracınızın ikinci el değerini de korur.</p>
+
+          <p><strong>Hatırlatma:</strong> Kullanım kılavuzunuzda belirtilen bakım programını takip edin. Servis kitapçığınızı mutlaka güncel tutun.</p>
+        `
+      },
+      {
+        id: 4,
+        title: "Lastik ve Süspansiyon",
+        subtitle: "Lastik ve süspansiyon sorunları hem konfor hem de güvenlik açısından önemlidir. Düzenli kontrol şarttır.",
+        image: "/assets/articles/tire_suspension.png",
+        categoryId: 1, // Mekanik Tamir
+        content: `
+          <h3>Lastik Sorunları</h3>
+          <p>Lastikler, aracınızın yol ile tek temas noktasıdır. Doğru basınç ve iyi durumdaki lastikler güvenli sürüş için elzemdir.</p>
+          
+          <h3>Ne Zaman Servise Gitmelisiniz?</h3>
+          <ul>
+            <li><strong>Diş Derinliği:</strong> Yasal minimum 1.6mm'nin altına düştüğünde (idealı 3mm üzeri)</li>
+            <li><strong>Düzensiz Aşınma:</strong> Tek tarafta veya ortada daha fazla aşınma varsa rot-balans gerekebilir</li>
+            <li><strong>Şişlik veya Kesikler:</strong> Yan tarafta şişlik veya derin kesikler patlamaöncesi kritik durumdur</li>
+            <li><strong>Titreşim:</strong> Direksiyonda veya kabin içinde hissedilen titreşimler dengesiz lastikleri işaret edebilir</li>
+            <li><strong>Basınç Kaybı:</strong> Sürekli basınç kaybı delik veya valf sorununu gösterir</li>
+          </ul>
+
+          <h3>Süspansiyon Sorunları</h3>
+          <ul>
+            <li><strong>Aşırı Sarsıntı:</strong> Kötü yolda normal olmayan şekilde zıplama amortisör sorunu olabilir</li>
+            <li><strong>Direksiyon Tutmama:</strong> Araç düz yolda bile sapmaya çalışıyorsa rot ayarı gerekebilir</li>
+            <li><strong>Tıkırtı Sesleri:</strong> Tümsek veya çukurda tıkırtı sesi süspansiyon elemanlarında aşınma işareti</li>
+            <li><strong>Fren Sırasında Dalma:</strong> Aşırı öne eğilme ön amotisörlerin zayıfladığını gösterir</li>
+            <li><strong>Tek Köşe Alçak:</strong> Bir köşe diğerlerinden belirgin şekilde alçaksa o taraftaki yay veya amortisör arızalı olabilir</li>
+          </ul>
+
+          <h3>Bakım Önerileri</h3>
+          <p>Lastik rotasyonunu her 10.000 km'de bir yaptırın. Hava basıncını ayda bir kontrol edin. Rot-balans ayarını yılda bir veya 20.000 km'de bir yaptırın. Amortisörleri her 80.000 km'de değerlendirin.</p>
+
+          <p><strong>Güvenlik Notu:</strong> Yağışta kayma, ani fren mesafesi uzaması veya yüksek hızda direksiyon hakimiyeti kaybı yaşıyorsanız acilen servise gidin.</p>
+        `
+      },
+      {
+        id: 5,
+        title: "Elektrik ve Elektronik Sistemler",
+        subtitle: "Modern araçlar karmaşık elektronik sistemlerle doludur. Elektrik sorunları tüm sistemi etkileyebilir.",
+        image: "/assets/articles/electrical_system.png",
+        categoryId: 1, // Mekanik Tamir
+        content: `
+          <h3>Elektrik Sistemi Sorunları</h3>
+          <p>Elektrik sistemi, modern araçların beyni ve sinir sistemidir. Aküden başlayıp, alternatör, marş motoru, sensörler, ECU ve tüm elektronik aksesuarlara kadar uzanan karmaşık bir yapıdır.</p>
+          
+          <h3>Servise Gitmenizi Gerektiren Belirtiler</h3>
+          <ul>
+            <li><strong>Motor Çalışmıyor:</strong> Marş alırken tek tık sesi veya hiç ses gelmiyorsa akü veya marş motoru arızalı olabilir</li>
+            <li><strong>Zayıf Başlatma:</strong> Motor güçlükle çalışıyorsa akü zayıf veya alternatör şarj etmiyor olabilir</li>
+            <li><strong>Gösterge Işıkları:</strong> Check Engine, ABS, Airbag veya diğer uyarı lambaları yanıyorsa mutlaka teşhis gerekir</li>
+            <li><strong>Farlar Sönük:</strong> Farlar ve panel ışıkları sönükse şarj sistemi sorunu olabilir</li>
+            <li><strong>Elektrikli Aksesuarlar Çalışmıyor:</strong> Camlar, aynalar, klima veya radyo çalışmıyorsa sigorta veya kablo arızası olabilir</li>
+            <li><strong>Aniden Kapanma:</strong> Araç seyir halindeyken elektronik kontrol üniteleri kapanıyorsa ciddi elektrik sorunu var demektir</li>
+          </ul>
+
+          <h3>Akü Bakımı</h3>
+          <p>Akünün ortalama ömrü 3-5 yıldır. Kutup başlarındaki oksitlenmeyi temizleyin. Su seviyesini kontrol edin (bakım gerektiren akülerde). Araç uzun süre kullanılmayacaksa aküyü çıkarın veya şarj cihazıyla şarjdadata bekletin.</p>
+
+          <h3>Alternatör Kontrolü</h3>
+          <p>Alternatör şarj sisteminin kalbidir. Motor çalışırken voltmetre 13.5V-14.5V arası göstermelidir. Daha düşük değerler şarj sorunu, daha yüksek değerler aşırı şarj sorununu işaret eder.</p>
+
+          <p><strong>Teşhis Önemi:</strong> Modern araçlarda elektrik arızası için OBD (On-Board Diagnostics) teşhis cihazı şarttır. Profesyonel serviste hata kodları okunarak sorun net şekilde tespit edilir.</p>
+        `
+      },
+      {
+        id: 6,
+        title: "Klima ve İklimlendirme",
+        subtitle: "Araç kliması sadece konfor değil, cam buğulanmasını önleyerek güvenlik de sağlar. Düzenli bakım önemlidir.",
+        image: "/assets/articles/ac_system.png",
+        categoryId: 2, // Periyodik Bakım
+        content: `
+          <h3>Klima Sistemi Nasıl Çalışır?</h3>
+          <p>Araç kliması, kompresör, evaporatör, kondenser ve filtreden oluşan kapalı bir sistemdir. Soğutucu gaz (R134a veya R1234yf) bu sistem içinde dolaşarak havayı soğuttur.</p>
+          
+          <h3>Ne Zaman Servise Gitmelisiniz?</h3>
+          <ul>
+            <li><strong>Soğutma Yok veya Zayıf:</strong> Gaz kaçağı, kompresör arızası veya filtre tıkanıklığı olabilir</li>
+            <li><strong>Kötü Koku:</strong> Evaporatörde bakteri ve küf üremesi olduğunu gösterir, hijyen dezenfeksiyon gerekir</li>
+            <li><strong>Anormal Sesler:</strong> Kompresörden gelen gürültü rulman veya kavrama arızasını işaret eder</li>
+            <li><strong>Su Sızıntısı:</strong> Evaporatör drenaj hortumu tıkanmış olabilir (normaldir ama fazlaysa sorun olabilir)</li>
+            <li><strong>Cam Buğulanması:</strong> Sistemde nem varsa veya filtre tıkalıysa camlar buğulanır
+</li>
+            <li><strong>Düzensiz Üfleme:</strong> Hava akışı sabit değilse kanat motoru veya rezistör sorunu olabilir</li>
+          </ul>
+
+          <h3>Düzenli Bakım Gereklilikleri</h3>
+          <ul>
+            <li><strong>Gaz Kontrolü:</strong> 2-3 yılda bir gaz seviyesi kontrol edilmeli, gerekirse gaz takviyesi yapılmalı</li>
+            <li><strong>Polen Filtresi:</strong> Her 15.000-20.000 km'de veya yılda bir kez değiştirilmeli</li>
+            <li><strong>Klima Temizliği:</strong> Yılda bir kez antibakteriyel temizlik ve dezenfeksiyon yapılmalı</li>
+            <li><strong>Kompresör Yağı:</strong> Klima gazı dolumu sırasında kompresör yağı da kontrol edilmelidir</li>
+          </ul>
+
+          <h3>Kullanım İpuçları</h3>
+          <p>Klimayı düzenli çalıştırın (kışın bile ayda bir 10 dakika). Sıcak havalarda önce camları açarak içerideki sıcak havayı atın, sonra klimayı çalıştırın. Park halinde uzun süre klimayı maksimumda çalıştırmaktan kaçının. Klima filtresi değişimini ihmal etmeyin.</p>
+
+          <p><strong>Sağlık Notu:</strong> Klimadan kötü koku geliyorsa bu bakterilerin solunum yollarınıza zarar verebilir. Derhal temizlik yaptırın.</p>
+        `
+      }
+    ];
+
+    let currentArticleId = null;
+
+    function loadArticles() {
+      const grid = document.getElementById('articles-grid');
+      if (!grid) return;
+
+      grid.innerHTML = articlesData.map(article => `
+        <div class="article-card" onclick="showArticle(${article.id})">
+          <img src="${article.image}" alt="${article.title}" class="article-card-image" onerror="this.style.display='none'">
+          <div class="article-card-content">
+            <h3 class="article-card-title">${article.title}</h3>
+            <p class="article-card-subtitle">${article.subtitle}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function showArticle(articleId, fromHistory = false) {
+      const article = articlesData.find(a => a.id === articleId);
+      if (!article) return;
+
+      currentArticleId = articleId;
+
+      // Update URL if not from history
+      if (!fromHistory) {
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('articleId', articleId);
+        window.history.pushState({ articleId: articleId }, '', newUrl);
+      }
+
+      // Hide dashboard content and articles, show article view
+      const dashboardContent = document.querySelector('.dashboard-content');
+      const articlesSection = document.getElementById('articles-section-container');
+      const articleView = document.getElementById('article-view');
+      const categoryView = document.getElementById('category-view');
+
+      // Fade out
+      if (dashboardContent) dashboardContent.style.opacity = '0';
+      articlesSection.style.opacity = '0';
+
+      setTimeout(async () => {
+        if (dashboardContent) dashboardContent.classList.add('hidden');
+        articlesSection.classList.add('hidden');
+        categoryView.classList.add('hidden');
+
+        // Set article content
+        document.getElementById('article-detail-title').textContent = article.title;
+        document.getElementById('article-detail-image').src = article.image;
+        document.getElementById('article-detail-image').alt = article.title;
+        document.getElementById('article-detail-subtitle').textContent = article.subtitle;
+        document.getElementById('article-detail-body').innerHTML = article.content;
+
+        // Load related services
+        await loadRelatedServices(article.categoryId);
+
+        // Show article view
+        articleView.classList.remove('hidden');
+        // Reset opacity in case it was set to 0 by category switch
+        articleView.style.opacity = '1';
+        setTimeout(() => {
+          articleView.classList.add('active');
+        }, 50);
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 300);
+    }
+
+    function returnFromArticle(fromHistory = false) {
+      const dashboardContent = document.querySelector('.dashboard-content');
+      const articlesSection = document.getElementById('articles-section-container');
+      const articleView = document.getElementById('article-view');
+
+      // Update URL if not from history
+      if (!fromHistory) {
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.delete('articleId');
+        window.history.pushState({}, '', newUrl);
+      }
+
+      // Fade out article view
+      articleView.classList.remove('active');
+
+      setTimeout(() => {
+        articleView.classList.add('hidden');
+        if (dashboardContent) dashboardContent.classList.remove('hidden');
+        articlesSection.classList.remove('hidden');
+
+        // Fade in
+        setTimeout(() => {
+          if (dashboardContent) dashboardContent.style.opacity = '1';
+          articlesSection.style.opacity = '1';
+        }, 50);
+
+        currentArticleId = null;
+
+        // Scroll to articles section
+        setTimeout(() => {
+          document.getElementById('articles-section-container')?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }, 300);
+      }, 300);
+    }
+
+    async function loadRelatedServices(categoryId) {
+      const grid = document.getElementById('related-services-grid');
+      if (!grid || !categoryId) {
+        return;
+      }
+
+
+      try {
+        // Show loading state
+        grid.innerHTML = '<div class="empty-state"><div class="spinner"></div><p>Servisler yükleniyor...</p></div>';
+
+        // Fetch all services (same approach as category view)
+        const filters = {
+          pageSize: 100
+        };
+
+        const allServices = await servicesActions.loadServices(filters);
+
+        if (!allServices || allServices.length === 0) {
+          grid.innerHTML = '<p style="text-align: center; color: var(--neutral-500); padding: 40px;">Servisler yüklenemedi.</p>';
+          return;
+        }
+
+        // Filter services by category (same logic as category view)
+        const categoryServices = allServices.filter(service => {
+          const serviceCategories = service.attributes?.categories?.data || [];
+
+          // Check if service belongs to the selected category
+          const hasSelectedCategory = serviceCategories.some(cat => cat.id === categoryId);
+
+          // Check if service has "Tüm Kategoriler" option
+          const hasAllCategories = serviceCategories.some(cat => {
+            const catName = cat.attributes?.name || '';
+            return catName.toLowerCase().includes('tüm') || catName.toLowerCase().includes('tum');
+          });
+
+          return hasSelectedCategory || hasAllCategories;
+        });
+
+
+        if (categoryServices.length === 0) {
+          grid.innerHTML = '<p style="text-align: center; color: var(--neutral-500); padding: 40px;">Bu sorunla ilgili henüz kayıtlı servis bulunamadı.</p>';
+          return;
+        }
+
+        // Sort by rating and limit to 6
+        const servicesToShow = categoryServices
+          .sort((a, b) => {
+            const ratingA = a.attributes?.rating || 0;
+            const ratingB = b.attributes?.rating || 0;
+            return ratingB - ratingA;
+          })
+          .slice(0, 6);
+
+
+        grid.innerHTML = servicesToShow.map(service => {
+          const attrs = service.attributes;
+          const imgUrl = Utils.getImageUrl(attrs.ProfilePicture);
+          const rating = attrs.rating || 4.5;
+
+          return `
+            <div class="related-service-card" onclick="window.location.href='/pages/service-detail.html?id=${service.id}'">
+              <div class="related-service-header">
+                <img src="${imgUrl}" alt="${attrs.name}" class="related-service-img" onerror="this.src='/assets/placeholder-service.jpg'">
+                <div class="related-service-info">
+                  <h4>${attrs.name}</h4>
+                  <p>
+                    <i class="ri-map-pin-line"></i>
+                    ${attrs.location || attrs.city || 'İstanbul'}
+                  </p>
+                </div>
+              </div>
+              <div class="related-service-actions">
+                <button class="related-service-btn btn-appointment" onclick="event.stopPropagation(); window.location.href='/pages/create-appointment.html?serviceId=${service.id}'">
+                  <i class="ri-calendar-line"></i> Randevu Al
+                </button>
+                <button class="related-service-btn btn-quote" onclick="event.stopPropagation(); window.location.href='/pages/create-appointment.html?serviceId=${service.id}&mode=quote'">
+                  <i class="ri-money-dollar-circle-line"></i> Teklif Al
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+
+      } catch (error) {
+        grid.innerHTML = '<p style="text-align: center; color: var(--neutral-500); padding: 40px;">Servisler yüklenirken bir hata oluştu.</p>';
+      }
+    }
+
+    // Load articles on page load
+    loadArticles();
+
+    // --- SIDEBAR TRUNCATION LOGIC ---
+    function adjustSidebarHeight() {
+      const sidebar = document.querySelector('.dashboard-sidebar');
+      const contentWrapper = document.querySelector('.content-wrapper');
+      const categoriesGrid = document.getElementById('categories-grid-sidebar');
+      const showMoreBtn = document.getElementById('sidebar-show-more');
+
+      if (!sidebar || !contentWrapper || !categoriesGrid || !showMoreBtn) return;
+
+      // Check if button is currently expanded - if so, don't re-truncate
+      if (showMoreBtn.classList.contains('expanded')) return;
+
+      // 1. Reset to measure natural heights
+      // We temporarily remove max-height to get the true scrollHeight
+      const wasMaxHeight = categoriesGrid.style.maxHeight;
+      categoriesGrid.style.maxHeight = 'none';
+
+      // 2. Get heights
+      const sidebarNaturalHeight = sidebar.scrollHeight;
+      const contentHeight = contentWrapper.offsetHeight;
+
+      // 3. Check if sidebar is taller than content
+      // Increased buffer to 150px to avoid "useless" buttons that only hide 1-2 items
+      if (sidebarNaturalHeight > contentHeight + 150) {
+        // We need to truncate
+        const excessHeight = sidebarNaturalHeight - contentHeight;
+
+        // Calculate target height
+        const currentGridHeight = categoriesGrid.offsetHeight;
+        let targetGridHeight = currentGridHeight - excessHeight;
+
+        // Safety check: Don't make it too small (min 300px)
+        if (targetGridHeight < 300) targetGridHeight = 300;
+
+        // Apply truncation
+        categoriesGrid.style.maxHeight = `${targetGridHeight}px`;
+        showMoreBtn.style.display = 'flex';
+
+        // Reset button state if it was hidden
+        if (showMoreBtn.style.display === 'none') {
+          showMoreBtn.classList.remove('expanded');
+          showMoreBtn.querySelector('span').textContent = 'Tümü';
+          showMoreBtn.querySelector('i').style.transform = 'rotate(0deg)';
+        }
+      } else {
+        // Sidebar fits or is close enough
+        categoriesGrid.style.maxHeight = 'none';
+        showMoreBtn.style.display = 'none';
+      }
+    }
+
+    // Toggle Sidebar Expansion
+    document.getElementById('sidebar-show-more')?.addEventListener('click', function () {
+      const categoriesGrid = document.getElementById('categories-grid-sidebar');
+      const isExpanded = this.classList.contains('expanded');
+      const btnText = this.querySelector('span');
+      const btnIcon = this.querySelector('i');
+
+      if (isExpanded) {
+        // Collapse
+        this.classList.remove('expanded');
+        btnText.textContent = 'Tümü';
+        btnIcon.style.transform = 'rotate(0deg)';
+        adjustSidebarHeight(); // Re-calculate
+      } else {
+        // Expand
+        this.classList.add('expanded');
+        btnText.textContent = 'Daha Az';
+        btnIcon.style.transform = 'rotate(180deg)';
+        categoriesGrid.style.maxHeight = categoriesGrid.scrollHeight + 'px';
+
+        setTimeout(() => {
+          if (this.classList.contains('expanded')) {
+            categoriesGrid.style.maxHeight = 'none';
+          }
+        }, 400);
+      }
+    });
+
+    // Use ResizeObserver to watch for content changes (images loading, dynamic content, etc.)
+    const resizeObserver = new ResizeObserver((entries) => {
+      // Debounce the adjustment
+      clearTimeout(window.sidebarResizeTimer);
+      window.sidebarResizeTimer = setTimeout(adjustSidebarHeight, 100);
+    });
+
+    // Start observing
+    document.addEventListener('DOMContentLoaded', () => {
+      const contentWrapper = document.querySelector('.content-wrapper');
+      const sidebar = document.querySelector('.dashboard-sidebar');
+      if (contentWrapper) resizeObserver.observe(contentWrapper);
+      if (sidebar) resizeObserver.observe(sidebar);
+
+      // Initial check
+      setTimeout(adjustSidebarHeight, 500);
+    });
+
+    // Initialize Article Persistence
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check for articleId in URL on load
+      const urlParams = new URLSearchParams(window.location.search);
+      const articleId = urlParams.get('articleId');
+      if (articleId) {
+        // Small delay to ensure articles are loaded
+        setTimeout(() => {
+          showArticle(parseInt(articleId), true);
+        }, 100);
+      }
+    });
+
+    // Handle browser back/forward buttons
+    window.addEventListener('popstate', (event) => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const articleId = urlParams.get('articleId');
+
+      if (articleId) {
+        showArticle(parseInt(articleId), true);
+      } else if (currentArticleId) {
+        returnFromArticle(true);
+      }
+    });
+
+  </script>
+  <!-- Global Footer will be injected here -->
+  <!-- Terms of Service Modal -->
+  <div id="terms-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Sadakat Programı Şartları</h3>
+        <button class="close-modal-btn"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>1. Program Kapsamı:</strong> Bu sadakat programı, TamirHanem üzerinden alınan belirli hizmetler
+          için
+          geçerlidir.</p>
+        <p><strong>2. Puan Kazanımı:</strong> Her tamamlanan randevu (minimum 500 TL tutarında) 1 sadakat puanı
+          kazandırır.</p>
+        <p><strong>3. Ödül:</strong> 5 puan toplandığında "Ücretsiz İç-Dış Yıkama" hakkı kazanılır.</p>
+        <p><strong>4. Geçerlilik:</strong> Kazanılan ödül 30 gün içinde kullanılmalıdır.</p>
+        <p><strong>5. İptal:</strong> TamirHanem program koşullarını değiştirme hakkını saklı tutar.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Load vehicles widget - DISABLED: Araçlarım bölümü dashboard'da gözükmesin
+    // loadMyVehiclesWidget();
+  </script>
+</body>
+
+</html>

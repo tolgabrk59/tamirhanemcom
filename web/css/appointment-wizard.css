@@ -1,0 +1,681 @@
+/**
+ * TamirHanem Web - Appointment Wizard Styles
+ * Multi-step appointment creation wizard
+ */
+
+/* ============================================
+   WIZARD CONTAINER
+   ============================================ */
+.wizard-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.wizard-card {
+  background: white;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+}
+
+/* ============================================
+   PROGRESS STEPPER
+   ============================================ */
+.wizard-stepper {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-2xl);
+  background: var(--color-bg);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.wizard-stepper::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: var(--spacing-2xl);
+  right: var(--spacing-2xl);
+  height: 3px;
+  background: #E5E7EB;
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.wizard-stepper-progress {
+  position: absolute;
+  top: 50%;
+  left: var(--spacing-2xl);
+  height: 3px;
+  background: var(--gradient-primary);
+  transform: translateY(-50%);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+.wizard-step {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.wizard-step-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid #E5E7EB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  transition: all var(--transition-base);
+}
+
+.wizard-step.active .wizard-step-circle {
+  background: var(--gradient-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-primary);
+  transform: scale(1.1);
+  box-shadow: var(--shadow-lg);
+}
+
+.wizard-step.completed .wizard-step-circle {
+  background: var(--color-success);
+  border-color: var(--color-success);
+  color: white;
+}
+
+.wizard-step-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-align: center;
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wizard-step.active .wizard-step-label {
+  color: var(--color-primary);
+}
+
+.wizard-step.completed .wizard-step-label {
+  color: var(--color-success);
+}
+
+/* ============================================
+   WIZARD CONTENT
+   ============================================ */
+.wizard-content {
+  padding: var(--spacing-2xl);
+  min-height: 500px;
+}
+
+.wizard-step-content {
+  display: none;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.wizard-step-content.active {
+  display: block;
+}
+
+.wizard-step-title {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.wizard-step-subtitle {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-2xl);
+}
+
+/* ============================================
+   SELECTION GRID
+   ============================================ */
+.selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.selection-card {
+  background: var(--color-bg);
+  border: 3px solid transparent;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.selection-card:hover {
+  background: white;
+  border-color: var(--color-primary);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.selection-card.selected {
+  background: white;
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-lg);
+}
+
+.selection-card-icon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+  display: block;
+}
+
+.selection-card-title {
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.selection-card-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ============================================
+   CALENDAR & TIME PICKER
+   ============================================ */
+.datetime-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.calendar-container {
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-lg);
+}
+
+.calendar-nav-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: white;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 1.25rem;
+  transition: all var(--transition-fast);
+}
+
+.calendar-nav-btn:hover {
+  background: var(--color-primary);
+  transform: scale(1.1);
+}
+
+.calendar-month {
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+}
+
+.calendar-day-header {
+  text-align: center;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  padding: 0.5rem;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  border: none;
+  background: white;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  transition: all var(--transition-fast);
+}
+
+.calendar-day:hover:not(.disabled):not(.selected) {
+  background: var(--color-primary-soft);
+  transform: scale(1.05);
+}
+
+.calendar-day.selected {
+  background: var(--gradient-primary);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.calendar-day.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.calendar-day.today {
+  border: 2px solid var(--color-primary);
+}
+
+.time-picker-container {
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+}
+
+.time-picker-label {
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.time-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.time-slot {
+  padding: var(--spacing-md);
+  background: white;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  text-align: center;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.time-slot:hover:not(.disabled):not(.selected) {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+}
+
+.time-slot.selected {
+  background: var(--color-primary);
+  color: var(--color-text-primary);
+  border-color: var(--color-primary);
+}
+
+.time-slot.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ============================================
+   VEHICLE SELECTION
+   ============================================ */
+.vehicle-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.vehicle-card {
+  background: var(--color-bg);
+  border: 3px solid transparent;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.vehicle-card:hover {
+  background: white;
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.vehicle-card.selected {
+  background: white;
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-lg);
+}
+
+.vehicle-card-icon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+  display: block;
+}
+
+.vehicle-card-title {
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.vehicle-card-plate {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+  padding: 0.5rem;
+  background: white;
+  border: 2px solid var(--color-text-primary);
+  border-radius: var(--radius-sm);
+  display: inline-block;
+  font-family: monospace;
+}
+
+.vehicle-card-details {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.add-vehicle-card {
+  border: 2px dashed var(--color-text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.add-vehicle-card:hover {
+  border-color: var(--color-primary);
+  border-style: solid;
+}
+
+/* ============================================
+   SUMMARY SECTION
+   ============================================ */
+.summary-grid {
+  display: grid;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.summary-card {
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+}
+
+.summary-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.summary-card-icon {
+  font-size: 2rem;
+}
+
+.summary-card-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-sm) 0;
+}
+
+.summary-item-label {
+  color: var(--color-text-secondary);
+}
+
+.summary-item-value {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* ============================================
+   WIZARD NAVIGATION
+   ============================================ */
+.wizard-navigation {
+  padding: var(--spacing-xl) var(--spacing-2xl);
+  background: var(--color-bg);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wizard-nav-info {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.wizard-nav-buttons {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1023px) {
+  .datetime-picker {
+    grid-template-columns: 1fr;
+  }
+
+  .time-picker-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .wizard-stepper {
+    padding: var(--spacing-lg);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .wizard-stepper::-webkit-scrollbar {
+    display: none;
+  }
+
+  .wizard-step {
+    flex-shrink: 0;
+  }
+
+  .wizard-step-label {
+    font-size: var(--font-size-xs);
+    max-width: 80px;
+  }
+
+  .wizard-step-circle {
+    width: 40px;
+    height: 40px;
+  }
+
+  .wizard-content {
+    padding: var(--spacing-lg);
+  }
+
+  .wizard-step-title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .selection-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .time-picker-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .vehicle-list {
+    grid-template-columns: 1fr;
+  }
+
+  .wizard-navigation {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+}
+
+/* ============================================
+   CATEGORY LIST (Simple list view)
+   ============================================ */
+.category-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.category-list-item {
+  background: var(--color-bg);
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.category-list-item:hover {
+  background: white;
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateX(4px);
+}
+
+.category-list-item.selected {
+  background: white;
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-lg);
+}
+
+.category-list-item-content {
+  flex: 1;
+}
+
+.category-list-item-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.category-list-item-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.category-list-item-arrow {
+  font-size: var(--font-size-2xl);
+  color: var(--color-text-muted);
+  font-weight: 300;
+  margin-left: var(--spacing-md);
+}
+
+.category-list-item.selected .category-list-item-arrow {
+  color: var(--color-primary);
+}
+
+/* ============================================
+   SERVICE LIST (List view with images)
+   ============================================ */
+.services-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.service-list-item {
+  background: var(--color-bg);
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.service-list-item:hover {
+  background: white;
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateX(4px);
+}
+
+.service-list-item.selected {
+  background: white;
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-lg);
+}
+
+.service-list-item-image {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.service-list-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.service-list-item-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.service-list-item-location {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.service-list-item-rating {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.service-list-item-arrow {
+  font-size: var(--font-size-2xl);
+  color: var(--color-text-muted);
+  font-weight: 300;
+  margin-left: var(--spacing-md);
+  flex-shrink: 0;
+}
+
+.service-list-item.selected .service-list-item-arrow {
+  color: var(--color-primary);
+}

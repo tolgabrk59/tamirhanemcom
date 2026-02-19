@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Email Doğrulama - TamirHanem">
+  <title>Email Doğrulama | TamirHanem</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/global-dashboard.css">
+
+  <style>
+    /* --- DESIGN SYSTEM (EXACT MATCH) --- */
+
+
+    /* Breadcrumb */
+    .breadcrumb-modern {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--white);
+      padding: 10px 20px;
+      border-radius: 50px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 25px;
+      border: 1px solid #eee;
+    }
+
+    .bc-item {
+      font-size: 0.85rem;
+      color: var(--neutral-500);
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .bc-item:hover {
+      color: var(--primary-dark);
+    }
+
+    .bc-separator {
+      color: var(--neutral-500);
+      font-size: 0.8rem;
+    }
+
+    .bc-item.active {
+      color: var(--custom-darker);
+      font-weight: 700;
+      background: var(--neutral-100);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    /* Auth Specific Styles */
+    .auth-layout {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 60vh;
+    }
+
+    .auth-card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid #eee;
+      width: 100%;
+      max-width: 450px;
+      text-align: center;
+    }
+
+    .auth-icon-box {
+      width: 80px;
+      height: 80px;
+      background: var(--primary-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      color: var(--primary-dark);
+      font-size: 2.5rem;
+    }
+
+    .auth-title {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: var(--custom-darker);
+    }
+
+    .auth-description {
+      color: var(--custom-dark);
+      font-size: 0.95rem;
+      margin-bottom: 30px;
+      line-height: 1.5;
+    }
+
+    .auth-email-highlight {
+      font-weight: 700;
+      color: var(--custom-darker);
+    }
+
+    /* OTP Input */
+    .otp-container {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .otp-input {
+      width: 45px;
+      height: 55px;
+      border-radius: 12px;
+      border: 1px solid #e0e0e0;
+      background: var(--neutral-100);
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      color: var(--custom-darker);
+      transition: 0.3s;
+    }
+
+    .otp-input:focus {
+      background: var(--white);
+      border-color: var(--primary);
+      box-shadow: 0 4px 15px rgba(251, 199, 7, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .otp-timer {
+      font-size: 0.9rem;
+      color: var(--neutral-500);
+      margin-bottom: 25px;
+      background: var(--neutral-100);
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 50px;
+    }
+
+    .timer-value {
+      color: var(--custom-darker);
+      font-weight: 700;
+    }
+
+    /* Buttons */
+    .btn {
+      border: none;
+      padding: 14px 20px;
+      border-radius: 100px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--custom-darker);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(251, 199, 7, 0.3);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #ddd;
+      color: var(--custom-dark);
+    }
+
+    .btn-outline:hover {
+      background: var(--neutral-100);
+      border-color: var(--custom-darker);
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .btn-disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .auth-footer {
+      margin-top: 25px;
+      font-size: 0.9rem;
+      color: var(--neutral-500);
+    }
+
+    .link-btn {
+      background: none;
+      border: none;
+      color: var(--primary-dark);
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0;
+      font-size: inherit;
+    }
+
+    .link-btn:hover {
+      text-decoration: underline;
+    }
+
+    .link-btn:disabled {
+      color: var(--neutral-500);
+      cursor: not-allowed;
+      text-decoration: none;
+    }
+
+    .link {
+      color: var(--primary-dark);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .link:hover {
+      text-decoration: underline;
+    }
+
+    .alert-success {
+      background: var(--success-bg);
+      color: var(--success);
+      padding: 15px;
+      border-radius: 12px;
+      text-align: left;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+      margin-top: 20px;
+      display: none;
+      border: 1px solid rgba(22, 101, 52, 0.1);
+    }
+
+    .text-success {
+      color: var(--success);
+      font-weight: 600;
+      display: block;
+      margin-top: 10px;
+    }
+
+    .text-error {
+      color: var(--error);
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="dashboard-navbar">
+    <div class="container dashboard-navbar-container">
+      <a href="/dashboard.html" class="dashboard-logo">
+        <i class="ri-steering-2-fill"></i>
+        <span>TAMİRHANEM</span>
+      </a>
+
+      <div class="dashboard-search">
+        <div class="search-input-wrapper">
+          <input type="text" class="search-input" placeholder="Servis veya kategori ara...">
+          <i class="ri-search-line search-icon"></i>
+        </div>
+      </div>
+
+      <div class="dashboard-actions">
+        <button class="action-btn"><i class="ri-notification-3-line"></i><span
+            class="notification-badge">2</span></button>
+        <button class="action-btn"><i class="ri-message-3-line"></i></button>
+        <div class="user-profile-mini" onclick="window.location.href='/dashboard.html#profile'">
+          <div class="user-avatar" id="user-avatar">U</div>
+          <div class="user-info"><span class="user-name" id="user-name">Kullanıcı</span><span
+              class="user-role">Müşteri</span></div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="dashboard-main">
+    <div class="container">
+
+      <div class="breadcrumb-modern">
+        <a href="/login.html" class="bc-item"><i class="ri-login-box-line"></i> Giriş Yap</a>
+        <i class="ri-arrow-right-s-line bc-separator"></i>
+        <a href="/forgot-password.html" class="bc-item">Şifremi Unuttum</a>
+        <i class="ri-arrow-right-s-line bc-separator"></i>
+        <span class="bc-item active">Email Doğrulama</span>
+      </div>
+
+      <div class="auth-layout">
+        <div class="auth-card">
+
+          <div class="auth-icon-box">
+            <i class="ri-mail-check-line"></i>
+          </div>
+
+          <h1 class="auth-title">Email Doğrulama</h1>
+          <p class="auth-description">
+            Hesap güvenliğiniz için <span id="user-email" class="auth-email-highlight">email@example.com</span> adresine
+            gönderilen 6 haneli kodu girin.
+          </p>
+
+          <div class="otp-container">
+            <input type="text" class="otp-input" maxlength="1" id="otp-1" autofocus>
+            <input type="text" class="otp-input" maxlength="1" id="otp-2">
+            <input type="text" class="otp-input" maxlength="1" id="otp-3">
+            <input type="text" class="otp-input" maxlength="1" id="otp-4">
+            <input type="text" class="otp-input" maxlength="1" id="otp-5">
+            <input type="text" class="otp-input" maxlength="1" id="otp-6">
+          </div>
+
+          <div class="otp-timer" id="otp-timer">
+            Kod geçerlilik süresi: <span class="timer-value" id="timer-value">05:00</span>
+          </div>
+
+          <button class="btn btn-primary btn-full" id="verify-btn">
+            <i class="ri-check-double-line"></i> Doğrula
+          </button>
+
+          <div class="auth-footer">
+            Kod gelmedi mi?
+            <button class="link-btn" id="resend-btn">Tekrar Gönder</button>
+            <div id="resend-message" style="display: none;">
+              <span class="text-success"><i class="ri-checkbox-circle-fill"></i> Kod tekrar gönderildi!</span>
+            </div>
+          </div>
+
+          <div class="alert-success" id="success-message">
+            <div style="font-weight: 700; margin-bottom: 5px; display: flex; align-items: center; gap: 8px;">
+              <i class="ri-checkbox-circle-fill"></i> Başarılı!
+            </div>
+            Email adresiniz doğrulandı. <span id="redirect-countdown">3</span> saniye içinde yönlendiriliyorsunuz...
+          </div>
+
+          <div style="margin-top: 30px;">
+            <a href="/login.html" class="link">← Giriş Sayfasına Dön</a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div class="dashboard-tabs">
+    <div class="dashboard-tabs-container">
+      <a href="/dashboard.html#home" class="tab-link"><i class="ri-home-5-line"></i><span>Anasayfa</span></a>
+      <a href="/dashboard.html#appointments" class="tab-link"><i
+          class="ri-calendar-event-line"></i><span>Randevular</span></a>
+      <a href="/dashboard.html#campaigns" class="tab-link"><i class="ri-coupon-2-line"></i><span>Fırsatlar</span></a>
+      <a href="/dashboard.html#assistant" class="tab-link"><i class="ri-robot-2-line"></i><span>Asistan</span></a>
+      <a href="/dashboard.html#profile" class="tab-link"><i class="ri-user-3-line"></i><span>Profil</span></a>
+    </div>
+  </div>
+
+  <div id="global-loading">
+    <div class="spinner"></div>
+  </div>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+
+  <script>
+    // Mock user data retrieval (normally from auth.js or localstorage)
+    const user = localStorage.getItem('user_data') ? JSON.parse(localStorage.getItem('user_data')) : { email: 'user@example.com' };
+    if (user && user.email) {
+      document.getElementById('user-email').textContent = user.email;
+    }
+
+    // OTP Input Logic
+    const otpInputs = document.querySelectorAll('.otp-input');
+
+    otpInputs.forEach((input, index) => {
+      input.addEventListener('input', (e) => {
+        const value = e.target.value;
+        if (!/^\d$/.test(value)) { e.target.value = ''; return; } // Only numbers
+
+        if (value && index < otpInputs.length - 1) otpInputs[index + 1].focus();
+
+        if (index === otpInputs.length - 1 && value) {
+          const allFilled = Array.from(otpInputs).every(inp => inp.value);
+          if (allFilled) verifyCode();
+        }
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !e.target.value && index > 0) otpInputs[index - 1].focus();
+      });
+
+      input.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pastedData = e.clipboardData.getData('text').trim();
+        if (/^\d{6}$/.test(pastedData)) {
+          otpInputs.forEach((inp, i) => { inp.value = pastedData[i] || ''; });
+          otpInputs[5].focus();
+          setTimeout(() => verifyCode(), 100);
+        }
+      });
+    });
+
+    function getOTPCode() { return Array.from(otpInputs).map(input => input.value).join(''); }
+    function clearOTP() { otpInputs.forEach(input => input.value = ''); otpInputs[0].focus(); }
+
+    async function verifyCode() {
+      const code = getOTPCode();
+      if (code.length !== 6) { Utils.showToast('Lütfen 6 haneli kodu girin', 'warning'); return; }
+
+      Utils.showLoading();
+      try {
+        // API simulation
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        document.getElementById('success-message').style.display = 'block';
+        let countdown = 3;
+        const countdownEl = document.getElementById('redirect-countdown');
+
+        const interval = setInterval(() => {
+          countdown--;
+          countdownEl.textContent = countdown;
+          if (countdown <= 0) {
+            clearInterval(interval);
+            window.location.href = '/dashboard.html';
+          }
+        }, 1000);
+      } catch (error) {
+        Utils.showToast('Doğrulama kodu hatalı', 'error');
+        clearOTP();
+      } finally { Utils.hideLoading(); }
+    }
+
+    document.getElementById('verify-btn').addEventListener('click', verifyCode);
+
+    // Resend Code Logic
+    let canResend = true;
+    let resendCooldown = 60;
+
+    document.getElementById('resend-btn').addEventListener('click', async () => {
+      if (!canResend) { Utils.showToast(`${resendCooldown} saniye sonra tekrar deneyin`, 'warning'); return; }
+
+      Utils.showLoading();
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1000)); // API Sim
+
+        Utils.showToast('Kod tekrar gönderildi', 'success');
+        document.getElementById('resend-message').style.display = 'block';
+        setTimeout(() => { document.getElementById('resend-message').style.display = 'none'; }, 3000);
+
+        canResend = false;
+        const resendBtn = document.getElementById('resend-btn');
+        const originalText = resendBtn.textContent;
+
+        const cooldownInterval = setInterval(() => {
+          resendCooldown--;
+          resendBtn.textContent = `Tekrar Gönder (${resendCooldown}s)`;
+          resendBtn.disabled = true;
+          resendBtn.classList.add('btn-disabled');
+
+          if (resendCooldown <= 0) {
+            clearInterval(cooldownInterval);
+            canResend = true; resendCooldown = 60;
+            resendBtn.textContent = originalText;
+            resendBtn.disabled = false;
+            resendBtn.classList.remove('btn-disabled');
+          }
+        }, 1000);
+        startTimer(5 * 60);
+      } finally { Utils.hideLoading(); }
+    });
+
+    // Timer
+    let timeLeft = 5 * 60;
+    function startTimer(seconds) {
+      timeLeft = seconds;
+      updateTimerDisplay();
+      // Clear existing intervals if any (simple implementation)
+      const timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          document.getElementById('otp-timer').innerHTML = '<span class="text-error">Süre doldu. Yeni kod isteyin.</span>';
+          document.getElementById('verify-btn').disabled = true;
+          document.getElementById('verify-btn').classList.add('btn-disabled');
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      document.getElementById('timer-value').textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+    startTimer(5 * 60);
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Araçlarım - TamirHanem">
+  <title>Araçlarım | TamirHanem</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="/favicon/site.webmanifest">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+
+  <!-- Global Dashboard CSS -->
+  <link rel="stylesheet" href="/css/global-dashboard.css">
+
+  <!-- Config (API URL) -->
+  <script src="/js/config.js"></script>
+
+  <style>
+    /* --- PAGE SPECIFIC STYLES --- */
+
+    /* Footer altı boşluk fix */
+    html {
+      height: 100%;
+    }
+    body {
+      min-height: 100%;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .dashboard-main {
+      flex: 1 0 auto;
+      padding: 20px 0;
+      padding-bottom: 100px;
+      min-height: 60vh;
+    }
+    .dashboard-footer {
+      flex-shrink: 0;
+      margin-bottom: 0 !important;
+    }
+
+    /* Page Header */
+    .page-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+    .page-header-left { display: flex; flex-direction: column; }
+    .page-header-left h1, .page-header h1 { font-size: 1.5rem; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; color: #2d2d2d; font-weight: 700; }
+    .page-header-left h1 i, .page-header h1 i { color: #fbc707; font-size: 1.5rem; }
+    .page-header-left p, .page-header p { font-size: 0.9rem; color: #64748b; margin: 0; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; border: none; font-family: inherit; }
+    .btn-primary { background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%); color: #2d2d2d; box-shadow: 0 4px 12px rgba(251, 199, 7, 0.3); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(251, 199, 7, 0.4); }
+
+    /* Form Elements */
+    .form-group { margin-bottom: 14px; }
+    .form-label { display: block; font-size: 0.8rem; font-weight: 600; color: #454545; margin-bottom: 6px; }
+    .form-input, .form-select { width: 100%; padding: 12px 14px; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; font-family: inherit; font-size: 0.9rem; color: #2d2d2d; background: rgba(255,255,255,0.8); transition: all 0.2s; box-sizing: border-box; }
+    .form-input:focus, .form-select:focus { border-color: #fbc707; background: #fff; box-shadow: 0 0 0 3px rgba(251, 199, 7, 0.15); outline: none; }
+    .form-input::placeholder { color: #aaa; }
+    .form-row { display: flex; gap: 12px; }
+    .form-row .form-group { flex: 1; }
+
+    /* === GLASSMORPHISM MODAL === */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; visibility: hidden;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .modal-overlay.show, .modal-overlay.active { opacity: 1; visibility: visible; }
+
+    .modal-content {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      width: 90%;
+      max-width: 420px;
+      max-height: 80vh;
+      border-radius: 20px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255,255,255,0.5) inset;
+      transform: translateY(20px) scale(0.95);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .modal-overlay.show .modal-content, .modal-overlay.active .modal-content {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      display: flex; justify-content: space-between; align-items: center;
+      background: linear-gradient(135deg, rgba(251, 199, 7, 0.15) 0%, rgba(238, 185, 2, 0.1) 100%);
+    }
+    .modal-header h2 { margin: 0; font-size: 1rem; color: #1e293b; display: flex; align-items: center; gap: 10px; }
+    .modal-header h2 i { color: #fbc707; font-size: 1.1rem; }
+    .modal-close {
+      background: rgba(255,255,255,0.5); border: none; font-size: 1.1rem; color: #64748b;
+      cursor: pointer; padding: 0; border-radius: 50%; transition: all 0.2s;
+      width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(10px);
+    }
+    .modal-close:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; transform: rotate(90deg); }
+
+    .modal-body { padding: 20px; max-height: 50vh; overflow-y: auto; }
+
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid rgba(0,0,0,0.08);
+      display: flex; justify-content: flex-end; gap: 10px;
+      background: rgba(248, 250, 252, 0.5);
+    }
+    .btn-cancel {
+      padding: 10px 18px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.7); color: #64748b; font-weight: 600;
+      cursor: pointer; transition: all 0.2s; font-size: 0.85rem;
+    }
+    .btn-cancel:hover { background: rgba(255,255,255,0.9); color: #334155; }
+    .btn-save {
+      padding: 10px 20px; border-radius: 10px; border: none;
+      background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%);
+      color: #2d2d2d; font-weight: 700; cursor: pointer; transition: all 0.2s;
+      box-shadow: 0 4px 15px rgba(251, 199, 7, 0.35); font-size: 0.85rem;
+    }
+    .btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(251, 199, 7, 0.45); }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center; padding: 60px 20px;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+    .empty-state-icon { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2rem; color: #2d2d2d; box-shadow: 0 8px 25px rgba(251, 199, 7, 0.35); }
+    .empty-state h3 { font-size: 1.15rem; margin-bottom: 8px; color: #2d2d2d; font-weight: 700; }
+    .empty-state p { color: #64748b; max-width: 280px; margin: 0 auto; font-size: 0.85rem; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px); color: white; padding: 12px 24px; border-radius: 50px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 10000; opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); font-weight: 600; font-size: 0.9rem; }
+    .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    .toast.error { background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); }
+    .toast i { font-size: 1.25rem; }
+
+    /* Plate Validation */
+    .plate-validation-msg { font-size: 0.75rem; margin-top: 6px; padding: 6px 10px; border-radius: 8px; display: none; }
+    .plate-validation-msg.success { display: block; background: rgba(209, 250, 229, 0.8); color: #065f46; }
+    .plate-validation-msg.error { display: block; background: rgba(254, 226, 226, 0.8); color: #991b1b; }
+    .plate-validation-msg.warning { display: block; background: rgba(254, 243, 199, 0.8); color: #92400e; }
+    .plate-validation-msg.loading { display: block; background: rgba(224, 242, 254, 0.8); color: #0369a1; }
+
+    /* Vehicles Grid */
+    .vehicles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 24px;
+      margin-bottom: 60px;
+      padding-bottom: 40px;
+    }
+
+    /* === PREMIUM VEHICLE CARD === */
+    .vehicle-card {
+      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+      border-radius: 24px;
+      padding: 0;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .vehicle-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(251, 199, 7, 0.15), 0 8px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Card Top Section - Gradient */
+    .vehicle-card-top {
+      background: linear-gradient(135deg, #fbc707 0%, #f5a623 50%, #ff9500 100%);
+      padding: 20px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vehicle-card-top::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 200px;
+      height: 200px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+    }
+
+    .vehicle-card-top::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -10%;
+      width: 150px;
+      height: 150px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+    }
+
+    .vehicle-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+
+    .vehicle-header-left {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .vehicle-brand-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .vehicle-plate-row {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .vehicle-brand {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: rgba(45, 45, 45, 0.7);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .vehicle-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #5a5a5a;
+      line-height: 1.3;
+      margin: 0;
+    }
+
+    .vehicle-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .vehicle-action-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .vehicle-action-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .vehicle-action-btn.edit:hover {
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(251, 199, 7, 0.4);
+    }
+
+    .vehicle-action-btn.delete:hover {
+      background: #fff1f2;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .vehicle-action-btn i {
+      font-size: 1.1rem;
+      color: #64748b;
+    }
+
+    .vehicle-action-btn.edit:hover i { color: #d97706; }
+    .vehicle-action-btn.delete:hover i { color: #ef4444; }
+
+    /* Card Body */
+    .vehicle-card-body {
+      padding: 20px 24px 24px;
+    }
+
+    /* Turkish License Plate Style - Compact for header */
+    .license-plate {
+      display: flex;
+      align-items: stretch;
+      background: #fff;
+      border: 2px solid #1e3a5f;
+      border-radius: 5px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      flex-shrink: 0;
+    }
+
+    .plate-country {
+      background: linear-gradient(180deg, #003399 0%, #002266 100%);
+      padding: 4px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1px;
+      min-width: 22px;
+    }
+
+    .plate-country .stars {
+      font-size: 4px;
+      color: #ffd700;
+      letter-spacing: 0.5px;
+    }
+
+    .plate-country .code {
+      font-size: 0.6rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .plate-number {
+      flex: 1;
+      padding: 4px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Arial Black', 'Helvetica Neue', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 900;
+      color: #1e3a5f;
+      letter-spacing: 1.5px;
+      background: linear-gradient(180deg, #fff 0%, #f0f0f0 100%);
+    }
+
+    /* Verification Status */
+    .verification-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      margin-top: 16px;
+    }
+
+    .verification-status.verified {
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .verification-status.unverified {
+      background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .verification-status i {
+      font-size: 1.1rem;
+    }
+
+    .verification-status.verified i { color: #10b981; }
+    .verification-status.unverified i { color: #ef4444; }
+
+    .verification-status span {
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .verification-status.verified span { color: #059669; }
+    .verification-status.unverified span { color: #dc2626; }
+
+    /* Vehicle Specs Grid */
+    .vehicle-specs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .vehicle-specs-row-2 {
+      grid-template-columns: repeat(2, 1fr);
+      margin-top: 10px;
+    }
+
+    .spec-item {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-radius: 12px;
+      padding: 14px 12px;
+      text-align: center;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .spec-item i {
+      font-size: 1.3rem;
+      color: #fbc707;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .spec-item .spec-value {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #334155;
+      display: block;
+    }
+
+    .spec-item .spec-label {
+      font-size: 0.65rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+      display: block;
+    }
+
+    /* Verify Button */
+    .verify-btn-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      margin-top: 16px;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, #fbc707 0%, #f5a623 100%);
+      border: none;
+      border-radius: 14px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #2d2d2d;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(251, 199, 7, 0.3);
+    }
+
+    .verify-btn-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(251, 199, 7, 0.4);
+    }
+
+    .verify-btn-card i {
+      font-size: 1.1rem;
+    }
+
+    /* Verification Modal Styles */
+    .verification-icon-box {
+      width: 70px; height: 70px; border-radius: 50%;
+      background: linear-gradient(135deg, #fbc707 0%, #ff9500 100%);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px; font-size: 2rem; color: #fff;
+      box-shadow: 0 10px 30px rgba(251, 199, 7, 0.4);
+    }
+
+    .upload-area {
+      border: 2px dashed rgba(0,0,0,0.15); border-radius: 16px; padding: 24px;
+      cursor: pointer; transition: all 0.3s;
+      background: rgba(248, 250, 252, 0.5);
+    }
+    .upload-area:hover { border-color: #fbc707; background: rgba(251, 199, 7, 0.05); }
+    .upload-area.dragover { border-color: #fbc707; background: rgba(251, 199, 7, 0.1); transform: scale(1.02); }
+
+    .upload-placeholder { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .upload-placeholder i { font-size: 2.5rem; color: #94a3b8; }
+    .upload-placeholder span { font-size: 0.85rem; color: #64748b; font-weight: 500; }
+    .upload-placeholder small { font-size: 0.7rem; color: #94a3b8; }
+
+    .upload-preview { position: relative; }
+    .upload-preview img { max-width: 100%; max-height: 150px; border-radius: 12px; object-fit: contain; }
+    .remove-preview { position: absolute; top: -8px; right: -8px; width: 28px; height: 28px; border-radius: 50%; background: #ef4444; border: none; color: #fff; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3); }
+    .remove-preview:hover { transform: scale(1.1); }
+
+    .upload-progress { margin-top: 16px; }
+    .progress-bar { height: 6px; background: rgba(0,0,0,0.1); border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #fbc707, #ff9500); border-radius: 3px; transition: width 0.3s; width: 0%; }
+    #progress-text { font-size: 0.75rem; color: #64748b; margin-top: 6px; display: block; }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .vehicles-grid {
+        grid-template-columns: 1fr;
+      }
+      .modal-content {
+        max-width: 95%;
+        max-height: 85vh;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header and Loyalty Bar will be injected by global-header.js -->
+
+  <!-- MAIN CONTENT -->
+  <main class="dashboard-main">
+    <div class="container">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1><i class="ri-roadster-fill"></i> Araçlarım</h1>
+          <p>Kayıtlı araçlarınızı yönetin</p>
+        </div>
+        <button class="btn btn-primary" id="add-vehicle-btn">
+          <i class="ri-add-line"></i> Yeni Araç Ekle
+        </button>
+      </div>
+
+      <div class="vehicles-grid" id="vehicles-list">
+        <div class="empty-state">
+          <div class="empty-state-icon"><i class="ri-roadster-line"></i></div>
+          <h3>Yükleniyor...</h3>
+          <p>Araçlarınız getiriliyor</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add/Edit Vehicle Modal -->
+  <div class="modal-overlay" id="vehicleModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="ri-roadster-line"></i> <span id="modal-title">Yeni Araç Ekle</span></h2>
+        <button class="modal-close" onclick="closeVehicleModal()"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="vehicleForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Marka *</label>
+              <select id="vehicle-make" class="form-select" required>
+                <option value="">Marka Seçiniz</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Model *</label>
+              <select id="vehicle-model" class="form-select" required disabled>
+                <option value="">Önce marka seçiniz</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Yıl *</label>
+              <select id="vehicle-year" class="form-select" required>
+                <option value="">Yıl Seçiniz</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Yakıt Tipi *</label>
+              <select id="vehicle-fuel" class="form-select" required>
+                <option value="">Seçiniz</option>
+                <option value="Benzin">Benzin</option>
+                <option value="Dizel">Dizel</option>
+                <option value="LPG">LPG</option>
+                <option value="Benzin + LPG">Benzin + LPG</option>
+                <option value="Elektrik">Elektrik</option>
+                <option value="Hibrit">Hibrit</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Plaka *</label>
+            <input type="text" id="vehicle-plate" class="form-input" placeholder="34 ABC 123" maxlength="12" required>
+            <div id="plate-validation-msg" class="plate-validation-msg"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Kilometre</label>
+              <input type="number" id="vehicle-mileage" class="form-input" placeholder="50000" min="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Son Bakım Km</label>
+              <input type="number" id="vehicle-last-maintenance" class="form-input" placeholder="45000" min="0">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Muayene Tarihi</label>
+            <input type="date" id="vehicle-inspection-date" class="form-input">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeVehicleModal()">İptal</button>
+        <button class="btn-save" id="save-vehicle-btn">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vehicle Verification Modal -->
+  <div class="modal-overlay" id="verificationModal">
+    <div class="modal-content" style="max-width: 420px;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #ffd740 0%, #ffc507 100%);">
+        <h2 style="color: #2d2d2d;"><i class="ri-shield-check-line"></i> <span>Plaka Doğrulama</span></h2>
+        <button class="modal-close" onclick="closeVerificationModal()"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body" style="text-align: center; padding: 30px 24px;">
+        <div class="verification-icon-box">
+          <i class="ri-shield-check-fill"></i>
+        </div>
+        <h3 style="font-size: 1.15rem; margin-bottom: 10px; color: #2d2d2d;">Ruhsat Belgesi Yükleyin</h3>
+        <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 20px;">
+          Aracınızın size ait olduğunu doğrulamak için ruhsat belgenizin fotoğrafını yükleyin. Bu işlem güvenliğiniz için zorunludur.
+        </p>
+        <p id="verification-vehicle-name" style="font-size: 0.85rem; color: #2d2d2d; font-weight: 700; margin-bottom: 16px;"></p>
+
+        <div class="upload-area" id="upload-area">
+          <input type="file" id="registration-file" accept="image/*,.pdf" style="display: none;">
+          <div class="upload-placeholder" id="upload-placeholder">
+            <i class="ri-upload-cloud-2-line"></i>
+            <span>Ruhsat fotoğrafını yüklemek için tıklayın</span>
+            <small>PNG, JPG veya PDF (max 5MB)</small>
+          </div>
+          <div class="upload-preview" id="upload-preview" style="display: none;">
+            <img id="preview-image" src="" alt="Önizleme">
+            <button class="remove-preview" onclick="removePreview()"><i class="ri-close-circle-fill"></i></button>
+          </div>
+        </div>
+
+        <div class="upload-progress" id="upload-progress" style="display: none;">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <span id="progress-text">Yükleniyor... %0</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeVerificationModal()">İptal</button>
+        <button class="btn-save" id="verify-btn" onclick="submitVerification()" disabled>
+          <i class="ri-shield-check-line"></i> Doğrula
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <i class="ri-checkbox-circle-fill" id="toast-icon"></i>
+    <span id="toast-message">İşlem başarılı</span>
+  </div>
+
+  <!-- Bottom Nav will be injected here by bottom-nav.js -->
+
+  <div id="global-loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Global Header Component -->
+  <script src="/components/global-header.js"></script>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/components/footer.js"></script>
+  <script src="/js/components/bottom-nav.js"></script>
+
+  <script>
+    let vehicles = [];
+    let editingVehicleId = null;
+    let brands = [];
+    let plateValidationTimeout = null;
+    let isPlateValid = false;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!auth.isAuthenticated()) {
+        window.location.href = '/login.html';
+        return;
+      }
+      await Promise.all([loadVehicles(), loadBrands()]);
+      populateYearDropdown();
+      setupEventListeners();
+    });
+
+    // Markaları backend'den yükle
+    async function loadBrands() {
+      try {
+        const token = localStorage.getItem('tamirhanem_token');
+        const response = await fetch(`${CONFIG.API_BASE_URL}/arac-datasi/unique-brands`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+        brands = result.data || [];
+
+        const brandSelect = document.getElementById('vehicle-make');
+        const optionsHtml = brands.map(brand => `<option value="${brand}">${brand}</option>`).join('');
+        brandSelect.innerHTML = '<option value="">Marka Seçiniz</option>' + optionsHtml;
+      } catch (error) {
+        showToast('Markalar yüklenemedi, lütfen sayfayı yenileyin', true);
+      }
+    }
+
+    // Marka seçildiğinde modelleri yükle
+    async function loadModels(brand) {
+      const modelSelect = document.getElementById('vehicle-model');
+
+      if (!brand) {
+        modelSelect.innerHTML = '<option value="">Önce marka seçiniz</option>';
+        modelSelect.disabled = true;
+        return;
+      }
+
+      modelSelect.innerHTML = '<option value="">Yükleniyor...</option>';
+      modelSelect.disabled = true;
+
+      try {
+        const token = localStorage.getItem('tamirhanem_token');
+        const response = await fetch(`${CONFIG.API_BASE_URL}/arac-datasi/models/${encodeURIComponent(brand)}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+        const models = result.data || [];
+
+        const optionsHtml = models.map(model => `<option value="${model}">${model}</option>`).join('');
+        modelSelect.innerHTML = '<option value="">Model Seçiniz</option>' + optionsHtml;
+        modelSelect.disabled = false;
+      } catch (error) {
+        modelSelect.innerHTML = '<option value="">Model yüklenemedi</option>';
+        modelSelect.disabled = false;
+      }
+    }
+
+    // Yıl dropdown'ını doldur (güncel yıldan 1970'e kadar)
+    function populateYearDropdown() {
+      const yearSelect = document.getElementById('vehicle-year');
+      const currentYear = new Date().getFullYear();
+      yearSelect.innerHTML = '<option value="">Yıl Seçiniz</option>';
+      for (let year = currentYear + 1; year >= 1970; year--) {
+        yearSelect.innerHTML += `<option value="${year}">${year}</option>`;
+      }
+    }
+
+    // Plaka doğrulama
+    async function validatePlate(plate) {
+      const msgEl = document.getElementById('plate-validation-msg');
+
+      if (!plate || plate.length < 5) {
+        msgEl.className = 'plate-validation-msg';
+        msgEl.textContent = '';
+        isPlateValid = false;
+        return;
+      }
+
+      msgEl.className = 'plate-validation-msg loading';
+      msgEl.textContent = 'Plaka kontrol ediliyor...';
+
+      try {
+        const response = await fetch(`${CONFIG.API_BASE_URL}/vehicles/check-plate?plate=${encodeURIComponent(plate)}&countryCode=TR`);
+        const result = await response.json();
+
+        if (!result.valid) {
+          msgEl.className = 'plate-validation-msg error';
+          msgEl.textContent = result.message || 'Geçersiz plaka formatı';
+          isPlateValid = false;
+        } else if (result.exists && !editingVehicleId) {
+          msgEl.className = 'plate-validation-msg warning';
+          msgEl.textContent = 'Bu plaka zaten kayıtlı';
+          isPlateValid = false;
+        } else {
+          msgEl.className = 'plate-validation-msg success';
+          msgEl.textContent = '✓ Plaka formatı geçerli';
+          isPlateValid = true;
+        }
+      } catch (error) {
+        msgEl.className = 'plate-validation-msg';
+        isPlateValid = true; // Hata durumunda devam etsin
+      }
+    }
+
+    // Event listener'ları kur
+    function setupEventListeners() {
+      // Marka değiştiğinde modelleri yükle
+      document.getElementById('vehicle-make').addEventListener('change', (e) => {
+        loadModels(e.target.value);
+      });
+
+      // Plaka değiştiğinde doğrula (debounce ile)
+      document.getElementById('vehicle-plate').addEventListener('input', (e) => {
+        clearTimeout(plateValidationTimeout);
+        plateValidationTimeout = setTimeout(() => {
+          validatePlate(e.target.value);
+        }, 500);
+      });
+    }
+
+    async function loadVehicles() {
+      try {
+        const response = await api.getVehicles();
+        vehicles = response.data || [];
+        renderVehicles();
+      } catch (error) {
+        showToast('Araçlar yüklenemedi', true);
+      }
+    }
+
+    function renderVehicles() {
+      const container = document.getElementById('vehicles-list');
+
+      if (vehicles.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="ri-roadster-line"></i></div>
+            <h3>Henüz Araç Eklenmemiş</h3>
+            <p>İlk aracınızı ekleyerek servis kayıtlarınızı takip edin.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const html = vehicles.map(veh => {
+        const attrs = veh.attributes || veh;
+        const make = attrs.make || attrs.brand || 'Bilinmeyen';
+        const model = attrs.model || '';
+        const year = attrs.year || '-';
+        const plate = attrs.plate || attrs.licensePlate || '';
+        const mileage = attrs.mileage || attrs.kilometre || '';
+        const fuelType = attrs.fuelType || attrs.fuel_type || '-';
+        const isVerified = attrs.isVerified || false;
+        const lastMaintenanceMileage = attrs.last_maintenance_mileage || '';
+        const inspectionDate = attrs.inspection_date || '';
+
+        // Verification status HTML
+        const verificationStatus = isVerified
+          ? `<div class="verification-status verified">
+              <i class="ri-shield-check-fill"></i>
+              <span>Araç Doğrulanmış</span>
+            </div>`
+          : `<div class="verification-status unverified">
+              <i class="ri-error-warning-fill"></i>
+              <span>Doğrulama Bekliyor</span>
+            </div>`;
+
+        // Verify button only for unverified vehicles
+        const verifyButton = !isVerified
+          ? `<button class="verify-btn-card" onclick="openVerificationModal(${veh.id}, '${make} ${model}')">
+              <i class="ri-shield-check-line"></i> Aracı Doğrula
+            </button>`
+          : '';
+
+        // Format mileage
+        const mileageFormatted = mileage ? Number(mileage).toLocaleString('tr-TR') : '-';
+        const lastMaintenanceFormatted = lastMaintenanceMileage ? Number(lastMaintenanceMileage).toLocaleString('tr-TR') : '-';
+
+        // Format inspection date
+        const inspectionFormatted = inspectionDate
+          ? new Date(inspectionDate).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+          : '-';
+
+        return `
+          <div class="vehicle-card">
+            <div class="vehicle-card-top">
+              <div class="vehicle-card-header">
+                <div class="vehicle-header-left">
+                  <div class="vehicle-brand-info">
+                    <div class="vehicle-brand">${make}</div>
+                    <h3 class="vehicle-title">${model}</h3>
+                  </div>
+                </div>
+                <div class="vehicle-actions">
+                  <button class="vehicle-action-btn edit" onclick="editVehicle(${veh.id})" title="Düzenle">
+                    <i class="ri-pencil-line"></i>
+                  </button>
+                  <button class="vehicle-action-btn delete" onclick="deleteVehicle(${veh.id})" title="Sil">
+                    <i class="ri-delete-bin-line"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="vehicle-card-body">
+              <div class="vehicle-plate-row">
+                <div class="license-plate">
+                  <div class="plate-country">
+                    <span class="stars">★★★</span>
+                    <span class="code">TR</span>
+                  </div>
+                  <div class="plate-number">${plate}</div>
+                </div>
+              </div>
+              <div class="vehicle-specs">
+                <div class="spec-item">
+                  <i class="ri-calendar-line"></i>
+                  <span class="spec-value">${year}</span>
+                  <span class="spec-label">Model Yılı</span>
+                </div>
+                <div class="spec-item">
+                  <i class="ri-speed-line"></i>
+                  <span class="spec-value">${mileageFormatted}</span>
+                  <span class="spec-label">Kilometre</span>
+                </div>
+                <div class="spec-item">
+                  <i class="ri-gas-station-line"></i>
+                  <span class="spec-value">${fuelType}</span>
+                  <span class="spec-label">Yakıt</span>
+                </div>
+              </div>
+              <div class="vehicle-specs vehicle-specs-row-2">
+                <div class="spec-item">
+                  <i class="ri-tools-line"></i>
+                  <span class="spec-value">${lastMaintenanceFormatted}</span>
+                  <span class="spec-label">Son Bakım Km</span>
+                </div>
+                <div class="spec-item">
+                  <i class="ri-file-list-3-line"></i>
+                  <span class="spec-value">${inspectionFormatted}</span>
+                  <span class="spec-label">Muayene</span>
+                </div>
+              </div>
+              ${verificationStatus}
+              ${verifyButton}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = html;
+    }
+
+    // Modal Functions
+    document.getElementById('add-vehicle-btn').addEventListener('click', async () => {
+      editingVehicleId = null;
+      document.getElementById('modal-title').textContent = 'Yeni Araç Ekle';
+      document.getElementById('vehicleForm').reset();
+      document.getElementById('vehicle-model').innerHTML = '<option value="">Önce marka seçiniz</option>';
+      document.getElementById('vehicle-model').disabled = true;
+      document.getElementById('plate-validation-msg').className = 'plate-validation-msg';
+      isPlateValid = false;
+      document.getElementById('vehicleModal').classList.add('show');
+    });
+
+    function closeVehicleModal() {
+      document.getElementById('vehicleModal').classList.remove('show');
+      editingVehicleId = null;
+      document.getElementById('plate-validation-msg').className = 'plate-validation-msg';
+    }
+
+    async function editVehicle(id) {
+      const vehicle = vehicles.find(v => v.id === id);
+      if (!vehicle) return;
+
+      editingVehicleId = id;
+      const attrs = vehicle.attributes || vehicle;
+      const brand = attrs.make || attrs.brand || '';
+      const modelValue = attrs.model || '';
+
+      // Önce modal'ı göster (UI donmasını önlemek için)
+      document.getElementById('modal-title').textContent = 'Aracı Düzenle';
+      document.getElementById('vehicleModal').classList.add('show');
+
+      // Form alanlarını doldur
+      document.getElementById('vehicle-make').value = brand;
+      document.getElementById('vehicle-year').value = attrs.year || '';
+      document.getElementById('vehicle-plate').value = attrs.plate || attrs.licensePlate || '';
+      document.getElementById('vehicle-mileage').value = attrs.mileage || attrs.kilometre || '';
+      document.getElementById('vehicle-fuel').value = attrs.fuelType || attrs.fuel_type || '';
+      document.getElementById('vehicle-last-maintenance').value = attrs.last_maintenance_mileage || '';
+      document.getElementById('vehicle-inspection-date').value = attrs.inspection_date || '';
+
+      // Düzenleme modunda plaka validasyonunu atla
+      document.getElementById('plate-validation-msg').className = 'plate-validation-msg';
+      isPlateValid = true;
+
+      // Model yüklemeyi bir sonraki frame'e bırak (UI donmasını önler)
+      if (brand) {
+        document.getElementById('vehicle-model').innerHTML = '<option value="">Yükleniyor...</option>';
+        document.getElementById('vehicle-model').disabled = true;
+
+        // requestAnimationFrame ile UI'ın güncellenmesini bekle
+        requestAnimationFrame(async () => {
+          await loadModels(brand);
+          document.getElementById('vehicle-model').value = modelValue;
+        });
+      }
+    }
+
+    async function deleteVehicle(id) {
+      if (!confirm('Bu aracı silmek istediğinizden emin misiniz?')) return;
+
+      try {
+        const token = auth.getToken();
+        const response = await fetch(`${CONFIG.API_BASE_URL}/vehicles/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) throw new Error('Araç silinemedi');
+
+        vehicles = vehicles.filter(v => v.id !== id);
+        renderVehicles();
+        showToast('Araç başarıyla silindi');
+      } catch (error) {
+        showToast('Araç silinemedi', true);
+      }
+    }
+
+    document.getElementById('save-vehicle-btn').addEventListener('click', async () => {
+      const form = document.getElementById('vehicleForm');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      const plate = document.getElementById('vehicle-plate').value.toUpperCase().replace(/\s+/g, '');
+
+      // Plaka doğrulaması (yeni araç için)
+      if (!editingVehicleId && !isPlateValid) {
+        await validatePlate(plate);
+        if (!isPlateValid) {
+          showToast('Lütfen geçerli bir plaka giriniz', true);
+          return;
+        }
+      }
+
+      const data = {
+        brand: document.getElementById('vehicle-make').value,
+        model: document.getElementById('vehicle-model').value,
+        year: parseInt(document.getElementById('vehicle-year').value),
+        plate: plate,
+        fuelType: document.getElementById('vehicle-fuel').value,
+        mileage: document.getElementById('vehicle-mileage').value ? parseInt(document.getElementById('vehicle-mileage').value) : null,
+        last_maintenance_mileage: document.getElementById('vehicle-last-maintenance').value ? parseInt(document.getElementById('vehicle-last-maintenance').value) : null,
+        inspection_date: document.getElementById('vehicle-inspection-date').value || null,
+      };
+
+      const saveBtn = document.getElementById('save-vehicle-btn');
+      saveBtn.textContent = 'Kaydediliyor...';
+      saveBtn.disabled = true;
+
+      try {
+        const token = auth.getToken();
+
+        if (editingVehicleId) {
+          const response = await fetch(`${CONFIG.API_BASE_URL}/vehicles/${editingVehicleId}`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ data })
+          });
+          if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.error?.message || 'Araç güncellenemedi');
+          }
+          showToast('Araç güncellendi');
+        } else {
+          const response = await fetch(`${CONFIG.API_BASE_URL}/vehicles`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ data })
+          });
+          if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.error?.message || 'Araç eklenemedi');
+          }
+          showToast('Araç eklendi');
+        }
+
+        closeVehicleModal();
+        await loadVehicles();
+      } catch (error) {
+        showToast(error.message || 'Araç kaydedilemedi', true);
+      } finally {
+        saveBtn.textContent = 'Kaydet';
+        saveBtn.disabled = false;
+      }
+    });
+
+    // Close modal on outside click
+    document.getElementById('vehicleModal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeVehicleModal();
+    });
+
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toast-icon');
+      document.getElementById('toast-message').textContent = message;
+
+      toast.classList.remove('error');
+      if (isError) {
+        toast.classList.add('error');
+        icon.className = 'ri-error-warning-fill';
+      } else {
+        icon.className = 'ri-checkbox-circle-fill';
+      }
+
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ===== VERIFICATION MODAL FUNCTIONS =====
+    let verifyingVehicleId = null;
+    let selectedFile = null;
+
+    function openVerificationModal(vehicleId, vehicleName) {
+      verifyingVehicleId = vehicleId;
+      document.getElementById('verification-vehicle-name').textContent = vehicleName;
+      document.getElementById('verificationModal').classList.add('show');
+      resetUploadState();
+    }
+
+    function closeVerificationModal() {
+      document.getElementById('verificationModal').classList.remove('show');
+      verifyingVehicleId = null;
+      selectedFile = null;
+      resetUploadState();
+    }
+
+    function resetUploadState() {
+      selectedFile = null;
+      document.getElementById('registration-file').value = '';
+      document.getElementById('upload-placeholder').style.display = 'flex';
+      document.getElementById('upload-preview').style.display = 'none';
+      document.getElementById('upload-progress').style.display = 'none';
+      document.getElementById('verify-btn').disabled = true;
+      document.getElementById('progress-fill').style.width = '0%';
+    }
+
+    function removePreview() {
+      resetUploadState();
+    }
+
+    // File upload handlers
+    document.addEventListener('DOMContentLoaded', () => {
+      const uploadArea = document.getElementById('upload-area');
+      const fileInput = document.getElementById('registration-file');
+
+      uploadArea.addEventListener('click', () => fileInput.click());
+
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+      });
+
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+      });
+
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        if (e.dataTransfer.files.length > 0) {
+          handleFileSelect(e.dataTransfer.files[0]);
+        }
+      });
+
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+          handleFileSelect(e.target.files[0]);
+        }
+      });
+
+      // Close modal on outside click
+      document.getElementById('verificationModal').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeVerificationModal();
+      });
+    });
+
+    function handleFileSelect(file) {
+      // Validate file
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
+      if (!allowedTypes.includes(file.type)) {
+        showToast('Lütfen geçerli bir dosya seçin (PNG, JPG, PDF)', true);
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('Dosya boyutu 5MB\'dan küçük olmalıdır', true);
+        return;
+      }
+
+      selectedFile = file;
+      document.getElementById('upload-placeholder').style.display = 'none';
+      document.getElementById('upload-preview').style.display = 'block';
+      document.getElementById('verify-btn').disabled = false;
+
+      // Show preview for images
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          document.getElementById('preview-image').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        // For PDF, show a placeholder
+        document.getElementById('preview-image').src = 'https://placehold.co/200x150/f8fafc/64748b?text=PDF+Dosyası';
+      }
+    }
+
+    async function submitVerification() {
+      if (!selectedFile || !verifyingVehicleId) {
+        showToast('Lütfen bir ruhsat belgesi seçin', true);
+        return;
+      }
+
+      const verifyBtn = document.getElementById('verify-btn');
+      verifyBtn.disabled = true;
+      verifyBtn.innerHTML = '<i class="ri-loader-4-line"></i> Yükleniyor...';
+
+      document.getElementById('upload-progress').style.display = 'block';
+
+      try {
+        const token = auth.getToken();
+        const formData = new FormData();
+        formData.append('files', selectedFile);
+
+        // Simulate progress
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+          progress += Math.random() * 15;
+          if (progress > 90) progress = 90;
+          document.getElementById('progress-fill').style.width = progress + '%';
+          document.getElementById('progress-text').textContent = `Yükleniyor... %${Math.round(progress)}`;
+        }, 200);
+
+        // Upload file
+        const uploadResponse = await fetch(`${CONFIG.API_BASE_URL}/vehicles/${verifyingVehicleId}/upload-registration`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
+
+        clearInterval(progressInterval);
+        document.getElementById('progress-fill').style.width = '100%';
+        document.getElementById('progress-text').textContent = 'Yükleme tamamlandı!';
+
+        if (!uploadResponse.ok) {
+          throw new Error('Dosya yüklenemedi');
+        }
+
+        showToast('Ruhsat belgesi başarıyla yüklendi! Doğrulama işlemi beklemede.');
+        closeVerificationModal();
+        await loadVehicles();
+
+      } catch (error) {
+        showToast('Dosya yüklenirken bir hata oluştu', true);
+        verifyBtn.disabled = false;
+        verifyBtn.innerHTML = '<i class="ri-shield-check-line"></i> Doğrula';
+        document.getElementById('upload-progress').style.display = 'none';
+      }
+    }
+  </script>
+</body>
+
+</html>

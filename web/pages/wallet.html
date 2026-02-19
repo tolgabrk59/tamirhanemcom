@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<!-- Updated: Wallet Page with full header and loyalty bar -->
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Cüzdanım - TamirHanem">
+  <title>Cüzdanım | TamirHanem</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="/favicon/site.webmanifest">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+
+  <!-- Global Dashboard CSS -->
+  <link rel="stylesheet" href="/css/global-dashboard.css">
+
+  <!-- Config (API URL) -->
+  <script src="/js/config.js"></script>
+
+  <style>
+    /* --- PAGE SPECIFIC STYLES --- */
+    /* Footer altı boşluk fix */
+    html { height: 100%; }
+    body { min-height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; }
+    .dashboard-main { flex: 1 0 auto; padding: 20px 0; }
+    .dashboard-footer { flex-shrink: 0; margin-bottom: 0 !important; }
+
+    /* Page Header */
+    .page-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+    .page-header-left { display: flex; flex-direction: column; }
+    .page-header-left h1, .page-header h1 { font-size: 1.5rem; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; color: #2d2d2d; font-weight: 700; }
+    .page-header-left h1 i, .page-header h1 i { color: #fbc707; font-size: 1.5rem; }
+    .page-header-left p, .page-header p { font-size: 0.9rem; color: #64748b; margin: 0; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; border: none; font-family: inherit; }
+    .btn-primary { background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%); color: #2d2d2d; box-shadow: 0 4px 12px rgba(251, 199, 7, 0.3); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(251, 199, 7, 0.4); }
+
+    /* Form Elements */
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 0.85rem; font-weight: 600; color: #454545; margin-bottom: 8px; }
+    .form-input, .form-select { width: 100%; padding: 14px 16px; border: 2px solid #eee; border-radius: 10px; font-family: inherit; font-size: 0.95rem; color: #2d2d2d; background: #f8f9fa; transition: all 0.2s; box-sizing: border-box; }
+    .form-input:focus, .form-select:focus { border-color: #fbc707; background: #fff; box-shadow: 0 0 0 4px rgba(251, 199, 7, 0.15); outline: none; }
+    .form-input::placeholder { color: #aaa; }
+    .form-row { display: flex; gap: 16px; }
+    .form-row .form-group { flex: 1; }
+
+    /* Modal */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(4px); }
+    .modal-overlay.show, .modal-overlay.active { opacity: 1; visibility: visible; }
+    .modal-content { background: #fff; width: 90%; max-width: 500px; border-radius: 16px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2); transform: translateY(20px); transition: transform 0.3s ease; overflow: hidden; }
+    .modal-overlay.show .modal-content, .modal-overlay.active .modal-content { transform: translateY(0); }
+    .modal-header { padding: 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
+    .modal-header h2, .modal-header h3 { margin: 0; font-size: 1.1rem; color: #1e293b; display: flex; align-items: center; gap: 10px; }
+    .modal-header h2 i, .modal-header h3 i { color: #fbc707; }
+    .modal-close, .close-modal-btn { background: none; border: none; font-size: 1.2rem; color: #64748b; cursor: pointer; padding: 5px; border-radius: 50%; transition: background 0.2s; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
+    .modal-close:hover, .close-modal-btn:hover { background: #e2e8f0; color: #ef4444; }
+    .modal-body { padding: 24px; max-height: 60vh; overflow-y: auto; }
+
+    /* Empty State */
+    .empty-state { text-align: center; padding: 60px 20px; background: #fff; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .empty-state-icon { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 2.5rem; color: #2d2d2d; }
+    .empty-state h3 { font-size: 1.25rem; margin-bottom: 10px; color: #2d2d2d; font-weight: 700; }
+    .empty-state p { color: #64748b; max-width: 300px; margin: 0 auto; font-size: 0.9rem; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1e293b; color: white; padding: 12px 24px; border-radius: 50px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 10000; opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); font-weight: 600; font-size: 0.9rem; }
+    .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    .toast.error { background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); }
+    .toast i { font-size: 1.25rem; }
+
+    .wallet-balance-card {
+      background: linear-gradient(135deg, var(--primary) 0%, #eeb902 100%);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      color: var(--custom-darker);
+      box-shadow: 0 15px 30px rgba(251, 199, 7, 0.25);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .wallet-balance-card::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 200px;
+      height: 200px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .wallet-balance-label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      opacity: 0.8;
+      margin-bottom: 8px;
+    }
+
+    .wallet-balance-value {
+      font-size: 2.75rem;
+      font-weight: 800;
+      margin-bottom: 24px;
+      letter-spacing: -1px;
+    }
+
+    .wallet-balance-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-wallet {
+      padding: 14px 24px;
+      border-radius: 50px;
+      border: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+
+    .btn-wallet-primary {
+      background: var(--white);
+      color: var(--custom-darker);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-wallet-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-wallet-secondary {
+      background: rgba(0, 0, 0, 0.1);
+      color: var(--custom-darker);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-wallet-secondary:hover {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .section-card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--custom-darker);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .section-title i {
+      color: var(--primary);
+    }
+
+    .transaction-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--neutral-100);
+    }
+
+    .transaction-item:last-child {
+      border-bottom: none;
+    }
+
+    .transaction-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .transaction-icon.credit {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .transaction-icon.debit {
+      background: var(--error-bg);
+      color: var(--error);
+    }
+
+    .transaction-info {
+      flex: 1;
+    }
+
+    .transaction-title {
+      font-weight: 700;
+      color: var(--custom-darker);
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+
+    .transaction-date {
+      font-size: 0.8rem;
+      color: var(--neutral-500);
+    }
+
+    .transaction-amount {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .transaction-amount.credit {
+      color: var(--success);
+    }
+
+    .transaction-amount.debit {
+      color: var(--error);
+    }
+
+
+
+
+
+    .amount-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .amount-btn {
+      padding: 14px;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--neutral-100);
+      background: var(--white);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--custom-darker);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .amount-btn:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .amount-btn.selected {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: var(--custom-darker);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary) 0%, #eeb902 100%);
+      color: var(--custom-darker);
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(251, 199, 7, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(251, 199, 7, 0.4);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header and Loyalty Bar will be injected by global-header.js -->
+
+  <main class="dashboard-main">
+    <div class="container">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1><i class="ri-wallet-3-fill"></i> Cüzdanım</h1>
+          <p>Bakiyenizi yönetin ve işlem geçmişinizi görüntüleyin</p>
+        </div>
+      </div>
+
+      <div class="wallet-balance-card">
+        <div class="wallet-balance-label">Toplam Bakiye</div>
+        <div class="wallet-balance-value" id="wallet-balance">₺0,00</div>
+        <div class="wallet-balance-actions">
+          <button class="btn-wallet btn-wallet-primary" onclick="openAddMoneyModal()"><i class="ri-add-circle-line"></i>
+            Para Yukle</button>
+          <button class="btn-wallet btn-wallet-secondary" onclick="showToast('Para cekme ozelligi yakinda!', false)"><i
+              class="ri-bank-line"></i> Para Cek</button>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h2 class="section-title"><i class="ri-history-line"></i> Islem Gecmisi</h2>
+        <div id="transactions-list">
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="ri-loader-4-line"></i></div>
+            <h3>Yukleniyor...</h3>
+            <p>Islem gecmisiniz getiriliyor</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal-overlay" id="addMoneyModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="ri-add-circle-line"></i> Para Yukle</h2>
+        <button class="modal-close" onclick="closeAddMoneyModal()"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="amount-grid">
+          <button class="amount-btn" onclick="selectAmount(50, this)">₺50</button>
+          <button class="amount-btn" onclick="selectAmount(100, this)">₺100</button>
+          <button class="amount-btn" onclick="selectAmount(200, this)">₺200</button>
+          <button class="amount-btn" onclick="selectAmount(500, this)">₺500</button>
+          <button class="amount-btn" onclick="selectAmount(1000, this)">₺1.000</button>
+          <button class="amount-btn" onclick="selectAmount(2000, this)">₺2.000</button>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ozel Tutar</label>
+          <input type="number" id="custom-amount" class="form-input" placeholder="Tutar girin (min ₺10)" min="10"
+            max="10000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Odeme Yontemi</label>
+          <select id="payment-method" class="form-input">
+            <option value="credit_card">Kredi Karti</option>
+            <option value="debit_card">Banka Karti</option>
+            <option value="bank_transfer">Banka Transferi</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="submit-btn" onclick="confirmAddMoney()"><i class="ri-check-line"></i> Para Yukle</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"><i class="ri-checkbox-circle-fill" id="toast-icon"></i><span
+      id="toast-message">Mesaj</span></div>
+
+  <!-- Global Header Component -->
+  <script src="/components/global-header.js"></script>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/components/footer.js"></script>
+  <script src="/js/components/bottom-nav.js"></script>
+
+  <script>
+    let selectedAmount = 0;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!auth.isAuthenticated()) { window.location.href = '/login.html'; return; }
+      loadWallet();
+    });
+
+    async function loadWallet() {
+      try {
+        const response = await api.getWallet();
+        const balance = response?.data?.attributes?.balance || response?.attributes?.balance || response?.balance || response?.data?.balance || 0;
+        const formattedBalance = Number(balance).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('wallet-balance').textContent = `₺${formattedBalance}`;
+        document.getElementById('navbar-wallet-balance').textContent = `₺${formattedBalance}`;
+        loadTransactions();
+      } catch (error) { console.error('Cuzdan yuklenemedi:', error); document.getElementById('wallet-balance').textContent = '₺0,00'; document.getElementById('navbar-wallet-balance').textContent = '₺0,00'; loadTransactions(); }
+    }
+
+    async function loadTransactions() {
+      const container = document.getElementById('transactions-list');
+      try {
+        const response = await api.getTransactions();
+        const transactions = response.data || [];
+        if (transactions.length === 0) { container.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><i class="ri-exchange-dollar-line"></i></div><h3>Henuz islem yok</h3><p>Ilk isleminizi yaparak baslayin</p></div>`; return; }
+        container.innerHTML = transactions.map(tx => {
+          const attrs = tx.attributes || tx;
+          const isCredit = attrs.direction === 'CREDIT';
+          const typeTitle = getTransactionTitle(attrs.type);
+          const dateStr = attrs.createdAt ? new Date(attrs.createdAt).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+          const amount = Number(attrs.amount || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          return `<div class="transaction-item"><div class="transaction-icon ${isCredit ? 'credit' : 'debit'}"><i class="${isCredit ? 'ri-arrow-left-down-line' : 'ri-arrow-right-up-line'}"></i></div><div class="transaction-info"><div class="transaction-title">${typeTitle}</div><div class="transaction-date">${dateStr}</div></div><div class="transaction-amount ${isCredit ? 'credit' : 'debit'}">${isCredit ? '+' : '-'}₺${amount}</div></div>`;
+        }).join('');
+      } catch (error) { console.error('Islemler yuklenemedi:', error); container.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><i class="ri-exchange-dollar-line"></i></div><h3>Henuz islem yok</h3><p>Ilk isleminizi yaparak baslayin</p></div>`; }
+    }
+
+    function getTransactionTitle(type) { const titles = { 'DEPOSIT_PAYMENT': 'Para Yukleme', 'REFUND': 'Iade', 'NO_SHOW_FORFEIT': 'Iptal Ucreti', 'APPOINTMENT_PAYMENT': 'Randevu Odemesi' }; return titles[type] || type || 'Islem'; }
+
+    function openAddMoneyModal() { document.getElementById('addMoneyModal').classList.add('show'); }
+    function closeAddMoneyModal() { document.getElementById('addMoneyModal').classList.remove('show'); selectedAmount = 0; document.getElementById('custom-amount').value = ''; document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('selected')); }
+
+    function selectAmount(amount, btn) { selectedAmount = amount; document.getElementById('custom-amount').value = amount; document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); }
+
+    document.getElementById('custom-amount').addEventListener('input', (e) => { selectedAmount = parseFloat(e.target.value) || 0; document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('selected')); });
+
+    async function confirmAddMoney() {
+      const amount = selectedAmount || parseFloat(document.getElementById('custom-amount').value);
+      if (!amount || amount < 10) { showToast('Minimum yukleme tutari ₺10\'dur', true); return; }
+      if (amount > 10000) { showToast('Maksimum yukleme tutari ₺10.000\'dir', true); return; }
+      showToast(`₺${amount.toLocaleString('tr-TR')} yukleme islemi baslatildi`, false);
+      closeAddMoneyModal();
+      setTimeout(() => { showToast('Para yukleme basarili!', false); loadWallet(); }, 1500);
+    }
+
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toast-icon');
+      const msg = document.getElementById('toast-message');
+      msg.textContent = message;
+      toast.classList.toggle('error', isError);
+      icon.className = isError ? 'ri-error-warning-fill' : 'ri-checkbox-circle-fill';
+      toast.classList.add('show');
+      setTimeout(() => { toast.classList.remove('show'); }, 3000);
+    }
+
+    document.getElementById('addMoneyModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeAddMoneyModal(); });
+  </script>
+</body>
+
+</html>

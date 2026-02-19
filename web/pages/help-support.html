@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Yardım ve Destek - TamirHanem">
+  <title>Yardım ve Destek | TamirHanem</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="/favicon/site.webmanifest">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+
+  <!-- Global Dashboard CSS -->
+  <link rel="stylesheet" href="/css/global-dashboard.css">
+
+  <!-- Config (API URL) -->
+  <script src="/js/config.js"></script>
+
+  <style>
+    /* --- PAGE SPECIFIC STYLES --- */
+    /* Footer altı boşluk fix */
+    html { height: 100%; }
+    body { min-height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; zoom: 0.765; }
+    .dashboard-main { flex: 1 0 auto; padding-top: 20px; padding-bottom: 100px; }
+    .dashboard-footer { flex-shrink: 0; margin-bottom: 0 !important; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1e293b; color: white; padding: 12px 24px; border-radius: 50px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 10000; opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); font-weight: 600; font-size: 0.9rem; }
+    .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    .toast.error { background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); }
+    .toast i { font-size: 1.25rem; }
+
+    /* ==================== PAGE HEADER ==================== */
+    .page-hero {
+      text-align: center;
+      padding: 32px 24px;
+      background: linear-gradient(135deg, #ffffff 0%, #fefce8 100%);
+      border-radius: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(251, 199, 7, 0.1);
+      border: 1px solid rgba(251, 199, 7, 0.2);
+    }
+
+    .page-hero-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 2rem;
+      color: #2d2d2d;
+      box-shadow: 0 8px 24px rgba(251, 199, 7, 0.35);
+    }
+
+    .page-hero h1 {
+      font-size: 1.6rem;
+      color: #5a5a5a;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .page-hero p {
+      color: #5a5a5a;
+      font-size: 0.95rem;
+      max-width: 400px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    /* ==================== SECTION CARD ==================== */
+    .section-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .section-card .section-header {
+      text-align: center !important;
+      margin: 0 0 28px 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      background: rgba(245, 245, 245, 0.8) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      padding: 16px 24px !important;
+      border-radius: 12px !important;
+      border: 2px solid #fbc707 !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+
+    .section-card .section-header h2 {
+      font-size: 1.15rem !important;
+      font-weight: 700 !important;
+      color: #5a5a5a !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 10px !important;
+      margin-bottom: 8px !important;
+      width: 100% !important;
+    }
+
+    .section-card .section-header h2 i {
+      color: #fbc707 !important;
+      font-size: 1.4rem !important;
+      background: transparent !important;
+      padding: 0 !important;
+      border-radius: 0 !important;
+    }
+
+    .section-card .section-header p {
+      color: #6b7280 !important;
+      font-size: 0.9rem !important;
+      margin: 0 !important;
+      text-align: center !important;
+      width: 100% !important;
+      line-height: 1.5 !important;
+    }
+
+    /* ==================== DESTEK TALEPLERİM ==================== */
+    .tickets-card {
+      background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .tickets-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(251, 199, 7, 0.35);
+    }
+
+    .tickets-card-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .tickets-card-icon {
+      width: 56px;
+      height: 56px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: #2d2d2d;
+    }
+
+    .tickets-card-text h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #5a5a5a;
+      margin-bottom: 4px;
+    }
+
+    .tickets-card-text p {
+      font-size: 0.85rem;
+      color: #5a5a00;
+      margin: 0;
+    }
+
+    .tickets-badge {
+      background: #ef4444;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-left: 8px;
+    }
+
+    /* ==================== SEARCH SECTION ==================== */
+    .search-wrapper {
+      position: relative;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .search-wrapper .search-icon {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #fbc707;
+      font-size: 1.3rem;
+    }
+
+    .search-wrapper .search-input {
+      width: 100%;
+      padding: 16px 20px 16px 56px;
+      border: 2px solid #f1f5f9;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      font-weight: 500;
+      background: #f8fafc;
+      color: #2d2d2d;
+      transition: all 0.3s;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .search-wrapper .search-input:focus {
+      outline: none;
+      border-color: #fbc707;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(251, 199, 7, 0.15);
+    }
+
+    .search-wrapper .search-input::placeholder {
+      color: #94a3b8;
+    }
+
+    /* ==================== CATEGORY PILLS ==================== */
+    .category-pills {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .pill-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 18px;
+      border-radius: 50px;
+      border: 2px solid #f1f5f9;
+      background: #fff;
+      color: #5a5a5a;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .pill-btn:hover {
+      border-color: #fbc707;
+      color: #2d2d2d;
+    }
+
+    .pill-btn.active {
+      background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%);
+      border-color: #fbc707;
+      color: #2d2d2d;
+      box-shadow: 0 4px 12px rgba(251, 199, 7, 0.25);
+    }
+
+    .pill-btn i {
+      font-size: 1rem;
+    }
+
+    /* ==================== FAQ SECTION ==================== */
+    .faq-list {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      background: #f8fafc;
+      border-radius: 16px;
+      margin-bottom: 12px;
+      border: 1px solid #f1f5f9;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .faq-item:hover {
+      border-color: rgba(251, 199, 7, 0.3);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    .faq-header {
+      padding: 18px 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .faq-question {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #5a5a5a;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .faq-question i {
+      color: #fbc707;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .faq-icon {
+      font-size: 1.2rem;
+      color: #94a3b8;
+      transition: transform 0.3s;
+      flex-shrink: 0;
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background: #fff;
+    }
+
+    .faq-answer-content {
+      padding: 0 20px 18px 52px;
+      color: #5a5a5a;
+      line-height: 1.6;
+      font-size: 0.9rem;
+    }
+
+    .faq-footer {
+      border-top: 1px solid #f1f5f9;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .helpful-text {
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+
+    .helpful-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .helpful-btn {
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      color: #5a5a5a;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .helpful-btn:hover {
+      background: #fef3c7;
+      border-color: #fbc707;
+      color: #2d2d2d;
+    }
+
+    /* ==================== CONTACT FORM ==================== */
+    .contact-form {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: #5a5a5a;
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid #f1f5f9;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: #5a5a5a;
+      background: #f8fafc;
+      transition: all 0.3s;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: #fbc707;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(251, 199, 7, 0.1);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 120px;
+      text-align: left;
+    }
+
+    .file-upload-wrapper {
+      position: relative;
+    }
+
+    .file-input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .file-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 18px;
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      background: #f8fafc;
+      cursor: pointer;
+      transition: all 0.3s;
+      color: #5a5a5a;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .file-label:hover {
+      border-color: #fbc707;
+      background: #fef3c7;
+      color: #2d2d2d;
+    }
+
+    .file-label i {
+      font-size: 1.3rem;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%);
+      color: #2d2d2d;
+      border: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 8px 20px rgba(251, 199, 7, 0.3);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(251, 199, 7, 0.4);
+    }
+
+    /* ==================== LIVE SUPPORT ==================== */
+    .support-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .support-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 20px 16px;
+      border-radius: 16px;
+      border: 2px solid #f1f5f9;
+      background: #fff;
+      transition: all 0.3s;
+      text-decoration: none;
+      color: inherit;
+      text-align: center;
+    }
+
+    .support-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .support-btn i {
+      font-size: 2rem;
+      padding: 14px;
+      border-radius: 50%;
+      transition: all 0.3s;
+    }
+
+    .support-btn.whatsapp i {
+      color: #25D366;
+      background: rgba(37, 211, 102, 0.1);
+    }
+
+    .support-btn.whatsapp:hover {
+      border-color: #25D366;
+    }
+
+    .support-btn.phone i {
+      color: #3b82f6;
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .support-btn.phone:hover {
+      border-color: #3b82f6;
+    }
+
+    .support-btn.email i {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .support-btn.email:hover {
+      border-color: #ef4444;
+    }
+
+    .support-btn strong {
+      font-size: 0.95rem;
+      color: #5a5a5a;
+    }
+
+    .support-btn span {
+      font-size: 0.8rem;
+      color: #5a5a5a;
+    }
+
+    /* ==================== EMPTY / LOADING STATES ==================== */
+    .loading-state,
+    .error-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #5a5a5a;
+    }
+
+    .loading-state i,
+    .error-state i {
+      font-size: 2.5rem;
+      color: #fbc707;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .empty-state i {
+      font-size: 2.5rem;
+      color: #94a3b8;
+      margin-bottom: 12px;
+    }
+
+    .empty-state h3 {
+      color: #5a5a5a;
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    .empty-state p {
+      color: #5a5a5a;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    /* ==================== TICKET ITEMS ==================== */
+    .ticket-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .ticket-item:hover {
+      border-color: #fbc707;
+      box-shadow: 0 4px 12px rgba(251, 199, 7, 0.15);
+    }
+
+    .ticket-item.unread {
+      background: #fffbeb;
+      border-color: #fbc707;
+    }
+
+    .ticket-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .ticket-id {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+
+    .ticket-subject {
+      font-weight: 700;
+      color: #5a5a5a;
+      margin-bottom: 4px;
+      font-size: 0.95rem;
+    }
+
+    .ticket-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.8rem;
+      color: #5a5a5a;
+    }
+
+    .ticket-status {
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .ticket-status.pending { background: #fef3c7; color: #92400e; }
+    .ticket-status.in-progress { background: #dbeafe; color: #1e40af; }
+    .ticket-status.resolved { background: #d1fae5; color: #065f46; }
+    .ticket-status.closed { background: #e5e7eb; color: #374151; }
+
+    .empty-tickets {
+      text-align: center;
+      padding: 48px 20px;
+      color: #94a3b8;
+    }
+
+    .empty-tickets i {
+      font-size: 3rem;
+      opacity: 0.3;
+      margin-bottom: 12px;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header and Loyalty Bar will be injected by global-header.js -->
+
+  <!-- MAIN CONTENT -->
+  <main class="dashboard-main">
+    <div class="container">
+
+      <!-- Page Hero -->
+      <div class="page-hero">
+        <div class="page-hero-icon">
+          <i class="ri-customer-service-2-fill"></i>
+        </div>
+        <h1>Yardım ve Destek</h1>
+        <p>Size nasıl yardımcı olabiliriz? Sorularınızı yanıtlayalım veya destek ekibimize ulaşın.</p>
+      </div>
+
+      <!-- Destek Taleplerim Card -->
+      <div class="section-card tickets-card" onclick="openTicketsModal()">
+        <div class="tickets-card-content">
+          <div class="tickets-card-icon">
+            <i class="ri-message-3-line"></i>
+          </div>
+          <div class="tickets-card-text">
+            <h3>Destek Taleplerim <span id="tickets-badge" class="tickets-badge" style="display: none;">0</span></h3>
+            <p>Açık taleplerinizi görüntüleyin ve takip edin</p>
+          </div>
+          <i class="ri-arrow-right-s-line" style="font-size: 1.5rem; color: #5a5a00;"></i>
+        </div>
+      </div>
+
+      <!-- Search Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2><i class="ri-search-line"></i> Sorunuzu Arayın</h2>
+          <p>Sıkça sorulan sorular arasında arayın</p>
+        </div>
+        <div class="search-wrapper">
+          <i class="ri-search-line search-icon"></i>
+          <input type="text" id="faq-search" class="search-input" placeholder="Ne arıyorsunuz?">
+        </div>
+        <div class="category-pills">
+          <button class="pill-btn active" data-category="all" onclick="filterByCategory('all', this)">
+            <i class="ri-apps-line"></i> Tümü
+          </button>
+          <button class="pill-btn" data-category="account" onclick="filterByCategory('account', this)">
+            <i class="ri-user-line"></i> Hesap
+          </button>
+          <button class="pill-btn" data-category="payment" onclick="filterByCategory('payment', this)">
+            <i class="ri-wallet-line"></i> Ödeme
+          </button>
+          <button class="pill-btn" data-category="technical" onclick="filterByCategory('technical', this)">
+            <i class="ri-tools-line"></i> Teknik
+          </button>
+          <button class="pill-btn" data-category="other" onclick="filterByCategory('other', this)">
+            <i class="ri-more-line"></i> Diğer
+          </button>
+        </div>
+      </div>
+
+      <!-- FAQ Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2><i class="ri-question-answer-line"></i> Sıkça Sorulan Sorular</h2>
+          <p>En çok sorulan sorular ve yanıtları</p>
+        </div>
+        <div id="faq-container">
+          <div id="loading-state" class="loading-state">
+            <i class="ri-loader-4-line" style="animation: spin 1s linear infinite;"></i>
+            <p>Sorular yükleniyor...</p>
+          </div>
+          <div id="error-state" class="error-state" style="display: none;">
+            <i class="ri-error-warning-line"></i>
+            <h3>Bir hata oluştu</h3>
+            <p id="error-message"></p>
+            <button class="btn-submit" onclick="loadFAQs()" style="max-width: 200px; margin: 16px auto 0;">
+              <i class="ri-refresh-line"></i> Tekrar Dene
+            </button>
+          </div>
+          <div id="faq-list" class="faq-list"></div>
+        </div>
+      </div>
+
+      <!-- Contact Form Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2><i class="ri-mail-send-line"></i> Bize Ulaşın</h2>
+          <p>Sorunuzu bulamadınız mı? Destek ekibimize mesaj gönderin</p>
+        </div>
+        <form id="contact-form" class="contact-form">
+          <div class="form-group">
+            <label class="form-label">Kategori</label>
+            <select id="category" class="form-select" required>
+              <option value="">Kategori seçin</option>
+              <option value="technical">Teknik Destek</option>
+              <option value="payment">Ödeme Sorunları</option>
+              <option value="account">Hesap Yönetimi</option>
+              <option value="other">Diğer</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Konu</label>
+            <input type="text" id="subject" class="form-input" placeholder="Sorun başlığı" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Mesajınız</label>
+            <textarea id="message" class="form-textarea" rows="4" placeholder="Lütfen sorununuzu detaylı açıklayın..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Öncelik</label>
+            <select id="priority" class="form-select" required>
+              <option value="low">Düşük - Genel sorular</option>
+              <option value="medium" selected>Orta - Standart destek</option>
+              <option value="high">Yüksek - Önemli sorun</option>
+              <option value="urgent">Acil - Kritik durum</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Dosya Ekle (Opsiyonel)</label>
+            <div class="file-upload-wrapper">
+              <input type="file" id="attachment" class="file-input" accept="image/*,.pdf,.doc,.docx">
+              <label for="attachment" class="file-label">
+                <i class="ri-attachment-line"></i>
+                <span id="file-name">Dosya seçin</span>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit">
+            <i class="ri-send-plane-fill"></i> Gönder
+          </button>
+        </form>
+      </div>
+
+      <!-- Live Support Widget -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2><i class="ri-customer-service-2-line"></i> Canlı Destek</h2>
+          <p>Hızlı yanıt için bize ulaşın</p>
+        </div>
+        <div class="support-options">
+          <a href="https://wa.me/905XXXXXXXXX" target="_blank" class="support-btn whatsapp">
+            <i class="ri-whatsapp-line"></i>
+            <strong>WhatsApp</strong>
+            <span>Hızlı yanıt</span>
+          </a>
+          <a href="tel:+905XXXXXXXXX" class="support-btn phone">
+            <i class="ri-phone-line"></i>
+            <strong>Telefon</strong>
+            <span>0850 XXX XX XX</span>
+          </a>
+          <a href="mailto:destek@tamirhanem.com" class="support-btn email">
+            <i class="ri-mail-line"></i>
+            <strong>E-posta</strong>
+            <span>destek@tamirhanem.com</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Bottom Nav will be injected here by bottom-nav.js -->
+
+  <!-- Tickets List Modal -->
+  <div class="modal-overlay" id="tickets-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="ri-message-3-line"></i>
+          Destek Taleplerim
+        </div>
+        <button class="modal-close" onclick="closeTicketsModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="tickets-list">
+        <!-- Tickets will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Ticket Detail Modal -->
+  <div class="modal-overlay" id="ticket-detail-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="ri-file-text-line"></i>
+          Talep Detayı
+        </div>
+        <button class="modal-close" onclick="closeTicketDetailModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="ticket-detail-content">
+        <!-- Ticket details will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Global Header Component -->
+  <script src="/components/global-header.js"></script>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/components/footer.js"></script>
+  <script src="/js/components/bottom-nav.js"></script>
+
+  <script>
+    // Check authentication
+    if (!auth.isAuthenticated()) {
+      window.location.href = '/login.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadFAQs();
+      loadMyTickets();
+    });
+
+    // Toast Notification Function
+    function showToast(message, type = 'success', title = null) {
+      const container = document.getElementById('toast-container');
+      container.innerHTML = '';
+
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<i class="ri-${type === 'success' ? 'checkbox-circle' : 'error-warning'}-fill"></i> ${message}`;
+
+      container.appendChild(toast);
+      setTimeout(() => toast.classList.add('show'), 10);
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+      }, 3000);
+    }
+
+    // FAQ Data Management
+    let allFAQs = [];
+    let currentCategory = 'all';
+
+    async function loadFAQs() {
+      try {
+        document.getElementById('loading-state').style.display = 'block';
+        document.getElementById('error-state').style.display = 'none';
+        document.getElementById('faq-list').style.display = 'none';
+
+        const token = localStorage.getItem('tamirhanem_token');
+        const response = await fetch(`${CONFIG.API_BASE_URL}/faqs?populate=*&sort=order:asc`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) throw new Error('FAQ verileri yüklenemedi');
+
+        const data = await response.json();
+        allFAQs = data.data || [];
+
+        renderFAQs();
+      } catch (error) {
+        document.getElementById('loading-state').style.display = 'none';
+        document.getElementById('error-state').style.display = 'block';
+        document.getElementById('error-message').textContent = error.message;
+      }
+    }
+
+    function renderFAQs() {
+      document.getElementById('loading-state').style.display = 'none';
+      document.getElementById('error-state').style.display = 'none';
+      document.getElementById('faq-list').style.display = 'block';
+
+      const filteredFAQs = currentCategory === 'all'
+        ? allFAQs
+        : allFAQs.filter(faq => faq.attributes.category === currentCategory);
+
+      const searchTerm = document.getElementById('faq-search').value.toLowerCase();
+      const searchedFAQs = searchTerm
+        ? filteredFAQs.filter(faq =>
+          faq.attributes.question.toLowerCase().includes(searchTerm) ||
+          faq.attributes.answer.toLowerCase().includes(searchTerm)
+        )
+        : filteredFAQs;
+
+      if (searchedFAQs.length === 0) {
+        document.getElementById('faq-list').innerHTML = `
+          <div class="empty-state">
+            <i class="ri-question-line"></i>
+            <h3>Sonuç bulunamadı</h3>
+            <p>Arama kriterlerinize uygun soru bulunamadı.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const faqHTML = searchedFAQs.map((faq, index) => {
+        const { question, answer, helpful = 0, category } = faq.attributes;
+        return `
+          <div class="faq-item" data-category="${category || 'other'}">
+            <div class="faq-header" onclick="toggleFAQ(${index})">
+              <h3 class="faq-question">
+                <i class="ri-question-mark"></i>
+                ${question}
+              </h3>
+              <i class="ri-arrow-down-s-line faq-icon" id="icon-${index}"></i>
+            </div>
+            <div class="faq-answer" id="answer-${index}">
+              <div class="faq-answer-content">${answer}</div>
+              <div class="faq-footer">
+                <span class="helpful-text">Bu yanıt yardımcı oldu mu?</span>
+                <div class="helpful-actions">
+                  <button class="helpful-btn" onclick="markHelpful(${faq.id}, true)">
+                    <i class="ri-thumb-up-line"></i> Evet (${helpful})
+                  </button>
+                  <button class="helpful-btn" onclick="markHelpful(${faq.id}, false)">
+                    <i class="ri-thumb-down-line"></i> Hayır
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('faq-list').innerHTML = faqHTML;
+    }
+
+    function toggleFAQ(index) {
+      const answer = document.getElementById(`answer-${index}`);
+      const icon = document.getElementById(`icon-${index}`);
+
+      if (answer.style.maxHeight) {
+        answer.style.maxHeight = null;
+        icon.style.transform = 'rotate(0deg)';
+      } else {
+        document.querySelectorAll('.faq-answer').forEach(ans => ans.style.maxHeight = null);
+        document.querySelectorAll('.faq-icon').forEach(ic => ic.style.transform = 'rotate(0deg)');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+        icon.style.transform = 'rotate(180deg)';
+      }
+    }
+
+    function filterByCategory(category, button) {
+      currentCategory = category;
+      document.querySelectorAll('.category-pills .pill-btn').forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      renderFAQs();
+    }
+
+    document.getElementById('faq-search').addEventListener('input', () => renderFAQs());
+
+    async function markHelpful(faqId, isHelpful) {
+      try {
+        const token = localStorage.getItem('tamirhanem_token');
+        await fetch(`${CONFIG.API_BASE_URL}/faqs/${faqId}/helpful`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ helpful: isHelpful })
+        });
+        showToast(isHelpful ? 'Geri bildiriminiz için teşekkürler!' : 'Geri bildiriminiz kaydedildi', 'success');
+        loadFAQs();
+      } catch (error) { }
+    }
+
+    // Contact form submission
+    document.getElementById('contact-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const submitBtn = e.target.querySelector('.btn-submit');
+      const originalText = submitBtn.innerHTML;
+
+      if (submitBtn.disabled) return;
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="ri-loader-4-line" style="animation: spin 1s linear infinite;"></i> Gönderiliyor...';
+
+      const category = document.getElementById('category').value;
+      const subject = document.getElementById('subject').value;
+      const message = document.getElementById('message').value;
+      const priority = document.getElementById('priority').value;
+      const attachment = document.getElementById('attachment').files[0];
+
+      try {
+        const token = localStorage.getItem('tamirhanem_token');
+        const userData = Utils.storage.get('tamirhanem_user');
+
+        const formData = new FormData();
+        formData.append('data', JSON.stringify({
+          category, subject, message, priority,
+          user: userData.id,
+          status: 'pending'
+        }));
+
+        if (attachment) formData.append('files.attachment', attachment);
+
+        const response = await fetch(`${CONFIG.API_BASE_URL}/support-tickets`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+
+        if (!response.ok) throw new Error('Mesaj gönderilemedi');
+
+        showToast('Mesajınız başarıyla gönderildi!', 'success');
+        document.getElementById('contact-form').reset();
+        document.getElementById('file-name').textContent = 'Dosya seçin';
+        loadMyTickets();
+      } catch (error) {
+        showToast('Gönderim başarısız. Lütfen tekrar deneyin.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+      }
+    });
+
+    document.getElementById('attachment').addEventListener('change', (e) => {
+      const fileName = e.target.files[0]?.name || 'Dosya seçin';
+      document.getElementById('file-name').textContent = fileName;
+    });
+
+    // ========== TICKET MANAGEMENT ==========
+    let myTickets = [];
+
+    async function loadMyTickets() {
+      try {
+        const token = localStorage.getItem('tamirhanem_token');
+        const userData = Utils.storage.get('tamirhanem_user');
+
+        const response = await fetch(
+          `${CONFIG.API_BASE_URL}/support-tickets?filters[user][id][$eq]=${userData.id}&populate=*&sort=createdAt:desc`,
+          { headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } }
+        );
+
+        if (!response.ok) throw new Error('Talepler yüklenemedi');
+
+        const data = await response.json();
+        myTickets = data.data || [];
+        updateBadgeCount();
+
+        const modal = document.getElementById('tickets-modal');
+        if (modal.classList.contains('show')) renderTicketList();
+
+        return myTickets;
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function updateBadgeCount() {
+      const unreadCount = myTickets.filter(ticket => ticket.attributes && ticket.attributes.hasUnreadAdminMessage).length;
+      const badge = document.getElementById('tickets-badge');
+      if (unreadCount > 0) {
+        badge.textContent = unreadCount;
+        badge.style.display = 'inline';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function renderTicketList() {
+      const listContainer = document.getElementById('tickets-list');
+
+      if (myTickets.length === 0) {
+        listContainer.innerHTML = `<div class="empty-tickets"><i class="ri-inbox-line"></i><p>Henüz destek talebiniz bulunmuyor.</p></div>`;
+        return;
+      }
+
+      listContainer.innerHTML = myTickets.map(ticket => {
+        const attrs = ticket.attributes;
+        const isUnread = attrs.hasUnreadAdminMessage;
+        const createdDate = new Date(attrs.createdAt).toLocaleDateString('tr-TR');
+
+        return `
+          <div class="ticket-item ${isUnread ? 'unread' : ''}" onclick="openTicketDetail(${ticket.id})">
+            <div class="ticket-header-row">
+              <span class="ticket-id">#${attrs.ticketId || ticket.id}</span>
+              <span class="ticket-status ${attrs.status}">${getStatusText(attrs.status)}</span>
+            </div>
+            <div class="ticket-subject">${attrs.subject}</div>
+            <div class="ticket-meta">
+              <span><i class="ri-calendar-line"></i> ${createdDate}</span>
+              <span><i class="ri-price-tag-3-line"></i> ${getCategoryText(attrs.category)}</span>
+              ${isUnread ? '<span style="color: #ef4444; font-weight: 700;"><i class="ri-notification-badge-fill"></i> Yeni Mesaj</span>' : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function openTicketsModal() {
+      const modal = document.getElementById('tickets-modal');
+      const listContainer = document.getElementById('tickets-list');
+      listContainer.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="ri-loader-4-line" style="font-size: 2rem; animation: spin 1s linear infinite;"></i></div>';
+      modal.classList.add('show');
+      await loadMyTickets();
+      renderTicketList();
+    }
+
+    function closeTicketsModal() {
+      document.getElementById('tickets-modal').classList.remove('show');
+    }
+
+    async function openTicketDetail(ticketId) {
+      const ticket = myTickets.find(t => t.id === ticketId);
+      if (!ticket) return;
+
+      const attrs = ticket.attributes;
+      const detailModal = document.getElementById('ticket-detail-modal');
+      const detailContent = document.getElementById('ticket-detail-content');
+
+      let conversation = attrs.conversation || [];
+      if (typeof conversation === 'string') {
+        try { conversation = JSON.parse(conversation); } catch (e) { conversation = []; }
+      }
+
+      let chatHtml = '';
+      if (conversation.length > 0) {
+        chatHtml = conversation.map(msg => {
+          const isUser = msg.sender === 'user';
+          const time = new Date(msg.timestamp).toLocaleString('tr-TR', { day: 'numeric', month: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          return `
+            <div style="display: flex; flex-direction: column; max-width: 80%; ${isUser ? 'align-self: flex-end; align-items: flex-end;' : 'align-self: flex-start; align-items: flex-start;'}">
+              <div style="padding: 12px 16px; border-radius: 12px; font-size: 0.9rem; line-height: 1.5; ${isUser ? 'background: #fbc707; color: #2d2d2d; border-bottom-right-radius: 4px;' : 'background: #f8fafc; border: 1px solid #e2e8f0; color: #2d2d2d; border-bottom-left-radius: 4px;'}">
+                ${msg.message.replace(/\n/g, '<br>')}
+              </div>
+              <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">${time}</div>
+            </div>
+          `;
+        }).join('');
+      } else if (attrs.message) {
+        const createdDate = new Date(attrs.createdAt).toLocaleString('tr-TR', { day: 'numeric', month: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        chatHtml = `<div style="display: flex; flex-direction: column; max-width: 80%; align-self: flex-end; align-items: flex-end;">
+          <div style="padding: 12px 16px; border-radius: 12px; font-size: 0.9rem; line-height: 1.5; background: #fbc707; color: #2d2d2d; border-bottom-right-radius: 4px;">${attrs.message.replace(/\n/g, '<br>')}</div>
+          <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">${createdDate}</div>
+        </div>`;
+        if (attrs.adminResponse) {
+          const responseDate = attrs.adminResponseDate ? new Date(attrs.adminResponseDate).toLocaleString('tr-TR', { day: 'numeric', month: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+          chatHtml += `<div style="display: flex; flex-direction: column; max-width: 80%; align-self: flex-start; align-items: flex-start;">
+            <div style="padding: 12px 16px; border-radius: 12px; font-size: 0.9rem; line-height: 1.5; background: #f8fafc; border: 1px solid #e2e8f0; color: #2d2d2d; border-bottom-left-radius: 4px;">${attrs.adminResponse.replace(/\n/g, '<br>')}</div>
+            <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">${responseDate}</div>
+          </div>`;
+        }
+      } else {
+        chatHtml = '<div style="text-align: center; color: #94a3b8; padding: 20px;">Mesaj geçmişi bulunamadı.</div>';
+      }
+
+      detailContent.innerHTML = `
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 0.8rem; font-weight: 700; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase;">Talep #${attrs.ticketId || ticketId}</div>
+          <div style="display: flex; gap: 8px; margin-top: 8px;">
+            <span class="ticket-status ${attrs.status}">${getStatusText(attrs.status)}</span>
+            <span style="font-size: 0.85rem; color: #5a5a5a;">${new Date(attrs.createdAt).toLocaleString('tr-TR')}</span>
+          </div>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 0.8rem; font-weight: 700; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase;">Konu</div>
+          <div style="background: #f8fafc; padding: 12px 16px; border-radius: 10px; border: 1px solid #e2e8f0; color: #2d2d2d;">${attrs.subject}</div>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 0.8rem; font-weight: 700; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase;">Mesaj Geçmişi</div>
+          <div style="display: flex; flex-direction: column; gap: 12px; padding: 16px; background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; max-height: 300px; overflow-y: auto;">
+            ${chatHtml}
+          </div>
+        </div>
+        ${attrs.status !== 'closed' && attrs.status !== 'resolved' && attrs.lastMessageBy === 'admin' ? `
+          <div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase;">Yanıt Ver</div>
+            <form id="reply-form-${ticketId}" onsubmit="sendTicketReply(event, ${ticketId})">
+              <textarea id="reply-message-${ticketId}" class="form-textarea" rows="3" placeholder="Yanıtınızı buraya yazın..." required style="margin-bottom: 10px;"></textarea>
+              <button type="submit" class="btn-submit"><i class="ri-send-plane-fill"></i> Yanıt Gönder</button>
+            </form>
+          </div>
+        ` : ''}
+      `;
+
+      detailModal.classList.add('show');
+      if (attrs.hasUnreadAdminMessage) markTicketAsRead(ticketId);
+    }
+
+    async function sendTicketReply(event, ticketId) {
+      event.preventDefault();
+      const form = event.target;
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const textarea = document.getElementById(`reply-message-${ticketId}`);
+      const originalText = submitBtn.innerHTML;
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="ri-loader-4-line" style="animation: spin 1s linear infinite;"></i> Gönderiliyor...';
+
+      try {
+        const token = localStorage.getItem('tamirhanem_token');
+        await fetch(`${CONFIG.API_BASE_URL}/support-tickets/${ticketId}`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: { newMessage: textarea.value, sender: 'user' } })
+        });
+        showToast('Yanıtınız başarıyla gönderildi!', 'success');
+        textarea.value = '';
+        await loadMyTickets();
+        openTicketDetail(ticketId);
+      } catch (error) {
+        showToast('Mesaj gönderilemedi. Lütfen tekrar deneyin.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+      }
+    }
+
+    function closeTicketDetailModal() {
+      document.getElementById('ticket-detail-modal').classList.remove('show');
+    }
+
+    async function markTicketAsRead(ticketId) {
+      try {
+        const token = localStorage.getItem('tamirhanem_token');
+        await fetch(`${CONFIG.API_BASE_URL}/support-tickets/${ticketId}`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: { hasUnreadAdminMessage: false } })
+        });
+        const ticket = myTickets.find(t => t.id === ticketId);
+        if (ticket) {
+          ticket.attributes.hasUnreadAdminMessage = false;
+          updateBadgeCount();
+        }
+      } catch (error) { }
+    }
+
+    function getStatusText(status) {
+      const statusMap = { 'pending': 'Beklemede', 'in-progress': 'İşlemde', 'resolved': 'Çözüldü', 'closed': 'Kapatıldı' };
+      return statusMap[status] || status;
+    }
+
+    function getCategoryText(category) {
+      const categoryMap = { 'technical': 'Teknik', 'payment': 'Ödeme', 'account': 'Hesap', 'other': 'Diğer' };
+      return categoryMap[category] || category;
+    }
+
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('show');
+    });
+  </script>
+</body>
+
+</html>

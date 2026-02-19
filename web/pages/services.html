@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Servisler - TamirHanem">
+  <title>Servisler | TamirHanem</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+  <!-- Global Dashboard CSS -->
+  <link rel="stylesheet" href="/css/global-dashboard.css">
+
+  <!-- Config (API URL) -->
+  <script src="/js/config.js"></script>
+
+  <style>
+    /* --- PAGE SPECIFIC STYLES --- */
+    body {
+      padding-bottom: 140px;
+    }
+
+    .dashboard-main {
+      padding-top: 20px;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb-modern {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--white);
+      padding: 10px 20px;
+      border-radius: 50px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 25px;
+      border: 1px solid #eee;
+    }
+
+    .bc-item {
+      font-size: 0.85rem;
+      color: var(--neutral-500);
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .bc-item:hover {
+      color: var(--primary-dark);
+    }
+
+    .bc-separator {
+      color: var(--neutral-500);
+      font-size: 0.8rem;
+    }
+
+    .bc-item.active {
+      color: var(--custom-dark);
+      font-weight: 700;
+      background: var(--neutral-100);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    /* --- PAGE LAYOUT --- */
+    .services-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    @media(min-width: 992px) {
+      .services-layout {
+        grid-template-columns: 280px 1fr;
+      }
+    }
+
+    /* Sidebar & Filters */
+    .filters-sidebar {
+      position: sticky;
+      top: 100px;
+      align-self: start;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid #eee;
+    }
+
+    .filter-section-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--custom-dark);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Custom Radio Buttons - UPDATED STYLE */
+    .filter-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .custom-radio {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 1px solid transparent;
+      color: var(--custom-dark);
+      font-size: 0.95rem;
+      font-weight: 600;
+      /* Yazılar Kalınlaştırıldı */
+    }
+
+    .custom-radio:hover {
+      background: var(--neutral-100);
+    }
+
+    .custom-radio input {
+      display: none;
+    }
+
+    .custom-radio i {
+      font-size: 1.2rem;
+      color: var(--neutral-500);
+      width: 24px;
+      text-align: center;
+    }
+
+    /* AKTİF SEÇİM (SARI DOLGU) */
+    .custom-radio:has(input:checked) {
+      background: var(--primary);
+      /* Tamirhanem Sarısı Dolgu */
+      border-color: var(--primary-dark);
+      color: var(--custom-darker);
+      /* Koyu Metin */
+      box-shadow: 0 4px 12px rgba(251, 199, 7, 0.3);
+    }
+
+    .custom-radio:has(input:checked) i {
+      color: var(--custom-darker);
+    }
+
+    .custom-radio:has(input:checked) span {
+      font-weight: 800;
+      color: var(--custom-darker);
+    }
+
+    /* Custom Checkbox */
+    .custom-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .custom-checkbox input {
+      accent-color: var(--primary);
+      width: 18px;
+      height: 18px;
+    }
+
+    .custom-checkbox span {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--custom-dark);
+    }
+
+    /* Main Content Area */
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    /* Renk #5a5a5a olarak güncellendi */
+    .results-count {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--custom-dark);
+    }
+
+    .input-select {
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 1px solid #eee;
+      background: var(--white);
+      color: var(--custom-dark);
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+      min-width: 180px;
+      font-weight: 600;
+    }
+
+    /* Services Grid */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .service-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid #eee;
+      overflow: hidden;
+      transition: 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .service-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+
+    .service-card-image {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      background: var(--neutral-100);
+    }
+
+    .service-card-content {
+      padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .service-card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--custom-dark);
+      margin-bottom: 5px;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .service-card-location {
+      font-size: 0.85rem;
+      color: var(--neutral-500);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+
+    .service-card-rating {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #eab308;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+
+    .rating-count {
+      color: var(--neutral-500);
+      font-weight: 400;
+      font-size: 0.8rem;
+    }
+
+    .service-card-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--success-bg);
+      color: var(--success);
+      padding: 4px 10px;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      align-self: flex-start;
+      margin-bottom: 15px;
+    }
+
+    .mt-auto {
+      margin-top: auto;
+    }
+
+    /* Buttons */
+
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 40px;
+    }
+
+    /* Loading & Empty */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      grid-column: 1 / -1;
+    }
+
+    .empty-state-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--neutral-100);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: var(--neutral-500);
+      margin-bottom: 20px;
+    }
+
+    .skeleton {
+      background: #eee;
+      border-radius: var(--radius-md);
+      animation: pulse 1.5s infinite;
+    }
+
+    .skeleton-card {
+      height: 280px;
+      width: 100%;
+    }
+
+    @keyframes pulse {
+      0% {
+        opacity: 0.6;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0.6;
+      }
+    }
+
+    #global-loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s;
+    }
+
+    #global-loading.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--neutral-100);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Bottom Nav */
+  </style>
+</head>
+
+<body>
+  <!-- Header and Loyalty Bar will be injected by global-header.js -->
+
+  <main class="dashboard-main">
+    <div class="container">
+
+      <div class="breadcrumb-modern">
+        <a href="/dashboard.html" class="bc-item"><i class="ri-home-5-line"></i> Anasayfa</a>
+        <i class="ri-arrow-right-s-line bc-separator"></i>
+        <span class="bc-item active">Servisler</span>
+      </div>
+
+      <div class="services-layout">
+
+        <div class="filters-sidebar">
+          <div class="card">
+            <div class="filter-section-title"><i class="ri-filter-3-line"></i> Filtreler</div>
+
+            <div style="margin-bottom: 25px;">
+              <label
+                style="display:block; font-size:0.85rem; font-weight:700; color:var(--custom-dark); margin-bottom:10px;">Servis
+                Tipi</label>
+              <div class="filter-options">
+                <label class="custom-radio">
+                  <input type="radio" name="serviceType" value="all" checked onchange="applyFilters()">
+                  <i class="ri-apps-2-line"></i> <span>Tümü</span>
+                </label>
+                <label class="custom-radio">
+                  <input type="radio" name="serviceType" value="industrial" onchange="applyFilters()">
+                  <i class="ri-tools-line"></i> <span>Oto Tamir</span>
+                </label>
+                <label class="custom-radio">
+                  <input type="radio" name="serviceType" value="car_wash" onchange="applyFilters()">
+                  <i class="ri-drop-line"></i> <span>Oto Yıkama</span>
+                </label>
+                <label class="custom-radio">
+                  <input type="radio" name="serviceType" value="roadside" onchange="applyFilters()">
+                  <i class="ri-truck-line"></i> <span>Çekici</span>
+                </label>
+                <label class="custom-radio">
+                  <input type="radio" name="serviceType" value="car_rental" onchange="applyFilters()">
+                  <i class="ri-roadster-line"></i> <span>Araç Kiralama</span>
+                </label>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 25px;">
+              <label
+                style="display:block; font-size:0.85rem; font-weight:700; color:var(--custom-dark); margin-bottom:10px;">Minimum
+                Puan</label>
+              <div class="filter-options">
+                <label class="custom-radio">
+                  <input type="radio" name="rating" value="0" checked onchange="applyFilters()">
+                  <i class="ri-star-line"></i> <span>Farketmez</span>
+                </label>
+                <label class="custom-radio">
+                  <input type="radio" name="rating" value="4" onchange="applyFilters()">
+                  <i class="ri-star-half-fill"></i> <span>4.0 ve üzeri</span>
+                </label>
+                <label class="custom-radio">
+                  <input type="radio" name="rating" value="4.5" onchange="applyFilters()">
+                  <i class="ri-star-fill"></i> <span>4.5 ve üzeri</span>
+                </label>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 25px;">
+              <label class="custom-checkbox">
+                <input type="checkbox" id="verified-only" onchange="applyFilters()">
+                <span>Sadece Doğrulanmış</span>
+              </label>
+            </div>
+
+            <button class="btn btn-ghost btn-full" onclick="resetFilters()">
+              <i class="ri-refresh-line"></i> Filtreleri Temizle
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div class="results-header">
+            <h2 class="results-count" id="results-count">0 Servis Bulundu</h2>
+            <select class="input-select" id="sort-select" onchange="applyFilters()">
+              <option value="default">Önerilen Sıralama</option>
+              <option value="rating">Puana Göre Azalan</option>
+              <option value="name">İsme Göre (A-Z)</option>
+            </select>
+          </div>
+
+          <div class="services-grid" id="services-grid">
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+          </div>
+
+          <div class="pagination" id="pagination">
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+
+
+  <div id="global-loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Global Header Component -->
+  <script src="/components/global-header.js"></script>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/store.js"></script>
+
+  <script>
+    let currentPage = 1;
+    let totalPages = 1;
+    let filters = {
+      serviceType: 'all',
+      rating: 0,
+      verifiedOnly: false,
+      search: '',
+      sort: 'default',
+    };
+
+    async function loadServices() {
+      Utils.showLoading();
+
+      try {
+        const apiFilters = {
+          serviceType: filters.serviceType !== 'all' ? filters.serviceType : null,
+          search: filters.search,
+          page: currentPage,
+          pageSize: 12,
+        };
+
+        const response = await api.getServices(apiFilters);
+        let services = response.data || [];
+
+        // Client-side filtering (if API doesn't support these params yet)
+        if (filters.rating > 0) {
+          services = services.filter(s => (s.attributes.rating || 0) >= filters.rating);
+        }
+
+        if (filters.verifiedOnly) {
+          services = services.filter(s => s.attributes.verified);
+        }
+
+        // Sorting
+        if (filters.sort === 'rating') {
+          services.sort((a, b) => (b.attributes.rating || 0) - (a.attributes.rating || 0));
+        } else if (filters.sort === 'name') {
+          services.sort((a, b) => a.attributes.name.localeCompare(b.attributes.name, 'tr'));
+        }
+
+        // Update results count
+        document.getElementById('results-count').textContent = `${services.length} Servis Bulundu`;
+
+        // Render services
+        if (services.length > 0) {
+          const html = services.map(service => {
+            const attrs = service.attributes;
+            const imgUrl = Utils.getImageUrl(attrs.ProfilePicture);
+
+            // Render Star Rating
+            let starsHtml = '';
+            const rating = attrs.rating || 0;
+            for (let i = 1; i <= 5; i++) {
+              if (i <= rating) starsHtml += '<i class="ri-star-fill"></i>';
+              else if (i - 0.5 <= rating) starsHtml += '<i class="ri-star-half-fill"></i>';
+              else starsHtml += '<i class="ri-star-line" style="color:#ddd;"></i>';
+            }
+
+            return `
+              <div class="service-card" onclick="window.location.href='/pages/service-detail.html?id=${service.id}'">
+                <img
+                  src="${imgUrl}"
+                  alt="${attrs.name}"
+                  class="service-card-image"
+                  onerror="this.src='https://placehold.co/600x400?text=No+Image'"
+                >
+                <div class="service-card-content">
+                  <h3 class="service-card-title">${attrs.name}</h3>
+                  <div class="service-card-location">
+                    <i class="ri-map-pin-line"></i> ${attrs.location || 'İstanbul'}
+                  </div>
+                  <div class="service-card-rating">
+                    ${starsHtml}
+                    <span class="rating-count">(${attrs.reviewCount || 0})</span>
+                  </div>
+                  ${attrs.verified ? '<span class="service-card-badge"><i class="ri-verified-badge-fill"></i> Doğrulanmış</span>' : ''}
+                  
+                  <button class="btn btn-primary btn-sm btn-full mt-auto">
+                    Randevu Al
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          document.getElementById('services-grid').innerHTML = html;
+        } else {
+          document.getElementById('services-grid').innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon"><i class="ri-search-2-line"></i></div>
+              <h3 style="color:var(--custom-dark); font-weight:700; margin-bottom:5px;">Servis bulunamadı</h3>
+              <p style="color:var(--neutral-500);">Farklı filtreler deneyebilirsiniz</p>
+            </div>
+          `;
+        }
+
+        // Update pagination
+        const pagination = response.meta?.pagination;
+        if (pagination) {
+          totalPages = pagination.pageCount;
+          renderPagination();
+        }
+
+      } catch (error) {
+        console.error('Load services error:', error);
+        Utils.showToast('Servisler yüklenemedi', 'error');
+      } finally {
+        Utils.hideLoading();
+      }
+    }
+
+    function applyFilters() {
+      filters.serviceType = document.querySelector('input[name="serviceType"]:checked').value;
+      filters.rating = parseFloat(document.querySelector('input[name="rating"]:checked').value);
+      filters.verifiedOnly = document.getElementById('verified-only').checked;
+      filters.sort = document.getElementById('sort-select').value;
+
+      currentPage = 1;
+      loadServices();
+    }
+
+    function resetFilters() {
+      document.querySelector('input[name="serviceType"][value="all"]').checked = true;
+      document.querySelector('input[name="rating"][value="0"]').checked = true;
+      document.getElementById('verified-only').checked = false;
+      document.getElementById('sort-select').value = 'default';
+      document.getElementById('search-input').value = '';
+
+      filters = {
+        serviceType: 'all',
+        rating: 0,
+        verifiedOnly: false,
+        search: '',
+        sort: 'default',
+      };
+
+      currentPage = 1;
+      loadServices();
+    }
+
+    function renderPagination() {
+      if (totalPages <= 1) {
+        document.getElementById('pagination').innerHTML = '';
+        return;
+      }
+
+      let html = '';
+
+      // Previous button
+      html += `
+        <button class="btn btn-ghost btn-sm" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">
+          <i class="ri-arrow-left-s-line"></i> Önceki
+        </button>
+      `;
+
+      // Page numbers
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+          html += `
+            <button class="btn btn-sm ${i === currentPage ? 'btn-primary' : 'btn-ghost'}" onclick="changePage(${i})">
+              ${i}
+            </button>
+          `;
+        } else if (i === currentPage - 2 || i === currentPage + 2) {
+          html += '<span style="color:var(--neutral-500);">...</span>';
+        }
+      }
+
+      // Next button
+      html += `
+        <button class="btn btn-ghost btn-sm" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">
+          Sonraki <i class="ri-arrow-right-s-line"></i>
+        </button>
+      `;
+
+      document.getElementById('pagination').innerHTML = html;
+    }
+
+    function changePage(page) {
+      if (page < 1 || page > totalPages) return;
+      currentPage = page;
+      loadServices();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Search
+    const searchInput = document.getElementById('search-input');
+    searchInput.addEventListener('input', Utils.debounce((e) => {
+      filters.search = e.target.value.trim();
+      currentPage = 1;
+      loadServices();
+    }, 500));
+
+    // Initialize
+    loadServices();
+  </script>
+</body>
+
+</html>

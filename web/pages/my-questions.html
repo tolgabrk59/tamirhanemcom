@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Soru ve Cevaplarım - TamirHanem">
+  <title>Soru & Cevaplarım | TamirHanem</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="/favicon/site.webmanifest">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+
+  <!-- Global Dashboard CSS -->
+  <link rel="stylesheet" href="/css/global-dashboard.css">
+
+  <!-- Config (API URL) -->
+  <script src="/js/config.js"></script>
+
+  <style>
+    /* --- PAGE SPECIFIC STYLES --- */
+    /* Footer altı boşluk fix */
+    html { height: 100%; }
+    body { min-height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; zoom: 0.765; }
+    .dashboard-main { flex: 1 0 auto; padding-top: 20px; padding-bottom: 100px; }
+    .dashboard-footer { flex-shrink: 0; margin-bottom: 0 !important; }
+
+    /* Page Header */
+    .page-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+    .page-header-left { display: flex; flex-direction: column; }
+    .page-header-left h1, .page-header h1 { font-size: 1.5rem; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; color: #2d2d2d; font-weight: 700; }
+    .page-header-left h1 i, .page-header h1 i { color: #fbc707; font-size: 1.5rem; }
+    .page-header-left p, .page-header p { font-size: 0.9rem; color: #64748b; margin: 0; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; border: none; font-family: inherit; }
+    .btn-primary { background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%); color: #2d2d2d; box-shadow: 0 4px 12px rgba(251, 199, 7, 0.3); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(251, 199, 7, 0.4); }
+
+    /* Form Elements */
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 0.85rem; font-weight: 600; color: #454545; margin-bottom: 8px; }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 14px 16px; border: 2px solid #eee; border-radius: 10px; font-family: inherit; font-size: 0.95rem; color: #2d2d2d; background: #f8f9fa; transition: all 0.2s; box-sizing: border-box; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: #fbc707; background: #fff; box-shadow: 0 0 0 4px rgba(251, 199, 7, 0.15); outline: none; }
+    .form-input::placeholder, .form-textarea::placeholder { color: #aaa; }
+    .form-row { display: flex; gap: 16px; }
+    .form-row .form-group { flex: 1; }
+    .form-textarea { min-height: 120px; resize: vertical; }
+
+    /* Modal */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(4px); }
+    .modal-overlay.show, .modal-overlay.active { opacity: 1; visibility: visible; }
+    .modal-content { background: #fff; width: 90%; max-width: 500px; border-radius: 16px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2); transform: translateY(20px); transition: transform 0.3s ease; overflow: hidden; }
+    .modal-overlay.show .modal-content, .modal-overlay.active .modal-content { transform: translateY(0); }
+    .modal-header { padding: 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
+    .modal-header h2, .modal-header h3 { margin: 0; font-size: 1.1rem; color: #1e293b; display: flex; align-items: center; gap: 10px; }
+    .modal-header h2 i, .modal-header h3 i { color: #fbc707; }
+    .modal-close, .close-modal-btn { background: none; border: none; font-size: 1.2rem; color: #64748b; cursor: pointer; padding: 5px; border-radius: 50%; transition: background 0.2s; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
+    .modal-close:hover, .close-modal-btn:hover { background: #e2e8f0; color: #ef4444; }
+    .modal-body { padding: 24px; max-height: 60vh; overflow-y: auto; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px; background: #f8fafc; }
+    .btn-cancel { padding: 10px 20px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; color: #64748b; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .btn-cancel:hover { background: #f1f5f9; color: #334155; }
+    .btn-save { padding: 10px 24px; border-radius: 8px; border: none; background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%); color: #2d2d2d; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(251, 199, 7, 0.3); }
+    .btn-save:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(251, 199, 7, 0.4); }
+
+    /* Empty State */
+    .empty-state { text-align: center; padding: 60px 20px; background: #fff; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .empty-state-icon { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 2.5rem; color: #2d2d2d; }
+    .empty-state h3 { font-size: 1.25rem; margin-bottom: 10px; color: #2d2d2d; font-weight: 700; }
+    .empty-state p { color: #64748b; max-width: 300px; margin: 0 auto; font-size: 0.9rem; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1e293b; color: white; padding: 12px 24px; border-radius: 50px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 10000; opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); font-weight: 600; font-size: 0.9rem; }
+    .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    .toast.error { background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); }
+    .toast i { font-size: 1.25rem; }
+
+    .ask-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--primary) 0%, #eeb902 100%);
+      color: var(--neutral-900);
+      border: none;
+      padding: 12px 20px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 6px 16px rgba(251, 199, 7, 0.3);
+    }
+
+    .ask-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 199, 7, 0.4);
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+    }
+
+    .stat-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(251, 199, 7, 0.15);
+      transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      margin: 0 auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: var(--primary-dark);
+    }
+
+    .stat-icon.success {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .stat-icon.warning {
+      background: #fef3c7;
+      color: var(--warning);
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--neutral-900);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--neutral-500);
+      margin-top: 2px;
+    }
+
+    /* Filter Tabs */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 10px 18px;
+      border: 2px solid var(--neutral-100);
+      background: var(--white);
+      border-radius: 50px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--neutral-500);
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-btn.active {
+      background: linear-gradient(135deg, var(--primary) 0%, #eeb902 100%);
+      color: var(--neutral-900);
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(251, 199, 7, 0.3);
+    }
+
+    .filter-btn:not(.active):hover {
+      background: var(--neutral-100);
+      border-color: var(--neutral-100);
+    }
+
+    .filter-count {
+      background: rgba(0, 0, 0, 0.1);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+    }
+
+    .filter-btn.active .filter-count {
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    /* Questions List */
+    .questions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Question Card */
+    .question-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(251, 199, 7, 0.1);
+      transition: all 0.3s;
+    }
+
+    .question-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 199, 7, 0.12);
+      border-color: var(--primary);
+    }
+
+    .question-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .service-image {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+      flex-shrink: 0;
+    }
+
+    .question-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .service-name-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .service-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .status-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 50px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.answered {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .status-badge.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .question-date {
+      font-size: 0.75rem;
+      color: var(--neutral-500);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    /* Question Content */
+    .question-content {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.04));
+      border-radius: var(--radius-md);
+      padding: 14px;
+      border-left: 3px solid var(--info);
+      margin-bottom: 12px;
+    }
+
+    .content-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .content-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .content-icon.question {
+      background: rgba(59, 130, 246, 0.15);
+    }
+
+    .content-icon.question i {
+      font-size: 0.8rem;
+      color: var(--info);
+    }
+
+    .content-icon.answer {
+      background: rgba(16, 185, 129, 0.15);
+    }
+
+    .content-icon.answer i {
+      font-size: 0.8rem;
+      color: var(--success);
+    }
+
+    .content-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .content-label.question {
+      color: var(--info);
+    }
+
+    .content-label.answer {
+      color: var(--success);
+    }
+
+    .content-text {
+      font-size: 0.9rem;
+      color: var(--neutral-700);
+      line-height: 1.5;
+    }
+
+    /* Answer Content */
+    .answer-content {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.04));
+      border-radius: var(--radius-md);
+      padding: 14px;
+      border-left: 3px solid var(--success);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .empty-state-icon {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, #eeb902 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 2.5rem;
+      color: var(--neutral-900);
+    }
+
+    .empty-state h3 {
+      font-size: 1.25rem;
+      margin-bottom: 10px;
+    }
+
+    .empty-state p {
+      color: var(--neutral-500);
+      max-width: 300px;
+      margin: 0 auto 24px;
+      font-size: 0.9rem;
+    }
+
+    /* Loading */
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      gap: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header and Loyalty Bar will be injected by global-header.js -->
+
+  <!-- Main Content -->
+  <main class="dashboard-main">
+    <div class="container">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1><i class="ri-question-answer-fill"></i> Soru & Cevaplarım</h1>
+          <p>Sorularınız ve yanıtlar</p>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="ri-questionnaire-fill"></i></div>
+          <div class="stat-value" id="totalQuestions">0</div>
+          <div class="stat-label">Toplam Soru</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon success"><i class="ri-checkbox-circle-fill"></i></div>
+          <div class="stat-value" id="answeredCount">0</div>
+          <div class="stat-label">Cevaplanan</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon warning"><i class="ri-time-fill"></i></div>
+          <div class="stat-value" id="pendingCount">0</div>
+          <div class="stat-label">Bekleyen</div>
+        </div>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="filter-tabs">
+        <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">
+          <i class="ri-list-check"></i> Tümünü Gör <span class="filter-count" id="allCount">0</span>
+        </button>
+        <button class="filter-btn" data-filter="answered" onclick="setFilter('answered')">
+          <i class="ri-checkbox-circle-line"></i> Cevaplanan <span class="filter-count"
+            id="answeredFilterCount">0</span>
+        </button>
+        <button class="filter-btn" data-filter="pending" onclick="setFilter('pending')">
+          <i class="ri-time-line"></i> Bekleyen <span class="filter-count" id="pendingFilterCount">0</span>
+        </button>
+      </div>
+
+      <!-- Content Container -->
+      <div id="content-container">
+        <div class="loading-container">
+          <div class="spinner"></div>
+          <p style="color: var(--neutral-500); font-size: 0.9rem;">Sorular yükleniyor...</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Nav will be injected here by bottom-nav.js -->
+
+  <div id="global-loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Global Header Component -->
+  <script src="/components/global-header.js"></script>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/components/footer.js"></script>
+  <script src="/js/components/bottom-nav.js"></script>
+
+  <script>
+    let allQuestions = [];
+    let filteredQuestions = [];
+    let currentFilter = 'all';
+    let isServiceOwner = false;
+    let selectedServiceId = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!auth.isAuthenticated()) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      // Check if service owner
+      isServiceOwner = localStorage.getItem('isServiceOwner') === 'true';
+      selectedServiceId = localStorage.getItem('selectedServiceId');
+
+      // Update page title for service owner
+      if (isServiceOwner && selectedServiceId) {
+        document.querySelector('.page-header h1').innerHTML = '<i class="ri-question-answer-fill"></i> Gelen Sorular';
+        document.querySelector('.page-header p').textContent = 'Müşterilerinizden gelen sorular ve yanıtlarınız';
+      }
+
+      await loadQuestions();
+    });
+
+    async function loadQuestions() {
+      try {
+        const user = auth.getUser();
+        if (!user) throw new Error('Kullanıcı bulunamadı');
+
+        const token = auth.getToken();
+        if (!token) throw new Error('Oturum bulunamadı');
+
+        let apiUrl;
+        if (isServiceOwner && selectedServiceId) {
+          // Servis kullanıcısı: servise gelen soruları getir
+          apiUrl = `${CONFIG.API_BASE_URL}/questions?filters[service][id][$eq]=${selectedServiceId}&populate=user,service,service.ProfilePicture&sort=createdAt:desc`;
+        } else {
+          // Normal kullanıcı: kendi sorularını getir
+          apiUrl = `${CONFIG.API_BASE_URL}/questions/my-questions`;
+        }
+
+        const response = await fetch(apiUrl, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const questionsArray = data.data || [];
+
+          allQuestions = questionsArray.map(q => {
+            // API'den gelen veri yapısı farklı olabilir
+            const attrs = q.attributes || q;
+            const serviceData = attrs.service?.data?.attributes || attrs.service || {};
+            const userData = attrs.user?.data?.attributes || attrs.user || {};
+
+            return {
+              id: q.id,
+              question: attrs.question,
+              answer: attrs.answer,
+              status: attrs.status,
+              createdAt: attrs.createdAt,
+              answeredAt: attrs.answeredAt,
+              serviceName: serviceData.name || 'Bilinmeyen Servis',
+              serviceImage: getServiceImageUrl(serviceData.ProfilePicture || attrs.service?.data?.attributes?.ProfilePicture),
+              userName: userData.name || userData.username || 'Müşteri',
+              userEmail: userData.email || ''
+            };
+          });
+
+          updateStats();
+          applyFilter();
+        } else {
+          throw new Error('Sorular yüklenemedi');
+        }
+
+      } catch (error) {
+        console.error('Sorular yüklenirken hata:', error);
+        document.getElementById('content-container').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="ri-error-warning-line"></i></div>
+            <h3>Bir Hata Oluştu</h3>
+            <p>${error.message}</p>
+            <button class="ask-btn" onclick="loadQuestions()">
+              <i class="ri-refresh-line"></i> Tekrar Dene
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    function getServiceImageUrl(image) {
+      if (!image) return '/assets/images/placeholder.jpg';
+      if (image.url) {
+        return image.url.startsWith('http') ? image.url : `https://api.tamirhanem.net${image.url}`;
+      }
+      if (image.data?.attributes?.url) {
+        const url = image.data.attributes.url;
+        return url.startsWith('http') ? url : `https://api.tamirhanem.net${url}`;
+      }
+      return '/assets/images/placeholder.jpg';
+    }
+
+    function updateStats() {
+      const total = allQuestions.length;
+      const answered = allQuestions.filter(q => q.status === 'answered' || q.answer).length;
+      const pending = total - answered;
+
+      document.getElementById('totalQuestions').textContent = total;
+      document.getElementById('answeredCount').textContent = answered;
+      document.getElementById('pendingCount').textContent = pending;
+      document.getElementById('allCount').textContent = total;
+      document.getElementById('answeredFilterCount').textContent = answered;
+      document.getElementById('pendingFilterCount').textContent = pending;
+    }
+
+    function setFilter(filter) {
+      currentFilter = filter;
+
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+      });
+
+      applyFilter();
+    }
+
+    function applyFilter() {
+      if (currentFilter === 'all') {
+        filteredQuestions = [...allQuestions];
+      } else if (currentFilter === 'answered') {
+        filteredQuestions = allQuestions.filter(q => q.status === 'answered' || q.answer);
+      } else {
+        filteredQuestions = allQuestions.filter(q => q.status !== 'answered' && !q.answer);
+      }
+
+      renderQuestions();
+    }
+
+    function renderQuestions() {
+      const container = document.getElementById('content-container');
+
+      if (filteredQuestions.length === 0) {
+        let emptyMessage;
+        if (isServiceOwner) {
+          emptyMessage = currentFilter === 'all'
+            ? { icon: 'ri-question-answer-line', title: 'Henüz Soru Gelmedi', text: 'Müşterilerinizden henüz soru almadınız.' }
+            : currentFilter === 'answered'
+              ? { icon: 'ri-checkbox-circle-line', title: 'Cevaplanan Soru Yok', text: 'Henüz cevapladığınız soru bulunmuyor.' }
+              : { icon: 'ri-time-line', title: 'Bekleyen Soru Yok', text: 'Tüm sorular cevaplanmış, harika!' };
+        } else {
+          emptyMessage = currentFilter === 'all'
+            ? { icon: 'ri-question-answer-line', title: 'Henüz Soru Sormadınız', text: 'Servislere soru sorarak merak ettiklerinizi öğrenebilirsiniz.' }
+            : currentFilter === 'answered'
+              ? { icon: 'ri-checkbox-circle-line', title: 'Cevaplanan Soru Yok', text: 'Henüz cevaplanmış bir sorunuz bulunmuyor.' }
+              : { icon: 'ri-time-line', title: 'Bekleyen Soru Yok', text: 'Tüm sorularınız cevaplanmış.' };
+        }
+
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="${emptyMessage.icon}"></i></div>
+            <h3>${emptyMessage.title}</h3>
+            <p>${emptyMessage.text}</p>
+            ${!isServiceOwner ? `<button class="ask-btn" onclick="window.location.href='/dashboard.html'">
+              <i class="ri-compass-3-line"></i> Servisleri Keşfet
+            </button>` : ''}
+          </div>
+        `;
+        return;
+      }
+
+      let html = '<div class="questions-list">';
+
+      filteredQuestions.forEach(q => {
+        const isAnswered = q.status === 'answered' || q.answer;
+        const statusClass = isAnswered ? 'answered' : 'pending';
+        const statusText = isAnswered ? 'Cevaplandı' : 'Bekliyor';
+
+        // Servis kullanıcısı için müşteri adını, normal kullanıcı için servis adını göster
+        const displayName = isServiceOwner ? q.userName : q.serviceName;
+        const displayLabel = isServiceOwner ? 'Müşteri Sorusu' : 'Sorunuz';
+
+        html += `
+          <div class="question-card">
+            <div class="question-header">
+              <img src="${q.serviceImage}" class="service-image" onerror="this.src='/assets/images/placeholder.jpg'">
+              <div class="question-info">
+                <div class="service-name-row">
+                  <span class="service-name">${displayName}</span>
+                  <span class="status-badge ${statusClass}">${statusText}</span>
+                </div>
+                <div class="question-date"><i class="ri-time-line"></i> ${formatDate(q.createdAt)}</div>
+              </div>
+            </div>
+
+            <div class="question-content">
+              <div class="content-header">
+                <div class="content-icon question"><i class="ri-question-line"></i></div>
+                <span class="content-label question">${displayLabel}</span>
+              </div>
+              <p class="content-text">${q.question}</p>
+            </div>
+
+            ${q.answer ? `
+              <div class="answer-content">
+                <div class="content-header">
+                  <div class="content-icon answer"><i class="ri-chat-check-line"></i></div>
+                  <span class="content-label answer">${isServiceOwner ? 'Yanıtınız' : 'Cevap'}</span>
+                </div>
+                <p class="content-text">${q.answer}</p>
+              </div>
+            ` : (isServiceOwner ? `
+              <button class="ask-btn" onclick="openAnswerModal(${q.id}, '${q.question.replace(/'/g, "\\'")}', '${q.userName}')" style="width: 100%; margin-top: 12px;">
+                <i class="ri-reply-line"></i> Cevapla
+              </button>
+            ` : '')}
+          </div>
+        `;
+      });
+
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    // Answer Modal Functions (for service owners)
+    function openAnswerModal(questionId, question, userName) {
+      // Create modal if it doesn't exist
+      let modal = document.getElementById('answer-modal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'answer-modal';
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3><i class="ri-reply-line"></i> Soruyu Yanıtla</h3>
+              <button class="close-modal-btn" onclick="closeAnswerModal()"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label class="form-label">Müşteri</label>
+                <input type="text" class="form-input" id="modal-user-name" readonly>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Soru</label>
+                <p id="modal-question" style="background: #f1f5f9; padding: 12px; border-radius: 8px; font-style: italic;"></p>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Yanıtınız *</label>
+                <textarea class="form-textarea" id="modal-answer" placeholder="Yanıtınızı yazın..."></textarea>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn-cancel" onclick="closeAnswerModal()">İptal</button>
+              <button class="btn-save" id="submit-answer-btn">
+                <i class="ri-send-plane-fill"></i> Gönder
+              </button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+      }
+
+      // Fill modal data
+      document.getElementById('modal-user-name').value = userName;
+      document.getElementById('modal-question').textContent = question;
+      document.getElementById('modal-answer').value = '';
+
+      // Set up submit handler
+      document.getElementById('submit-answer-btn').onclick = () => submitAnswer(questionId);
+
+      // Show modal
+      modal.classList.add('show');
+    }
+
+    function closeAnswerModal() {
+      const modal = document.getElementById('answer-modal');
+      if (modal) modal.classList.remove('show');
+    }
+
+    async function submitAnswer(questionId) {
+      const answer = document.getElementById('modal-answer').value.trim();
+      if (!answer) {
+        showToast('Lütfen bir yanıt yazın', 'error');
+        return;
+      }
+
+      const submitBtn = document.getElementById('submit-answer-btn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="ri-loader-4-line" style="animation: spin 1s linear infinite;"></i> Gönderiliyor...';
+
+      try {
+        const token = auth.getToken();
+        const response = await fetch(`${CONFIG.API_BASE_URL}/questions/${questionId}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            data: {
+              answer: answer,
+              status: 'answered',
+              answeredAt: new Date().toISOString()
+            }
+          })
+        });
+
+        if (response.ok) {
+          showToast('Yanıtınız başarıyla gönderildi!', 'success');
+          closeAnswerModal();
+          await loadQuestions(); // Reload questions
+        } else {
+          throw new Error('Yanıt gönderilemedi');
+        }
+      } catch (error) {
+        console.error('Yanıt gönderme hatası:', error);
+        showToast('Yanıt gönderilirken hata oluştu', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="ri-send-plane-fill"></i> Gönder';
+      }
+    }
+
+    function showToast(message, type = 'success') {
+      let toast = document.querySelector('.toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.className = 'toast';
+        document.body.appendChild(toast);
+      }
+      toast.className = `toast ${type === 'error' ? 'error' : ''}`;
+      toast.innerHTML = `<i class="ri-${type === 'error' ? 'error-warning' : 'checkbox-circle'}-fill"></i> ${message}`;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    function formatDate(dateString) {
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('tr-TR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+      } catch {
+        return 'Bilinmeyen tarih';
+      }
+    }
+  </script>
+</body>
+
+</html>

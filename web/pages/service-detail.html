@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Servis Detayı - TamirHanem">
+  <title>Servis Detayı | TamirHanem</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+  <!-- Global Dashboard CSS -->
+  <link rel="stylesheet" href="/css/global-dashboard.css">
+
+  <!-- Config (API URL) -->
+  <script src="/js/config.js"></script>
+
+  <style>
+    /* --- PAGE SPECIFIC STYLES --- */
+    /* Service Detail Page - Özel Container Stili */
+    .dashboard-main > .container {
+      max-width: 1400px !important;
+      margin: 0 auto !important;
+      padding: 0 20px !important;
+    }
+
+    @media (min-width: 768px) {
+      .dashboard-main > .container {
+        padding: 0 40px !important;
+      }
+    }
+
+    /* Header da aynı genişlikte ortalanacak */
+    .dashboard-navbar > .container {
+      max-width: 1400px !important;
+      margin: 0 auto !important;
+      padding: 0 20px !important;
+    }
+
+    @media (min-width: 768px) {
+      .dashboard-navbar > .container {
+        padding: 0 40px !important;
+      }
+    }
+
+    /* Loyalty Bar da aynı genişlikte ortalanacak */
+    .loyalty-bar-wrapper > .container {
+      max-width: 1400px !important;
+      margin: 0 auto !important;
+      padding: 0 20px !important;
+    }
+
+    @media (min-width: 768px) {
+      .loyalty-bar-wrapper > .container {
+        padding: 0 40px !important;
+      }
+    }
+
+    /* İçerik loyalty bar'dan biraz aşağıda başlasın */
+    .dashboard-main > .container {
+      margin-top: 20px !important;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb-modern {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--white);
+      padding: 10px 20px;
+      border-radius: 50px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 25px;
+      border: 1px solid #eee;
+    }
+
+    .bc-item {
+      font-size: 0.85rem;
+      color: var(--neutral-500);
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .bc-item:hover {
+      color: var(--primary-dark);
+    }
+
+    .bc-separator {
+      color: var(--neutral-500);
+      font-size: 0.8rem;
+    }
+
+    .bc-item.active {
+      color: var(--custom-dark);
+      font-weight: 700;
+      background: var(--neutral-100);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    /* --- SERVICE LAYOUT --- */
+    .service-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    @media(min-width: 992px) {
+      .service-layout {
+        grid-template-columns: 1fr 350px;
+      }
+    }
+
+    .service-header-card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 30px;
+      border: 1px solid #eee;
+    }
+
+    .service-gallery-main {
+      width: 100%;
+      height: 350px;
+      object-fit: cover;
+      background: var(--neutral-100);
+    }
+
+    .service-gallery-thumbs {
+      display: flex;
+      gap: 10px;
+      padding: 15px;
+      overflow-x: auto;
+    }
+
+    .gallery-thumb {
+      width: 80px;
+      height: 200px;
+      border-radius: 8px;
+      object-fit: cover;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: 0.2s;
+    }
+
+    .gallery-thumb.active {
+      border-color: var(--primary);
+      transform: scale(0.95);
+    }
+
+    .service-info-body {
+      padding: 0 30px 30px;
+    }
+
+    .service-title {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #5a5a5a;
+    }
+
+    .service-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      color: var(--custom-dark);
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .meta-item i {
+      color: var(--primary-dark);
+      font-size: 1.1rem;
+    }
+
+    .rating-badge {
+      background: #fffdf0;
+      color: #b48a00;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .verified-badge {
+      background: var(--success-bg);
+      color: var(--success);
+      padding: 4px 10px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .service-description {
+      line-height: 1.6;
+      color: var(--custom-dark);
+      margin-bottom: 25px;
+    }
+
+    .service-actions {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    /* Tabs */
+    .service-tabs {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid #eee;
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+
+    .tabs-header {
+      display: flex;
+      border-bottom: 1px solid #eee;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      background: transparent;
+      border: none;
+      font-weight: 600;
+      color: var(--custom-dark);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      background: var(--neutral-100);
+    }
+
+    .tab-btn.active {
+      color: var(--primary-dark);
+      border-bottom-color: var(--primary);
+      background: #fffdf0;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 25px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Services List & Pricing */
+    .services-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .service-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .service-item:last-child {
+      border-bottom: none;
+    }
+
+    .service-item-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .service-icon-box {
+      width: 40px;
+      height: 40px;
+      background: var(--neutral-100);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--custom-dark);
+    }
+
+    .service-item-name {
+      font-weight: 600;
+      color: var(--custom-darker);
+    }
+
+    .service-item-price {
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    /* Reviews */
+    .review-summary {
+      background: var(--neutral-100);
+      padding: 20px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .review-score-big {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--custom-darker);
+      line-height: 1;
+    }
+
+    .review-item {
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .reviewer-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .reviewer-avatar {
+      width: 36px;
+      height: 36px;
+      background: var(--primary);
+      color: var(--custom-darker);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .reviewer-name {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--custom-darker);
+    }
+
+    .review-date {
+      font-size: 0.8rem;
+      color: var(--neutral-500);
+    }
+
+    .review-text {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--custom-dark);
+    }
+
+    /* Sidebar Widgets */
+    .sidebar-widget {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 25px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid #eee;
+      margin-bottom: 25px;
+    }
+
+    .widget-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--custom-dark);
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .contact-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--neutral-100);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-dark);
+    }
+
+    .hours-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 0.9rem;
+    }
+
+    .hour-row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .hour-day {
+      color: var(--custom-dark);
+    }
+
+    .hour-time {
+      font-weight: 600;
+      color: var(--custom-darker);
+    }
+
+    .status-open {
+      color: var(--success);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 15px;
+    }
+
+    .map-placeholder {
+      width: 100%;
+      height: 200px;
+      background: var(--neutral-100);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--neutral-500);
+      margin-top: 20px;
+    }
+
+    /* Buttons */
+    .btn {
+      border: none;
+      padding: 12px 24px;
+      border-radius: 100px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.3s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--custom-darker);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #ddd;
+      color: var(--custom-dark);
+    }
+
+    .btn-outline:hover {
+      background: var(--white);
+      border-color: var(--custom-darker);
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .btn-lg {
+      padding: 14px 28px;
+      font-size: 1rem;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--neutral-500);
+    }
+
+    /* --- MODALS --- */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(90, 90, 90, 0.6);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background: var(--white);
+      width: 90%;
+      max-width: 450px;
+      border-radius: var(--radius-xl);
+      padding: 0;
+      box-shadow: var(--shadow-md);
+      transform: translateY(20px);
+      transition: 0.3s;
+      display: flex;
+      flex-direction: column;
+      max-height: 90vh;
+    }
+
+    .modal.modal-xl {
+      max-width: 800px;
+      height: 85vh;
+    }
+
+    .modal-backdrop.show .modal {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--custom-dark);
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--neutral-500);
+    }
+
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-footer {
+      padding: 20px 24px;
+      background: var(--neutral-100);
+      border-radius: 0 0 24px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Share Modal Grid */
+    .share-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      text-align: center;
+    }
+
+    .share-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .share-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      transition: 0.2s;
+    }
+
+    .share-item:hover .share-icon {
+      transform: scale(1.1);
+    }
+
+    .bg-whatsapp {
+      background: #25D366;
+    }
+
+    .bg-twitter {
+      background: #000000;
+    }
+
+    .bg-facebook {
+      background: #1877F2;
+    }
+
+    .bg-copy {
+      background: var(--neutral-500);
+    }
+
+    .share-label {
+      font-size: 0.8rem;
+      color: var(--custom-dark);
+    }
+
+    /* Selection Cards (Vehicle/Category) */
+    .selection-card {
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      transition: 0.2s;
+    }
+
+    .selection-card:hover {
+      background: var(--neutral-100);
+    }
+
+    .selection-card.selected {
+      border-color: var(--primary);
+      background: #fffdf0;
+      box-shadow: 0 0 0 2px var(--primary) inset;
+    }
+
+    /* Calendar */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      margin-top: 15px;
+    }
+
+    .cal-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .cal-day:hover:not(.disabled) {
+      background: var(--neutral-100);
+    }
+
+    .cal-day.selected {
+      background: var(--primary);
+      color: var(--custom-darker);
+      font-weight: 700;
+    }
+
+    .time-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .time-slot {
+      padding: 10px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .time-slot.selected {
+      background: var(--primary);
+      border-color: var(--primary);
+      font-weight: 700;
+      color: var(--custom-darker);
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      font-family: inherit;
+      resize: none;
+      color: var(--custom-dark);
+    }
+
+    /* Loading */
+    #global-loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s;
+    }
+
+    #global-loading.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--neutral-100);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Iframe Modal */
+    .iframe-modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .iframe-modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .iframe-modal {
+      background: var(--white);
+      width: 95%;
+      max-width: 900px;
+      height: 90vh;
+      max-height: 800px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      transform: scale(0.9) translateY(20px);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .iframe-modal-backdrop.show .iframe-modal {
+      transform: scale(1) translateY(0);
+    }
+    .iframe-modal-header {
+      padding: 20px 24px;
+      background: linear-gradient(135deg, var(--primary) 0%, #e0b000 100%);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .iframe-modal-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--custom-darker);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+    }
+    .iframe-modal-title i {
+      font-size: 1.4rem;
+    }
+    .iframe-modal-close {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.3);
+      color: var(--custom-darker);
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .iframe-modal-close:hover {
+      background: rgba(255,255,255,0.5);
+      transform: rotate(90deg);
+    }
+    .iframe-modal-body {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .iframe-modal-body iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .iframe-loading {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--neutral-100);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      color: var(--neutral-500);
+      font-weight: 600;
+    }
+    .iframe-loading.hidden {
+      display: none;
+    }
+    @media (max-width: 768px) {
+      .iframe-modal {
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+        border-radius: 0;
+      }
+      .iframe-modal-header {
+        padding: 16px 20px;
+      }
+
+      .service-actions {
+        flex-direction: column;
+      }
+
+      .service-actions button {
+        width: 100%;
+      }
+    }
+
+    /* Smaller badges for supported vehicles */
+    #brands-container span {
+      font-size: 0.75rem !important;
+      padding: 4px 10px !important;
+    }
+
+    #brands-container i {
+      font-size: 0.9rem !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header and Loyalty Bar will be injected by global-header.js -->
+
+  <main class="dashboard-main">
+    <div class="container">
+
+      <div class="breadcrumb-modern">
+        <a href="/dashboard.html" class="bc-item"><i class="ri-home-5-line"></i> Anasayfa</a>
+        <i class="ri-arrow-right-s-line bc-separator"></i>
+        <a href="/dashboard.html" class="bc-item">Servisler</a>
+        <i class="ri-arrow-right-s-line bc-separator"></i>
+        <span class="bc-item active" id="breadcrumb-title">Servis Detayı</span>
+      </div>
+
+      <div class="service-layout">
+        <div>
+          <div class="service-header-card">
+            <img id="gallery-main-image" src="" class="service-gallery-main"
+              onerror="this.src='https://placehold.co/800x400?text=No+Image'">
+            <div class="service-gallery-thumbs" id="gallery-thumbnails"></div>
+
+            <div class="service-info-body">
+              <h1 class="service-title" id="service-title">Yükleniyor...</h1>
+
+              <div class="service-meta">
+                <div class="rating-badge"><i class="ri-star-fill"></i> <span id="service-rating">4.5</span></div>
+                <span class="text-muted" id="service-review-count">(0)</span>
+                <div class="meta-item"><i class="ri-map-pin-line"></i> <span id="service-location">Konum</span></div>
+                <div class="verified-badge" id="service-verified" style="display: none;"><i
+                    class="ri-verified-badge-fill"></i> Doğrulanmış</div>
+              </div>
+
+              <p class="service-description" id="service-description">Servis açıklaması yükleniyor...</p>
+
+              <div class="service-actions" style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-primary" id="create-appointment-btn" onclick="openAppointmentModal()"
+                  style="flex: 1; white-space: nowrap; justify-content: center; padding: 0.75rem 1rem; font-size: 0.95rem;">
+                  <i class="ri-calendar-check-line"></i> Randevu Al
+                </button>
+                <button class="btn btn-outline" id="offer-btn" onclick="openOfferModal()"
+                  style="flex: 1; white-space: nowrap; justify-content: center; padding: 0.75rem 1rem; font-size: 0.95rem; border-color: var(--primary); color: var(--color-text-primary);">
+                  <i class="ri-price-tag-3-line"></i> Teklif Al
+                </button>
+                <button class="btn btn-outline" id="favorite-btn" onclick="toggleFavorite()"
+                  style="flex: 1; white-space: nowrap; justify-content: center; padding: 0.75rem 1rem; font-size: 0.95rem;">
+                  <i class="ri-heart-line"></i> Favori
+                </button>
+                <button class="btn btn-outline" id="share-btn" onclick="shareService()"
+                  style="flex: 1; white-space: nowrap; justify-content: center; padding: 0.75rem 1rem; font-size: 0.95rem;">
+                  <i class="ri-share-forward-line"></i> Paylaş
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="service-tabs">
+            <div class="tabs-header">
+              <button class="tab-btn active" data-tab="services"><i class="ri-tools-line"></i> Hizmetler</button>
+              <button class="tab-btn" data-tab="reviews"><i class="ri-star-line"></i> Yorumlar</button>
+              <button class="tab-btn" data-tab="about"><i class="ri-information-line"></i> Hakkında</button>
+            </div>
+
+            <div class="tab-content active" id="services-tab">
+              <h3 style="margin-bottom:20px; color:var(--custom-darker);">Sunulan Hizmetler</h3>
+              <div class="services-list">
+                <div class="service-item">
+                  <div class="service-item-left">
+                    <div class="service-icon-box"><i class="ri-settings-3-line"></i></div>
+                    <span class="service-item-name">Genel Bakım (Periyodik)</span>
+                  </div>
+                  <span class="service-item-price">₺1.500 - ₺3.500</span>
+                </div>
+                <div class="service-item">
+                  <div class="service-item-left">
+                    <div class="service-icon-box"><i class="ri-oil-line"></i></div>
+                    <span class="service-item-name">Yağ ve Filtre Değişimi</span>
+                  </div>
+                  <span class="service-item-price">₺800 - ₺1.200</span>
+                </div>
+                <div class="service-item">
+                  <div class="service-item-left">
+                    <div class="service-icon-box"><i class="ri-car-line"></i></div>
+                    <span class="service-item-name">Fren Balatası Değişimi</span>
+                  </div>
+                  <span class="service-item-price">₺1.000+</span>
+                </div>
+                <div class="service-item">
+                  <div class="service-item-left">
+                    <div class="service-icon-box"><i class="ri-brush-line"></i></div>
+                    <span class="service-item-name">Kaporta & Boya</span>
+                  </div>
+                  <span class="service-item-price">Fiyat Teklifi Alın</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="reviews-tab">
+              <div class="review-summary">
+                <div>
+                  <div class="review-score-big" id="reviews-score">4.8</div>
+                  <div style="color:#eab308; font-size:1.2rem;">
+                    <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i
+                      class="ri-star-fill"></i><i class="ri-star-half-fill"></i>
+                  </div>
+                  <div class="text-muted" id="reviews-total">0 değerlendirme</div>
+                </div>
+              </div>
+
+              <!-- Review Controls -->
+              <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; margin-top: 20px;">
+                <h4 style="margin: 0;">Yorumlar</h4>
+                <select id="review-sort"
+                  style="padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; font-family: inherit;">
+                  <option value="newest">En Yeni</option>
+                  <option value="highest">En Yüksek Puan</option>
+                  <option value="lowest">En Düşük Puan</option>
+                </select>
+              </div>
+
+              <div id="reviews-list"></div>
+
+              <!-- Load More Button -->
+              <div style="text-align: center; margin-top: 20px;">
+                <button id="load-more-reviews" class="btn btn-outline" style="display: none;">
+                  <i class="ri-arrow-down-line"></i> Daha Fazla Yükle
+                </button>
+              </div>
+            </div>
+
+            <div class="tab-content" id="about-tab">
+              <h3 style="margin-bottom:15px; color:var(--custom-darker);">Servis Hakkında</h3>
+              <div id="service-about-content">
+                <p class="text-muted">Detaylı bilgi yükleniyor...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="service-sidebar">
+
+          <div class="sidebar-widget">
+            <h3 class="widget-title">İletişim</h3>
+
+            <div class="contact-item">
+              <div class="contact-icon"><i class="ri-phone-line"></i></div>
+              <div><span style="font-size:0.75rem;color:#888;">Telefon</span><br><strong id="service-phone">-</strong>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon"><i class="ri-mail-line"></i></div>
+              <div><span style="font-size:0.75rem;color:#888;">E-posta</span><br><strong id="service-email">-</strong>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon"><i class="ri-global-line"></i></div>
+              <div><span style="font-size:0.75rem;color:#888;">Website</span><br><strong id="service-website">-</strong>
+              </div>
+            </div>
+
+            <button class="btn btn-outline btn-full" id="ask-question-btn">
+              <i class="ri-question-answer-line"></i> Soru Sor
+            </button>
+          </div>
+
+          <div class="sidebar-widget">
+            <h3 class="widget-title">Çalışma Saatleri</h3>
+            <div class="hours-list">
+              <div class="hour-row"><span class="hour-day">Pazartesi</span> <span class="hour-time">08:00 - 18:00</span>
+              </div>
+              <div class="hour-row"><span class="hour-day">Salı</span> <span class="hour-time">08:00 - 18:00</span>
+              </div>
+              <div class="hour-row"><span class="hour-day">Çarşamba</span> <span class="hour-time">08:00 - 18:00</span>
+              </div>
+              <div class="hour-row"><span class="hour-day">Perşembe</span> <span class="hour-time">08:00 - 18:00</span>
+              </div>
+              <div class="hour-row"><span class="hour-day">Cuma</span> <span class="hour-time">08:00 - 18:00</span>
+              </div>
+              <div class="hour-row"><span class="hour-day">Cumartesi</span> <span class="hour-time">09:00 - 15:00</span>
+              </div>
+              <div class="hour-row"><span class="hour-day">Pazar</span> <span class="hour-time"
+                  style="color:var(--error);">Kapalı</span></div>
+            </div>
+            <div class="status-open">
+              <i class="ri-checkbox-circle-fill"></i> Şu anda açık
+            </div>
+          </div>
+
+          <div class="sidebar-widget">
+            <h3 class="widget-title">Konum</h3>
+            <div id="service-map"
+              style="width: 100%; height: 200px; border-radius: 12px; overflow: hidden; margin-bottom: 15px;"></div>
+            <button class="btn btn-primary btn-full" id="get-directions-btn" style="margin-bottom: 10px;">
+              <i class="ri-map-pin-line"></i> Yol Tarifi Al
+            </button>
+            <div style="margin-top:15px; font-size:0.9rem; line-height:1.5;">
+              <i class="ri-map-pin-fill" style="color:var(--primary-dark);"></i>
+              <span id="service-address">Adres bilgisi yükleniyor...</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <div class="modal-backdrop" id="share-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Paylaş</h3>
+        <button class="modal-close" onclick="closeShareModal()"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="share-grid">
+          <div class="share-item" onclick="shareTo('whatsapp')">
+            <div class="share-icon bg-whatsapp"><i class="ri-whatsapp-line"></i></div>
+            <span class="share-label">WhatsApp</span>
+          </div>
+          <div class="share-item" onclick="shareTo('twitter')">
+            <div class="share-icon bg-twitter"><i class="ri-twitter-x-line"></i></div>
+            <span class="share-label">X</span>
+          </div>
+          <div class="share-item" onclick="shareTo('facebook')">
+            <div class="share-icon bg-facebook"><i class="ri-facebook-fill"></i></div>
+            <span class="share-label">Facebook</span>
+          </div>
+          <div class="share-item" onclick="copyLink()">
+            <div class="share-icon bg-copy"><i class="ri-file-copy-line"></i></div>
+            <span class="share-label">Kopyala</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Iframe Appointment Modal -->
+  <div class="iframe-modal-backdrop" id="appointment-modal">
+    <div class="iframe-modal">
+      <div class="iframe-modal-header">
+        <h3 class="iframe-modal-title"><i class="ri-calendar-check-line"></i> Randevu Oluştur</h3>
+        <button class="iframe-modal-close" onclick="closeAppointmentModal()"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="iframe-modal-body">
+        <iframe id="appointment-iframe" src="" frameborder="0"></iframe>
+        <div class="iframe-loading" id="iframe-loading">
+          <div class="spinner"></div>
+          <span>Yükleniyor...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Nav will be injected here by bottom-nav.js -->
+
+  <div id="global-loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Global Header Component -->
+  <script src="/components/global-header.js"></script>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/store.js"></script>
+  <script src="/js/components/footer.js"></script>
+  <script src="/js/components/bottom-nav.js"></script>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <script>
+    console.log('📍 Service Detail Script Started');
+
+    const params = Utils.getQueryParams();
+    const serviceId = params.id;
+    console.log('📍 Service ID:', serviceId);
+
+    let currentServiceData = null;
+
+    async function loadServiceDetail() {
+      console.log('📍 loadServiceDetail() called');
+      Utils.showLoading();
+      try {
+        const response = await api.getServiceById(serviceId);
+        const service = response.data;
+        if (!service) throw new Error('Servis bulunamadı');
+        currentServiceData = service;
+
+        const attrs = service.attributes;
+        document.title = `${attrs.name} | TamirHanem`;
+        document.getElementById('breadcrumb-title').textContent = attrs.name;
+        document.getElementById('service-title').textContent = attrs.name;
+        document.getElementById('service-location').textContent = attrs.location || 'Konum yok';
+        document.getElementById('service-description').textContent = attrs.description || 'Açıklama yok.';
+        document.getElementById('service-rating').textContent = (attrs.rating || 4.5).toFixed(1);
+        document.getElementById('service-review-count').textContent = `(${attrs.reviewCount || 0})`;
+        if (attrs.verified) document.getElementById('service-verified').style.display = 'inline-flex';
+
+        // Gallery - Handle gallery, ProfilePicture, Gallery, or images
+        let images = [];
+
+        // Helper to extract images from a field
+        const extractImages = (field) => {
+          if (!field) return [];
+          if (field.data) {
+            return Array.isArray(field.data) ? field.data : [field.data];
+          }
+          return Array.isArray(field) ? field : [field];
+        };
+
+        console.log('Checking gallery fields:', {
+          gallery: attrs.gallery,
+          Gallery: attrs.Gallery,
+          images: attrs.images,
+          ProfilePicture: attrs.ProfilePicture
+        });
+
+        // 1. Try 'gallery' field first (User specified this)
+        if (attrs.gallery) {
+          images = extractImages(attrs.gallery);
+        }
+        // 2. Try 'Gallery' (Capitalized)
+        else if (attrs.Gallery) {
+          images = extractImages(attrs.Gallery);
+        }
+        // 3. Try 'images'
+        else if (attrs.images) {
+          images = extractImages(attrs.images);
+        }
+        // 4. Fallback to ProfilePicture ONLY for the main image if no gallery exists
+        else if (attrs.ProfilePicture) {
+          const profileImages = extractImages(attrs.ProfilePicture);
+          if (profileImages.length > 1) {
+            images = profileImages;
+          } else {
+            images = profileImages;
+          }
+        }
+
+        console.log('Final parsed images for gallery:', images);
+
+        if (images.length > 0) {
+          // Set Main Image
+          const mainImageUrl = Utils.getImageUrl(images[0]);
+          document.getElementById('gallery-main-image').src = mainImageUrl;
+
+          // Set Thumbnails
+          const thumbnailsContainer = document.getElementById('gallery-thumbnails');
+
+          if (images.length > 0) {
+            const thumbsHTML = images.map((img, i) => {
+              const thumbUrl = Utils.getImageUrl(img);
+              return `<img src="${thumbUrl}" class="gallery-thumb ${i === 0 ? 'active' : ''}" onclick="changeGallery(this, '${thumbUrl}')" style="cursor: pointer; width: 80px; height: 60px; object-fit: cover; border-radius: 8px; border: 2px solid transparent;">`;
+            }).join('');
+
+            thumbnailsContainer.innerHTML = thumbsHTML;
+            thumbnailsContainer.style.display = 'flex';
+            thumbnailsContainer.style.marginTop = '15px';
+            thumbnailsContainer.style.gap = '10px';
+            thumbnailsContainer.style.overflowX = 'auto';
+            thumbnailsContainer.style.paddingBottom = '5px';
+          } else {
+            thumbnailsContainer.style.display = 'none';
+          }
+        } else {
+          // Fallback if absolutely no images found
+          document.getElementById('gallery-main-image').src = 'https://placehold.co/800x400?text=No+Image';
+          document.getElementById('gallery-thumbnails').style.display = 'none';
+        }
+
+        // Render Supported Vehicles (Car brands) below service title
+        let supportedBrands = [];
+
+        if (attrs.supported_vehicles) {
+          let vehiclesData = attrs.supported_vehicles;
+
+          // Handle if it's a string (JSON)
+          if (typeof vehiclesData === 'string') {
+            try { vehiclesData = JSON.parse(vehiclesData); } catch (e) { console.error('Error parsing supported_vehicles:', e); }
+          }
+
+          if (Array.isArray(vehiclesData)) {
+            supportedBrands = vehiclesData;
+          } else if (vehiclesData && Array.isArray(vehiclesData.brands)) {
+            supportedBrands = vehiclesData.brands.map(v => typeof v === 'string' ? v : v.brand).filter(Boolean);
+          }
+        }
+        else if (attrs['unique-brands'] && attrs['unique-brands'].data) {
+          supportedBrands = attrs['unique-brands'].data.map(b => b.attributes.name);
+        }
+        else if (attrs['unique_brands'] && attrs['unique_brands'].data) {
+          supportedBrands = attrs['unique_brands'].data.map(b => b.attributes.name);
+        }
+
+        console.log('Supported brands data:', supportedBrands);
+
+        if (supportedBrands && supportedBrands.length > 0) {
+          const brandsHTML = supportedBrands.map(brandName => {
+            return `<span style="display: inline-flex; align-items: center; gap: 5px; background: #f3f4f6; color: #1f2937; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; margin-right: 6px; margin-bottom: 6px; border: 1px solid #e5e7eb;">
+              <i class="ri-roadster-fill" style="color: #f59e0b; font-size: 0.9rem;"></i> ${brandName}
+            </span>`;
+          }).join('');
+
+          // Remove existing brands container if any
+          const existingBrands = document.getElementById('brands-container');
+          if (existingBrands) {
+            existingBrands.remove();
+          }
+
+          // Insert brands after service title
+          const brandsContainer = document.createElement('div');
+          brandsContainer.id = 'brands-container';
+          brandsContainer.style.marginTop = '10px';
+          brandsContainer.style.marginBottom = '15px';
+          brandsContainer.innerHTML = brandsHTML;
+
+          const titleElement = document.getElementById('service-title');
+          titleElement.parentNode.insertBefore(brandsContainer, titleElement.nextSibling);
+
+          console.log('✅ Supported brands rendered:', supportedBrands.length);
+        } else {
+          console.warn('⚠️ No supported vehicles data found');
+        }
+
+        // Render Service Categories in "Hizmetler" tab
+        console.log('Categories data:', attrs.categories);
+
+        if (attrs.categories && attrs.categories.data && attrs.categories.data.length > 0) {
+          const categoriesHTML = attrs.categories.data.map(cat => {
+            const catAttrs = cat.attributes;
+            let iconHTML = '<i class="ri-tools-fill"></i>'; // Default icon
+
+            // Use category's own icon if available
+            if (catAttrs.icon && catAttrs.icon.data) {
+              const iconUrl = Utils.getImageUrl(catAttrs.icon);
+              iconHTML = `<img src="${iconUrl}" style="width:24px; height:24px; object-fit:contain;">`;
+            }
+
+            return `
+              <div class="service-item">
+                <div class="service-item-left">
+                  <div class="service-icon-box">${iconHTML}</div>
+                  <span class="service-item-name">${catAttrs.name}</span>
+                </div>
+                <span class="service-item-price">Hizmet Mevcut</span>
+              </div>
+            `;
+          }).join('');
+
+          document.querySelector('#services-tab .services-list').innerHTML = categoriesHTML;
+          console.log('✅ Categories rendered:', attrs.categories.data.length);
+        } else {
+          console.warn('⚠️ No categories data found');
+        }
+
+        // Load Reviews
+        loadReviews(true);
+
+        // Contact Details Re-populated
+        document.getElementById('service-phone').textContent = attrs.phone || 'Belirtilmemiş';
+        document.getElementById('service-email').textContent = attrs.email || 'Belirtilmemiş';
+        document.getElementById('service-website').textContent = attrs.website || 'Belirtilmemiş';
+        document.getElementById('service-address').textContent = attrs.location || 'Adres bilgisi bulunamadı';
+
+        document.getElementById('service-about-content').innerHTML = `<p class="text-muted" style="line-height:1.6;">${attrs.description || 'Ek bilgi bulunmuyor.'}</p>`;
+
+        // Initialize map if coordinates available
+        if (attrs.latitude && attrs.longitude) {
+          initServiceMap(attrs.latitude, attrs.longitude, attrs.name);
+        }
+
+        // Check if service is in favorites
+        checkIfFavorite();
+
+      } catch (error) {
+        Utils.showToast('Servis yüklenemedi', 'error');
+      } finally { Utils.hideLoading(); }
+    }
+
+    function changeGallery(el, src, index = 0) {
+      document.getElementById('gallery-main-image').src = src;
+      document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+
+      // Update main image click to open at correct index
+      document.getElementById('gallery-main-image').onclick = () => openPhotoSwipe(index);
+    }
+
+    // --- REVIEWS MANAGEMENT ---
+    let reviewsState = {
+      page: 1,
+      pageSize: 5,
+      sortBy: 'newest',
+      hasMore: false,
+      total: 0
+    };
+
+    async function loadReviews(reset = false) {
+      if (reset) {
+        reviewsState.page = 1;
+        document.getElementById('reviews-list').innerHTML = '';
+      }
+
+      try {
+        const sort = reviewsState.sortBy === 'newest' ? 'createdAt:desc' :
+          reviewsState.sortBy === 'highest' ? 'value:desc' : 'value:asc';
+
+        const endpoint = `/ratings?filters[service][id][$eq]=${serviceId}&populate=*&sort=${sort}&pagination[page]=${reviewsState.page}&pagination[pageSize]=${reviewsState.pageSize}`;
+
+        const response = await api.get(endpoint);
+
+        const reviews = Array.isArray(response.data) ? response.data : (response.data?.data || []);
+        const pagination = response.meta?.pagination || response.data?.meta?.pagination || {};
+
+        reviewsState.total = pagination.total || 0;
+        reviewsState.hasMore = reviewsState.page < (pagination.pageCount || 1);
+
+        // Update summary
+        if (currentServiceData && currentServiceData.attributes) {
+          const serviceAttrs = currentServiceData.attributes;
+          const avgRating = serviceAttrs.rating || 0;
+          const totalReviews = serviceAttrs.ratingCount || reviewsState.total || 0;
+
+          document.getElementById('reviews-total').textContent = `${totalReviews} değerlendirme`;
+          document.getElementById('reviews-score').textContent = avgRating.toFixed(1);
+
+          const starsContainer = document.querySelector('.review-summary .ri-star-fill')?.parentNode;
+          if (starsContainer) {
+            const fullStars = Math.floor(avgRating);
+            const hasHalfStar = avgRating % 1 >= 0.5;
+            let starsHTML = '';
+            for (let i = 0; i < 5; i++) {
+              if (i < fullStars) starsHTML += '<i class="ri-star-fill"></i>';
+              else if (i === fullStars && hasHalfStar) starsHTML += '<i class="ri-star-half-fill"></i>';
+              else starsHTML += '<i class="ri-star-line"></i>';
+            }
+            starsContainer.innerHTML = starsHTML;
+          }
+        }
+
+        // Render reviews
+        const reviewsContainer = document.getElementById('reviews-list');
+        if (reviews.length === 0 && reset) {
+          reviewsContainer.innerHTML = '<p class="text-muted" style="text-align: center; padding: 40px 0;">Henüz yorum yapılmamış.</p>';
+        } else {
+          reviews.forEach(review => {
+            reviewsContainer.innerHTML += renderReview(review);
+          });
+        }
+
+        // Show/hide load more button
+        document.getElementById('load-more-reviews').style.display = reviewsState.hasMore ? 'inline-flex' : 'none';
+
+      } catch (error) {
+        console.error('Reviews load error:', error);
+        if (reset) {
+          document.getElementById('reviews-list').innerHTML = '<p class="text-muted" style="text-align: center;">Yorumlar yüklenemedi.</p>';
+        }
+      }
+    }
+
+    function renderReview(review) {
+      const attrs = review.attributes || review;
+
+      let user = {};
+      if (attrs.user?.data?.attributes) {
+        user = attrs.user.data.attributes;
+      } else if (attrs.user) {
+        user = attrs.user;
+      }
+
+      let userName = 'Anonim';
+      if (user.name || user.surname) {
+        userName = `${user.name || ''} ${user.surname || ''}`.trim();
+      } else if (user.username) {
+        userName = user.username;
+      } else if (user.email) {
+        userName = user.email.split('@')[0];
+      }
+
+      const userInitial = userName.charAt(0).toUpperCase();
+      const date = new Date(attrs.createdAt).toLocaleDateString('tr-TR');
+      const stars = '<i class="ri-star-fill"></i>'.repeat(attrs.value || 0) + '<i class="ri-star-line"></i>'.repeat(5 - (attrs.value || 0));
+
+      const commentText = attrs.comment || attrs.content || attrs.text || '';
+
+      let avatarHTML = `<div class="reviewer-avatar">${userInitial}</div>`;
+
+      if (user.avatar) {
+        const imgUrl = Utils.getImageUrl(user.avatar);
+        if (imgUrl) {
+          avatarHTML = `<img src="${imgUrl}" class="reviewer-avatar" style="object-fit:cover;">`;
+        }
+      }
+
+      return `
+        <div class="review-item">
+          <div class="review-header">
+            <div class="reviewer-info">
+              ${avatarHTML}
+              <div>
+                <div class="reviewer-name">${userName}</div>
+                <div class="review-date">${date}</div>
+              </div>
+            </div>
+            <div style="color: #eab308; font-size: 1rem;">${stars}</div>
+          </div>
+          <p class="review-text">${commentText}</p>
+        </div>
+      `;
+    }
+
+    // Review sort change handler
+    document.getElementById('review-sort')?.addEventListener('change', (e) => {
+      reviewsState.sortBy = e.target.value;
+      loadReviews(true);
+    });
+
+    // Load more button
+    document.getElementById('load-more-reviews')?.addEventListener('click', () => {
+      reviewsState.page++;
+      loadReviews(false);
+    });
+
+    function openOfferModal() {
+      alert('Teklif alma özelliği yakında eklenecek!');
+    }
+
+    // Tabs Logic Fix
+    const tabs = document.querySelectorAll('.tab-btn');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab + '-tab').classList.add('active');
+      });
+    });
+
+    // --- MODAL & WIZARD LOGIC ---
+    const shareBtn = document.getElementById('share-btn');
+    if (shareBtn) {
+      shareBtn.addEventListener('click', () => {
+        const shareModal = document.getElementById('share-modal');
+        if (shareModal) shareModal.classList.add('show');
+      });
+    }
+    function closeShareModal() {
+      const shareModal = document.getElementById('share-modal');
+      if (shareModal) shareModal.classList.remove('show');
+    }
+
+    function openAppointmentModal() {
+      const modal = document.getElementById('appointment-modal');
+      const iframe = document.getElementById('appointment-iframe');
+      const loading = document.getElementById('iframe-loading');
+
+      // Show modal
+      modal.classList.add('show');
+      loading.classList.remove('hidden');
+
+      // Set iframe src with service ID
+      const iframeSrc = `/pages/create-appointment.html?serviceId=${serviceId}&embedded=true`;
+      iframe.src = iframeSrc;
+
+      // Hide loading when iframe loads
+      iframe.onload = () => {
+        loading.classList.add('hidden');
+      };
+
+      // Prevent body scroll
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeAppointmentModal() {
+      const modal = document.getElementById('appointment-modal');
+      const iframe = document.getElementById('appointment-iframe');
+
+      modal.classList.remove('show');
+
+      // Clear iframe after animation
+      setTimeout(() => {
+        iframe.src = '';
+      }, 300);
+
+      // Restore body scroll
+      document.body.style.overflow = '';
+    }
+
+    const askQuestionBtn = document.getElementById('ask-question-btn');
+    if (askQuestionBtn) {
+      askQuestionBtn.addEventListener('click', () => { window.location.href = '/dashboard.html#assistant'; });
+    }
+    function shareTo(platform) { window.open('#', '_blank'); closeShareModal(); }
+    function copyLink() { navigator.clipboard.writeText(window.location.href); Utils.showToast('Link kopyalandı', 'success'); closeShareModal(); }
+
+    // --- FAVORITE FUNCTIONALITY ---
+    function checkIfFavorite() {
+      const favourites = JSON.parse(localStorage.getItem('favouriteServices') || '[]');
+      const isFavorite = favourites.some(fav => fav.id == serviceId);
+
+      const favoriteBtn = document.getElementById('favorite-btn');
+      if (!favoriteBtn) return;
+
+      if (isFavorite) {
+        favoriteBtn.innerHTML = '<i class="ri-heart-fill" style="color: #ef4444;"></i> Favorilerimde';
+        favoriteBtn.style.borderColor = '#ef4444';
+        favoriteBtn.style.color = '#ef4444';
+      } else {
+        favoriteBtn.innerHTML = '<i class="ri-heart-line"></i> Favori';
+        favoriteBtn.style.borderColor = '';
+        favoriteBtn.style.color = '';
+      }
+    }
+
+    function toggleFavorite() {
+      if (!currentServiceData) {
+        Utils.showToast('Servis bilgisi yüklenemedi', 'error');
+        return;
+      }
+
+      const favourites = JSON.parse(localStorage.getItem('favouriteServices') || '[]');
+      const serviceIndex = favourites.findIndex(fav => fav.id == serviceId);
+
+      const attrs = currentServiceData.attributes;
+
+      if (serviceIndex > -1) {
+        // Remove from favorites
+        favourites.splice(serviceIndex, 1);
+        Utils.showToast('Favorilerden çıkarıldı', 'success');
+      } else {
+        // Add to favorites
+        const favoriteData = {
+          id: serviceId,
+          name: attrs.name,
+          location: attrs.location || 'Konum yok',
+          image: attrs.ProfilePicture ? Utils.getImageUrl(Array.isArray(attrs.ProfilePicture) ? attrs.ProfilePicture[0] : attrs.ProfilePicture) : 'https://via.placeholder.com/40',
+          rating: attrs.rating || 4.5,
+          addedAt: new Date().toISOString()
+        };
+        favourites.push(favoriteData);
+        Utils.showToast('Favorilere eklendi', 'success');
+      }
+
+      localStorage.setItem('favouriteServices', JSON.stringify(favourites));
+      checkIfFavorite();
+    }
+
+    // Favori butonu onclick ile çalışıyor, addEventListener kaldırıldı
+
+    // --- MAP FUNCTIONALITY ---
+    let serviceMap = null;
+    let serviceLatLng = null;
+
+    function initServiceMap(lat, lng, serviceName) {
+      try {
+        serviceLatLng = [lat, lng];
+
+        // Create map
+        serviceMap = L.map('service-map').setView(serviceLatLng, 15);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors',
+          maxZoom: 19
+        }).addTo(serviceMap);
+
+        // Add marker
+        const marker = L.marker(serviceLatLng).addTo(serviceMap);
+        marker.bindPopup(`<b>${serviceName}</b>`).openPopup();
+
+        console.log('✅ Map initialized successfully');
+      } catch (error) {
+        console.error('❌ Map initialization error:', error);
+        document.getElementById('service-map').innerHTML = '<div style="display:flex; align-items:center; justify-content:center; height:100%; background:#f0f0f0; color:#888;"><p>Harita yüklenemedi</p></div>';
+      }
+    }
+
+    // Get Directions Button
+    const getDirectionsBtn = document.getElementById('get-directions-btn');
+    if (getDirectionsBtn) {
+      getDirectionsBtn.addEventListener('click', () => {
+        if (serviceLatLng) {
+          const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${serviceLatLng[0]},${serviceLatLng[1]}`;
+          window.open(googleMapsUrl, '_blank');
+        } else {
+          Utils.showToast('Konum bilgisi bulunamadı', 'error');
+        }
+      });
+    }
+
+    console.log('🚀 Service Detail Page - Starting loadServiceDetail...');
+    loadServiceDetail();
+  </script>
+</body>
+
+</html>

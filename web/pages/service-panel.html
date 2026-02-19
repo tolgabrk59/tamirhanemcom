@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Servis Paneli | TamirHanem</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+
+  <style>
+    /* --- NEW DESIGN SYSTEM (SaaS Style) --- */
+    :root {
+      /* Brand Colors - Refined */
+      --primary: #FFC507;
+      --primary-dark: #e6b006;
+      --primary-light: #fff8e1;
+      --secondary: #1A1A1A;
+
+      /* Functional Colors */
+      --success: #10B981;
+      --success-light: #D1FAE5;
+      --warning: #F59E0B;
+      --warning-light: #FEF3C7;
+      --danger: #EF4444;
+      --danger-light: #FEE2E2;
+      --info: #3B82F6;
+      --info-light: #DBEAFE;
+
+      /* Neutrals */
+      --bg-body: #F3F4F6;
+      --bg-surface: #FFFFFF;
+      --bg-glass: rgba(255, 255, 255, 0.8);
+
+      --text-main: #111827;
+      --text-muted: #6B7280;
+      --text-light: #9CA3AF;
+
+      --border-color: #E5E7EB;
+      --border-light: #F3F4F6;
+
+      /* Shadows */
+      --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+      /* Spacing & Radius */
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+      --radius-xl: 1rem;
+      --radius-2xl: 1.5rem;
+
+      --nav-height: 72px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding-bottom: 100px;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      transition: 0.2s;
+    }
+
+    button {
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* --- Navbar Revert & Update --- */
+    .dashboard-navbar {
+      height: var(--nav-height);
+      background: linear-gradient(to right, #FFC507, #FFD700);
+      /* TamirHanem Yellow */
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(255, 197, 7, 0.3);
+    }
+
+    .dashboard-navbar-container {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-brand img {
+      height: auto;
+      width: 200px;
+    }
+
+    .nav-greeting {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-weight: 700;
+      font-size: 1rem;
+      color: #1A1A1A;
+      /* Dark text on yellow */
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-btn-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      transition: all 0.2s;
+    }
+
+    .nav-btn-icon:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .nav-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 12px 4px 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-profile:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .nav-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--bg-body);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--primary);
+      overflow: hidden;
+    }
+
+    .nav-user-info {
+      display: none;
+      /* Hidden on mobile to save space */
+      flex-direction: column;
+      line-height: 1.2;
+      padding-right: 4px;
+    }
+
+    @media (min-width: 768px) {
+      .nav-user-info {
+        display: flex;
+      }
+    }
+
+    .nav-user-name {
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: var(--text-main);
+    }
+
+    .nav-user-role {
+      font-size: 0.75rem;
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    /* --- Welcome Section (Date Only) --- */
+    .welcome-section {
+      margin-top: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .date-badge {
+      background: white;
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      color: var(--text-muted);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* --- Stats Grid --- */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 24px;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+
+    .stat-icon-wrapper {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 4px;
+      line-height: 1;
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    /* --- Section Headers --- */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      margin-top: 40px;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title::before {
+      content: '';
+      display: block;
+      width: 4px;
+      height: 24px;
+      background: var(--primary);
+      border-radius: 4px;
+    }
+
+    /* --- Big Actions (Hızlı İşlemler) --- */
+    .quick-actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .action-card {
+      background: white;
+      padding: 20px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .action-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: transparent;
+    }
+
+    .action-card-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      flex-shrink: 0;
+    }
+
+    .action-card-content {
+      flex: 1;
+    }
+
+    .action-card-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .action-card-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    /* --- Menu Grid (İşlemler) --- */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .menu-item {
+      background: white;
+      padding: 20px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      transition: all 0.2s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .menu-item:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .menu-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      /* Icons will have colored backgrounds */
+    }
+
+    .menu-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .menu-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .menu-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--danger);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* --- Recent List --- */
+    .recent-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .list-item {
+      background: white;
+      padding: 16px 20px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .list-item:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-sm);
+      transform: translateX(4px);
+    }
+
+    .list-item-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .list-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-body);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      overflow: hidden;
+    }
+
+    .list-info h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .list-info p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-pending {
+      background: var(--warning-light);
+      color: var(--warning);
+    }
+
+    .status-approved {
+      background: var(--success-light);
+      color: var(--success);
+    }
+
+    .status-completed {
+      background: var(--info-light);
+      color: var(--info);
+    }
+
+    .status-cancelled {
+      background: var(--danger-light);
+      color: var(--danger);
+    }
+
+    /* --- Bottom Nav --- */
+    .dashboard-tabs {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: var(--bottom-nav-height);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      z-index: 1000;
+      padding-bottom: 10px;
+    }
+
+    .dashboard-tabs-container {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .tab-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+
+    .tab-link:hover {
+      color: var(--primary);
+    }
+
+    .tab-link.active {
+      color: var(--primary-dark);
+    }
+
+    .tab-link.active i {
+      color: var(--primary-dark);
+    }
+
+    .tab-link i {
+      font-size: 1.5rem;
+      margin-bottom: 2px;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .nav-greeting {
+        display: none;
+        /* Hide greeting on small screens if it overlaps */
+      }
+
+      .nav-brand img {
+        width: 150px;
+        /* Smaller logo on mobile */
+      }
+    }
+
+    /* --- Appointment Cards --- */
+    .appointments-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+      padding-top: 10px;
+    }
+
+    .appointment-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .appointment-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .user-info {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .user-avatar {
+      width: 50px;
+      height: 50px;
+      min-width: 50px;
+      border-radius: 50%;
+      background: var(--bg-body);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      overflow: hidden;
+      border: 2px solid white;
+      box-shadow: var(--shadow-sm);
+      flex-shrink: 0;
+    }
+
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .user-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .user-details h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .user-details p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .card-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .info-row i {
+      color: var(--primary);
+      font-size: 1rem;
+    }
+
+    .card-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .card-actions .btn {
+      width: 100%;
+      margin: 0;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="dashboard-navbar">
+    <div class="container dashboard-navbar-container">
+      <a href="/dashboard.html" class="nav-brand">
+        <img src="/images/logo.png" alt="TamirHanem">
+      </a>
+
+      <div class="nav-greeting" id="nav-greeting">
+        <!-- Greeting will be injected here -->
+      </div>
+
+      <div class="nav-actions">
+        <button class="nav-btn-icon">
+          <i class="ri-notification-3-line"></i>
+        </button>
+
+        <div class="nav-profile" onclick="window.location.href='/dashboard.html#profile'">
+          <div class="nav-avatar" id="user-avatar">S</div>
+          <div class="nav-user-info">
+            <span class="nav-user-name" id="service-name-header">Servis</span>
+            <span class="nav-user-role">Yönetici</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container welcome-section">
+    <div class="date-badge">
+      <i class="ri-calendar-line"></i>
+      <span id="current-date">...</span>
+    </div>
+  </div>
+
+  <main class="container" style="padding-top: 0;">
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon-wrapper" style="background: var(--warning-light); color: var(--warning);">
+          <i class="ri-time-line"></i>
+        </div>
+        <div class="stat-value" id="stat-pending">0</div>
+        <div class="stat-label">Bekleyen Randevu</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrapper" style="background: var(--info-light); color: var(--info);">
+          <i class="ri-calendar-check-line"></i>
+        </div>
+        <div class="stat-value" id="stat-today">0</div>
+        <div class="stat-label">Bugünkü Randevu</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrapper" style="background: var(--success-light); color: var(--success);">
+          <i class="ri-list-check"></i>
+        </div>
+        <div class="stat-value" id="stat-total">0</div>
+        <div class="stat-label">Toplam Randevu</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrapper" style="background: #F3E8FF; color: #9333EA;">
+          <i class="ri-star-fill"></i>
+        </div>
+        <div class="stat-value" id="stat-rating">0.0 ⭐</div>
+        <div class="stat-label">Servis Puanı</div>
+      </div>
+    </div>
+
+    <!-- Quick Actions (Hızlı İşlemler) -->
+    <div class="section-header">
+      <h2 class="section-title">Hızlı İşlemler</h2>
+    </div>
+
+    <div class="quick-actions-grid">
+      <!-- Müşteri Bul -->
+      <div class="action-card" onclick="navigateTo('/pages/general-pool.html')">
+        <div class="action-card-icon" style="background: var(--danger-light); color: var(--danger);">
+          <i class="ri-user-search-line"></i>
+        </div>
+        <div class="action-card-content">
+          <div class="action-card-title">Müşteri Bul</div>
+          <div class="action-card-desc">Genel havuzdaki müşteriler</div>
+        </div>
+      </div>
+
+      <!-- Araç Teslim -->
+      <div class="action-card" onclick="navigateTo('/pages/vehicle-delivery.html')">
+        <div class="action-card-icon" style="background: var(--info-light); color: var(--info);">
+          <i class="ri-car-line"></i>
+        </div>
+        <div class="action-card-content">
+          <div class="action-card-title">Araç Teslim</div>
+          <div class="action-card-desc">Tamamlanan işleri teslim et</div>
+        </div>
+      </div>
+
+      <!-- WhatsApp -->
+      <div class="action-card" onclick="handleWhatsAppClick()">
+        <div class="action-card-icon" style="background: var(--success-light); color: var(--success);">
+          <i class="ri-whatsapp-line"></i>
+        </div>
+        <div class="action-card-content">
+          <div class="action-card-title">WhatsApp</div>
+          <div class="action-card-desc">Müşteri ile mesajlaş</div>
+        </div>
+      </div>
+
+      <!-- Günlük Kasa -->
+      <div class="action-card" onclick="navigateTo('/pages/daily-report.html')">
+        <div class="action-card-icon" style="background: var(--warning-light); color: var(--warning);">
+          <i class="ri-file-chart-line"></i>
+        </div>
+        <div class="action-card-content">
+          <div class="action-card-title">Günlük Kasa</div>
+          <div class="action-card-desc">Günlük gelir raporu</div>
+        </div>
+      </div>
+
+      <!-- Stok Takibi -->
+      <div class="action-card" onclick="navigateTo('/pages/inventory-tracking.html')">
+        <div class="action-card-icon" style="background: #F3E8FF; color: #9333EA;">
+          <i class="ri-box-3-line"></i>
+        </div>
+        <div class="action-card-content">
+          <div class="action-card-title">Stok Takibi</div>
+          <div class="action-card-desc">Parça ve malzeme stokları</div>
+        </div>
+      </div>
+
+
+
+      <!-- Lojistik Parça Takibi -->
+      <div class="action-card" onclick="navigateTo('/pages/part-tracking.html')">
+        <div class="action-card-icon" style="background: #E0E7FF; color: #4F46E5;">
+          <i class="ri-truck-line"></i>
+        </div>
+        <div class="action-card-content">
+          <div class="action-card-title">Lojistik Parça Takibi</div>
+          <div class="action-card-desc">Sipariş ve parça durumlarını takip edin</div>
+        </div>
+      </div>
+
+      <!-- Kampanya Yayınla -->
+      <div class="action-card" onclick="navigateTo('/pages/publish-campaign.html')">
+        <div class="action-card-icon" style="background: #FCE7F3; color: #DB2777;">
+          <i class="ri-megaphone-line"></i>
+        </div>
+        <div class="action-card-content">
+          <div class="action-card-title">Kampanya Yayınla</div>
+          <div class="action-card-desc">Yeni kampanya oluştur</div>
+        </div>
+      </div>
+
+
+
+      <!-- Hızlı Fiyat Hesaplama -->
+      <div class="action-card" onclick="navigateTo('/pages/quick-price-calculator.html?v=3')">
+        <div class="action-card-icon" style="background: #FFEDD5; color: #F97316;">
+          <i class="ri-calculator-line"></i>
+        </div>
+        <div class="action-card-content">
+          <div class="action-card-title">Hızlı Fiyat</div>
+          <div class="action-card-desc">Hızlı fiyat tahmini alın</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Menu Actions (İşlemler) -->
+    <div class="section-header">
+      <h2 class="section-title">İşlemler</h2>
+    </div>
+
+    <div class="menu-grid">
+      <!-- Fiyatlandırma -->
+      <div class="menu-item" onclick="navigateTo('/pages/service-pricing-management.html')">
+        <div class="menu-icon" style="background: #E0E7FF; color: #6366F1;">
+          <i class="ri-price-tag-3-line"></i>
+        </div>
+        <div class="menu-title">Fiyatlandırma</div>
+        <div class="menu-desc">Hizmet fiyatlarını yönetin</div>
+      </div>
+
+      <!-- Detaylı Teklif Oluşturucu -->
+      <div class="menu-item" onclick="navigateTo('/pages/price-calculator.html')">
+        <div class="menu-icon" style="background: #FEF3C7; color: #D97706;">
+          <i class="ri-file-text-line"></i>
+        </div>
+        <div class="menu-title">Detaylı Teklif Oluştur</div>
+        <div class="menu-desc">Profesyonel teklif hazırlayın</div>
+      </div>
+
+      <!-- Randevular -->
+      <div class="menu-item" onclick="navigateTo('/pages/service-appointments.html')">
+        <div class="menu-icon" style="background: var(--primary);">
+          <i class="ri-calendar-check-line"></i>
+        </div>
+        <div class="menu-title">Randevular</div>
+        <div class="menu-desc">Tüm randevularınızı görüntüleyin</div>
+        <div class="menu-badge" id="badge-total" style="display:none;">0</div>
+      </div>
+
+      <!-- Bekleyenler -->
+      <div class="menu-item" onclick="navigateTo('/pages/service-appointments.html?filter=pending')">
+        <div class="menu-icon" style="background: var(--warning);">
+          <i class="ri-time-line"></i>
+        </div>
+        <div class="menu-title">Bekleyenler</div>
+        <div class="menu-desc">Onay bekleyen randevular</div>
+        <div class="menu-badge" id="badge-pending-btn" style="display:none;">0</div>
+      </div>
+
+      <!-- Teklifler -->
+      <div class="menu-item" onclick="navigateTo('/pages/past-offers.html')">
+        <div class="menu-icon" style="background: var(--success);">
+          <i class="ri-price-tag-3-line"></i>
+        </div>
+        <div class="menu-title">Teklifler</div>
+        <div class="menu-desc">Verdiğiniz teklifleri görün</div>
+        <div class="menu-badge" id="badge-offers" style="display:none;">0</div>
+      </div>
+
+      <!-- Yorumlar -->
+      <div class="menu-item" onclick="navigateTo('/pages/service-rating.html')">
+        <div class="menu-icon" style="background: var(--info);">
+          <i class="ri-star-line"></i>
+        </div>
+        <div class="menu-title">Yorumlar</div>
+        <div class="menu-desc">Müşteri puanları ve yorumları</div>
+      </div>
+
+      <!-- Teknisyen Yönetimi -->
+      <div class="menu-item" onclick="navigateTo('/pages/technician-management.html')">
+        <div class="menu-icon" style="background: #8B5CF6;">
+          <i class="ri-team-line"></i>
+        </div>
+        <div class="menu-title">Teknisyen Yönetimi</div>
+        <div class="menu-desc">Teknisyenlerinizi yönetin</div>
+      </div>
+
+      <!-- Kampanyalarım -->
+      <div class="menu-item" onclick="navigateTo('/pages/my-campaigns.html')">
+        <div class="menu-icon" style="background: #EC4899;">
+          <i class="ri-megaphone-line"></i>
+        </div>
+        <div class="menu-title">Kampanyalarım</div>
+        <div class="menu-desc">Kampanyalarınızı yönetin</div>
+      </div>
+
+
+
+
+
+      <!-- Servis İstatistikleri -->
+      <div class="menu-item" onclick="navigateTo('/pages/service-statistics.html')">
+        <div class="menu-icon" style="background: #10B981;">
+          <i class="ri-bar-chart-box-line"></i>
+        </div>
+        <div class="menu-title">Servis İstatistikleri</div>
+        <div class="menu-desc">Detaylı analiz ve raporlar</div>
+      </div>
+
+      <!-- Finansal Raporlar -->
+      <div class="menu-item" onclick="navigateTo('/pages/financial-reports.html')">
+        <div class="menu-icon" style="background: #3B82F6;">
+          <i class="ri-funds-box-line"></i>
+        </div>
+        <div class="menu-title">Finansal Raporlar</div>
+        <div class="menu-desc">Gelir ve gider analizi</div>
+      </div>
+
+      <!-- Hızlı Fiyat Hesaplama -->
+
+      <!-- Hızlı Fiyat Hesaplama -->
+      <div class="menu-item" onclick="navigateTo('/pages/quick-price-calculator.html')">
+        <div class="menu-icon" style="background: #F97316;">
+          <i class="ri-calculator-line"></i>
+        </div>
+        <div class="menu-title">Hızlı Fiyat Hesaplama</div>
+        <div class="menu-desc">Anında fiyat teklifi oluşturun</div>
+      </div>
+
+
+
+      <!-- Borç Alacak Takibi -->
+      <div class="menu-item" onclick="navigateTo('/pages/customer-debts.html')">
+        <div class="menu-icon" style="background: var(--danger);">
+          <i class="ri-money-dollar-circle-line"></i>
+        </div>
+        <div class="menu-title">Borç Alacak Takibi</div>
+        <div class="menu-desc">Borç ve alacak yönetimi</div>
+      </div>
+
+      <!-- Yardım Merkezi -->
+      <div class="menu-item" onclick="navigateTo('/pages/help-support.html')">
+        <div class="menu-icon" style="background: #8B5CF6;">
+          <i class="ri-question-line"></i>
+        </div>
+        <div class="menu-title">Yardım Merkezi</div>
+        <div class="menu-desc">SSS ve destek talepleriniz</div>
+      </div>
+
+
+      <!-- Servis Profili -->
+      <div class="menu-item" onclick="navigateTo('/pages/edit-service-profile.html')">
+        <div class="menu-icon" style="background: #6366F1;">
+          <i class="ri-settings-3-line"></i>
+        </div>
+        <div class="menu-title">Servis Profili</div>
+        <div class="menu-desc">Servis bilgilerinizi düzenleyin</div>
+      </div>
+    </div>
+
+    <!-- Recent Appointments List -->
+    <div class="section-header">
+      <h2 class="section-title">Son Randevular</h2>
+      <a href="/pages/service-appointments.html"
+        style="color: var(--primary); font-weight: 600; font-size: 0.9rem;">Tümünü Gör</a>
+    </div>
+
+    <div id="recent-appointments" class="recent-list">
+      <div class="skeleton skeleton-card" style="height: 80px;"></div>
+      <div class="skeleton skeleton-card" style="height: 80px;"></div>
+      <div class="skeleton skeleton-card" style="height: 80px;"></div>
+    </div>
+
+  </main>
+
+  <!-- WhatsApp Modal -->
+  <div class="modal" id="whatsapp-modal">
+    <div class="modal-content">
+      <div
+        style="padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 1.2rem;">WhatsApp Mesajlaşma</h3>
+        <button onclick="closeModal('whatsapp-modal')"
+          style="background:none; border:none; font-size: 1.5rem; cursor: pointer;">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+      <div style="padding: 20px; flex: 1; overflow-y: auto;">
+        <div id="whatsapp-list" style="display: flex; flex-direction: column; gap: 10px;">
+          <div class="loading-spinner"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Appointment Selection Modal -->
+  <div class="modal" id="appointment-select-modal">
+    <div class="modal-content">
+      <div
+        style="padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 1.2rem;">Müşteri Seçin</h3>
+        <button onclick="closeModal('appointment-select-modal')"
+          style="background:none; border:none; font-size: 1.5rem; cursor: pointer;"><i
+            class="ri-close-line"></i></button>
+      </div>
+      <div style="padding: 20px; flex: 1; overflow-y: auto;">
+        <input type="text" id="modal-search-input" placeholder="İsim veya plaka ile ara..."
+          style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 15px; background: #f9f9f9;"
+          onkeyup="filterModalAppointments()">
+        <div id="modal-appointment-list" style="display: flex; flex-direction: column; gap: 10px;">
+          <div class="loading-spinner"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-tabs">
+    <div class="dashboard-tabs-container">
+      <a href="/dashboard.html#home" class="tab-link active"><i class="ri-home-5-line"></i><span>Anasayfa</span></a>
+      <a href="/pages/service-appointments.html" class="tab-link"><i
+          class="ri-calendar-event-line"></i><span>Randevular</span></a>
+      <a href="/dashboard.html#campaigns" class="tab-link"><i class="ri-coupon-2-line"></i><span>Fırsatlar</span></a>
+      <a href="/dashboard.html#assistant" class="tab-link"><i class="ri-robot-2-line"></i><span>Asistan</span></a>
+      <a href="/dashboard.html#profile" class="tab-link"><i class="ri-user-3-line"></i><span>Profil</span></a>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="dashboard-tabs">
+    <div class="container dashboard-tabs-container">
+      <a href="/pages/service-panel.html" class="tab-link active">
+        <i class="ri-dashboard-line"></i>
+        <span>Panel</span>
+      </a>
+      <a href="/pages/service-appointments.html" class="tab-link">
+        <i class="ri-calendar-check-line"></i>
+        <span>Randevular</span>
+      </a>
+      <a href="/pages/qr-scanner.html" class="tab-link">
+        <i class="ri-qr-code-line"></i>
+        <span>QR/Kamera</span>
+      </a>
+      <a href="/dashboard.html#profile" class="tab-link">
+        <i class="ri-user-line"></i>
+        <span>Profil</span>
+      </a>
+    </div>
+  </nav>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+
+  <script>
+    // --- Constants & State ---
+    const PENDING_STATUSES = ['Bekliyor', 'Beklemede', 'Tarih Belirlendi'];
+    let allAppointments = [];
+    let serviceId = localStorage.getItem('selectedServiceId');
+
+    // --- Init ---
+    document.addEventListener('DOMContentLoaded', async () => {
+      console.group('🚀 Service Panel Init');
+      console.log('Initial Service ID:', serviceId);
+
+      if (!auth.requireAuth()) return;
+
+      // Clean up invalid service ID
+      if (serviceId === 'null' || serviceId === 'undefined') {
+        console.warn('Invalid Service ID found in storage, clearing...');
+        serviceId = null;
+        localStorage.removeItem('selectedServiceId');
+      }
+
+      // Try to discover service if missing
+      if (!serviceId) {
+        console.log('Service ID missing, attempting discovery...');
+        serviceId = await discoverUserService();
+      }
+
+      console.log('Final Service ID to use:', serviceId);
+
+      // Show debug info on UI
+      const debugDiv = document.createElement('div');
+      debugDiv.style.cssText = 'position:fixed; bottom:10px; right:10px; background:rgba(0,0,0,0.8); color:#0f0; padding:10px; border-radius:8px; font-size:10px; z-index:9999; max-width:300px; word-break:break-all; font-family:monospace; cursor:pointer;';
+      debugDiv.innerHTML = `DEBUG: ServiceID: ${serviceId || 'NONE'}<br>User: ${auth.getUser()?.username || 'NONE'}`;
+      debugDiv.onclick = () => alert(`Token: ${auth.getToken()?.substring(0, 10)}...\nService ID: ${serviceId}\nUser ID: ${auth.getUser()?.id}`);
+      document.body.appendChild(debugDiv);
+
+      if (!serviceId) {
+        console.error('❌ Service ID could not be determined.');
+        document.querySelector('.stats-grid').innerHTML = '<div style="grid-column: 1/-1; padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 12px; text-align: center;">Servis bilgisi bulunamadı. (ID: null)</div>';
+        console.groupEnd();
+        return;
+      }
+
+      await loadDashboardData();
+      console.groupEnd();
+    });
+
+    async function discoverUserService() {
+      try {
+        const user = auth.getUser();
+        console.log('Discovering service for user:', user);
+
+        if (!user) return null;
+
+        const token = auth.getToken();
+
+        // 1. Check /users/me
+        console.log('Fetching /users/me...');
+        const meRes = await fetch(`${CONFIG.API_BASE_URL}/users/me?populate=service`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const meData = await meRes.json();
+        console.log('/users/me response:', meData);
+
+        if (meData.service && meData.service.id) {
+          console.log('✅ Service found via /users/me:', meData.service.id);
+          localStorage.setItem('selectedServiceId', meData.service.id);
+          localStorage.setItem('isServiceOwner', 'true');
+          return meData.service.id;
+        }
+
+        // 2. Search services by owner
+        console.log('Searching services by owner ID:', user.id);
+        const searchRes = await fetch(`${CONFIG.API_BASE_URL}/services?filters[owner][id][$eq]=${user.id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const searchData = await searchRes.json();
+        console.log('Service search response:', searchData);
+
+        if (searchData.data && searchData.data.length > 0) {
+          const sId = searchData.data[0].id;
+          console.log('✅ Service found via search:', sId);
+          localStorage.setItem('selectedServiceId', sId);
+          localStorage.setItem('isServiceOwner', 'true');
+          return sId;
+        }
+
+        console.warn('❌ No service found for this user.');
+        return null;
+      } catch (error) {
+        console.error('Service discovery failed:', error);
+        return null;
+      }
+    }
+
+    // --- Data Loading ---
+    async function loadDashboardData() {
+      console.group('📊 Loading Dashboard Data');
+      try {
+        const token = auth.getToken();
+
+        // 1. Fetch Appointments
+        const appointmentsUrl = `${CONFIG.API_BASE_URL}/appointments?` +
+          `populate[user][populate]=avatar` +
+          `&populate[service][populate]=ProfilePicture` +
+          `&populate[vehicle][populate]=*` +
+          `&populate[category][populate]=*` +
+          `&populate[attachments][populate]=*` +
+          `&filters[service][id][$eq]=${serviceId}` +
+          `&pagination[pageSize]=200&sort[0]=createdAt:desc`;
+
+        // 2. Fetch Service Info
+        const serviceUrl = `${CONFIG.API_BASE_URL}/services/${serviceId}?populate[ratings]=0&populate[favorites]=0&populate[ProfilePicture]=*`;
+
+        const [aptRes, srvRes] = await Promise.all([
+          fetch(appointmentsUrl, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(serviceUrl, { headers: { Authorization: `Bearer ${token}` } })
+        ]);
+
+        const aptData = await aptRes.json();
+        const srvData = await srvRes.json();
+
+        // Process Data
+        const allItems = Array.isArray(aptData)
+          ? aptData
+          : (Array.isArray(aptData.data) ? aptData.data : []);
+
+        // CLIENT-SIDE FILTERING: Separate appointments from offer requests
+        const appointments = allItems.filter(item => {
+          const attrs = item.attributes || item;
+          return attrs.isOfferRequest !== true; // Sadece gerçek randevular
+        });
+
+        const offerRequests = allItems.filter(item => {
+          const attrs = item.attributes || item;
+          return attrs.isOfferRequest === true; // Sadece teklif istekleri
+        });
+
+        allAppointments = appointments; // Sadece randevuları sakla
+
+        console.log('📊 [DASHBOARD] Total API Records:', allItems.length);
+        console.log('📊 [DASHBOARD] Appointments (isOfferRequest≠true):', appointments.length);
+        console.log('📊 [DASHBOARD] Offer Requests (isOfferRequest=true):', offerRequests.length);
+
+        // Calculate Stats (sadece randevular için)
+        let pending = 0;
+        let todayCount = 0;
+        const todayKey = new Date().toISOString().split('T')[0];
+
+        appointments.forEach(item => {
+          const attrs = item.attributes || item;
+          const status = attrs.status || '';
+          const dateKey = attrs.createdAt ? attrs.createdAt.split('T')[0] : '';
+
+          if (PENDING_STATUSES.includes(status)) pending++;
+          if (dateKey === todayKey) todayCount++;
+        });
+
+        // Update Stats UI
+        document.getElementById('stat-pending').textContent = pending;
+        document.getElementById('stat-today').textContent = todayCount;
+        document.getElementById('stat-total').textContent = appointments.length; // Sadece randevular
+
+        // Update Badges
+        // 1. Randevular Badge
+        if (appointments.length > 0) {
+          const badgeTotal = document.getElementById('badge-total');
+          badgeTotal.textContent = appointments.length;
+          badgeTotal.style.display = 'block';
+        }
+
+        // 2. Bekleyenler Badge
+        if (pending > 0) {
+          const badgePending = document.getElementById('badge-pending-btn');
+          badgePending.textContent = pending;
+          badgePending.style.display = 'block';
+        }
+
+        // 3. Teklifler Badge (YENİ!)
+        if (offerRequests.length > 0) {
+          const badgeOffers = document.getElementById('badge-offers');
+          badgeOffers.textContent = offerRequests.length;
+          badgeOffers.style.display = 'block';
+        }
+
+        // Update Service Info & Welcome Message
+        if (srvData.data) {
+          const srvAttrs = srvData.data.attributes;
+          const rating = srvAttrs.rating || 0;
+
+          document.getElementById('stat-rating').textContent = Number(rating).toFixed(1) + ' ⭐';
+          document.getElementById('service-name-header').textContent = srvAttrs.name;
+
+          // Welcome Message (Navbar)
+          const hour = new Date().getHours();
+          let greeting = 'Merhaba';
+          if (hour < 12) greeting = 'Günaydın';
+          else if (hour < 18) greeting = 'İyi Günler';
+          else greeting = 'İyi Akşamlar';
+
+          const greetingEl = document.getElementById('nav-greeting');
+          if (greetingEl) {
+            greetingEl.textContent = `${greeting}, ${srvAttrs.name}`;
+          }
+
+          // Profile Picture
+          const avatarEl = document.getElementById('user-avatar');
+          const profilePic = srvAttrs.ProfilePicture;
+
+          if (profilePic) {
+            let picUrl = null;
+            if (profilePic.data?.attributes?.url) {
+              picUrl = profilePic.data.attributes.url;
+            } else if (profilePic.url) {
+              picUrl = profilePic.url;
+            }
+
+            if (picUrl) {
+              const fullUrl = picUrl.startsWith('http') ? picUrl : `https://api.tamirhanem.net${picUrl}`;
+              avatarEl.innerHTML = `<img src="${fullUrl}" style="width:100%; height:100%; object-fit:cover;">`;
+            } else {
+              avatarEl.textContent = srvAttrs.name.charAt(0).toUpperCase();
+            }
+          } else {
+            avatarEl.textContent = srvAttrs.name.charAt(0).toUpperCase();
+          }
+        }
+
+        // Update Date
+        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('tr-TR', dateOptions);
+
+        // Render Recent List
+        renderRecentAppointments(appointments.slice(0, 5));
+
+      } catch (error) {
+        console.error('Dashboard Error:', error);
+        document.getElementById('recent-appointments').innerHTML = '<div style="text-align:center; color:var(--danger);">Veriler yüklenemedi.</div>';
+      } finally {
+        console.groupEnd();
+      }
+    }
+
+    function getAvatarUrl(user) {
+      if (!user) return null;
+      const avatar = user.avatar;
+      if (!avatar) return null;
+
+      let url = avatar.url || (avatar.data && avatar.data.attributes && avatar.data.attributes.url) || null;
+
+      if (url && !url.startsWith('http')) {
+        url = `https://api.tamirhanem.net${url}`;
+      }
+      return url;
+    }
+
+    function renderRecentAppointments(list) {
+      const container = document.getElementById('recent-appointments');
+      if (!list || list.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">Henüz randevu bulunmuyor.</div>';
+        return;
+      }
+
+      const cardsHTML = list.map(item => {
+        const attrs = item.attributes || item;
+        const user = attrs.user?.data?.attributes || attrs.user || {};
+        const vehicle = attrs.vehicle?.data?.attributes || attrs.vehicle || {};
+        const category = attrs.category?.data?.attributes || attrs.category || {};
+
+        const name = `${user.name || ''} ${user.surname || ''}`.trim() || user.username || 'Müşteri';
+        const plate = vehicle.plaka || 'Bilinmiyor';
+        const vehicleText = vehicle.brand ? `${vehicle.brand} ${vehicle.model}` : 'Araç bilgisi yok';
+        const status = attrs.status || 'Bekliyor';
+        const statusClass = getStatusClass(status);
+        const categoryName = category.name || attrs.faultDescription || 'Genel';
+
+        // Date display
+        let displayDate = 'Tarih belirtilmemiş';
+        if (attrs.matchedDate && Array.isArray(attrs.matchedDate) && attrs.matchedDate.length > 0) {
+          const firstSlot = attrs.matchedDate[0];
+          const date = new Date(firstSlot.date);
+          const dateStr = date.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long' });
+          displayDate = `${dateStr} • ${firstSlot.timeSlot || ''}`;
+        } else if (attrs.preferredDateTime) {
+          const date = new Date(attrs.preferredDateTime);
+          displayDate = date.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' });
+        }
+
+        const avatarUrl = getAvatarUrl(user);
+        const avatarHtml = avatarUrl
+          ? `<img src="${avatarUrl}">`
+          : name.charAt(0).toUpperCase();
+
+        return `
+          <div class="appointment-card" onclick="window.location.href='/pages/service-appointments.html'">
+            <div class="card-header">
+              <div class="user-info">
+                <div class="user-avatar">${avatarHtml}</div>
+                <div class="user-details">
+                  <h3>${name}</h3>
+                  <p><i class="ri-car-line"></i> ${vehicleText} • ${plate}</p>
+                </div>
+              </div>
+              <span class="status-badge ${statusClass}">${status}</span>
+            </div>
+            <div class="card-info">
+              <div class="info-row"><i class="ri-calendar-line"></i> ${displayDate}</div>
+              <div class="info-row"><i class="ri-tools-line"></i> ${categoryName}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = `<div class="appointments-grid">${cardsHTML}</div>`;
+    }
+
+    function getStatusClass(status) {
+      if (PENDING_STATUSES.includes(status)) return 'status-pending';
+      if (status === 'Tamamlandı') return 'status-completed';
+      if (status === 'İptal Edildi') return 'status-cancelled';
+      return 'status-approved';
+    }
+
+    // --- WhatsApp Logic ---
+    function handleWhatsAppClick() {
+      console.log('🔵 WhatsApp button clicked');
+      console.log('📊 allAppointments:', allAppointments);
+      console.log('📊 allAppointments length:', allAppointments?.length || 0);
+
+      const modal = document.getElementById('whatsapp-modal');
+      console.log('📋 Modal element:', modal);
+
+      if (!modal) {
+        console.error('❌ WhatsApp modal not found!');
+        alert('WhatsApp modal bulunamadı!');
+        return;
+      }
+
+      modal.classList.add('active');
+      console.log('✅ Modal opened');
+
+      // Populate WhatsApp list with unique customers
+      const container = document.getElementById('whatsapp-list');
+
+      if (!container) {
+        console.error('❌ WhatsApp list container not found!');
+        return;
+      }
+
+      // Get unique customers with phone numbers
+      const uniqueCustomers = new Map();
+
+      if (!allAppointments || allAppointments.length === 0) {
+        console.warn('⚠️ No appointments found');
+        container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-muted);">Henüz randevu bulunmuyor.</div>';
+        return;
+      }
+
+      allAppointments.forEach(item => {
+        const attrs = item.attributes || item;
+        const user = attrs.user?.data?.attributes || attrs.user || {};
+        const phone = user.phonenumber || user.phone;
+
+        console.log('👤 User:', user.name, 'Phone:', phone);
+
+        if (phone && !uniqueCustomers.has(user.id)) {
+          uniqueCustomers.set(user.id, {
+            id: item.id,
+            name: `${user.name || ''} ${user.surname || ''}`.trim() || user.username || 'Müşteri',
+            phone: phone,
+            avatar: getAvatarUrl(user)
+          });
+        }
+      });
+
+      console.log('📱 Unique customers with phone:', uniqueCustomers.size);
+
+      if (uniqueCustomers.size === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-muted);">Telefon numarası olan müşteri bulunamadı.</div>';
+        return;
+      }
+
+      container.innerHTML = Array.from(uniqueCustomers.values()).map(customer => {
+        const avatarHtml = customer.avatar
+          ? `<img src="${customer.avatar}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`
+          : customer.name.charAt(0).toUpperCase();
+
+        return `
+          <div class="whatsapp-item" style="cursor: default; display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width:48px; height:48px; border-radius:50%; background:#f0f0f0; display:flex; align-items:center; justify-content:center; font-weight:700; overflow:hidden;">
+                ${avatarHtml}
+              </div>
+              <div>
+                <div style="font-weight:700; margin-bottom:4px;">${customer.name}</div>
+                <div style="color:#888; font-size:0.9rem;">${customer.phone}</div>
+              </div>
+            </div>
+            <button class="btn btn-whatsapp" style="padding: 8px 16px; font-size: 0.9rem;" onclick="startChat(${customer.id})">
+              <i class="ri-whatsapp-line"></i> Mesaj
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      console.log('✅ WhatsApp list populated with', uniqueCustomers.size, 'customers');
+    }
+
+    function renderWhatsAppList(list) {
+      const container = document.getElementById('whatsapp-list');
+
+      if (list.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">Mesajlaşılacak randevu bulunamadı.</div>';
+        return;
+      }
+
+      container.innerHTML = list.map(item => {
+        const attrs = item.attributes || item;
+        const user = attrs.user?.data?.attributes || attrs.user || {};
+        const vehicle = attrs.vehicle?.data?.attributes || attrs.vehicle || {};
+
+        const name = `${user.name || ''} ${user.surname || ''}`.trim() || user.username || 'Müşteri';
+        const vehicleText = vehicle.brand ? `${vehicle.brand} ${vehicle.model}` : 'Araç bilgisi yok';
+        const date = new Date(attrs.createdAt).toLocaleDateString('tr-TR');
+
+        const avatarUrl = getAvatarUrl(user);
+        const avatarHtml = avatarUrl
+          ? `<img src="${avatarUrl}" style="width:100%; height:100%; object-fit:cover;">`
+          : name.charAt(0).toUpperCase();
+
+        // Phone check
+        const phone = user.phoneNumber || user.phone || user.gsm || user.mobile;
+        const hasPhone = !!phone;
+
+        if (!hasPhone) return ''; // Skip users without phone
+
+        return `
+          <div class="whatsapp-item" style="cursor: default; display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+              <div class="user-avatar" style="width: 50px; height: 50px; font-size: 1.2rem;">${avatarHtml}</div>
+              <div>
+                <div style="font-weight: 700; font-size: 1rem; color: var(--text-primary);">${name}</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px;">${vehicleText}</div>
+                <div style="font-size: 0.75rem; color: #999; margin-top: 2px;">${date}</div>
+              </div>
+            </div>
+            <button class="btn btn-whatsapp" style="padding: 8px 16px; font-size: 0.9rem;" onclick="startChat(${item.id})">
+              <i class="ri-whatsapp-line"></i> Mesaj
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterModalAppointments() {
+      const query = document.getElementById('modal-search-input').value.toLowerCase();
+      const filtered = allAppointments.filter(item => {
+        const attrs = item.attributes || item;
+        const user = attrs.user?.data?.attributes || {};
+        const vehicle = attrs.vehicle?.data?.attributes || {};
+        const name = `${user.name || ''} ${user.surname || ''} ${user.username || ''}`.toLowerCase();
+        const plate = (vehicle.plate || '').toLowerCase();
+        return name.includes(query) || plate.includes(query);
+      });
+      renderModalList(filtered);
+    }
+
+    function startChat(appointmentId) {
+      window.location.href = `/pages/service-chat.html?appointmentId=${appointmentId}`;
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function navigateTo(url) {
+      window.location.href = url;
+    }
+  </script>
+</body>
+
+</html>

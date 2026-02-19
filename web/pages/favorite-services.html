@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Favori Servislerim - TamirHanem">
+  <title>Favori Servislerim | TamirHanem</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+
+  <!-- Global Dashboard CSS -->
+  <link rel="stylesheet" href="/css/global-dashboard.css">
+
+  <!-- Config (API URL) -->
+  <script src="/js/config.js"></script>
+
+  <style>
+    /* --- PAGE SPECIFIC STYLES --- */
+    body {
+      zoom: 0.765;
+    }
+
+    /* Page Header */
+    .page-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+    .page-header-left { display: flex; flex-direction: column; }
+    .page-header-left h1, .page-header h1 { font-size: 1.5rem; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; color: #2d2d2d; font-weight: 700; }
+    .page-header-left h1 i, .page-header h1 i { color: #fbc707; font-size: 1.5rem; }
+    .page-header-left p, .page-header p { font-size: 0.9rem; color: #64748b; margin: 0; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; border: none; font-family: inherit; }
+    .btn-primary { background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%); color: #2d2d2d; box-shadow: 0 4px 12px rgba(251, 199, 7, 0.3); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(251, 199, 7, 0.4); }
+
+    /* Form Elements */
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 0.85rem; font-weight: 600; color: #454545; margin-bottom: 8px; }
+    .form-input, .form-select { width: 100%; padding: 14px 16px; border: 2px solid #eee; border-radius: 10px; font-family: inherit; font-size: 0.95rem; color: #2d2d2d; background: #f8f9fa; transition: all 0.2s; box-sizing: border-box; }
+    .form-input:focus, .form-select:focus { border-color: #fbc707; background: #fff; box-shadow: 0 0 0 4px rgba(251, 199, 7, 0.15); outline: none; }
+    .form-input::placeholder { color: #aaa; }
+    .form-row { display: flex; gap: 16px; }
+    .form-row .form-group { flex: 1; }
+
+    /* Empty State */
+    .empty-state { text-align: center; padding: 60px 20px; background: #fff; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .empty-state-icon { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 2.5rem; color: #2d2d2d; }
+    .empty-state h3 { font-size: 1.25rem; margin-bottom: 10px; color: #2d2d2d; font-weight: 700; }
+    .empty-state p { color: #64748b; max-width: 300px; margin: 0 auto; font-size: 0.9rem; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1e293b; color: white; padding: 12px 24px; border-radius: 50px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 10000; opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); font-weight: 600; font-size: 0.9rem; }
+    .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    .toast.error { background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); }
+    .toast i { font-size: 1.25rem; }
+
+    /* Search Box */
+
+
+    /* Search Box */
+    .search-box-container {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 14px 18px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid #eee;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .search-box-container i {
+      color: var(--neutral-500);
+      font-size: 1.1rem;
+    }
+
+    .search-box-container input {
+      flex: 1;
+      border: none;
+      background: none;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--neutral-900);
+    }
+
+    .search-box-container input::placeholder {
+      color: var(--neutral-500);
+    }
+
+    .search-box-container .clear-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--neutral-500);
+      font-size: 1rem;
+      display: none;
+      transition: 0.2s;
+    }
+
+    .search-box-container .clear-btn.visible {
+      display: block;
+    }
+
+    .search-box-container .clear-btn:hover {
+      color: var(--error);
+    }
+
+    /* Favorites Grid */
+    .favorites-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .favorites-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Favorite Card */
+    .favorite-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(251, 199, 7, 0.15);
+      transition: all 0.3s var(--ease);
+    }
+
+    .favorite-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(251, 199, 7, 0.12);
+      border-color: var(--primary);
+    }
+
+    .favorite-card-inner {
+      display: flex;
+      padding: 14px;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .service-image-container {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .service-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+    }
+
+    .rating-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background: linear-gradient(135deg, #FFD700, #FF8C00);
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .service-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .service-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 3px;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .service-location {
+      font-size: 0.8rem;
+      color: var(--neutral-500);
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.95rem;
+    }
+
+    .action-icon-btn.detail {
+      background: var(--primary);
+      color: var(--neutral-900);
+    }
+
+    .action-icon-btn.detail:hover {
+      background: var(--primary-dark);
+      transform: scale(1.05);
+    }
+
+    .action-icon-btn.remove {
+      background: var(--error);
+      color: white;
+    }
+
+    .action-icon-btn.remove:hover {
+      background: #dc2626;
+      transform: scale(1.05);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 50px 20px;
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .empty-state-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, #eeb902 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 2rem;
+      color: var(--neutral-900);
+    }
+
+    .empty-state h3 {
+      font-size: 1.15rem;
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      color: var(--neutral-500);
+      max-width: 280px;
+      margin: 0 auto 20px;
+      font-size: 0.9rem;
+    }
+
+    .btn-explore {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--primary) 0%, #eeb902 100%);
+      color: var(--neutral-900);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 6px 16px rgba(251, 199, 7, 0.3);
+    }
+
+    .btn-explore:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 199, 7, 0.4);
+    }
+
+    /* Loading & Toast */
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 50px 20px;
+      gap: 14px;
+    }
+
+    .toast {
+      position: fixed;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: linear-gradient(135deg, #E74C3C, #C0392B);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s var(--ease);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header and Loyalty Bar will be injected by global-header.js -->
+
+  <!-- Main Content -->
+  <main class="dashboard-main">
+    <div class="container">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div>
+          <h1><i class="ri-heart-fill"></i> Favori Servislerim</h1>
+          <p>Beğendiğiniz servislere hızlı erişim</p>
+        </div>
+      </div>
+
+      <!-- Search Box -->
+      <div class="search-box-container">
+        <i class="ri-search-line"></i>
+        <input type="text" id="searchInput" placeholder="Favori servislerinizde ara...">
+        <button class="clear-btn" id="clearSearch" onclick="clearSearch()">
+          <i class="ri-close-circle-fill"></i>
+        </button>
+      </div>
+
+      <!-- Content Container -->
+      <div id="content-container">
+        <div class="loading-container">
+          <div class="spinner"></div>
+          <p style="color: var(--neutral-500); font-size: 0.9rem;">Favoriler yükleniyor...</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <i class="ri-heart-fill"></i>
+    <span id="toast-message">Mesaj</span>
+  </div>
+
+  <!-- Bottom Nav will be injected here by bottom-nav.js -->
+
+  <div id="global-loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Global Header Component -->
+  <script src="/components/global-header.js"></script>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/components/footer.js"></script>
+  <script src="/js/components/bottom-nav.js"></script>
+
+  <script>
+    let allFavorites = [];
+    let filteredFavorites = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!auth.isAuthenticated()) {
+        window.location.href = '/login.html';
+        return;
+      }
+      await loadFavorites();
+      setupSearch();
+    });
+
+    async function loadFavorites() {
+      const container = document.getElementById('content-container');
+
+      try {
+        const user = auth.getUser();
+        if (!user) throw new Error('Kullanıcı bulunamadı');
+
+        const token = auth.getToken();
+        if (!token) throw new Error('Oturum bulunamadı');
+
+        const response = await fetch(
+          `${CONFIG.API_BASE_URL}/favorites?filters[user][id][$eq]=${user.id}&populate[service][populate]=ProfilePicture`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+
+        if (!response.ok) throw new Error('Favoriler yüklenemedi');
+
+        const data = await response.json();
+        allFavorites = (data.data || []).filter(f => f.attributes?.service?.data);
+        filteredFavorites = [...allFavorites];
+
+        renderFavorites();
+
+      } catch (error) {
+        console.error('Favoriler yüklenirken hata:', error);
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="ri-error-warning-line"></i></div>
+            <h3>Bir Hata Oluştu</h3>
+            <p>${error.message}</p>
+            <button class="btn-explore" onclick="loadFavorites()">
+              <i class="ri-refresh-line"></i> Tekrar Dene
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    function renderFavorites() {
+      const container = document.getElementById('content-container');
+
+      if (filteredFavorites.length === 0) {
+        if (allFavorites.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon"><i class="ri-heart-add-line"></i></div>
+              <h3>Henüz Favori Servisiniz Yok</h3>
+              <p>Beğendiğiniz servisleri favorilerinize ekleyerek buradan kolayca erişebilirsiniz.</p>
+              <button class="btn-explore" onclick="window.location.href='/dashboard.html'">
+                <i class="ri-compass-3-line"></i> Servisleri Keşfet
+              </button>
+            </div>
+          `;
+        } else {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon"><i class="ri-search-line"></i></div>
+              <h3>Sonuç Bulunamadı</h3>
+              <p>Arama kriterlerinize uygun favori servis bulunamadı.</p>
+              <button class="btn-explore" onclick="clearSearch()">
+                <i class="ri-close-line"></i> Aramayı Temizle
+              </button>
+            </div>
+          `;
+        }
+        return;
+      }
+
+      let html = '<div class="favorites-grid">';
+      filteredFavorites.forEach((favorite) => {
+        const service = favorite.attributes.service.data;
+        const attrs = service.attributes;
+        const imageUrl = getImageUrl(attrs.ProfilePicture);
+        const rating = attrs.rating ? parseFloat(attrs.rating).toFixed(1) : null;
+
+        html += `
+          <div class="favorite-card">
+            <div class="favorite-card-inner">
+              <div class="service-image-container">
+                <img src="${imageUrl}" class="service-image" onerror="this.src='/assets/images/placeholder.jpg'">
+                ${rating ? `<div class="rating-badge"><i class="ri-star-fill"></i>${rating}</div>` : ''}
+              </div>
+              <div class="service-info">
+                <div class="service-name">${attrs.name || 'İsimsiz Servis'}</div>
+                <div class="service-location"><i class="ri-map-pin-2-fill"></i> ${attrs.address || attrs.location || 'Adres bilinmiyor'}</div>
+              </div>
+              <div class="card-actions">
+                <button class="action-icon-btn detail" onclick="goToServiceDetail(${service.id})" title="Detay">
+                  <i class="ri-information-line"></i>
+                </button>
+                <button class="action-icon-btn remove" onclick="removeFavorite(${favorite.id}, '${attrs.name?.replace(/'/g, "\\'")}')" title="Favorilerden Çıkar">
+                  <i class="ri-heart-fill"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    function getImageUrl(image) {
+      if (!image) return '/assets/images/placeholder.jpg';
+      if (image.data?.attributes?.url) {
+        const url = image.data.attributes.url;
+        return url.startsWith('http') ? url : `https://api.tamirhanem.net${url}`;
+      }
+      if (image.url) {
+        return image.url.startsWith('http') ? image.url : `https://api.tamirhanem.net${image.url}`;
+      }
+      return '/assets/images/placeholder.jpg';
+    }
+
+    function goToServiceDetail(serviceId) {
+      window.location.href = `/pages/service-detail.html?id=${serviceId}`;
+    }
+
+    async function removeFavorite(favoriteId, serviceName) {
+      if (!confirm(`${serviceName} servisini favorilerden çıkarmak istediğinizden emin misiniz?`)) return;
+
+      try {
+        const token = auth.getToken();
+        const response = await fetch(`${CONFIG.API_BASE_URL}/favorites/${favoriteId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) throw new Error('Silme işlemi başarısız');
+
+        allFavorites = allFavorites.filter(f => f.id !== favoriteId);
+        filteredFavorites = filteredFavorites.filter(f => f.id !== favoriteId);
+        renderFavorites();
+        showToast(`${serviceName} favorilerden çıkarıldı`);
+
+      } catch (error) {
+        console.error('Favori silme hatası:', error);
+        alert('Servis favorilerden çıkarılamadı.');
+      }
+    }
+
+    function setupSearch() {
+      const input = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('clearSearch');
+
+      input.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        clearBtn.classList.toggle('visible', query.length > 0);
+
+        if (!query) {
+          filteredFavorites = [...allFavorites];
+        } else {
+          filteredFavorites = allFavorites.filter(f => {
+            const service = f.attributes.service.data.attributes;
+            return (service.name || '').toLowerCase().includes(query) ||
+              (service.address || '').toLowerCase().includes(query);
+          });
+        }
+        renderFavorites();
+      });
+    }
+
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('clearSearch').classList.remove('visible');
+      filteredFavorites = [...allFavorites];
+      renderFavorites();
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-message').textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+  </script>
+</body>
+
+</html>

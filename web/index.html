@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TamirHanem | Yönlendiriliyor...</title>
+    <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .loader {
+            text-align: center;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(251, 199, 7, 0.2);
+            border-top-color: #fbc707;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loader p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="loader">
+        <div class="spinner"></div>
+        <p>Yönlendiriliyor...</p>
+    </div>
+
+    <script>
+        (function() {
+            const token = localStorage.getItem('tamirhanem_token');
+
+            if (token) {
+                // Kullanıcı giriş yapmış, dashboard'a yönlendir
+                window.location.replace('/dashboard.html');
+            } else {
+                // Giriş yapılmamış, login sayfasına yönlendir
+                window.location.replace('/login.html');
+            }
+        })();
+    </script>
+</body>
+</html>

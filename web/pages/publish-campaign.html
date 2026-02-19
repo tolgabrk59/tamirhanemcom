@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kampanya Yayınla | TamirHanem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/main.css">
+    <style>
+        :root {
+            --primary: #FFC507;
+            --primary-dark: #e0ac00;
+            --primary-light: #fff8db;
+            --text-dark: #2c3e50;
+            --text-light: #64748b;
+            --bg-light: #f8f9fa;
+            --white: #ffffff;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border-radius: 16px;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* Header Styling */
+        .page-header {
+            background: linear-gradient(135deg, #FFC507 0%, #FFD700 100%);
+            padding: 40px 20px 60px;
+            text-align: center;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(255, 197, 7, 0.2);
+            margin-bottom: -30px;
+            z-index: 1;
+        }
+
+        .page-header h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #2c3e50;
+            margin: 0 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .page-header p {
+            color: #4a5568;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.25rem;
+            color: #2c3e50;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            background: #fff;
+        }
+
+        /* Container */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px 100px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Credit Banner */
+        .credit-info-banner {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+            padding: 20px 24px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .credit-banner-icon {
+            font-size: 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .credit-banner-content {
+            flex: 1;
+        }
+
+        .credit-banner-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .credit-banner-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            line-height: 1;
+            color: #ffffff !important;
+            /* Force white text on banner */
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Form Sections */
+        .form-section {
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 24px;
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .section-title i {
+            color: var(--primary);
+            font-size: 1.4rem;
+            background: var(--primary-light);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .price-calc-group {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #eee;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: var(--transition);
+            background: var(--bg-light);
+            color: #2c3e50;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(255, 197, 7, 0.1);
+        }
+
+        .calculated-price {
+            background-color: #fffbe6 !important;
+            border-color: #ffe58f !important;
+            color: #d48806 !important;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .form-hint {
+            display: block;
+            margin-top: 6px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* Image Upload */
+        .image-upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 30px;
+            border: 2px dashed #e0e0e0;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            background: #fcfcfc;
+        }
+
+        .image-upload-container:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .campaign-image-preview {
+            width: 100%;
+            max-width: 500px;
+            height: 250px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #adb5bd;
+            border: 1px solid #eee;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .campaign-image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .campaign-image-preview i {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: #cbd5e1;
+        }
+
+        .image-upload-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Buttons */
+        .btn-primary,
+        .btn-secondary,
+        .btn-danger,
+        .btn-retry {
+            border: none;
+            border-radius: 12px;
+            padding: 14px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FFC507 0%, #FFD700 100%);
+            color: #2c3e50;
+            width: 100%;
+            box-shadow: 0 8px 20px rgba(255, 197, 7, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(255, 197, 7, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #2c3e50;
+            border: 2px solid #eee;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            border-color: #ddd;
+        }
+
+        .btn-danger {
+            background: #fff1f0;
+            color: #ff4d4f;
+        }
+
+        .btn-danger:hover {
+            background: #ff4d4f;
+            color: white;
+        }
+
+        /* Credit Modal */
+        .credit-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .credit-modal-content {
+            background: white;
+            width: 95%;
+            max-width: 500px;
+            /* Increased width */
+            border-radius: 28px;
+            padding: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .credit-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .credit-modal-header h3 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #1e293b;
+        }
+
+        .credit-modal-close {
+            background: #f1f5f9;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: #64748b;
+        }
+
+        .credit-modal-close:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .credit-info-card {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .credit-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .credit-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .credit-label {
+            color: #64748b;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .credit-value {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 1.1rem;
+        }
+
+        .credit-cost {
+            color: #ef4444;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .credit-remaining {
+            color: #10b981;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .credit-divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 16px 0;
+        }
+
+        .credit-confirmation-text {
+            text-align: center;
+            color: #475569;
+            margin-bottom: 28px;
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        .credit-modal-footer {
+            display: flex;
+            /* Changed to flex for better control */
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .credit-modal-footer button {
+            flex: 1;
+            padding: 16px 24px;
+            font-size: 1.05rem;
+            white-space: nowrap;
+            /* Prevent text wrapping */
+        }
+
+        .credit-modal-footer .btn-secondary {
+            flex: 0.6;
+            /* Make cancel button slightly smaller */
+        }
+
+        /* Loading & Error States */
+        .loading-state,
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            color: var(--danger);
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .price-calc-group {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+        /* Success Modal */
+        .success-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-modal-content {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 28px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .success-icon-circle {
+            width: 80px;
+            height: 80px;
+            background: #dcfce7;
+            color: #16a34a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 24px;
+            box-shadow: 0 10px 20px rgba(22, 163, 74, 0.15);
+        }
+
+        .success-modal h2 {
+            color: #1e293b;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 0 0 12px;
+        }
+
+        .success-modal p {
+            color: #64748b;
+            font-size: 1rem;
+            margin: 0 0 32px;
+            line-height: 1.5;
+        }
+
+        /* Toast Container Z-Index Fix & Styles */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999 !important;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: white;
+            color: #2c3e50;
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            max-width: 400px;
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border-left: 4px solid #2c3e50;
+            font-weight: 500;
+            pointer-events: auto;
+            font-size: 0.95rem;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-success {
+            border-left-color: #10b981;
+        }
+
+        .toast-success::before {
+            content: '\eb7a';
+            /* remixicon check-line */
+            font-family: 'remixicon';
+            color: #10b981;
+            font-size: 1.2rem;
+        }
+
+        .toast-error {
+            border-left-color: #ef4444;
+        }
+
+        .toast-error::before {
+            content: '\eb97';
+            /* remixicon error-warning-line */
+            font-family: 'remixicon';
+            color: #ef4444;
+            font-size: 1.2rem;
+        }
+
+        .toast-warning {
+            border-left-color: #f59e0b;
+        }
+
+        .toast-warning::before {
+            content: '\ea09';
+            /* remixicon alert-line */
+            font-family: 'remixicon';
+            color: #f59e0b;
+            font-size: 1.2rem;
+        }
+
+        .toast-info {
+            border-left-color: #3b82f6;
+        }
+
+        .toast-info::before {
+            content: '\eb99';
+            /* remixicon information-line */
+            font-family: 'remixicon';
+            color: #3b82f6;
+            font-size: 1.2rem;
+        }
+    </style>
+
+
+<body>
+    <div class="page-header">
+        <button class="back-btn" onclick="window.history.back()">
+            <i class="ri-arrow-left-line"></i>
+        </button>
+        <h1><i class="ri-megaphone-line"></i> Kampanya Yayınla</h1>
+        <p>Müşterilerinize özel kampanyalar oluşturun</p>
+    </div>
+
+    <div class="container">
+        <!-- Loading State -->
+        <div id="loading-state" class="loading-state" style="display: none;">
+            <div class="loading-spinner"></div>
+            <h2>Yükleniyor...</h2>
+            <p>Kategoriler getiriliyor</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="error-state" style="display: none;">
+            <div class="error-icon"><i class="ri-error-warning-line"></i></div>
+            <h2>Bir Hata Oluştu</h2>
+            <p id="error-message"></p>
+            <button class="btn-retry" onclick="CampaignManager.init()">
+                <i class="ri-refresh-line"></i> Tekrar Dene
+            </button>
+        </div>
+
+        <!-- Campaign Form -->
+        <div id="campaign-form-container" class="campaign-form-container">
+
+            <!-- Credit Info Banner -->
+            <div id="credit-info-banner" class="credit-info-banner" style="display: none;">
+                <div class="credit-banner-icon">
+                    <i class="ri-wallet-3-line"></i>
+                </div>
+                <div class="credit-banner-content">
+                    <div class="credit-banner-label">Kredi Bakiyeniz</div>
+                    <div class="credit-banner-value" id="credit-balance">-</div>
+                </div>
+            </div>
+
+            <form id="campaign-form" class="campaign-form">
+
+                <!-- Campaign Image -->
+                <div class="form-section">
+                    <h3 class="section-title"><i class="ri-image-line"></i> Kampanya Görseli</h3>
+                    <div class="image-upload-container">
+                        <div id="campaign-image-preview" class="campaign-image-preview"
+                            onclick="document.getElementById('campaign-image-input').click()" style="cursor: pointer;"
+                            title="Görsel seçmek için tıklayın">
+                            <i class="ri-image-add-line"></i>
+                            <p>Görsel Seç</p>
+                        </div>
+                        <input type="file" id="campaign-image-input" accept="image/*" style="display: none;">
+                        <div class="image-upload-actions">
+                            <button type="button" class="btn-secondary"
+                                onclick="document.getElementById('campaign-image-input').click()">
+                                <i class="ri-upload-2-line"></i> Görsel Seç
+                            </button>
+                            <button type="button" id="remove-image-btn" class="btn-danger" style="display: none;"
+                                onclick="CampaignManager.removeImage()">
+                                <i class="ri-delete-bin-line"></i> Kaldır
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <h3 class="section-title"><i class="ri-information-line"></i> Kampanya Bilgileri</h3>
+
+                    <div class="form-group">
+                        <label class="form-label">Kampanya Başlığı *</label>
+                        <input type="text" id="campaign-title" class="form-input"
+                            placeholder="Örn: Yaz Sezonu İndirim Kampanyası" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Açıklama *</label>
+                        <textarea id="campaign-description" class="form-input" rows="4"
+                            placeholder="Kampanya detaylarını açıklayın..." required></textarea>
+                    </div>
+                </div>
+
+                <!-- Date Range -->
+                <div class="form-section">
+                    <h3 class="section-title"><i class="ri-calendar-line"></i> Geçerlilik Tarihleri</h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Başlangıç Tarihi *</label>
+                            <input type="date" id="start-date" class="form-input" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Bitiş Tarihi *</label>
+                            <input type="date" id="end-date" class="form-input" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing -->
+                <div class="form-section">
+                    <h3 class="section-title"><i class="ri-price-tag-3-line"></i> Fiyatlandırma</h3>
+
+                    <div class="form-row price-calc-group">
+                        <div class="form-group">
+                            <label class="form-label">Orijinal Fiyat (₺)</label>
+                            <input type="number" id="original-price" class="form-input" placeholder="0.00" min="0"
+                                step="0.01" oninput="CampaignManager.calculateDiscountedPrice()">
+                            <small class="form-hint">Opsiyonel - Genel indirim için boş bırakılabilir</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">İndirim Oranı (%) *</label>
+                            <input type="number" id="discount-rate" class="form-input" placeholder="0" min="0" max="100"
+                                step="1" required oninput="CampaignManager.calculateDiscountedPrice()">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">İndirimli Fiyat (₺)</label>
+                            <input type="number" id="discounted-price" class="form-input calculated-price"
+                                placeholder="0.00" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Target Category -->
+                <div class="form-section">
+                    <h3 class="section-title"><i class="ri-list-check"></i> Hedef Kategori</h3>
+
+                    <div class="form-group">
+                        <label class="form-label">Hizmet Kategorisi *</label>
+                        <select id="campaign-category" class="form-input" required>
+                            <option value="">Kategori seçiniz...</option>
+                        </select>
+                        <small class="form-hint">Kampanya hangi hizmet kategorisi için geçerli?</small>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-primary" id="submit-btn">
+                    <i class="ri-send-plane-fill"></i> <span>Kampanyayı Yayınla</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Credit Confirmation Modal -->
+        <div id="credit-modal" class="credit-modal" style="display: none;">
+            <div class="credit-modal-overlay" onclick="CampaignManager.closeCreditModal()"></div>
+            <div class="credit-modal-content">
+                <div class="credit-modal-header">
+                    <h3><i class="ri-wallet-3-line"></i> Kredi Onayı</h3>
+                    <button class="credit-modal-close" onclick="CampaignManager.closeCreditModal()">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="credit-modal-body">
+                    <div class="credit-info-card">
+                        <div class="credit-row">
+                            <span class="credit-label">Mevcut Krediniz:</span>
+                            <span class="credit-value" id="current-credits">∞</span>
+                        </div>
+                        <div class="credit-row">
+                            <span class="credit-label">İşlem Bedeli:</span>
+                            <span class="credit-value credit-cost" id="campaign-cost">10 Kredi</span>
+                        </div>
+                        <div class="credit-divider"></div>
+                        <div class="credit-row">
+                            <span class="credit-label">Kalan Kredi:</span>
+                            <span class="credit-value credit-remaining" id="remaining-credits">∞</span>
+                        </div>
+                    </div>
+                    <p class="credit-confirmation-text">Kampanya yayınlamayı onaylıyor musunuz?</p>
+                </div>
+                <div class="credit-modal-footer">
+                    <button class="btn-secondary" onclick="CampaignManager.closeCreditModal()">
+                        <i class="ri-close-line"></i> İptal
+                    </button>
+                    <button class="btn-primary" onclick="CampaignManager.confirmAndPublish()">
+                        <i class="ri-check-line"></i> Onayla ve Yayınla
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="success-modal" style="display: none;">
+        <div class="success-modal-content">
+            <div class="success-icon-circle">
+                <i class="ri-check-line"></i>
+            </div>
+            <h2>Kampanya Yayınlandı!</h2>
+            <p>Kampanyanız başarıyla oluşturuldu ve müşterilerinizle paylaşıldı.</p>
+            <button class="btn-primary" onclick="window.location.href = '/pages/service-panel.html'">
+                <i class="ri-dashboard-line"></i> Panele Dön
+            </button>
+        </div>
+    </div>
+    </div>
+
+    <script src="/js/config.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        // Check authentication
+        if (!auth.requireAuth()) {
+            // Redirect handled
+        }
+
+        // Credit System Configuration
+        const CAMPAIGN_COST = 10; // Credits required to publish a campaign
+
+        const CampaignManager = {
+            serviceId: null,
+            categories: [],
+            selectedImageFile: null,
+            uploadedImageId: null,
+            userData: null,
+            pendingCampaignData: null,
+
+            async init() {
+                try {
+                    this.showLoading();
+
+                    // Get user's service ID and store user data
+                    this.userData = await this.getUserService();
+                    this.serviceId = this.userData.service.id;
+
+                    // Display credit balance
+                    this.displayCreditBalance();
+
+                    // Fetch categories
+                    await this.fetchCategories();
+
+                    // Setup image upload
+                    this.setupImageUpload();
+
+                    // Setup date validation
+                    this.setupDateValidation();
+
+                    this.showForm();
+                } catch (error) {
+                    console.error('Init error:', error);
+                    this.showError(error.message);
+                }
+            },
+
+            async getUserService() {
+                const token = localStorage.getItem('tamirhanem_token');
+                const response = await fetch(`${CONFIG.API_BASE_URL}/users/me?populate=service`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Kullanıcı bilgileri alınamadı');
+                }
+
+                const user = await response.json();
+
+                if (!user.service) {
+                    throw new Error('Servis bilgisi bulunamadı');
+                }
+
+                return user;
+            },
+
+            displayCreditBalance() {
+                const credits = this.userData?.service?.credits;
+                const banner = document.getElementById('credit-info-banner');
+                const balanceEl = document.getElementById('credit-balance');
+
+                if (credits === null || credits === undefined || credits > 9000000) {
+                    balanceEl.textContent = 'SINIRSIZ (BETAYA ÖZEL)';
+                    // Removed inline color style to let CSS handle it (white)
+                    balanceEl.style.color = '';
+                } else {
+                    balanceEl.textContent = `${credits.toLocaleString('tr-TR')} Kredi`;
+                    // Keep color logic for non-unlimited values if needed, but banner text is white by default in CSS.
+                    // If we want colored text on green banner, it might look bad. 
+                    // Let's force white for consistency on the green banner.
+                    balanceEl.style.color = '';
+                }
+
+                banner.style.display = 'flex';
+            },
+
+            async fetchCategories() {
+                try {
+                    const response = await fetch(`${CONFIG.API_BASE_URL}/categories`);
+                    const data = await response.json();
+                    this.categories = data.data || [];
+                    this.renderCategoryDropdown();
+                } catch (error) {
+                    console.error('Categories fetch error:', error);
+                    throw new Error('Kategoriler yüklenemedi');
+                }
+            },
+
+            renderCategoryDropdown() {
+                const select = document.getElementById('campaign-category');
+
+                this.categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.attributes.name;
+                    select.appendChild(option);
+                });
+            },
+
+            setupImageUpload() {
+                const input = document.getElementById('campaign-image-input');
+                input.addEventListener('change', (e) => {
+                    if (e.target.files && e.target.files[0]) {
+                        this.selectedImageFile = e.target.files[0];
+                        this.previewImage(e.target.files[0]);
+                    }
+                });
+            },
+
+            previewImage(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const preview = document.getElementById('campaign-image-preview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                    document.getElementById('remove-image-btn').style.display = 'inline-flex';
+                };
+                reader.readAsDataURL(file);
+            },
+
+            removeImage() {
+                this.selectedImageFile = null;
+                this.uploadedImageId = null;
+                document.getElementById('campaign-image-preview').innerHTML = '<i class="ri-image-add-line"></i><p>Görsel Seç</p>';
+                document.getElementById('remove-image-btn').style.display = 'none';
+                document.getElementById('campaign-image-input').value = '';
+            },
+
+            async uploadImage(file) {
+                try {
+                    const token = localStorage.getItem('tamirhanem_token');
+                    const formData = new FormData();
+                    formData.append('files', file);
+
+                    const uploadResponse = await fetch(`${CONFIG.API_BASE_URL}/upload`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+
+                    if (!uploadResponse.ok) {
+                        throw new Error('Görsel yüklenemedi');
+                    }
+
+                    const uploadData = await uploadResponse.json();
+                    return uploadData[0].id;
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    throw error;
+                }
+            },
+
+            setupDateValidation() {
+                const today = new Date().toISOString().split('T')[0];
+                const startDateInput = document.getElementById('start-date');
+                const endDateInput = document.getElementById('end-date');
+
+                // Set minimum date to today
+                startDateInput.min = today;
+                endDateInput.min = today;
+
+                // Validate end date is after start date and max 7 days
+                startDateInput.addEventListener('change', () => {
+                    if (startDateInput.value) {
+                        endDateInput.min = startDateInput.value;
+
+                        // Set max date to 7 days after start date
+                        const startDate = new Date(startDateInput.value);
+                        const maxDate = new Date(startDate);
+                        maxDate.setDate(maxDate.getDate() + 7);
+                        endDateInput.max = maxDate.toISOString().split('T')[0];
+
+                        // If end date is before start date or more than 7 days, clear it
+                        if (endDateInput.value) {
+                            const endDate = new Date(endDateInput.value);
+                            if (endDate < startDate || endDate > maxDate) {
+                                endDateInput.value = '';
+                                Utils.showToast('Kampanya süresi maksimum 7 gün olabilir', 'warning');
+                            }
+                        }
+                    }
+                });
+
+                // Also validate when end date changes
+                endDateInput.addEventListener('change', () => {
+                    if (startDateInput.value && endDateInput.value) {
+                        const startDate = new Date(startDateInput.value);
+                        const endDate = new Date(endDateInput.value);
+                        const daysDiff = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+
+                        if (daysDiff > 7) {
+                            endDateInput.value = '';
+                            Utils.showToast('Kampanya süresi maksimum 7 gün olabilir', 'warning');
+                        }
+                    }
+                });
+            },
+
+            calculateDiscountedPrice() {
+                const originalPrice = parseFloat(document.getElementById('original-price').value) || 0;
+                const discountRate = parseFloat(document.getElementById('discount-rate').value) || 0;
+
+                if (originalPrice > 0 && discountRate >= 0 && discountRate <= 100) {
+                    const discountedPrice = originalPrice * (1 - discountRate / 100);
+                    document.getElementById('discounted-price').value = discountedPrice.toFixed(2);
+                } else {
+                    document.getElementById('discounted-price').value = '';
+                }
+            },
+
+            async createCampaign(event) {
+                event.preventDefault();
+
+                // Validate form and prepare data
+                const campaignData = this.prepareCampaignData();
+                if (!campaignData) return;
+
+                // Store pending campaign data
+                this.pendingCampaignData = campaignData;
+
+                // Show credit confirmation modal
+                this.showCreditModal();
+            },
+
+            prepareCampaignData() {
+                const submitBtn = document.getElementById('submit-btn');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="ri-loader-4-line"></i> <span>Hazırlanıyor...</span>';
+
+                try {
+                    // Read form values
+                    const title = document.getElementById('campaign-title')?.value?.trim() || '';
+                    const description = document.getElementById('campaign-description')?.value?.trim() || '';
+                    const startDate = document.getElementById('start-date')?.value || '';
+                    const endDate = document.getElementById('end-date')?.value || '';
+                    const originalPrice = parseFloat(document.getElementById('original-price')?.value || '0');
+                    const discountRate = parseFloat(document.getElementById('discount-rate')?.value || '0');
+                    const discountedPrice = parseFloat(document.getElementById('discounted-price')?.value || '0');
+                    const categoryId = document.getElementById('campaign-category')?.value || '';
+
+                    // DEBUG: Log all field values
+                    console.log('=== FORM DATA DEBUG ===');
+                    console.log('Title:', title, '(empty:', !title, ')');
+                    console.log('Description:', description, '(empty:', !description, ')');
+                    console.log('Start Date:', startDate, '(empty:', !startDate, ')');
+                    console.log('End Date:', endDate, '(empty:', !endDate, ')');
+                    console.log('Original Price:', originalPrice, '(zero:', originalPrice === 0, ')');
+                    console.log('Discount Rate:', discountRate, '(zero:', discountRate === 0, ')');
+                    console.log('Discounted Price:', discountedPrice);
+                    console.log('Category ID:', categoryId, '(empty:', !categoryId, ')');
+                    console.log('=======================');
+
+                    // Validation
+                    if (!title || !description || !startDate || !endDate || !discountRate || !categoryId) {
+                        console.error('Validation FAILED - Missing fields');
+                        Utils.showToast('Lütfen tüm zorunlu alanları doldurun', 'error');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="ri-send-plane-fill"></i> <span>Kampanyayı Yayınla</span>';
+                        return null;
+                    }
+
+                    if (endDate < startDate) {
+                        console.error('Validation FAILED - End date before start date');
+                        Utils.showToast('Bitiş tarihi başlangıç tarihinden önce olamaz', 'error');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="ri-send-plane-fill"></i> <span>Kampanyayı Yayınla</span>';
+                        return null;
+                    }
+
+                    console.log('✅ Validation PASSED - Returning data');
+
+                    // Return validated data
+                    return {
+                        title,
+                        description,
+                        startDate,
+                        endDate,
+                        originalPrice,
+                        discountRate,
+                        discountedPrice,
+                        categoryId
+                    };
+
+                } catch (error) {
+                    console.error('Campaign preparation error:', error);
+                    Utils.showToast(error.message, 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="ri-send-plane-fill"></i> <span>Kampanyayı Yayınla</span>';
+                    return null;
+                }
+            },
+
+            showCreditModal() {
+                // Get user credits (from service object)
+                const userCredits = this.userData?.service?.credits;
+                const hasUnlimitedCredits = userCredits === null || userCredits === undefined || userCredits > 9000000;
+
+                // Update modal content
+                document.getElementById('current-credits').textContent = hasUnlimitedCredits ? 'SINIRSIZ (Beta Özel)' : userCredits.toLocaleString('tr-TR');
+                document.getElementById('campaign-cost').textContent = `${CAMPAIGN_COST} Kredi`;
+
+                if (hasUnlimitedCredits) {
+                    document.getElementById('remaining-credits').textContent = 'SINIRSIZ (Beta Özel)';
+                } else {
+                    const remaining = userCredits - CAMPAIGN_COST;
+                    document.getElementById('remaining-credits').textContent = remaining >= 0 ? remaining.toLocaleString('tr-TR') : '0';
+                    document.getElementById('remaining-credits').style.color = remaining >= 0 ? '#10b981' : '#ff4d4f';
+                }
+
+                // Show modal
+                document.getElementById('credit-modal').style.display = 'flex';
+            },
+
+            closeCreditModal() {
+                document.getElementById('credit-modal').style.display = 'none';
+                this.pendingCampaignData = null;
+            },
+
+            async confirmAndPublish() {
+                if (!this.pendingCampaignData) {
+                    Utils.showToast('Kampanya verileri bulunamadı', 'error');
+                    return;
+                }
+
+                // Save data locally before modal closes (to prevent null reference)
+                const dataToPublish = this.pendingCampaignData;
+
+                // Check credits (if system is active)
+                const userCredits = this.userData?.service?.credits;
+                const hasUnlimitedCredits = userCredits === null || userCredits === undefined || userCredits > 9000000;
+
+                if (!hasUnlimitedCredits && userCredits < CAMPAIGN_COST) {
+                    Utils.showToast('Yetersiz kredi! Lütfen kredi satın alın.', 'error');
+                    this.closeCreditModal();
+                    return;
+                }
+
+                // Close modal (this will clear this.pendingCampaignData)
+                this.closeCreditModal();
+
+                // Proceed with campaign creation using saved data
+                console.log('🚀 Publishing campaign with data:', dataToPublish);
+                await this.publishCampaign(dataToPublish);
+            },
+
+            async publishCampaign(data) {
+                const submitBtn = document.getElementById('submit-btn');
+
+                // Safety check: Ensure submit button exists
+                if (!submitBtn) {
+                    console.error('Submit button not found');
+                    Utils.showToast('Form hatası. Lütfen sayfayı yenileyin.', 'error');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="ri-loader-4-line"></i> <span>Yayınlanıyor...</span>';
+
+                try {
+                    // Safety check: Validate data object
+                    if (!data) {
+                        throw new Error('Kampanya verileri eksik');
+                    }
+
+                    if (!data.title || !data.description || !data.categoryId) {
+                        throw new Error('Zorunlu alanlar eksik');
+                    }
+
+                    // Upload image if selected
+                    let imageId = null;
+                    if (this.selectedImageFile) {
+                        imageId = await this.uploadImage(this.selectedImageFile);
+                    }
+
+                    // Create campaign
+                    const token = localStorage.getItem('tamirhanem_token');
+
+                    if (!token) {
+                        throw new Error('Oturum bilgisi bulunamadı. Lütfen giriş yapın.');
+                    }
+
+                    const requestBody = {
+                        data: {
+                            title: data.title,
+                            description: data.description,
+                            start_date: data.startDate,
+                            end_date: data.endDate,
+                            original_price: data.originalPrice,
+                            discount_rate: data.discountRate,
+                            discounted_price: data.discountedPrice,
+                            service: this.serviceId,
+                            category: data.categoryId,
+                            is_active: true
+                        }
+                    };
+
+                    // Add image if uploaded
+                    if (imageId) {
+                        requestBody.data.image = imageId;
+                    }
+
+                    const response = await fetch(`${CONFIG.API_BASE_URL}/campaigns`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+
+                        // Handle rate limit error
+                        if (errorData.error?.details?.rateLimitExceeded) {
+                            const nextDate = new Date(errorData.error.details.nextAllowedDate);
+                            const formattedDate = nextDate.toLocaleDateString('tr-TR', {
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric'
+                            });
+                            throw new Error(`Haftalık kampanya limitiniz doldu. ${formattedDate} tarihinden sonra tekrar deneyebilirsiniz.`);
+                        }
+
+                        // Handle insufficient credits error
+                        if (errorData.error?.details?.insufficientCredits) {
+                            throw new Error('Yetersiz kredi bakiyesi. Lütfen kredi satın alın.');
+                        }
+
+                        throw new Error(errorData.error?.message || 'Kampanya oluşturulamadı');
+                    }
+
+                    const result = await response.json();
+
+                    // Show Success Modal instead of redirecting
+                    document.getElementById('success-modal').style.display = 'flex';
+
+                    // Optional: Play a success sound if available
+                    // Utils.playSuccessSound();
+
+                } catch (error) {
+                    console.error('Campaign publishing error:', error);
+
+                    // Make sure the button is re-enabled
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="ri-send-plane-fill"></i> <span>Kampanyayı Yayınla</span>';
+                    }
+
+                    // Show error toast with longer duration for important messages
+                    const isRateLimitError = error.message.includes('limitiniz doldu');
+                    const duration = isRateLimitError ? 5000 : 3000;
+
+                    Utils.showToast(error.message || 'Kampanya yayınlanırken hata oluştu', 'error');
+
+                    // Log for debugging
+                    console.log('🔴 Error toast shown:', error.message);
+                }
+            },
+
+            showLoading() {
+                document.getElementById('loading-state').style.display = 'block';
+                document.getElementById('error-state').style.display = 'none';
+                document.getElementById('campaign-form-container').style.display = 'none';
+            },
+
+            showError(message) {
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('error-state').style.display = 'block';
+                document.getElementById('campaign-form-container').style.display = 'none';
+                document.getElementById('error-message').textContent = message;
+            },
+
+            showForm() {
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('error-state').style.display = 'none';
+                document.getElementById('campaign-form-container').style.display = 'block';
+            }
+        };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            CampaignManager.init();
+
+            // Setup form submission
+            document.getElementById('campaign-form').addEventListener('submit', (e) => {
+                CampaignManager.createCampaign(e);
+            });
+        });
+    </script>
+</body>
+
+</html>

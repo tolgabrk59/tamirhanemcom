@@ -1,0 +1,2859 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teklif Oluşturucu | TamirHanem</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    :root {
+      /* Brand Colors */
+      --primary: #FFC507;
+      --primary-dark: #e0ac00;
+      --primary-light: #fff8db;
+      --secondary: #1A1A1A;
+
+      /* UI Colors */
+      --bg-body: #f8f9fa;
+      --bg-surface: #ffffff;
+      --text-main: #2c3e50;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+
+      /* Functional */
+      --success: #10B981;
+      --danger: #EF4444;
+      --warning: #F59E0B;
+
+      /* Spacing & Radius */
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      margin: 0;
+      padding-bottom: 80px;
+      zoom: 0.765;
+    }
+
+    /* --- Header --- */
+    .page-header {
+      background: linear-gradient(135deg, #FFC507 0%, #FFD700 100%);
+      padding: 40px 20px 100px;
+      /* Increased padding for search bar overlap */
+      text-align: center;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(255, 197, 7, 0.2);
+      margin-bottom: -60px;
+      z-index: 1;
+    }
+
+    .page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #2c3e50;
+      margin: 0 0 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .page-header p {
+      color: #4a5568;
+      font-size: 0.95rem;
+      font-weight: 500;
+      opacity: 0.9;
+      margin: 0;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.25rem;
+      color: #2c3e50;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-2px);
+      background: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    /* --- Layout --- */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* --- Wizard Progress --- */
+    .wizard-progress {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-md);
+      position: relative;
+    }
+
+    .progress-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      opacity: 0.6;
+      transition: all 0.3s;
+    }
+
+    .progress-step.active {
+      opacity: 1;
+      font-weight: 700;
+    }
+
+    .progress-step.completed .step-icon {
+      background: var(--success);
+      color: white;
+      border-color: var(--success);
+    }
+
+    .progress-step.active .step-icon {
+      background: var(--primary);
+      color: var(--text-main);
+      border-color: var(--primary);
+      transform: scale(1.1);
+      box-shadow: 0 0 0 4px var(--primary-light);
+    }
+
+    /* Wizard Progress Fix */
+    .step-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--bg-body);
+      /* Fix opacity issue */
+      border: 2px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      position: relative;
+      z-index: 2;
+      /* Ensure it sits on top of the line */
+      transition: all 0.3s ease;
+    }
+
+    /* Offer Modal Styles - Premium Redesign */
+    #offer-modal .modal-content {
+      max-width: 900px;
+      width: 95%;
+      padding: 0;
+      border-radius: 24px;
+      background: #f8fafc;
+      /* Light gray background for contrast */
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      position: relative;
+      overflow: hidden;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Modal Header */
+    .modal-header-custom {
+      background: linear-gradient(135deg, #FFC507 0%, #FFD700 100%);
+      padding: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .modal-header-custom::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+      opacity: 0.6;
+    }
+
+    .modal-title-custom {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #1e293b;
+      letter-spacing: -0.5px;
+      margin: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    #offer-modal .close-modal-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #1e293b;
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(4px);
+    }
+
+    #offer-modal .close-modal-btn:hover {
+      background: rgba(255, 255, 255, 0.6);
+      transform: rotate(90deg);
+    }
+
+    /* Tabs */
+    .tab-header {
+      background: #ffffff;
+      padding: 15px 30px 0;
+      display: flex;
+      gap: 10px;
+      border-bottom: 1px solid #e2e8f0;
+      flex-shrink: 0;
+    }
+
+    .tab-btn {
+      padding: 15px 20px;
+      background: none;
+      border: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      border-bottom: 3px solid transparent;
+    }
+
+    .tab-btn:hover {
+      color: var(--primary-dark);
+      background: #f8fafc;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .tab-btn.active {
+      color: var(--primary-dark);
+      font-weight: 700;
+      border-bottom-color: var(--primary);
+    }
+
+    .tab-btn.active::after {
+      display: none;
+      /* Remove old style */
+    }
+
+    .tab-content {
+      display: none;
+      overflow-y: auto;
+      padding: 30px;
+      flex-grow: 1;
+      background: #f8fafc;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Grid Layout */
+    .request-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 24px;
+      padding-bottom: 20px;
+    }
+
+    /* Card Design */
+    .request-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 24px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .request-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      border-color: var(--primary);
+    }
+
+    .request-card.selected {
+      border-color: var(--primary);
+      background: #fffbeb;
+      box-shadow: 0 0 0 2px var(--primary), 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .request-card.selected::before {
+      content: '\eb7b';
+      font-family: 'remixicon';
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      color: #1e293b;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      z-index: 2;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border: 2px solid white;
+    }
+
+    /* Card Header */
+    .card-header-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .card-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #FFC507 0%, #FFD700 100%);
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 6px rgba(255, 197, 7, 0.2);
+    }
+
+    .card-title {
+      font-weight: 800;
+      color: #1e293b;
+      font-size: 1.1rem;
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+
+    .card-vehicle-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f1f5f9;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #475569;
+      font-weight: 600;
+      border: 1px solid #e2e8f0;
+      max-width: 100%;
+    }
+
+    .card-vehicle-badge i {
+      color: var(--primary-dark);
+    }
+
+    /* Info Rows */
+    .info-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #f8fafc;
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid #f1f5f9;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.95rem;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    .info-row i {
+      color: #94a3b8;
+      margin-top: 3px;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .info-row.highlight {
+      color: #334155;
+      font-weight: 600;
+    }
+
+    .info-row.highlight i {
+      color: var(--primary-dark);
+    }
+
+    /* Date Badge */
+    .date-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1e293b;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    }
+
+    .date-badge i {
+      color: var(--primary-dark);
+      font-size: 1.1rem;
+    }
+
+    /* Details Button */
+    .btn-card-details {
+      width: 100%;
+      padding: 12px;
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      color: #64748b;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .btn-card-details:hover {
+      background: #f8fafc;
+      color: #1e293b;
+      border-color: #cbd5e1;
+    }
+
+    /* Expanded State */
+    .request-card.expanded {
+      grid-column: 1 / -1;
+      cursor: default;
+      transform: none !important;
+      background: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+      z-index: 10;
+    }
+
+    .card-expanded-content {
+      display: none;
+      margin-top: 24px;
+      border-top: 2px dashed #e2e8f0;
+      padding-top: 24px;
+      animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .request-card.expanded .card-expanded-content {
+      display: block;
+    }
+
+    /* Internal Tabs */
+    .card-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      background: #f1f5f9;
+      padding: 6px;
+      border-radius: 14px;
+      width: fit-content;
+    }
+
+    .card-tab-btn {
+      padding: 10px 20px;
+      background: none;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #64748b;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.2s;
+    }
+
+    .card-tab-btn.active {
+      background: #ffffff;
+      color: var(--primary-dark);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .card-tab-content {
+      display: none;
+    }
+
+    .card-tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    /* Detail Grid */
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .detail-item {
+      background: #f8fafc;
+      padding: 16px;
+      border-radius: 14px;
+      border: 1px solid #f1f5f9;
+      transition: all 0.2s;
+    }
+
+    .detail-item:hover {
+      background: #ffffff;
+      border-color: #e2e8f0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .detail-item label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #94a3b8;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .detail-item div {
+      font-weight: 700;
+      color: #1e293b;
+      font-size: 1rem;
+    }
+
+    /* Media Gallery */
+    .media-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .media-item {
+      aspect-ratio: 1;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      border: 2px solid #e2e8f0;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #f1f5f9;
+    }
+
+    .media-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .media-item:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .media-item:hover img {
+      transform: scale(1.1);
+    }
+
+    .media-type-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px;
+      height: 40px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      backdrop-filter: blur(4px);
+      font-size: 1.2rem;
+    }
+
+    .audio-player {
+      width: 100%;
+      margin-top: 10px;
+      height: 40px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Footer */
+    .modal-footer-custom {
+      background: #ffffff;
+      padding: 20px 30px;
+      border-top: 1px solid #f1f5f9;
+      flex-shrink: 0;
+    }
+
+    #btn-submit-offer {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+      box-shadow: 0 10px 15px -3px rgba(var(--primary-rgb), 0.3);
+      transition: all 0.3s;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    #btn-submit-offer:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 25px -5px rgba(var(--primary-rgb), 0.4);
+    }
+
+    #btn-submit-offer:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.4);
+    }
+
+    #btn-submit-offer:disabled {
+      background: #e5e7eb;
+      color: #9ca3af;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* Progress Line */
+    .progress-line {
+      position: absolute;
+      top: 40px;
+      left: 50px;
+      right: 50px;
+      height: 2px;
+      background: var(--border-color);
+      z-index: 1;
+    }
+
+    .progress-line-fill {
+      height: 100%;
+      background: var(--success);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* --- Wizard Content --- */
+    .wizard-content {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow-md);
+      min-height: 400px;
+    }
+
+    .step-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .step-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h2.step-title {
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* --- Components --- */
+
+    /* Search Box */
+    .search-box {
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 16px 20px 16px 50px;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all 0.2s;
+      background: var(--bg-body);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 4px var(--primary-light);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1.2rem;
+    }
+
+    /* Customer Results */
+    .customer-results {
+      display: grid;
+      gap: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+
+    .customer-result-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: var(--bg-body);
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .customer-result-item:hover {
+      background: white;
+      border-color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .customer-result-item i {
+      font-size: 1.5rem;
+      color: var(--text-muted);
+      background: white;
+      padding: 10px;
+      border-radius: 50%;
+    }
+
+    /* New Customer Section */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 30px 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .or-divider span {
+      padding: 0 15px;
+      background: white;
+      z-index: 1;
+    }
+
+    .new-customer-card {
+      background: var(--bg-surface);
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      transition: all 0.2s;
+    }
+
+    .new-customer-card:hover {
+      border-color: var(--primary);
+      background: var(--bg-body);
+    }
+
+    .new-customer-card h3 {
+      margin-top: 0;
+      font-size: 1.1rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Selected Customer Card */
+    .selected-customer-card {
+      background: var(--primary-light);
+      border: 1px solid var(--primary);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .customer-info h3 {
+      margin: 0 0 4px;
+      color: var(--text-main);
+    }
+
+    .customer-info p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Category Cards */
+    .category-search-container {
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      /* Smaller cards */
+      gap: 16px;
+    }
+
+    .category-card {
+      background: var(--bg-body);
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .category-card:hover {
+      background: white;
+      border-color: var(--border-color);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .category-card.selected {
+      background: white;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--primary-light);
+    }
+
+    .category-card img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      margin-bottom: 12px;
+    }
+
+    .category-card i {
+      font-size: 2rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .category-card.selected i {
+      color: var(--primary-dark);
+    }
+
+    .category-card h3 {
+      font-size: 0.95rem;
+      margin: 0;
+      line-height: 1.3;
+    }
+
+    /* Service List */
+    .services-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .service-checkbox {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      background: var(--bg-body);
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .service-checkbox:hover {
+      background: white;
+      border-color: var(--border-color);
+      transform: translateX(4px);
+    }
+
+    .service-checkbox input:checked+.service-info {
+      color: var(--primary-dark);
+    }
+
+    .service-checkbox input:checked+.service-info .service-name {
+      font-weight: 700;
+    }
+
+    .service-checkbox input {
+      width: 20px;
+      height: 20px;
+      margin-right: 16px;
+      accent-color: var(--primary);
+    }
+
+    .service-info {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 500;
+    }
+
+    .service-name {
+      font-size: 1rem;
+    }
+
+    .service-price {
+      font-weight: 700;
+      color: var(--primary-dark);
+      background: var(--primary-light);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    /* Summary Section Redesign */
+    .summary-container {
+      background: white;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .summary-header {
+      background: var(--bg-surface);
+      padding: 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .summary-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .summary-body {
+      padding: 24px;
+    }
+
+    /* Customer Card in Summary */
+    .summary-customer-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      background: var(--bg-body);
+      border-radius: var(--radius-md);
+      margin-bottom: 32px;
+      border: 1px solid transparent;
+    }
+
+    .summary-customer-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: white;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .summary-customer-info h4 {
+      margin: 0 0 4px;
+      font-size: 1.1rem;
+      color: var(--text-main);
+    }
+
+    .summary-customer-info p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Service Table */
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+    }
+
+    .summary-table th {
+      text-align: left;
+      padding: 12px 0;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .summary-table td {
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-size: 0.95rem;
+    }
+
+    .summary-table td.price-col {
+      text-align: right;
+      font-weight: 600;
+      font-family: 'Courier New', monospace;
+      /* Monospaced for alignment */
+    }
+
+    .summary-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Totals Section */
+    .summary-totals {
+      background: var(--bg-body);
+      padding: 24px;
+      border-radius: var(--radius-md);
+      margin-top: 20px;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+
+    .total-row.final {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 2px solid var(--border-color);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+      align-items: center;
+    }
+
+    .total-row.final .amount {
+      color: var(--primary-dark);
+    }
+
+    /* Action Buttons Redesign */
+    .action-buttons-container {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      /* PDF takes less space */
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    .primary-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .action-buttons-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Buttons */
+    .wizard-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .btn {
+      padding: 14px 28px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--text-main);
+      box-shadow: 0 4px 12px rgba(255, 197, 7, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(255, 197, 7, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--bg-body);
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    /* Inputs */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      background: var(--bg-body);
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 24px;
+      padding: 32px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* Utilities */
+    .text-center {
+      text-align: center;
+    }
+
+    .mt-4 {
+      margin-top: 1rem;
+    }
+
+    .mb-4 {
+      margin-bottom: 1rem;
+    }
+
+    .w-100 {
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .wizard-progress {
+        padding: 16px;
+        overflow-x: auto;
+      }
+
+      .step-label {
+        display: none;
+      }
+
+      .wizard-content {
+        padding: 20px;
+      }
+
+      .page-header {
+        padding-bottom: 80px;
+      }
+    }
+
+    /* --- Toast Notification Fix --- */
+    #toast-container {
+      top: 20px !important;
+      right: 20px !important;
+      left: auto !important;
+      bottom: auto !important;
+      z-index: 1100 !important;
+    }
+
+    @media (max-width: 768px) {
+      #toast-container {
+        top: auto !important;
+        bottom: 20px !important;
+        left: 20px !important;
+        right: 20px !important;
+      }
+    }
+
+    /* --- Summary Section Redesign (Step 5) --- */
+    .summary-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      border: 1px solid #f1f5f9;
+    }
+
+    .summary-header {
+      background: linear-gradient(135deg, #FFC507 0%, #FFD700 100%);
+      padding: 24px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+
+    .summary-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      opacity: 0.15;
+    }
+
+    .summary-header h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .summary-header .badge {
+      background: rgba(255, 255, 255, 0.9) !important;
+      color: #0f172a !important;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 30px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      position: relative;
+      z-index: 1;
+    }
+
+    .summary-body {
+      padding: 32px;
+    }
+
+    /* Customer Summary Card */
+    .summary-customer-card {
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .summary-customer-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #FFC507 0%, #FFD700 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0f172a;
+      box-shadow: 0 4px 6px rgba(255, 197, 7, 0.2);
+    }
+
+    .summary-customer-info h4 {
+      margin: 0 0 4px 0;
+      font-size: 1.1rem;
+      color: #0f172a;
+    }
+
+    .summary-customer-info p {
+      margin: 0;
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+
+    /* Summary Table */
+    .summary-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-bottom: 32px;
+    }
+
+    .summary-table th {
+      text-align: left;
+      padding: 12px 16px;
+      color: #64748b;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #f1f5f9;
+    }
+
+    .summary-table td {
+      padding: 16px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #334155;
+      font-size: 0.95rem;
+    }
+
+    .summary-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .summary-table tr:hover td {
+      background: #f8fafc;
+    }
+
+    /* Totals Section */
+    .summary-totals {
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 24px;
+      margin-top: 20px;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+
+    .total-row.final {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e2e8f0;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 1.25rem;
+      margin-bottom: 0;
+    }
+
+    .total-row.final .amount {
+      color: #0f172a;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-header">
+    <button class="back-btn" onclick="window.location.href='/pages/service-panel.html'">
+      <i class="ri-arrow-left-line"></i>
+    </button>
+    <h1><i class="ri-calculator-line"></i> Teklif Oluşturucu</h1>
+    <p>Profesyonel fiyat teklifi ve iş emri hazırlayın</p>
+  </div>
+
+  <div class="container">
+    <!-- Wizard Progress -->
+    <div class="wizard-progress">
+      <div class="progress-line">
+        <div class="progress-line-fill" id="progress-line-fill"></div>
+      </div>
+
+      <div class="progress-step active" data-step="1">
+        <div class="step-icon"><i class="ri-user-search-line"></i></div>
+        <div class="step-label">Müşteri</div>
+      </div>
+      <div class="progress-step" data-step="2">
+        <div class="step-icon"><i class="ri-tools-line"></i></div>
+        <div class="step-label">Kategori</div>
+      </div>
+      <div class="progress-step" data-step="3">
+        <div class="step-icon"><i class="ri-list-check"></i></div>
+        <div class="step-label">Hizmetler</div>
+      </div>
+      <div class="progress-step" data-step="4">
+        <div class="step-icon"><i class="ri-file-edit-line"></i></div>
+        <div class="step-label">Detaylar</div>
+      </div>
+      <div class="progress-step" data-step="5">
+        <div class="step-icon"><i class="ri-check-double-line"></i></div>
+        <div class="step-label">Özet</div>
+      </div>
+    </div>
+
+    <!-- Wizard Content -->
+    <div class="wizard-content">
+
+      <!-- Step 1: Customer Selection -->
+      <div id="step-1" class="step-content active">
+        <h2 class="step-title">Müşteri Seçimi</h2>
+
+        <!-- Selected Customer Display -->
+        <div id="selected-customer-display" class="selected-customer-card" style="display: none;">
+          <div class="customer-info">
+            <h3 id="selected-customer-name">Müşteri Adı</h3>
+            <p id="selected-customer-contact">İletişim Bilgileri</p>
+          </div>
+          <button class="btn btn-secondary" onclick="QuoteWizard.clearCustomer()">
+            <i class="ri-close-line"></i> Değiştir
+          </button>
+        </div>
+
+        <div class="search-box">
+          <i class="ri-search-line search-icon"></i>
+          <input type="text" id="customer-search" class="search-input"
+            placeholder="Müşteri adı, telefon veya e-posta ile arayın..."
+            oninput="QuoteWizard.searchCustomers(this.value)">
+        </div>
+
+        <div id="customer-results" class="customer-results"></div>
+
+        <div class="or-divider">
+          <span>veya yeni müşteri olarak kaydedin</span>
+        </div>
+
+        <div class="new-customer-card">
+          <h3><i class="ri-user-add-line"></i> Yeni Müşteri Ekle</h3>
+          <div class="form-group mt-4">
+            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <input type="text" id="new-customer-name" class="form-input" placeholder="Ad Soyad">
+              <input type="tel" id="new-customer-phone" class="form-input" placeholder="Telefon">
+            </div>
+            <input type="email" id="new-customer-email" class="form-input mt-4" placeholder="E-posta (Opsiyonel)">
+            <button class="btn btn-secondary w-100 mt-4" onclick="QuoteWizard.selectNewCustomer()">
+              <i class="ri-check-line"></i> Yeni Müşteri Olarak Seç
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Category Selection -->
+      <div id="step-2" class="step-content">
+        <h2 class="step-title">Hizmet Kategorisi</h2>
+
+        <div class="category-search-container">
+          <div class="search-box mb-4">
+            <i class="ri-search-line search-icon"></i>
+            <input type="text" id="category-search" class="search-input" placeholder="Kategori ara..."
+              oninput="QuoteWizard.filterCategories(this.value)">
+          </div>
+        </div>
+
+        <div id="categories-loading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p>Kategoriler yükleniyor...</p>
+        </div>
+        <div id="categories-error" class="alert alert-danger" style="display: none;">
+          Kategoriler yüklenemedi.
+        </div>
+        <div id="categories-container" class="categories-grid"></div>
+      </div>
+
+      <!-- Step 3: Services Selection -->
+      <div id="step-3" class="step-content">
+        <h2 class="step-title">Hizmet ve Parça Seçimi</h2>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h4 id="selected-category-title" style="color: var(--primary-dark); margin: 0;"></h4>
+          <button class="btn btn-secondary" onclick="QuoteWizard.openManualItemModal()">
+            <i class="ri-add-line"></i> Özel Kalem Ekle
+          </button>
+        </div>
+
+        <div id="additional-services-loading" class="text-center">
+          <p>Hizmetler yükleniyor...</p>
+        </div>
+
+        <div id="additional-services-container" class="services-list mb-4"></div>
+
+        <div id="manual-items-container" class="services-list"></div>
+      </div>
+
+      <!-- Step 4: Details -->
+      <div id="step-4" class="step-content">
+        <h2 class="step-title">Teklif Detayları</h2>
+
+        <div class="form-group">
+          <label class="form-label">İskonto</label>
+          <div style="display: flex; gap: 10px;">
+            <input type="number" id="discount-input" class="form-input" placeholder="0" min="0">
+            <select id="discount-type" class="form-input" style="width: 120px;">
+              <option value="percentage">% Yüzde</option>
+              <option value="amount">₺ Tutar</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Geçerlilik Tarihi</label>
+          <input type="date" id="valid-until" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Dahili Notlar (Sadece siz görürsünüz)</label>
+          <textarea id="internal-notes" class="form-textarea" rows="3"
+            placeholder="Parça tedarik durumu vb."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Müşteri Notu (Teklifte görünür)</label>
+          <textarea id="customer-notes" class="form-textarea" rows="3"
+            placeholder="Garanti koşulları, teslim süresi vb."></textarea>
+        </div>
+      </div>
+
+      <!-- Step 5: Summary (Redesigned) -->
+      <div id="step-5" class="step-content">
+        <h2 class="step-title">Teklif Özeti</h2>
+
+        <div class="summary-container">
+          <div class="summary-header">
+            <h3><i class="ri-file-list-3-line"></i> Teklif Detayları</h3>
+            <span class="badge bg-light text-dark" id="summary-date"></span>
+          </div>
+
+          <div class="summary-body">
+            <!-- Customer Section -->
+            <div id="summary-customer"></div>
+
+            <!-- Services Section -->
+            <h4 class="mb-3"
+              style="font-size: 0.95rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">
+              Hizmetler & Parçalar</h4>
+            <table class="summary-table">
+              <thead>
+                <tr>
+                  <th>Açıklama</th>
+                  <th style="text-align: right;">Tutar</th>
+                </tr>
+              </thead>
+              <tbody id="summary-services-body">
+                <!-- Items will be injected here -->
+              </tbody>
+            </table>
+
+            <!-- Totals Section -->
+            <div class="summary-totals">
+              <div class="total-row">
+                <span>Ara Toplam</span>
+                <span id="summary-subtotal">0.00 ₺</span>
+              </div>
+              <div class="total-row" style="color: var(--danger);">
+                <span>İskonto</span>
+                <span id="summary-discount">-0.00 ₺</span>
+              </div>
+              <div class="total-row final">
+                <span>GENEL TOPLAM</span>
+                <span class="amount" id="summary-total">0.00 ₺</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="action-buttons-container">
+          <button class="btn btn-secondary w-100" onclick="QuoteWizard.downloadPDF()">
+            <i class="ri-file-pdf-line"></i> PDF İndir
+          </button>
+
+          <div class="primary-actions">
+            <button class="btn btn-primary" onclick="QuoteWizard.saveQuote()">
+              <i class="ri-save-line"></i> Kaydet
+            </button>
+            <button class="btn btn-success" style="background-color: var(--success); color: white;"
+              onclick="QuoteWizard.openOfferModal()">
+              <i class="ri-check-double-line"></i> Teklif Yap
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="wizard-actions" id="wizard-nav-buttons">
+        <button id="btn-prev" class="btn btn-secondary" onclick="QuoteWizard.prevStep()" style="visibility: hidden;">
+          <i class="ri-arrow-left-line"></i> Geri
+        </button>
+        <button id="btn-next" class="btn btn-primary" onclick="QuoteWizard.nextStep()">
+          Devam Et <i class="ri-arrow-right-line"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Manual Item Modal -->
+  <div id="manual-item-modal" class="modal">
+    <div class="modal-content">
+      <h3 class="mb-4">Özel Kalem Ekle</h3>
+      <div class="form-group">
+        <label class="form-label">Hizmet/Parça Adı</label>
+        <input type="text" id="manual-item-name" class="form-input" placeholder="Örn: Ekstra İşçilik">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fiyat (₺)</label>
+        <input type="number" id="manual-item-price" class="form-input" placeholder="0.00">
+      </div>
+      <div class="wizard-actions mt-4">
+        <button class="btn btn-secondary" onclick="QuoteWizard.closeManualItemModal()">İptal</button>
+        <button class="btn btn-primary" onclick="QuoteWizard.addManualItem()">Ekle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Offer Selection Modal -->
+  <div id="offer-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header-custom">
+        <h3 class="modal-title-custom">Teklif Gönder</h3>
+        <button class="close-modal-btn" onclick="QuoteWizard.closeOfferModal()">
+          <i class="ri-close-line" style="font-size: 1.5rem;"></i>
+        </button>
+      </div>
+
+      <div class="tab-header">
+        <button class="tab-btn active" onclick="QuoteWizard.switchTab('incoming')">
+          Gelen İstekler
+        </button>
+        <button class="tab-btn" onclick="QuoteWizard.switchTab('pool')">
+          Müşteri Havuzu
+        </button>
+      </div>
+
+      <div id="tab-incoming" class="tab-content active">
+        <div id="incoming-requests-list" class="request-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <div id="tab-pool" class="tab-content">
+        <div id="pool-customers-list" class="request-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <div class="modal-footer-custom">
+        <button id="btn-submit-offer" disabled onclick="QuoteWizard.submitOffer()">
+          <span>TEKLİFİ GÖNDER</span>
+          <i class="ri-arrow-right-line"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/utils.js?v=1.1"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    if (!auth.requireAuth()) {
+      // Redirect handled
+    }
+
+    const QuoteWizard = {
+      currentStep: 1,
+      totalSteps: 5,
+      selectedCustomer: null,
+      selectedCategory: null,
+      selectedServices: [],
+      manualItems: [],
+      allCategories: [], // Store for filtering
+
+      init() {
+        this.updateUI();
+        this.setupEventListeners();
+
+        // Set default date
+        const date = new Date();
+        date.setDate(date.getDate() + 7);
+        const validUntilInput = document.getElementById('valid-until');
+        if (validUntilInput) validUntilInput.valueAsDate = date;
+      },
+
+      setupEventListeners() {
+        const discountInput = document.getElementById('discount-input');
+        const discountType = document.getElementById('discount-type');
+
+        if (discountInput) discountInput.addEventListener('input', () => this.calculateTotal());
+        if (discountType) discountType.addEventListener('change', () => this.calculateTotal());
+      },
+
+      nextStep() {
+        if (!this.validateStep(this.currentStep)) return;
+
+        if (this.currentStep < this.totalSteps) {
+          this.currentStep++;
+          this.updateUI();
+        }
+      },
+
+      prevStep() {
+        if (this.currentStep > 1) {
+          this.currentStep--;
+          this.updateUI();
+        }
+      },
+
+      updateUI() {
+        // Update Steps Visibility
+        document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+        const currentStepEl = document.getElementById(`step-${this.currentStep}`);
+        if (currentStepEl) currentStepEl.classList.add('active');
+
+        // Update Progress Bar
+        document.querySelectorAll('.progress-step').forEach(el => {
+          const step = parseInt(el.dataset.step);
+          el.classList.remove('active', 'completed');
+          if (step === this.currentStep) el.classList.add('active');
+          if (step < this.currentStep) el.classList.add('completed');
+        });
+
+        // Update Progress Line
+        const progress = ((this.currentStep - 1) / (this.totalSteps - 1)) * 100;
+        const lineFill = document.getElementById('progress-line-fill');
+        if (lineFill) lineFill.style.width = `${progress}%`;
+
+        // Update Buttons
+        const prevBtn = document.getElementById('btn-prev');
+        const nextBtn = document.getElementById('btn-next');
+
+        if (prevBtn) prevBtn.style.visibility = this.currentStep === 1 ? 'hidden' : 'visible';
+
+        // Hide default nav buttons on step 5
+        const navButtons = document.getElementById('wizard-nav-buttons');
+        if (navButtons) {
+          navButtons.style.display = this.currentStep === 5 ? 'none' : 'flex';
+        }
+
+        if (nextBtn) {
+          if (this.currentStep === this.totalSteps) {
+            nextBtn.style.display = 'none';
+          } else {
+            nextBtn.style.display = 'inline-flex';
+            nextBtn.innerHTML = 'Devam Et <i class="ri-arrow-right-line"></i>';
+          }
+        }
+
+        // Step Specific Logic
+        if (this.currentStep === 2 && this.allCategories.length === 0) {
+          this.loadCategories();
+        }
+
+        if (this.currentStep === 3) {
+          const titleEl = document.getElementById('selected-category-title');
+          if (titleEl && this.selectedCategory) {
+            titleEl.textContent = this.selectedCategory.name;
+          }
+          this.loadServices();
+        }
+
+        if (this.currentStep === 5) {
+          this.calculateTotal();
+          this.renderSummary();
+        }
+      },
+
+      validateStep(step) {
+        switch (step) {
+          case 1:
+            if (!this.selectedCustomer) {
+              Utils.showToast('Lütfen bir müşteri seçin veya yeni ekleyin', 'warning');
+              return false;
+            }
+            return true;
+          case 2:
+            if (!this.selectedCategory) {
+              Utils.showToast('Lütfen bir hizmet kategorisi seçin', 'warning');
+              return false;
+            }
+            return true;
+          case 3:
+            if (this.selectedServices.length === 0 && this.manualItems.length === 0) {
+              Utils.showToast('Lütfen en az bir hizmet veya parça ekleyin', 'warning');
+              return false;
+            }
+            return true;
+          default:
+            return true;
+        }
+      },
+
+      async searchCustomers(query) {
+        if (query.length < 2) {
+          document.getElementById('customer-results').innerHTML = '';
+          return;
+        }
+
+        try {
+          const token = localStorage.getItem('tamirhanem_token');
+          // Search by username, email, phone, name, or surname
+          const response = await fetch(`${CONFIG.API_BASE_URL}/users?filters[$or][0][username][$contains]=${query}&filters[$or][1][email][$contains]=${query}&filters[$or][2][phone][$contains]=${query}&filters[$or][3][name][$contains]=${query}&filters[$or][4][surname][$contains]=${query}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+
+          if (!response.ok) throw new Error('Search failed');
+
+          const users = await response.json();
+          this.displayCustomerResults(users);
+        } catch (error) {
+          console.error('Search error:', error);
+        }
+      },
+
+      displayCustomerResults(users) {
+        const container = document.getElementById('customer-results');
+        if (!users || users.length === 0) {
+          container.innerHTML = '<p class="text-muted text-center p-3">Müşteri bulunamadı</p>';
+          return;
+        }
+
+        container.innerHTML = users.map(user => {
+          const displayName = (user.name && user.surname) ? `${user.name} ${user.surname}` : (user.username || 'İsimsiz Müşteri');
+          const userData = JSON.stringify({
+            id: user.id,
+            username: user.username,
+            name: user.name,
+            surname: user.surname,
+            phone: user.phone,
+            email: user.email
+          }).replace(/'/g, "&#39;");
+
+          return `
+                <div class="customer-result-item" onclick='QuoteWizard.selectCustomer(${userData})'>
+                  <i class="ri-user-line"></i>
+                  <div>
+                    <div style="font-weight: 700; color: var(--text-main);">${Utils.escapeHTML(displayName)}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">
+                        ${Utils.escapeHTML(user.phone || '')} 
+                        ${user.email ? '• ' + Utils.escapeHTML(user.email) : ''}
+                    </div>
+                  </div>
+                </div>
+              `;
+        }).join('');
+      },
+
+      selectCustomer(customer) {
+        this.selectedCustomer = {
+          id: customer.id,
+          name: (customer.name && customer.surname) ? `${customer.name} ${customer.surname}` : customer.username,
+          phone: customer.phone,
+          email: customer.email
+        };
+
+        document.getElementById('selected-customer-name').textContent = this.selectedCustomer.name;
+        document.getElementById('selected-customer-contact').textContent = `${this.selectedCustomer.phone || ''} ${this.selectedCustomer.email ? '• ' + this.selectedCustomer.email : ''}`;
+
+        document.getElementById('selected-customer-display').style.display = 'flex';
+        document.getElementById('customer-search').value = '';
+        document.getElementById('customer-results').innerHTML = '';
+      },
+
+      selectNewCustomer() {
+        const name = document.getElementById('new-customer-name').value.trim();
+        const phone = document.getElementById('new-customer-phone').value.trim();
+        const email = document.getElementById('new-customer-email').value.trim();
+
+        if (!name || !phone) {
+          Utils.showToast('Lütfen ad ve telefon bilgilerini girin', 'warning');
+          return;
+        }
+
+        this.selectedCustomer = { name, phone, email, isNew: true };
+
+        document.getElementById('selected-customer-name').textContent = name;
+        document.getElementById('selected-customer-contact').textContent = `${phone} ${email ? '• ' + email : ''}`;
+
+        document.getElementById('selected-customer-display').style.display = 'flex';
+
+        document.getElementById('new-customer-name').value = '';
+        document.getElementById('new-customer-phone').value = '';
+        document.getElementById('new-customer-email').value = '';
+      },
+
+      clearCustomer() {
+        this.selectedCustomer = null;
+        document.getElementById('selected-customer-display').style.display = 'none';
+      },
+
+      async loadCategories() {
+        try {
+          document.getElementById('categories-loading').style.display = 'block';
+          document.getElementById('categories-error').style.display = 'none';
+
+          const response = await fetch(`${CONFIG.API_BASE_URL}/categories?populate=*`);
+          if (!response.ok) throw new Error('Failed to load categories');
+
+          const data = await response.json();
+          this.allCategories = data.data || [];
+
+          this.renderCategories(this.allCategories);
+
+          document.getElementById('categories-loading').style.display = 'none';
+        } catch (error) {
+          console.error('Categories load error:', error);
+          document.getElementById('categories-loading').style.display = 'none';
+          document.getElementById('categories-error').style.display = 'block';
+        }
+      },
+
+      renderCategories(categories) {
+        const container = document.getElementById('categories-container');
+        container.innerHTML = categories.map(cat => {
+          const iconUrl = cat.attributes?.icon?.data?.attributes?.url;
+          const fullIconUrl = iconUrl ? Utils.getStrapiImageUrl(iconUrl) : null;
+
+          return `
+                <div class="category-card" onclick="QuoteWizard.selectCategory(${cat.id}, '${Utils.escapeHTML(cat.attributes?.name || '')}', event)">
+                  ${fullIconUrl
+              ? `<img src="${fullIconUrl}" alt="${cat.attributes?.name}">`
+              : '<i class="ri-tools-line"></i>'}
+                  <h3>${Utils.escapeHTML(cat.attributes?.name || '')}</h3>
+                </div>
+              `;
+        }).join('');
+      },
+
+      filterCategories(query) {
+        if (!query) {
+          this.renderCategories(this.allCategories);
+          return;
+        }
+        const lowerQuery = query.toLowerCase();
+        const filtered = this.allCategories.filter(cat =>
+          (cat.attributes?.name || '').toLowerCase().includes(lowerQuery)
+        );
+        this.renderCategories(filtered);
+      },
+
+      selectCategory(id, name, event) {
+        this.selectedCategory = { id, name };
+        document.querySelectorAll('.category-card').forEach(card => card.classList.remove('selected'));
+        if (event && event.target) {
+          const card = event.target.closest('.category-card');
+          if (card) card.classList.add('selected');
+        }
+
+        this.selectedServices = [];
+        document.getElementById('additional-services-container').innerHTML = '';
+
+        setTimeout(() => this.nextStep(), 300);
+      },
+
+      async loadServices() {
+        if (!this.selectedCategory) return;
+
+        const container = document.getElementById('additional-services-container');
+        if (container.children.length > 0) return;
+
+        try {
+          document.getElementById('additional-services-loading').style.display = 'block';
+
+          const token = localStorage.getItem('tamirhanem_token');
+          const response = await fetch(
+            `${CONFIG.API_BASE_URL}/service-pricings/by-category/${this.selectedCategory.id}`,
+            { headers: { 'Authorization': `Bearer ${token}` } }
+          );
+
+          if (!response.ok) throw new Error('Failed to load services');
+
+          const result = await response.json();
+          // API returns flat array of items in data
+          const services = result.data || [];
+
+          container.innerHTML = services.map(item => {
+            const itemData = JSON.stringify(item).replace(/"/g, '&quot;');
+            const isChecked = this.selectedServices.find(s => s.name === item.name) ? 'checked' : '';
+
+            return `
+                  <label class="service-checkbox">
+                    <input type="checkbox" ${isChecked} onchange="QuoteWizard.toggleService(this, ${itemData})">
+                    <div class="service-info">
+                      <span class="service-name">${Utils.escapeHTML(item.name)}</span>
+                      <span class="service-price">${item.price} ₺</span>
+                    </div>
+                  </label>
+                `;
+          }).join('');
+
+          if (container.innerHTML === '') {
+            container.innerHTML = '<p class="text-muted text-center">Bu kategoride tanımlı hizmet bulunamadı.</p>';
+          }
+
+          document.getElementById('additional-services-loading').style.display = 'none';
+        } catch (error) {
+          console.error('Services load error:', error);
+          document.getElementById('additional-services-loading').style.display = 'none';
+          Utils.showToast('Hizmetler yüklenemedi', 'error');
+        }
+      },
+
+      toggleService(checkbox, item) {
+        if (checkbox.checked) {
+          this.selectedServices.push(item);
+        } else {
+          this.selectedServices = this.selectedServices.filter(s => s.name !== item.name);
+        }
+      },
+
+      openManualItemModal() {
+        document.getElementById('manual-item-modal').classList.add('show');
+        document.getElementById('manual-item-name').value = '';
+        document.getElementById('manual-item-price').value = '';
+      },
+
+      closeManualItemModal() {
+        document.getElementById('manual-item-modal').classList.remove('show');
+      },
+
+      addManualItem() {
+        const name = document.getElementById('manual-item-name').value.trim();
+        const price = parseFloat(document.getElementById('manual-item-price').value);
+
+        if (!name || isNaN(price)) {
+          Utils.showToast('Lütfen geçerli bir isim ve fiyat girin', 'warning');
+          return;
+        }
+
+        this.manualItems.push({ name, price, isManual: true });
+        this.displayManualItems();
+        this.closeManualItemModal();
+      },
+
+      displayManualItems() {
+        const container = document.getElementById('manual-items-container');
+        if (!container) return;
+
+        if (this.manualItems.length === 0) {
+          container.innerHTML = '';
+          return;
+        }
+
+        container.innerHTML = '<h4 class="mt-4 mb-3">Özel Kalemler</h4>' + this.manualItems.map((item, index) => `
+              <div class="service-checkbox" style="cursor: default;">
+                <div class="service-info">
+                  <span>${Utils.escapeHTML(item.name)} <span class="badge bg-warning text-dark" style="font-size: 0.7em; padding: 2px 6px; border-radius: 4px;">MANUEL</span></span>
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="text-primary font-weight-bold">${item.price} ₺</span>
+                    <button onclick="QuoteWizard.removeManualItem(${index})" class="btn btn-sm btn-danger" style="padding: 4px 8px;">
+                      <i class="ri-delete-bin-line"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `).join('');
+      },
+
+      removeManualItem(index) {
+        this.manualItems.splice(index, 1);
+        this.displayManualItems();
+      },
+
+      selectedOfferRequest: null, // For the offer modal
+
+      calculateTotal() {
+        const servicesTotal = this.selectedServices.reduce((sum, item) => sum + parseFloat(item.price), 0);
+        const manualTotal = this.manualItems.reduce((sum, item) => sum + parseFloat(item.price), 0);
+        const subtotal = servicesTotal + manualTotal;
+
+        const discountInput = parseFloat(document.getElementById('discount-input').value) || 0;
+        const discountType = document.getElementById('discount-type').value;
+
+        let discountAmount = 0;
+        if (discountType === 'percentage') {
+          discountAmount = subtotal * (discountInput / 100);
+        } else {
+          discountAmount = discountInput;
+        }
+
+        const discountedSubtotal = Math.max(0, subtotal - discountAmount);
+
+        // VAT Calculation (20%)
+        const vatRate = 0.20;
+        const vatAmount = discountedSubtotal * vatRate;
+        const total = discountedSubtotal + vatAmount;
+
+        document.getElementById('summary-subtotal').textContent = Utils.formatCurrency(subtotal);
+        document.getElementById('summary-discount').textContent = `-${Utils.formatCurrency(discountAmount)}`;
+
+        // Add VAT display if not exists
+        let vatRow = document.getElementById('summary-vat-row');
+        if (!vatRow) {
+          const totalsContainer = document.querySelector('.summary-totals');
+          const totalRow = document.querySelector('.total-row.final');
+          vatRow = document.createElement('div');
+          vatRow.id = 'summary-vat-row';
+          vatRow.className = 'total-row';
+          vatRow.innerHTML = `<span>KDV (%20)</span><span id="summary-vat">0.00 ₺</span>`;
+          totalsContainer.insertBefore(vatRow, totalRow);
+        }
+        document.getElementById('summary-vat').textContent = Utils.formatCurrency(vatAmount);
+
+        document.getElementById('summary-total').textContent = Utils.formatCurrency(total);
+
+        return { subtotal, discountAmount, vatAmount, total };
+      },
+
+      renderSummary() {
+        // Set Date
+        const dateEl = document.getElementById('summary-date');
+        if (dateEl) dateEl.textContent = new Date().toLocaleDateString('tr-TR');
+
+        // Render Customer
+        const customerHtml = `
+              <div class="summary-customer-card">
+                <div class="summary-customer-avatar">
+                    <i class="ri-user-star-line"></i>
+                </div>
+                <div class="summary-customer-info">
+                    <h4>${Utils.escapeHTML(this.selectedCustomer.name)}</h4>
+                    <p>
+                        <i class="ri-phone-line" style="vertical-align: middle;"></i> ${Utils.escapeHTML(this.selectedCustomer.phone || '')} 
+                        ${this.selectedCustomer.email ? `<span class="mx-2">•</span> <i class="ri-mail-line" style="vertical-align: middle;"></i> ${Utils.escapeHTML(this.selectedCustomer.email)}` : ''}
+                    </p>
+                </div>
+              </div>
+            `;
+        document.getElementById('summary-customer').innerHTML = customerHtml;
+
+        // Render Services Table
+        const allItems = [...this.selectedServices, ...this.manualItems];
+        const servicesHtml = allItems.map(item => `
+              <tr>
+                <td>
+                    <div style="font-weight: 500;">${Utils.escapeHTML(item.name)}</div>
+                    ${item.isManual ? '<span class="badge bg-warning text-dark" style="font-size: 0.7em;">Özel Kalem</span>' : ''}
+                </td>
+                <td class="price-col" style="text-align: right; font-weight: 600;">${Utils.formatCurrency(item.price)}</td>
+              </tr>
+            `).join('');
+
+        const tbody = document.getElementById('summary-services-body');
+        if (tbody) {
+          tbody.innerHTML = servicesHtml || '<tr><td colspan="2" class="text-center text-muted py-4">Hizmet seçilmedi</td></tr>';
+        }
+      },
+
+      async saveQuote() {
+        Utils.showLoading();
+        try {
+          const totals = this.calculateTotal();
+          const token = localStorage.getItem('tamirhanem_token');
+
+          const discountType = document.getElementById('discount-type').value;
+          const discountInput = parseFloat(document.getElementById('discount-input').value) || 0;
+
+          const quoteData = {
+            data: {
+              customer: {
+                name: this.selectedCustomer.name,
+                phone: this.selectedCustomer.phone,
+                email: this.selectedCustomer.email
+              },
+              items: [...this.selectedServices, ...this.manualItems],
+              subtotal: totals.subtotal,
+              discount: discountInput > 0 ? {
+                type: discountType === 'percentage' ? 'percent' : 'fixed',
+                value: discountInput
+              } : null,
+              totalAmount: totals.total,
+              validUntil: document.getElementById('valid-until').value,
+              internalNotes: document.getElementById('internal-notes').value,
+              customerNotes: document.getElementById('customer-notes').value,
+              status: 'pending'
+            }
+          };
+
+          const response = await fetch(`${CONFIG.API_BASE_URL}/quotes`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(quoteData)
+          });
+
+          if (!response.ok) throw new Error('Kaydetme başarısız');
+
+          Utils.showToast('Teklif taslağı kaydedildi', 'success');
+          setTimeout(() => {
+            window.location.href = '/pages/service-panel.html';
+          }, 1500);
+
+        } catch (error) {
+          console.error('Save error:', error);
+          Utils.showToast('Kaydetme hatası', 'error');
+        } finally {
+          Utils.hideLoading();
+        }
+      },
+
+      async convertToAppointment() {
+        await this.saveQuote();
+      },
+
+      async downloadPDF() {
+        const element = document.querySelector('.summary-container');
+        const originalActions = document.querySelector('.action-buttons-container');
+
+        // Hide actions for capture
+        if (originalActions) originalActions.style.display = 'none';
+
+        Utils.showLoading();
+
+        try {
+          if (!window.html2canvas || !window.jspdf) {
+            throw new Error('PDF libraries not loaded');
+          }
+
+          const canvas = await html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff'
+          });
+
+          const imgData = canvas.toDataURL('image/png');
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF('p', 'mm', 'a4');
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+          pdf.addImage(imgData, 'PNG', 0, 20, pdfWidth, pdfHeight);
+          pdf.save(`Teklif_${this.selectedCustomer.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
+
+          Utils.showToast('PDF başarıyla indirildi', 'success');
+        } catch (error) {
+          console.error('PDF Error:', error);
+          Utils.showToast('PDF oluşturulurken hata oluştu', 'error');
+        } finally {
+          if (originalActions) originalActions.style.display = 'grid';
+          Utils.hideLoading();
+        }
+      },
+
+      // Offer Modal Logic
+      openOfferModal() {
+        document.getElementById('offer-modal').classList.add('show');
+        this.switchTab('incoming'); // Default tab
+      },
+
+      closeOfferModal() {
+        document.getElementById('offer-modal').classList.remove('show');
+        this.selectedOfferRequest = null;
+        document.getElementById('btn-submit-offer').disabled = true;
+      },
+
+      switchTab(tabName) {
+        // Update Tabs
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        // Activate selected
+        const btn = document.querySelector(`.tab-btn[onclick*="'${tabName}'"]`);
+        if (btn) btn.classList.add('active');
+        document.getElementById(`tab-${tabName}`).classList.add('active');
+
+        // Load Data
+        if (tabName === 'incoming') {
+          this.loadIncomingRequests();
+        } else {
+          this.loadPoolCustomers();
+        }
+      },
+
+      async loadIncomingRequests() {
+        const container = document.getElementById('incoming-requests-list');
+        container.innerHTML = '<div class="text-center py-5" style="grid-column: 1/-1;"><div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div><p class="mt-3 text-muted">Yükleniyor...</p></div>';
+
+        try {
+          const token = localStorage.getItem('tamirhanem_token');
+          // Use the custom endpoint that filters by the logged-in service's offers
+          const response = await fetch(`${CONFIG.API_BASE_URL}/appointments/my-offer-requests`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.error('Incoming requests error:', response.status, errorData);
+            throw new Error('Failed to load requests');
+          }
+
+          const data = await response.json();
+          const requests = Array.isArray(data) ? data : (data.data || []);
+
+          if (requests.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-5" style="grid-column: 1/-1;">
+                    <div style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem;"><i class="ri-inbox-archive-line"></i></div>
+                    <h4 style="color: #64748b;">Bekleyen teklif isteği yok</h4>
+                    <p class="text-muted">Şu an için size yönlendirilen yeni bir talep bulunmuyor.</p>
+                </div>`;
+            return;
+          }
+
+          container.innerHTML = requests.map(req => {
+            const r = req.attributes || req;
+            const user = r.user?.data?.attributes || r.user || {};
+            const vehicle = r.vehicle?.data?.attributes || r.vehicle || {};
+            const attachments = r.attachments?.data || [];
+
+            const name = user.name || '';
+            const surname = user.surname || '';
+            const fullName = (name + ' ' + surname).trim() || user.username || 'Müşteri';
+            const initial = fullName.charAt(0).toUpperCase();
+
+            // Use faultDescription instead of note
+            const issue = r.faultDescription || r.note || 'Belirtilmemiş';
+            const date = r.preferredDateTime ? new Date(r.preferredDateTime).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Tarih yok';
+
+            // Generate media HTML
+            let mediaHtml = '';
+            if (attachments.length > 0) {
+              mediaHtml = '<div class="media-gallery">';
+              attachments.forEach(att => {
+                const url = `${CONFIG.API_BASE_URL}${att.attributes?.url || att.url}`;
+                const mime = att.attributes?.mime || att.mime || '';
+
+                if (mime.startsWith('image/')) {
+                  mediaHtml += `
+                            <div class="media-item" onclick="window.open('${url}', '_blank')">
+                                <img src="${url}" loading="lazy" alt="Araç görseli">
+                                <div class="media-type-icon"><i class="ri-image-line"></i></div>
+                            </div>`;
+                } else if (mime.startsWith('video/')) {
+                  mediaHtml += `
+                            <div class="media-item" onclick="window.open('${url}', '_blank')">
+                                <video src="${url}" style="width:100%; height:100%; object-fit:cover;"></video>
+                                <div class="media-type-icon"><i class="ri-play-fill"></i></div>
+                            </div>`;
+                } else if (mime.startsWith('audio/')) {
+                  mediaHtml += `<audio controls class="audio-player" src="${url}"></audio>`;
+                }
+              });
+              mediaHtml += '</div>';
+            }
+
+            return `
+                    <div class="request-card" id="card-${req.id}" onclick="QuoteWizard.selectOfferRequest(${req.id}, this)">
+                        <div class="card-header-info">
+                            <div class="card-avatar">${initial}</div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div class="card-title text-truncate">${Utils.escapeHTML(fullName)}</div>
+                                <div class="card-vehicle-badge">
+                                    <i class="ri-roadster-line"></i>
+                                    <span class="vehicle-text">
+                                        ${Utils.escapeHTML(vehicle.brand || '')} ${Utils.escapeHTML(vehicle.model || '')}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-section">
+                            <div class="info-row highlight">
+                                <i class="ri-tools-line"></i>
+                                <span style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${Utils.escapeHTML(issue)}</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <i class="ri-calendar-event-line"></i>
+                                <span>${date}</span>
+                            </div>
+                        </div>
+
+                        <button class="btn-card-details" onclick="event.stopPropagation(); QuoteWizard.toggleCardDetails(${req.id})">
+                            <span>Teklif Detayları</span>
+                            <i class="ri-arrow-down-s-line"></i>
+                        </button>
+
+                        <div class="card-expanded-content" onclick="event.stopPropagation()">
+                            <div class="card-tabs">
+                                <button class="card-tab-btn active" onclick="QuoteWizard.switchCardTab(${req.id}, 'vehicle')">Araç</button>
+                                <button class="card-tab-btn" onclick="QuoteWizard.switchCardTab(${req.id}, 'customer')">Müşteri</button>
+                                <button class="card-tab-btn" onclick="QuoteWizard.switchCardTab(${req.id}, 'request')">Talep & Medya</button>
+                            </div>
+
+                            <div id="card-tab-${req.id}-vehicle" class="card-tab-content active">
+                                <div class="detail-grid">
+                                    <div class="detail-item"><label>Marka/Model</label><div>${Utils.escapeHTML(vehicle.brand || '-')} ${Utils.escapeHTML(vehicle.model || '-')}</div></div>
+                                    <div class="detail-item"><label>Plaka</label><div>${Utils.escapeHTML(vehicle.plate || '-')}</div></div>
+                                    <div class="detail-item"><label>Yıl</label><div>${Utils.escapeHTML(vehicle.year || '-')}</div></div>
+                                    <div class="detail-item"><label>Yakıt</label><div>${Utils.escapeHTML(vehicle.fuelType || '-')}</div></div>
+                                    <div class="detail-item"><label>KM</label><div>${vehicle.km ? vehicle.km + ' km' : '-'}</div></div>
+                                    <div class="detail-item"><label>Şasi No</label><div>${Utils.escapeHTML(vehicle.chassisNumber || '-')}</div></div>
+                                </div>
+                            </div>
+
+                            <div id="card-tab-${req.id}-customer" class="card-tab-content">
+                                <div class="detail-grid">
+                                    <div class="detail-item"><label>Ad Soyad</label><div>${Utils.escapeHTML(fullName)}</div></div>
+                                    <div class="detail-item"><label>Telefon</label><div>${Utils.escapeHTML(user.phone || user.phoneNumber || '-')}</div></div>
+                                    <div class="detail-item"><label>E-posta</label><div>${Utils.escapeHTML(user.email || '-')}</div></div>
+                                </div>
+                            </div>
+
+                            <div id="card-tab-${req.id}-request" class="card-tab-content">
+                                <div class="detail-item mb-3" style="background: #fff; border-color: var(--primary);">
+                                    <label style="color: var(--primary-dark);">Arıza Tanımı</label>
+                                    <div>${Utils.escapeHTML(issue)}</div>
+                                </div>
+                                <div class="detail-grid mb-3">
+                                    <div class="detail-item"><label>Oluşturulma</label><div>${new Date(r.createdAt).toLocaleDateString('tr-TR')}</div></div>
+                                    <div class="detail-item"><label>Tercih Edilen Tarih</label><div>${date}</div></div>
+                                </div>
+                                ${mediaHtml ? `<h5 class="mt-4 mb-3 small text-muted font-weight-bold" style="letter-spacing: 1px;">MEDYA DOSYALARI</h5>${mediaHtml}` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+          }).join('');
+
+        } catch (error) {
+          console.error('Load incoming error:', error);
+          container.innerHTML = '<p class="text-danger text-center">Yükleme hatası</p>';
+        }
+      },
+
+      async loadPoolCustomers() {
+        const container = document.getElementById('pool-customers-list');
+        container.innerHTML = '<div class="text-center py-5" style="grid-column: 1/-1;"><div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div><p class="mt-3 text-muted">Yükleniyor...</p></div>';
+
+        try {
+          const token = localStorage.getItem('tamirhanem_token');
+          const response = await fetch(`${CONFIG.API_BASE_URL}/appointments/general-pool`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+
+          if (!response.ok) throw new Error('Failed to load pool');
+
+          const data = await response.json();
+          // Handle potential array or object wrapper
+          const pool = Array.isArray(data) ? data : (data.data || []);
+
+          if (pool.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-5" style="grid-column: 1/-1;">
+                    <div style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem;"><i class="ri-group-line"></i></div>
+                    <h4 style="color: #64748b;">Havuzda müşteri yok</h4>
+                    <p class="text-muted">Şu an için genel havuzda bekleyen müşteri bulunmuyor.</p>
+                </div>`;
+            return;
+          }
+
+          container.innerHTML = pool.map(item => {
+            const apt = item.attributes || item;
+            const user = apt.user?.data?.attributes || apt.user || {};
+            const vehicle = apt.vehicle?.data?.attributes || apt.vehicle || {};
+            const attachments = apt.attachments?.data || [];
+
+            const name = user.name || '';
+            const surname = user.surname || '';
+            const fullName = (name + ' ' + surname).trim() || user.username || 'Müşteri';
+            const initial = fullName.charAt(0).toUpperCase();
+
+            const issue = apt.faultDescription || 'Arıza belirtilmemiş';
+            const date = apt.preferredDateTime ? new Date(apt.preferredDateTime).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Tarih yok';
+
+            // Generate media HTML
+            let mediaHtml = '';
+            if (attachments.length > 0) {
+              mediaHtml = '<div class="media-gallery">';
+              attachments.forEach(att => {
+                const url = `${CONFIG.API_BASE_URL}${att.attributes?.url || att.url}`;
+                const mime = att.attributes?.mime || att.mime || '';
+
+                if (mime.startsWith('image/')) {
+                  mediaHtml += `
+                            <div class="media-item" onclick="window.open('${url}', '_blank')">
+                                <img src="${url}" loading="lazy" alt="Araç görseli">
+                                <div class="media-type-icon"><i class="ri-image-line"></i></div>
+                            </div>`;
+                } else if (mime.startsWith('video/')) {
+                  mediaHtml += `
+                            <div class="media-item" onclick="window.open('${url}', '_blank')">
+                                <video src="${url}" style="width:100%; height:100%; object-fit:cover;"></video>
+                                <div class="media-type-icon"><i class="ri-play-fill"></i></div>
+                            </div>`;
+                } else if (mime.startsWith('audio/')) {
+                  mediaHtml += `<audio controls class="audio-player" src="${url}"></audio>`;
+                }
+              });
+              mediaHtml += '</div>';
+            }
+
+            return `
+                    <div class="request-card" id="card-${item.id}" onclick="QuoteWizard.selectOfferRequest(${item.id}, this)">
+                        <div class="card-header-info">
+                            <div class="card-avatar" style="background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); color: #4338ca; box-shadow: 0 4px 6px rgba(99, 102, 241, 0.2);">${initial}</div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div class="card-title text-truncate">${Utils.escapeHTML(fullName)}</div>
+                                <div class="card-vehicle-badge">
+                                    <i class="ri-roadster-line"></i>
+                                    <span class="vehicle-text">
+                                        ${Utils.escapeHTML(vehicle.brand || '')} ${Utils.escapeHTML(vehicle.model || '')}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-row highlight">
+                                <i class="ri-tools-line"></i>
+                                <span style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${Utils.escapeHTML(issue)}</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <i class="ri-calendar-event-line"></i>
+                                <span>${date}</span>
+                            </div>
+                        </div>
+
+                        <button class="btn-card-details" onclick="event.stopPropagation(); QuoteWizard.toggleCardDetails(${item.id})">
+                            <span>Teklif Detayları</span>
+                            <i class="ri-arrow-down-s-line"></i>
+                        </button>
+
+                        <div class="card-expanded-content" onclick="event.stopPropagation()">
+                            <div class="card-tabs">
+                                <button class="card-tab-btn active" onclick="QuoteWizard.switchCardTab(${item.id}, 'vehicle')">Araç</button>
+                                <button class="card-tab-btn" onclick="QuoteWizard.switchCardTab(${item.id}, 'customer')">Müşteri</button>
+                                <button class="card-tab-btn" onclick="QuoteWizard.switchCardTab(${item.id}, 'request')">Talep & Medya</button>
+                            </div>
+
+                            <div id="card-tab-${item.id}-vehicle" class="card-tab-content active">
+                                <div class="detail-grid">
+                                    <div class="detail-item"><label>Marka/Model</label><div>${Utils.escapeHTML(vehicle.brand || '-')} ${Utils.escapeHTML(vehicle.model || '-')}</div></div>
+                                    <div class="detail-item"><label>Plaka</label><div>${Utils.escapeHTML(vehicle.plate || '-')}</div></div>
+                                    <div class="detail-item"><label>Yıl</label><div>${Utils.escapeHTML(vehicle.year || '-')}</div></div>
+                                    <div class="detail-item"><label>Yakıt</label><div>${Utils.escapeHTML(vehicle.fuelType || '-')}</div></div>
+                                    <div class="detail-item"><label>KM</label><div>${vehicle.km ? vehicle.km + ' km' : '-'}</div></div>
+                                </div>
+                            </div>
+
+                            <div id="card-tab-${item.id}-customer" class="card-tab-content">
+                                <div class="detail-grid">
+                                    <div class="detail-item"><label>Ad Soyad</label><div>${Utils.escapeHTML(fullName)}</div></div>
+                                    <div class="detail-item"><label>Telefon</label><div>${Utils.escapeHTML(user.phone || user.phoneNumber || '-')}</div></div>
+                                    <div class="detail-item"><label>E-posta</label><div>${Utils.escapeHTML(user.email || '-')}</div></div>
+                                </div>
+                            </div>
+
+                            <div id="card-tab-${item.id}-request" class="card-tab-content">
+                                <div class="detail-item mb-3" style="background: #fff; border-color: var(--primary);">
+                                    <label style="color: var(--primary-dark);">Arıza Tanımı</label>
+                                    <div>${Utils.escapeHTML(issue)}</div>
+                                </div>
+                                <div class="detail-grid mb-3">
+                                    <div class="detail-item"><label>Oluşturulma</label><div>${new Date(apt.createdAt).toLocaleDateString('tr-TR')}</div></div>
+                                    <div class="detail-item"><label>Tercih Edilen Tarih</label><div>${date}</div></div>
+                                </div>
+                                ${mediaHtml ? `<h5 class="mt-4 mb-3 small text-muted font-weight-bold" style="letter-spacing: 1px;">MEDYA DOSYALARI</h5>${mediaHtml}` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+          }).join('');
+
+        } catch (error) {
+          console.error('Load pool error:', error);
+          container.innerHTML = '<p class="text-danger text-center">Yükleme hatası</p>';
+        }
+      },
+
+      toggleCardDetails(id) {
+        const card = document.getElementById(`card-${id}`);
+        const isExpanded = card.classList.contains('expanded');
+
+        // Close all other expanded cards
+        document.querySelectorAll('.request-card.expanded').forEach(el => {
+          el.classList.remove('expanded');
+          const btn = el.querySelector('.btn-card-details');
+          if (btn) {
+            btn.innerHTML = '<span>Teklif Detayları</span><i class="ri-arrow-down-s-line"></i>';
+          }
+        });
+
+        if (!isExpanded) {
+          card.classList.add('expanded');
+          const btn = card.querySelector('.btn-card-details');
+          if (btn) {
+            btn.innerHTML = '<span>Detayları Gizle</span><i class="ri-arrow-up-s-line"></i>';
+          }
+
+          // Auto-select the card when expanded
+          this.selectOfferRequest(id, card);
+        }
+      },
+
+      switchCardTab(id, tabName) {
+        const card = document.getElementById(`card-${id}`);
+        if (!card) return;
+
+        // Update buttons
+        card.querySelectorAll('.card-tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // Update content
+        card.querySelectorAll('.card-tab-content').forEach(content => content.classList.remove('active'));
+        const targetContent = card.querySelector(`#card-tab-${id}-${tabName}`);
+        if (targetContent) targetContent.classList.add('active');
+      },
+
+      selectOfferRequest(id, element) {
+        // If clicking the same card, toggle selection off
+        if (this.selectedOfferRequest === id) {
+          this.selectedOfferRequest = null;
+          element.classList.remove('selected');
+          document.getElementById('btn-submit-offer').disabled = true;
+          return;
+        }
+
+        this.selectedOfferRequest = id;
+        document.querySelectorAll('.request-card').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+        document.getElementById('btn-submit-offer').disabled = false;
+      },
+
+      async submitOffer() {
+        if (!this.selectedOfferRequest) return;
+
+        Utils.showLoading();
+        try {
+          const totals = this.calculateTotal();
+          const token = localStorage.getItem('tamirhanem_token');
+
+          // 1. Create Quote Record
+          const discountType = document.getElementById('discount-type').value;
+          const discountInput = parseFloat(document.getElementById('discount-input').value) || 0;
+
+          const quoteData = {
+            data: {
+              customer: {
+                id: this.selectedCustomer.id,
+                name: this.selectedCustomer.name,
+                phone: this.selectedCustomer.phone,
+                email: this.selectedCustomer.email
+              },
+              items: [...this.selectedServices, ...this.manualItems],
+              subtotal: totals.subtotal,
+              discount: discountInput > 0 ? {
+                type: discountType === 'percentage' ? 'percent' : 'fixed',
+                value: discountInput
+              } : null,
+              totalAmount: totals.total,
+              validUntil: document.getElementById('valid-until').value,
+              internalNotes: document.getElementById('internal-notes').value,
+              customerNotes: document.getElementById('customer-notes').value,
+              status: 'pending',
+              convertedAppointment: this.selectedOfferRequest
+            }
+          };
+
+          const quoteResponse = await fetch(`${CONFIG.API_BASE_URL}/quotes`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(quoteData)
+          });
+
+          if (!quoteResponse.ok) {
+            const errorData = await quoteResponse.json().catch(() => ({}));
+            console.error('Quote creation failed:', {
+              status: quoteResponse.status,
+              error: errorData,
+              sentData: quoteData
+            });
+            throw new Error(errorData.error?.message || 'Teklif oluşturulamadı');
+          }
+
+          // 2. Update Appointment Status (to 'Teklif Verildi')
+          await fetch(`${CONFIG.API_BASE_URL}/appointments/${this.selectedOfferRequest}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              data: {
+                offerStatus: 'Teklif Verildi',
+                offerPrice: totals.total,
+                offerDate: new Date()
+              }
+            })
+          });
+
+          Utils.showToast('Teklif başarıyla gönderildi!', 'success');
+          this.closeOfferModal();
+
+          // Redirect after delay
+          setTimeout(() => {
+            window.location.href = '/pages/service-panel.html';
+          }, 1500);
+
+        } catch (error) {
+          console.error('Submit offer error:', error);
+          Utils.showToast('Teklif gönderilirken hata oluştu', 'error');
+        } finally {
+          Utils.hideLoading();
+        }
+      },
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      QuoteWizard.init();
+    });
+  </script>
+</body>
+
+</html>

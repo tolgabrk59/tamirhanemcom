@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parça Takibi | TamirHanem</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <style>
+    :root {
+      --primary: #FFC507;
+      --primary-dark: #e0ac00;
+      --primary-light: #fff8db;
+      --text-dark: #2c3e50;
+      --text-light: #64748b;
+      --bg-light: #f8f9fa;
+      --white: #ffffff;
+      --danger: #ff4d4f;
+      --danger-bg: #fff1f0;
+      --success: #52c41a;
+      --border-radius: 16px;
+      --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header Styling */
+    .page-header {
+      background: linear-gradient(135deg, #FFC507 0%, #FFD700 100%);
+      padding: 40px 20px 60px;
+      text-align: center;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(255, 197, 7, 0.2);
+      margin-bottom: -30px;
+      z-index: 1;
+    }
+
+    .page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #2c3e50;
+      margin: 0 0 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .page-header p {
+      color: #4a5568;
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    /* Header Buttons */
+    .back-btn,
+    .add-btn {
+      position: absolute;
+      top: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 1.25rem;
+      color: #2c3e50;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-btn {
+      left: 20px;
+    }
+
+    .add-btn {
+      right: 20px;
+    }
+
+    .back-btn:hover,
+    .add-btn:hover {
+      transform: translateY(-2px) scale(1.05);
+      background: #fff;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Container */
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px 100px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 10px 4px 20px;
+      margin-bottom: 10px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      /* Firefox */
+    }
+
+    .filter-bar::-webkit-scrollbar {
+      display: none;
+      /* Chrome, Safari, Opera */
+    }
+
+    .filter-btn {
+      background: var(--white);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      padding: 10px 18px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+
+    .filter-btn:hover {
+      background: #f8f9fa;
+      transform: translateY(-1px);
+    }
+
+    .filter-btn.active {
+      background: #2c3e50;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
+    }
+
+    .filter-btn i {
+      font-size: 1.1rem;
+    }
+
+    /* Tracking Card */
+    .tracking-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid rgba(0, 0, 0, 0.03);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tracking-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+    }
+
+    .tracking-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .tracking-info h3 {
+      margin: 0 0 6px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .part-code {
+      font-family: 'Courier New', monospace;
+      background: #f1f5f9;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      color: #475569;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .tracking-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 1rem;
+    }
+
+    .btn-edit {
+      background: #e6f7ff;
+      color: #1890ff;
+    }
+
+    .btn-edit:hover {
+      background: #1890ff;
+      color: #fff;
+    }
+
+    .btn-delete {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .btn-delete:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .tracking-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+      background: #f8fafc;
+      padding: 16px;
+      border-radius: 12px;
+    }
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    .detail-item i {
+      color: var(--primary-dark);
+      font-size: 1.1rem;
+    }
+
+    /* Timeline Component */
+    .timeline-container {
+      margin: 30px 0 20px;
+      padding: 0 10px;
+    }
+
+    .status-timeline {
+      display: flex;
+      justify-content: space-between;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      position: relative;
+    }
+
+    /* Connecting Line */
+    .status-timeline::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: #e2e8f0;
+      z-index: 0;
+    }
+
+    .status-step {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .step-icon {
+      width: 34px;
+      height: 34px;
+      background: #fff;
+      border: 3px solid #e2e8f0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      transition: var(--transition);
+      color: #cbd5e1;
+      font-size: 1rem;
+    }
+
+    .step-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #94a3b8;
+      transition: var(--transition);
+    }
+
+    /* Completed Step */
+    .status-step.completed .step-icon {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #2c3e50;
+    }
+
+    .status-step.completed .step-label {
+      color: var(--text-dark);
+    }
+
+    /* Active Step */
+    .status-step.active .step-icon {
+      background: #fff;
+      border-color: var(--primary);
+      color: var(--primary-dark);
+      box-shadow: 0 0 0 4px rgba(255, 197, 7, 0.2);
+      transform: scale(1.1);
+    }
+
+    .status-step.active .step-label {
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
+
+    /* Connecting Line Coloring Logic (CSS trick for previous siblings) */
+    /* Note: CSS cannot select previous siblings easily for the line color. 
+           We'll rely on the visual impact of the dots for now, or use JS to color the line segments if needed.
+           For this CSS-only approach, the dots are sufficient. */
+
+    .tracking-notes {
+      margin-top: 16px;
+      padding: 12px;
+      background: #fffbeb;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: #92400e;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .tracking-notes i {
+      margin-top: 3px;
+    }
+
+    /* States (Loading, Error, Empty) */
+    .loading-state,
+    .error-state,
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      background: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      margin-top: 20px;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--bg-light);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    .error-icon,
+    .empty-icon {
+      font-size: 4rem;
+      color: var(--text-light);
+      opacity: 0.3;
+      margin-bottom: 20px;
+    }
+
+    .error-icon {
+      color: var(--danger);
+      opacity: 0.8;
+    }
+
+    .empty-icon {
+      color: var(--primary);
+      opacity: 0.8;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+
+    p {
+      color: var(--text-light);
+      margin-bottom: 20px;
+    }
+
+    /* Modal Styling */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: var(--white);
+      border-radius: 24px;
+      padding: 32px;
+      width: 90%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+
+    .modal.show .modal-content {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--bg-light);
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #2c3e50;
+      margin: 0;
+    }
+
+    .modal-close {
+      background: var(--bg-light);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-light);
+      transition: var(--transition);
+    }
+
+    .modal-close:hover {
+      background: var(--danger-bg);
+      color: var(--danger);
+      transform: rotate(90deg);
+    }
+
+    /* Form Styling */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #eee;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: var(--transition);
+      background: var(--bg-light);
+      color: #2c3e50;
+      box-sizing: border-box;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: var(--white);
+      box-shadow: 0 0 0 4px rgba(255, 197, 7, 0.1);
+    }
+
+    .form-input::placeholder {
+      color: #aaa;
+    }
+
+    /* Primary Button */
+    .btn-primary {
+      background: linear-gradient(135deg, #FFC507 0%, #FFD700 100%);
+      color: #2c3e50;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(255, 197, 7, 0.3);
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255, 197, 7, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--bg-light);
+      color: var(--text-dark);
+      border: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      width: 100%;
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    /* Toast Notifications */
+    #toast-container {
+      position: fixed;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: rgba(40, 40, 40, 0.95);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 50px;
+      margin-bottom: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      opacity: 0;
+      transform: translateY(-30px) scale(0.9);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      min-width: 300px;
+      max-width: 90vw;
+      justify-content: center;
+      font-weight: 500;
+      pointer-events: auto;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .toast-success {
+      background: rgba(39, 174, 96, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .toast-error {
+      background: rgba(231, 76, 60, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Responsive Timeline */
+    @media (max-width: 600px) {
+      .status-timeline {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        padding-left: 20px;
+      }
+
+      .status-timeline::before {
+        width: 3px;
+        height: 100%;
+        top: 0;
+        left: 36px;
+        /* Adjust based on icon size/padding */
+      }
+
+      .status-step {
+        flex-direction: row;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+        text-align: left;
+      }
+
+      .step-icon {
+        margin-bottom: 0;
+        min-width: 34px;
+      }
+
+      .container {
+        padding: 0 16px 80px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-header">
+    <button class="back-btn" onclick="window.history.back()">
+      <i class="ri-arrow-left-line"></i>
+    </button>
+    <h1><i class="ri-tools-line"></i> Parça Takibi</h1>
+    <p>Sipariş edilen parçaların durumunu takip edin</p>
+    <button class="add-btn" onclick="PartTrackingManager.openAddModal()">
+      <i class="ri-add-line"></i>
+    </button>
+  </div>
+
+  <div class="container">
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <button class="filter-btn active" data-status="all" onclick="PartTrackingManager.filterByStatus('all')">
+        <i class="ri-list-check"></i> Tümü
+      </button>
+      <button class="filter-btn" data-status="ordered" onclick="PartTrackingManager.filterByStatus('ordered')">
+        <i class="ri-shopping-cart-line"></i> Sipariş Edildi
+      </button>
+      <button class="filter-btn" data-status="in_transit" onclick="PartTrackingManager.filterByStatus('in_transit')">
+        <i class="ri-truck-line"></i> Yolda
+      </button>
+      <button class="filter-btn" data-status="arrived" onclick="PartTrackingManager.filterByStatus('arrived')">
+        <i class="ri-inbox-line"></i> Geldi
+      </button>
+      <button class="filter-btn" data-status="installed" onclick="PartTrackingManager.filterByStatus('installed')">
+        <i class="ri-checkbox-circle-line"></i> Takıldı
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading-state" class="loading-state">
+      <div class="loading-spinner"></div>
+      <h2>Yükleniyor...</h2>
+      <p>Parça takip bilgileri getiriliyor</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="error-state" class="error-state" style="display: none;">
+      <div class="error-icon"><i class="ri-error-warning-line"></i></div>
+      <h2>Bir Hata Oluştu</h2>
+      <p id="error-message"></p>
+      <button class="btn-retry" onclick="PartTrackingManager.init()">
+        <i class="ri-refresh-line"></i> Tekrar Dene
+      </button>
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="empty-state" style="display: none;">
+      <div class="empty-icon"><i class="ri-inbox-line"></i></div>
+      <h2>Henüz Takip Kaydı Yok</h2>
+      <p>İlk parça takibinizi ekleyerek başlayın</p>
+      <button class="btn-primary" onclick="PartTrackingManager.openAddModal()">
+        <i class="ri-add-line"></i> Yeni Takip Ekle
+      </button>
+    </div>
+
+    <!-- Part Tracking List -->
+    <div id="tracking-list" class="tracking-list" style="display: none;">
+      <!-- Dynamic content -->
+    </div>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div id="tracking-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title">Yeni Parça Takibi</h2>
+        <button class="modal-close" onclick="PartTrackingManager.closeModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+      <form id="tracking-form" onsubmit="PartTrackingManager.saveTracking(event)">
+        <div class="form-group">
+          <label class="form-label">Parça Adı *</label>
+          <input type="text" id="part-name" class="form-input" placeholder="Örn: Fren Diski" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Parça Kodu *</label>
+          <input type="text" id="part-code" class="form-input" placeholder="Örn: FD-001" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Sipariş Tarihi *</label>
+            <input type="date" id="order-date" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tahmini Varış</label>
+            <input type="date" id="expected-arrival" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Durum *</label>
+          <select id="status" class="form-input" required>
+            <option value="ordered">Sipariş Edildi</option>
+            <option value="in_transit">Yolda</option>
+            <option value="arrived">Geldi</option>
+            <option value="installed">Takıldı</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Takip Numarası</label>
+          <input type="text" id="tracking-number" class="form-input" placeholder="Kargo takip numarası">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tedarikçi</label>
+          <input type="text" id="supplier" class="form-input" placeholder="Tedarikçi adı">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Notlar</label>
+          <textarea id="notes" class="form-input" rows="3" placeholder="Ek notlar..."></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="PartTrackingManager.closeModal()">
+            İptal
+          </button>
+          <button type="submit" class="btn-primary" id="submit-btn">
+            <i class="ri-save-line"></i> Kaydet
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    // Check authentication
+    if (!auth.requireAuth()) {
+      // Redirect handled
+    }
+
+    const PartTrackingManager = {
+      serviceId: null,
+      trackingData: [],
+      filteredData: [],
+      editingId: null,
+      currentFilter: 'all',
+
+      async init() {
+        try {
+          this.showLoading();
+
+          const token = localStorage.getItem('tamirhanem_token');
+          const userData = Utils.storage.get('tamirhanem_user');
+
+          if (!token || !userData || !userData.serviceId) {
+            throw new Error('Yetkilendirme bilgileri eksik veya servis seçilmemiş.');
+          }
+
+          this.serviceId = userData.serviceId;
+
+          // Set today's date as default for order date
+          const today = new Date().toISOString().split('T')[0];
+          document.getElementById('order-date').value = today;
+
+          await this.fetchTracking();
+        } catch (error) {
+          console.error('Init error:', error);
+          this.showError(error.message);
+        }
+      },
+
+      async fetchTracking() {
+        try {
+          const token = localStorage.getItem('tamirhanem_token');
+          const response = await fetch(
+            `${CONFIG.API_BASE_URL}/part-trackings?populate=appointment&sort=createdAt:desc`,
+            {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error('Takip bilgileri yüklenemedi.');
+          }
+
+          const data = await response.json();
+          this.trackingData = data.data || [];
+          this.filterByStatus(this.currentFilter);
+        } catch (error) {
+          console.error('Fetch error:', error);
+          throw error;
+        }
+      },
+
+      filterByStatus(status) {
+        this.currentFilter = status;
+
+        // Update active filter button
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.dataset.status === status) {
+            btn.classList.add('active');
+          }
+        });
+
+        // Filter data
+        if (status === 'all') {
+          this.filteredData = [...this.trackingData];
+        } else {
+          this.filteredData = this.trackingData.filter(item =>
+            item.attributes.status === status
+          );
+        }
+
+        this.renderTracking();
+      },
+
+      renderTracking() {
+        const container = document.getElementById('tracking-list');
+
+        if (this.filteredData.length === 0) {
+          this.showEmpty();
+          return;
+        }
+
+        container.innerHTML = this.filteredData.map(item => {
+          const attrs = item.attributes;
+          return `
+                        <div class="tracking-card">
+                            <div class="tracking-card-header">
+                                <div class="tracking-info">
+                                    <h3 class="part-name">${attrs.part_name}</h3>
+                                    <span class="part-code">${attrs.part_code}</span>
+                                </div>
+                                <div class="tracking-actions">
+                                    <button class="btn-icon btn-edit" onclick="PartTrackingManager.openEditModal(${item.id})" title="Düzenle">
+                                        <i class="ri-edit-line"></i>
+                                    </button>
+                                    <button class="btn-icon btn-delete" onclick="PartTrackingManager.deleteTracking(${item.id})" title="Sil">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="tracking-details">
+                                ${attrs.supplier ? `<div class="detail-item"><i class="ri-store-line"></i> ${attrs.supplier}</div>` : ''}
+                                ${attrs.tracking_number ? `<div class="detail-item"><i class="ri-barcode-line"></i> ${attrs.tracking_number}</div>` : ''}
+                                <div class="detail-item"><i class="ri-calendar-line"></i> Sipariş: ${Utils.formatDate(attrs.order_date)}</div>
+                                ${attrs.expected_arrival ? `<div class="detail-item"><i class="ri-time-line"></i> Tahmini: ${Utils.formatDate(attrs.expected_arrival)}</div>` : ''}
+                            </div>
+
+                            <div class="timeline-container">
+                                <ul class="status-timeline">
+                                    <li class="status-step ${this.getStepClass('ordered', attrs.status)}">
+                                        <div class="step-icon"><i class="ri-shopping-cart-line"></i></div>
+                                        <div class="step-label">Sipariş Edildi</div>
+                                    </li>
+                                    <li class="status-step ${this.getStepClass('in_transit', attrs.status)}">
+                                        <div class="step-icon"><i class="ri-truck-line"></i></div>
+                                        <div class="step-label">Yolda</div>
+                                    </li>
+                                    <li class="status-step ${this.getStepClass('arrived', attrs.status)}">
+                                        <div class="step-icon"><i class="ri-inbox-line"></i></div>
+                                        <div class="step-label">Geldi</div>
+                                    </li>
+                                    <li class="status-step ${this.getStepClass('installed', attrs.status)}">
+                                        <div class="step-icon"><i class="ri-checkbox-circle-line"></i></div>
+                                        <div class="step-label">Takıldı</div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            ${attrs.notes ? `<div class="tracking-notes"><i class="ri-sticky-note-line"></i> ${attrs.notes}</div>` : ''}
+                        </div>
+                    `;
+        }).join('');
+
+        this.showList();
+      },
+
+      getStepClass(stepStatus, currentStatus) {
+        const statusOrder = ['ordered', 'in_transit', 'arrived', 'installed'];
+        const stepIndex = statusOrder.indexOf(stepStatus);
+        const currentIndex = statusOrder.indexOf(currentStatus);
+
+        if (stepIndex < currentIndex) return 'completed';
+        if (stepIndex === currentIndex) return 'active';
+        return '';
+      },
+
+      openAddModal() {
+        this.editingId = null;
+        document.getElementById('modal-title').textContent = 'Yeni Parça Takibi';
+        document.getElementById('tracking-form').reset();
+
+        // Set today's date
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('order-date').value = today;
+
+        document.getElementById('tracking-modal').classList.add('show');
+      },
+
+      openEditModal(id) {
+        this.editingId = id;
+        const item = this.trackingData.find(t => t.id === id);
+
+        if (!item) return;
+
+        const attrs = item.attributes;
+        document.getElementById('modal-title').textContent = 'Parça Takibini Düzenle';
+        document.getElementById('part-name').value = attrs.part_name;
+        document.getElementById('part-code').value = attrs.part_code;
+        document.getElementById('order-date').value = attrs.order_date;
+        document.getElementById('expected-arrival').value = attrs.expected_arrival || '';
+        document.getElementById('status').value = attrs.status;
+        document.getElementById('tracking-number').value = attrs.tracking_number || '';
+        document.getElementById('supplier').value = attrs.supplier || '';
+        document.getElementById('notes').value = attrs.notes || '';
+
+        document.getElementById('tracking-modal').classList.add('show');
+      },
+
+      closeModal() {
+        document.getElementById('tracking-modal').classList.remove('show');
+        document.getElementById('tracking-form').reset();
+        this.editingId = null;
+      },
+
+      async saveTracking(event) {
+        event.preventDefault();
+
+        const partName = document.getElementById('part-name').value.trim();
+        const partCode = document.getElementById('part-code').value.trim();
+        const orderDate = document.getElementById('order-date').value;
+        const expectedArrival = document.getElementById('expected-arrival').value;
+        const status = document.getElementById('status').value;
+        const trackingNumber = document.getElementById('tracking-number').value.trim();
+        const supplier = document.getElementById('supplier').value.trim();
+        const notes = document.getElementById('notes').value.trim();
+
+        if (!partName || !partCode || !orderDate) {
+          Utils.showToast('Zorunlu alanları doldurun', 'error');
+          return;
+        }
+
+        try {
+          const submitBtn = document.getElementById('submit-btn');
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="ri-loader-4-line"></i> Kaydediliyor...';
+
+          const token = localStorage.getItem('tamirhanem_token');
+          const requestBody = {
+            data: {
+              part_name: partName,
+              part_code: partCode,
+              order_date: orderDate,
+              expected_arrival: expectedArrival || null,
+              status: status,
+              tracking_number: trackingNumber || null,
+              supplier: supplier || null,
+              notes: notes || null
+            }
+          };
+
+          const url = this.editingId
+            ? `${CONFIG.API_BASE_URL}/part-trackings/${this.editingId}`
+            : `${CONFIG.API_BASE_URL}/part-trackings`;
+
+          const method = this.editingId ? 'PUT' : 'POST';
+
+          const response = await fetch(url, {
+            method: method,
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error?.message || 'İşlem başarısız');
+          }
+
+          Utils.showToast(
+            this.editingId ? 'Takip başarıyla güncellendi' : 'Takip başarıyla eklendi',
+            'success'
+          );
+
+          this.closeModal();
+          await this.fetchTracking();
+        } catch (error) {
+          console.error('Save error:', error);
+          Utils.showToast(error.message || 'İşlem başarısız', 'error');
+        } finally {
+          const submitBtn = document.getElementById('submit-btn');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="ri-save-line"></i> Kaydet';
+        }
+      },
+
+      async deleteTracking(id) {
+        if (!confirm('Bu takip kaydını silmek istediğinizden emin misiniz?')) {
+          return;
+        }
+
+        try {
+          const token = localStorage.getItem('tamirhanem_token');
+          const response = await fetch(
+            `${CONFIG.API_BASE_URL}/part-trackings/${id}`,
+            {
+              method: 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error('Silme işlemi başarısız');
+          }
+
+          Utils.showToast('Takip kaydı başarıyla silindi', 'success');
+          await this.fetchTracking();
+        } catch (error) {
+          console.error('Delete error:', error);
+          Utils.showToast(error.message || 'Silme işlemi başarısız', 'error');
+        }
+      },
+
+      showLoading() {
+        document.getElementById('loading-state').style.display = 'block';
+        document.getElementById('error-state').style.display = 'none';
+        document.getElementById('empty-state').style.display = 'none';
+        document.getElementById('tracking-list').style.display = 'none';
+      },
+
+      showError(message) {
+        document.getElementById('loading-state').style.display = 'none';
+        document.getElementById('error-state').style.display = 'block';
+        document.getElementById('empty-state').style.display = 'none';
+        document.getElementById('tracking-list').style.display = 'none';
+        document.getElementById('error-message').textContent = message;
+      },
+
+      showEmpty() {
+        document.getElementById('loading-state').style.display = 'none';
+        document.getElementById('error-state').style.display = 'none';
+        document.getElementById('empty-state').style.display = 'block';
+        document.getElementById('tracking-list').style.display = 'none';
+      },
+
+      showList() {
+        document.getElementById('loading-state').style.display = 'none';
+        document.getElementById('error-state').style.display = 'none';
+        document.getElementById('empty-state').style.display = 'none';
+        document.getElementById('tracking-list').style.display = 'block';
+      }
+    };
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      PartTrackingManager.init();
+    });
+  </script>
+</body>
+
+</html>

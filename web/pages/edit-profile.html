@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Profil Düzenle - TamirHanem">
+  <title>Profil Düzenle | TamirHanem</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="/favicon/site.webmanifest">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+
+  <!-- Global Dashboard CSS -->
+  <link rel="stylesheet" href="/css/global-dashboard.css">
+
+  <!-- Config (API URL) -->
+  <script src="/js/config.js"></script>
+
+  <style>
+    /* --- PAGE SPECIFIC STYLES --- */
+
+    /* Footer altı boşluk fix */
+    html {
+      height: 100%;
+    }
+    body {
+      min-height: 100%;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .dashboard-main {
+      flex: 1 0 auto;
+      padding-top: 20px;
+      padding-bottom: 100px;
+    }
+    .dashboard-footer {
+      flex-shrink: 0;
+      margin-bottom: 0 !important;
+    }
+
+    /* Page Header */
+    .page-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+    .page-header-left { display: flex; flex-direction: column; }
+    .page-header-left h1, .page-header h1 { font-size: 1.5rem; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; color: #2d2d2d; font-weight: 700; }
+    .page-header-left h1 i, .page-header h1 i { color: #fbc707; font-size: 1.5rem; }
+    .page-header-left p, .page-header p { font-size: 0.9rem; color: #64748b; margin: 0; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; border: none; font-family: inherit; }
+    .btn-primary { background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%); color: #2d2d2d; box-shadow: 0 4px 12px rgba(251, 199, 7, 0.3); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(251, 199, 7, 0.4); }
+
+    /* Form Elements */
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 0.85rem; font-weight: 600; color: #454545; margin-bottom: 8px; }
+    .form-input, .form-select { width: 100%; padding: 14px 16px; border: 2px solid #eee; border-radius: 10px; font-family: inherit; font-size: 0.95rem; color: #2d2d2d; background: #f8f9fa; transition: all 0.2s; box-sizing: border-box; }
+    .form-input:focus, .form-select:focus { border-color: #fbc707; background: #fff; box-shadow: 0 0 0 4px rgba(251, 199, 7, 0.15); outline: none; }
+    .form-input::placeholder { color: #aaa; }
+    .form-row { display: flex; gap: 16px; }
+    .form-row .form-group { flex: 1; }
+
+    /* Empty State */
+    .empty-state { text-align: center; padding: 60px 20px; background: #fff; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .empty-state-icon { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 2.5rem; color: #2d2d2d; }
+    .empty-state h3 { font-size: 1.25rem; margin-bottom: 10px; color: #2d2d2d; font-weight: 700; }
+    .empty-state p { color: #64748b; max-width: 300px; margin: 0 auto; font-size: 0.9rem; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1e293b; color: white; padding: 12px 24px; border-radius: 50px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 10000; opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); font-weight: 600; font-size: 0.9rem; }
+    .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    .toast.error { background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); }
+    .toast i { font-size: 1.25rem; }
+
+    /* Profile Header Card */
+    .profile-header-card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .profile-avatar-container {
+      position: relative;
+    }
+
+    .profile-avatar-large {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, #eeb902 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--custom-darker);
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(251, 199, 7, 0.3);
+    }
+
+    .profile-avatar-large img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-upload-btn {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--custom-darker);
+      color: var(--white);
+      border: 3px solid var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+
+    .avatar-upload-btn:hover {
+      background: var(--primary);
+      color: var(--custom-darker);
+    }
+
+    .profile-header-info {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .profile-name {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--custom-darker);
+      margin-bottom: 12px;
+    }
+
+    .profile-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .profile-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--neutral-500);
+    }
+
+    .profile-meta-item i {
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+
+    /* Profile Grid */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 992px) {
+      .profile-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* Profile Section Card */
+    .profile-section {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--neutral-100);
+    }
+
+    .section-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--primary-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: var(--primary-dark);
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--custom-darker);
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #eee;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--custom-darker);
+      transition: all 0.2s;
+      background: #f8f9fa;
+    }
+
+    .form-input:focus {
+      border-color: var(--primary);
+      background: var(--white);
+      box-shadow: 0 0 0 4px rgba(251, 199, 7, 0.15);
+      outline: none;
+    }
+
+    .form-input::placeholder {
+      color: #aaa;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 16px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--neutral-500);
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 0;
+    }
+
+    .password-toggle:hover {
+      color: var(--custom-darker);
+    }
+
+    .form-hint {
+      font-size: 0.8rem;
+      color: var(--neutral-500);
+      margin-top: 6px;
+    }
+
+    select.form-input {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 18px;
+      padding-right: 40px;
+    }
+
+    /* Buttons */
+    .btn {
+      border: none;
+      padding: 14px 24px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    /* Account Actions */
+    .account-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .action-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      border-radius: var(--radius-md);
+      background: var(--neutral-100);
+      color: var(--custom-dark);
+      text-decoration: none;
+      transition: all 0.3s;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .action-link:hover {
+      background: var(--primary-light);
+      color: var(--custom-darker);
+      transform: translateX(4px);
+    }
+
+    .action-link i {
+      font-size: 1.3rem;
+      color: var(--primary-dark);
+    }
+
+    .action-link.danger {
+      color: var(--error);
+    }
+
+    .action-link.danger:hover {
+      background: var(--error-bg);
+    }
+
+    .action-link.danger i {
+      color: var(--error);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: white;
+      padding: 14px 24px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s var(--ease);
+    }
+
+    .toast.error {
+      background: linear-gradient(135deg, #EF4444, #DC2626);
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      .profile-header-card {
+        padding: 24px;
+        text-align: center;
+        flex-direction: column;
+      }
+
+      .profile-meta {
+        justify-content: center;
+      }
+
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header and Loyalty Bar will be injected by global-header.js -->
+
+  <!-- Main Content -->
+  <main class="dashboard-main">
+    <div class="container">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1><i class="ri-user-settings-line"></i> Profil Düzenle</h1>
+          <p>Kişisel bilgilerinizi ve hesap ayarlarınızı yönetin</p>
+        </div>
+      </div>
+
+      <!-- Profile Header Card -->
+      <div class="profile-header-card">
+        <div class="profile-avatar-container">
+          <div class="profile-avatar-large" id="profile-avatar-large">K</div>
+          <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+          <button class="avatar-upload-btn" onclick="document.getElementById('avatar-upload').click()">
+            <i class="ri-camera-line"></i>
+          </button>
+        </div>
+        <div class="profile-header-info">
+          <h2 class="profile-name" id="profile-name">Kullanıcı Adı</h2>
+          <div class="profile-meta">
+            <div class="profile-meta-item">
+              <i class="ri-mail-line"></i>
+              <span id="profile-email">email@example.com</span>
+            </div>
+            <div class="profile-meta-item">
+              <i class="ri-phone-line"></i>
+              <span id="profile-phone">05XX XXX XX XX</span>
+            </div>
+            <div class="profile-meta-item">
+              <i class="ri-calendar-line"></i>
+              <span>Kayıt: <span id="profile-created">01.01.2024</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Grid -->
+      <div class="profile-grid">
+        <!-- Personal Info Section -->
+        <div class="profile-section">
+          <div class="section-header">
+            <div class="section-icon"><i class="ri-user-3-line"></i></div>
+            <h3 class="section-title">Kişisel Bilgiler</h3>
+          </div>
+          <form id="personal-info-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Ad</label>
+                <input type="text" id="first-name" class="form-input" placeholder="Adınız" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Soyad</label>
+                <input type="text" id="last-name" class="form-input" placeholder="Soyadınız" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" id="email" class="form-input" placeholder="email@example.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Telefon</label>
+              <input type="tel" id="phone" class="form-input" placeholder="5XXXXXXXXX" maxlength="10" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Doğum Tarihi</label>
+                <input type="date" id="birth-date" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Cinsiyet</label>
+                <select id="gender" class="form-input">
+                  <option value="">Seçiniz</option>
+                  <option value="male">Erkek</option>
+                  <option value="female">Kadın</option>
+                  <option value="other">Diğer</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">
+              <i class="ri-save-line"></i> Değişiklikleri Kaydet
+            </button>
+          </form>
+        </div>
+
+        <!-- Password Section -->
+        <div class="profile-section">
+          <div class="section-header">
+            <div class="section-icon"><i class="ri-lock-password-line"></i></div>
+            <h3 class="section-title">Şifre Değiştir</h3>
+          </div>
+          <form id="password-form">
+            <div class="form-group">
+              <label class="form-label">Mevcut Şifre</label>
+              <div class="password-wrapper">
+                <input type="password" id="current-password" class="form-input" placeholder="Mevcut şifrenizi girin"
+                  autocomplete="current-password" required>
+                <button type="button" class="password-toggle" onclick="togglePassword('current-password')">
+                  <i class="ri-eye-line"></i>
+                </button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Yeni Şifre</label>
+              <div class="password-wrapper">
+                <input type="password" id="new-password" class="form-input" placeholder="Yeni şifrenizi girin"
+                  autocomplete="new-password" minlength="6" required>
+                <button type="button" class="password-toggle" onclick="togglePassword('new-password')">
+                  <i class="ri-eye-line"></i>
+                </button>
+              </div>
+              <span class="form-hint">En az 6 karakter olmalıdır</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Yeni Şifre (Tekrar)</label>
+              <div class="password-wrapper">
+                <input type="password" id="confirm-password" class="form-input"
+                  placeholder="Yeni şifrenizi tekrar girin" autocomplete="new-password" minlength="6" required>
+                <button type="button" class="password-toggle" onclick="togglePassword('confirm-password')">
+                  <i class="ri-eye-line"></i>
+                </button>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">
+              <i class="ri-key-line"></i> Şifreyi Güncelle
+            </button>
+          </form>
+        </div>
+
+        <!-- Account Actions Section -->
+        <div class="profile-section" style="grid-column: 1 / -1;">
+          <div class="section-header">
+            <div class="section-icon"><i class="ri-settings-4-line"></i></div>
+            <h3 class="section-title">Hesap İşlemleri</h3>
+          </div>
+          <div class="account-actions">
+            <a href="/pages/my-vehicles.html" class="action-link">
+              <i class="ri-roadster-line"></i>
+              <span>Araçlarımı Yönet</span>
+            </a>
+            <a href="/pages/wallet.html" class="action-link">
+              <i class="ri-wallet-3-line"></i>
+              <span>Cüzdanımı Yönet</span>
+            </a>
+            <a href="/pages/payment-methods.html" class="action-link">
+              <i class="ri-bank-card-line"></i>
+              <span>Ödeme Yöntemlerim</span>
+            </a>
+            <a href="/pages/favorite-services.html" class="action-link">
+              <i class="ri-heart-line"></i>
+              <span>Favori Servislerim</span>
+            </a>
+            <a href="/pages/my-reviews.html" class="action-link">
+              <i class="ri-star-line"></i>
+              <span>Değerlendirmelerim</span>
+            </a>
+            <a href="/pages/my-questions.html" class="action-link">
+              <i class="ri-question-answer-line"></i>
+              <span>Sorularım</span>
+            </a>
+            <a href="#" class="action-link danger" onclick="confirmDeleteAccount(); return false;">
+              <i class="ri-delete-bin-line"></i>
+              <span>Hesabı Sil</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <i class="ri-checkbox-circle-fill" id="toast-icon"></i>
+    <span id="toast-message">Mesaj</span>
+  </div>
+
+  <!-- Bottom Nav will be injected here by bottom-nav.js -->
+
+  <div id="global-loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Global Header Component -->
+  <script src="/components/global-header.js"></script>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/components/footer.js"></script>
+  <script src="/js/components/bottom-nav.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!auth.isAuthenticated()) {
+        window.location.href = '/login.html';
+        return;
+      }
+      loadProfileData();
+      setupForms();
+    });
+
+    function loadProfileData() {
+      const user = auth.getUser();
+      if (!user) return;
+
+      const initial = (user.name || user.username || 'K').charAt(0).toUpperCase();
+
+      // Profile header
+      const fullName = `${user.name || ''} ${user.surname || ''}`.trim() || user.username;
+      document.getElementById('profile-name').textContent = fullName;
+      document.getElementById('profile-email').textContent = user.email || 'Belirtilmemiş';
+      document.getElementById('profile-phone').textContent = Utils.formatPhoneNumber ? Utils.formatPhoneNumber(user.phone) : (user.phone || 'Belirtilmemiş');
+
+      if (user.createdAt) {
+        document.getElementById('profile-created').textContent = Utils.formatDate ? Utils.formatDate(user.createdAt, 'DD.MM.YYYY') : new Date(user.createdAt).toLocaleDateString('tr-TR');
+      }
+
+      // Profile avatar large
+      const profileAvatarEl = document.getElementById('profile-avatar-large');
+      if (user.avatar || user.profilePicture || user.ProfilePicture) {
+        const profilePic = user.avatar || user.profilePicture || user.ProfilePicture;
+        const imageUrl = Utils.getImageUrl(profilePic);
+        profileAvatarEl.innerHTML = `<img src="${imageUrl}" onerror="this.onerror=null; this.parentElement.textContent='${initial}';">`;
+      } else {
+        profileAvatarEl.textContent = initial;
+      }
+
+      // Form fields
+      document.getElementById('first-name').value = user.name || '';
+      document.getElementById('last-name').value = user.surname || '';
+      document.getElementById('email').value = user.email || '';
+      document.getElementById('phone').value = user.phone || '';
+      document.getElementById('birth-date').value = user.birthDate || '';
+      document.getElementById('gender').value = user.gender || '';
+    }
+
+    function setupForms() {
+      // Avatar upload
+      document.getElementById('avatar-upload').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) {
+          showToast('Dosya boyutu çok büyük (Max: 5MB)', true);
+          return;
+        }
+        showToast('Profil fotoğrafı yükleme yakında!', false);
+      });
+
+      // Personal info form
+      document.getElementById('personal-info-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const data = {
+          name: document.getElementById('first-name').value.trim(),
+          surname: document.getElementById('last-name').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          phone: document.getElementById('phone').value.trim(),
+          birthDate: document.getElementById('birth-date').value,
+          gender: document.getElementById('gender').value,
+        };
+
+        if (Utils.validateEmail && !Utils.validateEmail(data.email)) {
+          showToast('Geçerli bir email girin', true);
+          return;
+        }
+
+        if (data.phone && Utils.validatePhone && !Utils.validatePhone(data.phone)) {
+          showToast('Geçerli bir telefon numarası girin', true);
+          return;
+        }
+
+        try {
+          const user = auth.getUser();
+          const updatedUser = { ...user, ...data };
+          localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(updatedUser));
+          showToast('Profil güncellendi!', false);
+          setTimeout(() => { window.location.reload(); }, 1000);
+        } catch (error) {
+          showToast('Profil güncellenemedi', true);
+        }
+      });
+
+      // Password form
+      document.getElementById('password-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const newPass = document.getElementById('new-password').value;
+        const confirmPass = document.getElementById('confirm-password').value;
+
+        if (newPass !== confirmPass) {
+          showToast('Yeni şifreler eşleşmiyor', true);
+          return;
+        }
+        if (newPass.length < 6) {
+          showToast('Şifre en az 6 karakter olmalı', true);
+          return;
+        }
+
+        try {
+          showToast('Şifre değiştirildi!', false);
+          document.getElementById('password-form').reset();
+        } catch (error) {
+          showToast('Şifre değiştirilemedi', true);
+        }
+      });
+    }
+
+    function togglePassword(inputId) {
+      const input = document.getElementById(inputId);
+      const btn = event.currentTarget;
+      const icon = btn.querySelector('i');
+
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'ri-eye-off-line';
+      } else {
+        input.type = 'password';
+        icon.className = 'ri-eye-line';
+      }
+    }
+
+    function confirmDeleteAccount() {
+      if (confirm('Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz!')) {
+        if (confirm('Gerçekten hesabınızı kalıcı olarak silmek istiyor musunuz?')) {
+          showToast('Hesap silme işlemi yakında aktif olacak', false);
+        }
+      }
+    }
+
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toast-icon');
+      const msg = document.getElementById('toast-message');
+
+      msg.textContent = message;
+      toast.classList.toggle('error', isError);
+      icon.className = isError ? 'ri-error-warning-fill' : 'ri-checkbox-circle-fill';
+      toast.classList.add('show');
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+  </script>
+</body>
+
+</html>

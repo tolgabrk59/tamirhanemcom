@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fırsatlar | TamirHanem</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- Global Dashboard CSS -->
+    <link rel="stylesheet" href="/css/global-dashboard.css">
+
+    <!-- Config (API URL) -->
+    <script src="/js/config.js"></script>
+
+    <style>
+        /* --- PAGE SPECIFIC STYLES --- */
+
+        /* Footer altı boşluk fix */
+        html {
+            height: 100%;
+        }
+        body {
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .dashboard-main {
+            flex: 1 0 auto;
+        }
+        .dashboard-footer {
+            flex-shrink: 0;
+            margin-bottom: 0 !important;
+        }
+
+        .dashboard-main {
+            padding-top: 20px;
+            padding-bottom: 100px;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+            color: #2d2d2d;
+            font-weight: 700;
+        }
+
+        .page-header h1 i {
+            color: #fbc707;
+            font-size: 1.5rem;
+        }
+
+        .page-header p {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin: 0;
+        }
+
+        /* Stats Summary */
+        .stats-summary {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .stat-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            white-space: nowrap;
+            border: 1px solid rgba(251, 199, 7, 0.15);
+        }
+
+        .stat-pill i {
+            font-size: 1.2rem;
+            color: #fbc707;
+        }
+
+        .stat-pill .stat-number {
+            font-weight: 800;
+            color: #2d2d2d;
+        }
+
+        .stat-pill .stat-text {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        /* Campaign Grid */
+        .campaigns-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* Modern Campaign Card - WHITE THEME */
+        /* Override global CSS */
+        .campaign-card,
+        .campaign-card * {
+            clip-path: none !important;
+        }
+
+        .campaign-card::before,
+        .campaign-card::after {
+            display: none !important;
+            content: none !important;
+        }
+
+        .campaign-card {
+            background: white !important;
+            border-radius: 20px !important;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+            border: 1px solid #e5e7eb !important;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .campaign-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 32px rgba(251, 199, 7, 0.2) !important;
+            border-color: #fbc707 !important;
+        }
+
+        /* Corner Ribbon Badge */
+        .ribbon-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            z-index: 10;
+            overflow: hidden;
+            width: 110px;
+            height: 110px;
+            pointer-events: none;
+        }
+
+        .ribbon-badge span {
+            position: absolute;
+            display: block;
+            width: 180px;
+            padding: 10px 0;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+            color: #fff;
+            font-weight: 800;
+            font-size: 0.8rem;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            right: -45px;
+            top: 25px;
+            transform: rotate(45deg);
+        }
+
+        /* Card Image Area */
+        .campaign-image-wrapper {
+            position: relative;
+            height: 180px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .campaign-image-wrapper .placeholder-icon {
+            font-size: 4rem;
+            color: #f59e0b;
+            opacity: 0.6;
+        }
+
+        .campaign-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .campaign-card:hover .campaign-image {
+            transform: scale(1.05);
+            transition: transform 0.5s ease;
+        }
+
+        /* Card Content */
+        .campaign-content {
+            padding: 20px;
+            background: white;
+        }
+
+        .campaign-service {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 8px 14px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 14px;
+        }
+
+        .campaign-service i {
+            color: #f59e0b;
+            font-size: 0.9rem;
+        }
+
+        .campaign-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .campaign-desc {
+            font-size: 0.9rem;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 18px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Card Footer */
+        .campaign-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 16px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .campaign-date {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .campaign-date i {
+            color: #fbc707;
+        }
+
+        .campaign-date.urgent {
+            color: #dc2626;
+        }
+
+        .campaign-date.urgent i {
+            color: #dc2626;
+        }
+
+        .discount-badge {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            font-weight: 800;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .btn-detail {
+            background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%);
+            color: #1e293b;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(251, 199, 7, 0.3);
+        }
+
+        .btn-detail:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(251, 199, 7, 0.4);
+        }
+
+        /* Empty State */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .empty-state-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 2.5rem;
+            color: #2d2d2d;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+            color: #2d2d2d;
+            font-weight: 700;
+        }
+
+        .empty-state p {
+            color: #64748b;
+            max-width: 300px;
+            margin: 0 auto;
+            font-size: 0.9rem;
+        }
+
+        /* Skeleton Loader */
+        .skeleton-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        .skeleton-image {
+            height: 180px;
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        .skeleton-content {
+            padding: 20px;
+        }
+
+        .skeleton-line {
+            height: 16px;
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .skeleton-line.short {
+            width: 40%;
+        }
+
+        .skeleton-line.medium {
+            width: 70%;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @media (max-width: 768px) {
+            .campaigns-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header and Loyalty Bar will be injected by global-header.js -->
+
+    <main class="dashboard-main">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1><i class="ri-gift-fill"></i> Fırsatlar ve Kampanyalar</h1>
+                <p>Aracınız için en özel indirimler ve avantajlı paketler</p>
+            </div>
+
+            <!-- Stats Summary -->
+            <div class="stats-summary">
+                <div class="stat-pill">
+                    <i class="ri-fire-fill"></i>
+                    <span class="stat-number" id="active-count">0</span>
+                    <span class="stat-text">Aktif Kampanya</span>
+                </div>
+                <div class="stat-pill">
+                    <i class="ri-percent-fill"></i>
+                    <span class="stat-number" id="max-discount">-</span>
+                    <span class="stat-text">En Yüksek İndirim</span>
+                </div>
+                <div class="stat-pill">
+                    <i class="ri-timer-flash-fill"></i>
+                    <span class="stat-number" id="ending-soon">0</span>
+                    <span class="stat-text">Yakında Bitiyor</span>
+                </div>
+            </div>
+
+            <!-- Campaigns Grid -->
+            <div id="campaigns-grid" class="campaigns-grid">
+                <!-- Skeleton Loaders -->
+                <div class="skeleton-card">
+                    <div class="skeleton-image"></div>
+                    <div class="skeleton-content">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line medium"></div>
+                    </div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-image"></div>
+                    <div class="skeleton-content">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line medium"></div>
+                    </div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-image"></div>
+                    <div class="skeleton-content">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line medium"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Global Header Component -->
+    <script src="/components/global-header.js"></script>
+
+    <script src="/js/utils.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/components/footer.js"></script>
+    <script src="/js/components/bottom-nav.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const grid = document.getElementById('campaigns-grid');
+
+            try {
+                // Fetch campaigns with proper Strapi v4 media populate
+                const apiUrl = `${CONFIG.API_BASE_URL}/campaigns?populate[campaign_image][fields][0]=url&populate[campaign_image][fields][1]=formats&populate[service][fields][0]=name`;
+
+                const token = localStorage.getItem('tamirhanem_token');
+                const response = await fetch(apiUrl, {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+                const data = await response.json();
+
+                const campaigns = data.data || [];
+
+                // Update stats
+                updateStats(campaigns);
+
+                if (campaigns.length === 0) {
+                    grid.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon"><i class="ri-gift-line"></i></div>
+                            <h3>Aktif Kampanya Bulunamadı</h3>
+                            <p>Şu anda aktif bir kampanya bulunmuyor. Yeni fırsatlar için takipte kalın!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Render campaigns with INLINE STYLES to override global CSS
+                grid.innerHTML = campaigns.map(campaign => {
+                    const attrs = campaign.attributes || campaign;
+                    if (!attrs) return '';
+
+                    // Get image URL from campaign_image field
+                    let imageUrl = null;
+                    const imgField = attrs.campaign_image;
+
+                    if (imgField) {
+                        // Flat format (direct url on object)
+                        if (imgField.url) {
+                            imageUrl = imgField.url;
+                        }
+                        // Strapi v4 with data.attributes wrapper
+                        else if (imgField.data?.attributes?.url) {
+                            imageUrl = imgField.data.attributes.url;
+                        }
+                        // Strapi v4 with just data.url
+                        else if (imgField.data?.url) {
+                            imageUrl = imgField.data.url;
+                        }
+                        // Maybe formats has url
+                        else if (imgField.formats?.medium?.url) {
+                            imageUrl = imgField.formats.medium.url;
+                        }
+                        else if (imgField.formats?.small?.url) {
+                            imageUrl = imgField.formats.small.url;
+                        }
+                        else if (imgField.formats?.thumbnail?.url) {
+                            imageUrl = imgField.formats.thumbnail.url;
+                        }
+
+                        if (imageUrl && !imageUrl.startsWith('http')) {
+                            imageUrl = `https://api.tamirhanem.net${imageUrl}`;
+                        }
+                    }
+
+                    const discount = attrs.discount_percentage;
+
+                    // Calculate days remaining
+                    let dateStr = 'Süresiz';
+                    let isUrgent = false;
+
+                    if (attrs.end_date) {
+                        const endDate = new Date(attrs.end_date);
+                        const today = new Date();
+                        const diffTime = endDate - today;
+                        const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                        if (daysRemaining <= 0) {
+                            dateStr = 'Sona Erdi';
+                            isUrgent = true;
+                        } else if (daysRemaining <= 3) {
+                            dateStr = `Son ${daysRemaining} gün!`;
+                            isUrgent = true;
+                        } else if (daysRemaining <= 7) {
+                            dateStr = `${daysRemaining} gün`;
+                        } else {
+                            dateStr = endDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+                        }
+                    }
+
+                    const description = attrs.description || 'Bu kampanyadan yararlanmak için detayları inceleyin.';
+                    const serviceName = attrs.service?.data?.attributes?.name || null;
+
+                    // ALL INLINE STYLES
+                    const cardStyle = `
+                        background: white !important;
+                        border-radius: 16px !important;
+                        overflow: hidden !important;
+                        box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
+                        border: 1px solid #e5e7eb !important;
+                        cursor: pointer;
+                        position: relative !important;
+                        display: flex !important;
+                        flex-direction: column !important;
+                        clip-path: none !important;
+                    `.replace(/\s+/g, ' ').trim();
+
+                    const imageWrapperStyle = `
+                        height: 140px !important;
+                        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        position: relative !important;
+                        overflow: hidden !important;
+                        clip-path: none !important;
+                    `.replace(/\s+/g, ' ').trim();
+
+                    const contentStyle = `
+                        padding: 16px !important;
+                        background: white !important;
+                        display: flex !important;
+                        flex-direction: column !important;
+                        gap: 8px !important;
+                        position: relative !important;
+                        z-index: 5 !important;
+                        clip-path: none !important;
+                    `.replace(/\s+/g, ' ').trim();
+
+                    const titleStyle = `
+                        font-size: 1rem !important;
+                        font-weight: 700 !important;
+                        color: #1e293b !important;
+                        margin: 0 !important;
+                        line-height: 1.3 !important;
+                        clip-path: none !important;
+                    `.replace(/\s+/g, ' ').trim();
+
+                    const descStyle = `
+                        font-size: 0.85rem !important;
+                        color: #64748b !important;
+                        margin: 0 !important;
+                        line-height: 1.4 !important;
+                        display: -webkit-box !important;
+                        -webkit-line-clamp: 2 !important;
+                        -webkit-box-orient: vertical !important;
+                        overflow: hidden !important;
+                        clip-path: none !important;
+                    `.replace(/\s+/g, ' ').trim();
+
+                    const footerStyle = `
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: space-between !important;
+                        padding-top: 12px !important;
+                        margin-top: 8px !important;
+                        border-top: 1px solid #f1f5f9 !important;
+                        clip-path: none !important;
+                    `.replace(/\s+/g, ' ').trim();
+
+                    const dateStyle = `
+                        display: flex !important;
+                        align-items: center !important;
+                        gap: 4px !important;
+                        font-size: 0.75rem !important;
+                        color: ${isUrgent ? '#dc2626' : '#64748b'} !important;
+                        font-weight: 600 !important;
+                        clip-path: none !important;
+                    `.replace(/\s+/g, ' ').trim();
+
+                    const btnStyle = `
+                        background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%) !important;
+                        color: #1e293b !important;
+                        border: none !important;
+                        padding: 10px 16px !important;
+                        border-radius: 10px !important;
+                        font-weight: 700 !important;
+                        font-size: 0.8rem !important;
+                        cursor: pointer !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        gap: 4px !important;
+                        clip-path: none !important;
+                    `.replace(/\s+/g, ' ').trim();
+
+                    const ribbonStyle = `
+                        position: absolute !important;
+                        top: -5px !important;
+                        right: -5px !important;
+                        z-index: 20 !important;
+                        overflow: hidden !important;
+                        width: 100px !important;
+                        height: 100px !important;
+                        pointer-events: none !important;
+                    `.replace(/\s+/g, ' ').trim();
+
+                    const ribbonSpanStyle = `
+                        position: absolute !important;
+                        display: block !important;
+                        width: 150px !important;
+                        padding: 8px 0 !important;
+                        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+                        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4) !important;
+                        color: #fff !important;
+                        font-weight: 800 !important;
+                        font-size: 0.7rem !important;
+                        text-align: center !important;
+                        right: -35px !important;
+                        top: 20px !important;
+                        transform: rotate(45deg) !important;
+                    `.replace(/\s+/g, ' ').trim();
+
+                    const serviceBadgeStyle = `
+                        display: inline-flex !important;
+                        align-items: center !important;
+                        gap: 4px !important;
+                        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+                        padding: 6px 10px !important;
+                        border-radius: 50px !important;
+                        font-size: 0.7rem !important;
+                        font-weight: 700 !important;
+                        color: #92400e !important;
+                        width: fit-content !important;
+                        clip-path: none !important;
+                    `.replace(/\s+/g, ' ').trim();
+
+                    return `
+                        <article style="${cardStyle}" onclick="window.location.href='/pages/campaign-detail.html?id=${campaign.id}'">
+                            ${discount ? `
+                                <div style="${ribbonStyle}">
+                                    <span style="${ribbonSpanStyle}">%${discount} İndirim</span>
+                                </div>
+                            ` : ''}
+
+                            <div style="${imageWrapperStyle}">
+                                ${imageUrl ? `
+                                    <img src="${imageUrl}" alt="${attrs.title}" style="width:100%!important;height:100%!important;object-fit:cover!important;">
+                                ` : `
+                                    <i class="ri-gift-fill" style="font-size:3rem!important;color:#f59e0b!important;opacity:0.5!important;"></i>
+                                `}
+                            </div>
+
+                            <div style="${contentStyle}">
+                                ${serviceName ? `<div style="${serviceBadgeStyle}"><i class="ri-store-2-fill" style="color:#f59e0b!important;"></i> ${serviceName}</div>` : ''}
+
+                                <h2 style="${titleStyle}">${attrs.title || 'Kampanya'}</h2>
+                                <p style="${descStyle}">${description}</p>
+
+                                <div style="${footerStyle}">
+                                    <div style="${dateStyle}">
+                                        <i class="ri-calendar-line" style="color:${isUrgent ? '#dc2626' : '#fbc707'}!important;"></i>
+                                        ${dateStr}
+                                    </div>
+                                    <button style="${btnStyle}">
+                                        Detaylar <i class="ri-arrow-right-line"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </article>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon"><i class="ri-error-warning-line"></i></div>
+                        <h3>Bir Hata Oluştu</h3>
+                        <p>Kampanyalar yüklenirken bir sorun oluştu. Lütfen sayfayı yenileyin.</p>
+                    </div>
+                `;
+            }
+        });
+
+        function updateStats(campaigns) {
+            const activeCount = campaigns.length;
+            const discounts = campaigns.map(c => (c.attributes || c).discount_percentage || 0).filter(d => d > 0);
+            const maxDiscount = discounts.length > 0 ? Math.max(...discounts) : 0;
+
+            const today = new Date();
+            const endingSoon = campaigns.filter(c => {
+                const endDate = (c.attributes || c).end_date;
+                if (!endDate) return false;
+                const diff = new Date(endDate) - today;
+                const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                return days > 0 && days <= 7;
+            }).length;
+
+            document.getElementById('active-count').textContent = activeCount;
+            document.getElementById('max-discount').textContent = maxDiscount > 0 ? `%${maxDiscount}` : '-';
+            document.getElementById('ending-soon').textContent = endingSoon;
+        }
+    </script>
+</body>
+
+</html>

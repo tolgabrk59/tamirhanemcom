@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Acil Çekici Çağır - TamirHanem">
+  <title>Acil Çekici Çağır | TamirHanem</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- Global Dashboard CSS -->
+  <link rel="stylesheet" href="/css/global-dashboard.css">
+
+  <!-- Config (API URL) -->
+  <script src="/js/config.js"></script>
+
+  <style>
+    /* Sidebar header'a yapışması için overflow fix */
+    .dashboard-main,
+    .dashboard-main .container,
+    .dashboard-layout {
+      overflow: visible !important;
+    }
+
+    /* Page Specific Styles */
+    .emergency-page {
+      max-width: 100%;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 24px;
+      margin-top: 20px;
+    }
+
+    .page-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--neutral-900);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .page-title i {
+      color: #ef4444;
+      animation: pulse-icon 2s infinite;
+    }
+
+    @keyframes pulse-icon {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    .page-subtitle {
+      font-size: 0.95rem;
+      color: var(--neutral-500);
+    }
+
+    /* Emergency Card */
+    .emergency-card {
+      background: var(--white);
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    /* Map Section */
+    .map-section {
+      position: relative;
+    }
+
+    #map {
+      width: 100%;
+      height: 350px;
+      z-index: 1;
+    }
+
+    .map-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: all 0.5s ease;
+    }
+
+    .map-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .location-prompt {
+      text-align: center;
+      color: white;
+      padding: 20px;
+    }
+
+    .location-prompt i {
+      font-size: 4rem;
+      margin-bottom: 16px;
+      animation: bounce-location 2s infinite;
+    }
+
+    @keyframes bounce-location {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .location-prompt h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .location-prompt p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
+
+    .btn-location {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #1a1a1a;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(251, 191, 36, 0.4);
+    }
+
+    .btn-location:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(251, 191, 36, 0.5);
+    }
+
+    .btn-location i {
+      font-size: 1.2rem;
+      animation: none;
+    }
+
+    .manual-select {
+      margin-top: 16px;
+      color: rgba(255,255,255,0.8);
+      font-size: 0.85rem;
+    }
+
+    .manual-select a {
+      color: #fbbf24;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    /* Location Info Bar */
+    .location-info-bar {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .location-info-bar.hidden {
+      display: none;
+    }
+
+    .location-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+    }
+
+    .location-info i {
+      font-size: 1.2rem;
+    }
+
+    .btn-change-location {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-change-location:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    /* Action Section */
+    .action-section {
+      padding: 24px;
+    }
+
+    .emergency-info {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .emergency-info i {
+      font-size: 1.5rem;
+      color: #d97706;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .emergency-info-content h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #92400e;
+      margin-bottom: 4px;
+    }
+
+    .emergency-info-content p {
+      font-size: 0.85rem;
+      color: #a16207;
+      line-height: 1.5;
+    }
+
+    /* Call Button */
+    .btn-emergency-call {
+      width: 100%;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      border: none;
+      padding: 18px 32px;
+      border-radius: 16px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 30px rgba(239, 68, 68, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-emergency-call::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    .btn-emergency-call:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(239, 68, 68, 0.5);
+    }
+
+    .btn-emergency-call:disabled {
+      background: linear-gradient(135deg, #9ca3af, #6b7280);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-emergency-call:disabled::before {
+      display: none;
+    }
+
+    .btn-emergency-call i {
+      font-size: 1.4rem;
+    }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .feature-item {
+      text-align: center;
+      padding: 16px 8px;
+      background: var(--neutral-50);
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+
+    .feature-item:hover {
+      background: var(--neutral-100);
+      transform: translateY(-2px);
+    }
+
+    .feature-item i {
+      font-size: 1.5rem;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .feature-item span {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+      display: block;
+    }
+
+    /* ===================== */
+    /* WAITING/COUNTDOWN SCREEN */
+    /* ===================== */
+    .waiting-screen {
+      display: none;
+      padding: 0;
+    }
+
+    .waiting-screen.active {
+      display: block;
+    }
+
+    .waiting-header {
+      background: linear-gradient(135deg, #10b981, #059669);
+      padding: 30px 24px;
+      text-align: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .waiting-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: rotate-bg 20s linear infinite;
+    }
+
+    @keyframes rotate-bg {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .success-checkmark {
+      width: 80px;
+      height: 80px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      position: relative;
+      z-index: 1;
+      animation: success-pop 0.6s ease-out;
+    }
+
+    @keyframes success-pop {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .success-checkmark i {
+      font-size: 2.5rem;
+      animation: none;
+    }
+
+    .waiting-header h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .waiting-header p {
+      font-size: 0.95rem;
+      opacity: 0.95;
+      position: relative;
+      z-index: 1;
+      line-height: 1.5;
+    }
+
+    /* Countdown Section */
+    .countdown-section {
+      padding: 30px 24px;
+      text-align: center;
+      background: linear-gradient(180deg, #f8fafc, #ffffff);
+    }
+
+    .countdown-label {
+      font-size: 0.9rem;
+      color: var(--neutral-500);
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    .countdown-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .countdown-box {
+      background: linear-gradient(135deg, #1e293b, #334155);
+      color: white;
+      padding: 16px 20px;
+      border-radius: 16px;
+      min-width: 80px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .countdown-box .number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1;
+      font-family: 'Plus Jakarta Sans', monospace;
+    }
+
+    .countdown-box .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.7;
+      margin-top: 6px;
+    }
+
+    .countdown-separator {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--neutral-300);
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      margin-bottom: 24px;
+    }
+
+    .progress-bar-track {
+      height: 8px;
+      background: var(--neutral-200);
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #34d399);
+      border-radius: 10px;
+      width: 100%;
+      transition: width 1s linear;
+      position: relative;
+    }
+
+    .progress-bar-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      animation: progress-shimmer 2s infinite;
+    }
+
+    @keyframes progress-shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* Tow Truck Animation */
+    .tow-animation-container {
+      position: relative;
+      height: 100px;
+      margin: 20px 0;
+      overflow: hidden;
+      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%);
+      border-radius: 16px;
+    }
+
+    .road {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 30px;
+      background: #374151;
+    }
+
+    .road::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: repeating-linear-gradient(90deg, #fbbf24, #fbbf24 20px, transparent 20px, transparent 40px);
+      animation: road-move 1s linear infinite;
+    }
+
+    @keyframes road-move {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-40px); }
+    }
+
+    .tow-truck {
+      position: absolute;
+      bottom: 25px;
+      right: 30%;
+      font-size: 3rem;
+      animation: truck-bounce 0.5s ease-in-out infinite;
+      z-index: 2;
+    }
+
+    @keyframes truck-bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .location-pin {
+      position: absolute;
+      bottom: 28px;
+      left: 15%;
+      font-size: 2.2rem;
+      animation: car-shake 0.5s ease-in-out infinite;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .location-pin .car-warning {
+      font-size: 0.9rem;
+      animation: warning-blink 1s infinite;
+    }
+
+    @keyframes car-shake {
+      0%, 100% { transform: translateX(0) rotate(0deg); }
+      25% { transform: translateX(-2px) rotate(-1deg); }
+      75% { transform: translateX(2px) rotate(1deg); }
+    }
+
+    @keyframes warning-blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    @keyframes pin-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    .distance-indicator {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    /* Status Steps */
+    .status-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 0 10px;
+    }
+
+    .status-step {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 16px;
+      background: var(--neutral-50);
+      border-radius: 12px;
+      transition: all 0.5s ease;
+    }
+
+    .status-step.active {
+      background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+      border: 1px solid #10b981;
+    }
+
+    .status-step.completed {
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    }
+
+    .status-step.completed .step-icon {
+      background: #10b981;
+      color: white;
+    }
+
+    .step-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--neutral-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.3s;
+    }
+
+    .status-step.active .step-icon {
+      background: #10b981;
+      color: white;
+      animation: pulse-step 2s infinite;
+    }
+
+    @keyframes pulse-step {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+    }
+
+    .step-icon i {
+      font-size: 1.1rem;
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-content h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--neutral-800);
+      margin-bottom: 2px;
+    }
+
+    .step-content p {
+      font-size: 0.8rem;
+      color: var(--neutral-500);
+    }
+
+    .step-time {
+      font-size: 0.75rem;
+      color: var(--neutral-400);
+      font-weight: 600;
+    }
+
+    /* Contact Info */
+    .contact-info {
+      margin-top: 24px;
+      padding: 20px;
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .contact-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .contact-details {
+      flex: 1;
+    }
+
+    .contact-details h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--neutral-800);
+      margin-bottom: 4px;
+    }
+
+    .contact-details p {
+      font-size: 0.85rem;
+      color: var(--neutral-600);
+    }
+
+    .btn-call-driver {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+
+    .btn-call-driver:hover {
+      background: #059669;
+      transform: translateY(-2px);
+    }
+
+    /* Cancel Button */
+    .btn-cancel {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      background: transparent;
+      border: 2px solid var(--neutral-200);
+      border-radius: 12px;
+      color: var(--neutral-600);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-cancel:hover {
+      border-color: #ef4444;
+      color: #ef4444;
+      background: #fef2f2;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .features-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+
+      .feature-item {
+        padding: 12px 6px;
+      }
+
+      .feature-item i {
+        font-size: 1.3rem;
+      }
+
+      .countdown-box {
+        min-width: 70px;
+        padding: 12px 16px;
+      }
+
+      .countdown-box .number {
+        font-size: 2rem;
+      }
+
+      #map {
+        height: 280px;
+      }
+
+      .contact-info {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .btn-call-driver {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    /* Leaflet Custom Marker */
+    .custom-marker {
+      background: #ef4444;
+      border: 3px solid white;
+      border-radius: 50%;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.5);
+    }
+
+    .pulse-marker {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.3);
+      animation: marker-pulse 2s infinite;
+    }
+
+    @keyframes marker-pulse {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(2.5); opacity: 0; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Global Header + Loyalty Bar will be injected here -->
+
+  <main class="dashboard-main">
+    <div class="container">
+      <div class="dashboard-layout" id="main-layout">
+        <!-- Global Sidebar will be injected here -->
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="main-content-area">
+          <div class="emergency-page">
+            <!-- Page Header -->
+            <div class="page-header">
+              <h1 class="page-title">
+                <i class="ri-truck-fill"></i>
+                Acil Çekici Çağır
+              </h1>
+              <p class="page-subtitle">7/24 hızlı ve güvenilir yol yardımı hizmeti</p>
+            </div>
+
+            <!-- Main Request Card -->
+            <div class="emergency-card" id="request-card">
+              <!-- Map Section -->
+              <div class="map-section">
+                <div id="map"></div>
+
+                <!-- Location Permission Overlay -->
+                <div class="map-overlay" id="location-overlay">
+                  <div class="location-prompt">
+                    <i class="ri-map-pin-line"></i>
+                    <h3>Konumunuzu Paylaşın</h3>
+                    <p>Size en yakın çekiciyi bulabilmemiz için<br>konum izni vermeniz gerekmektedir.</p>
+                    <button class="btn-location" onclick="requestLocation()">
+                      <i class="ri-crosshair-2-line"></i>
+                      Konum İzni Ver
+                    </button>
+                    <p class="manual-select">veya <a onclick="enableManualSelection()">haritadan manuel seçin</a></p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Location Info Bar -->
+              <div class="location-info-bar hidden" id="location-bar">
+                <div class="location-info">
+                  <i class="ri-map-pin-fill"></i>
+                  <span id="location-text">Konum belirleniyor...</span>
+                </div>
+                <button class="btn-change-location" onclick="changeLocation()">
+                  <i class="ri-edit-line"></i> Değiştir
+                </button>
+              </div>
+
+              <!-- Action Section -->
+              <div class="action-section">
+                <div class="emergency-info">
+                  <i class="ri-information-fill"></i>
+                  <div class="emergency-info-content">
+                    <h4>Nasıl Çalışır?</h4>
+                    <p>Konumunuzu paylaştığınızda, çevrenizdeki tüm çekici hizmetlerine bildirim gönderilir. En yakın müsait çekici sizinle iletişime geçer.</p>
+                  </div>
+                </div>
+
+                <button class="btn-emergency-call" id="btn-call" onclick="callTowTruck()" disabled>
+                  <i class="ri-alarm-warning-fill"></i>
+                  ACİL ÇEKİCİ ÇAĞIR
+                </button>
+
+                <div class="features-grid">
+                  <div class="feature-item">
+                    <i class="ri-time-fill"></i>
+                    <span>Ortalama 15 dk</span>
+                  </div>
+                  <div class="feature-item">
+                    <i class="ri-shield-check-fill"></i>
+                    <span>Sigortalı Hizmet</span>
+                  </div>
+                  <div class="feature-item">
+                    <i class="ri-24-hours-fill"></i>
+                    <span>7/24 Aktif</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Waiting/Countdown Screen (Initially Hidden) -->
+            <div class="emergency-card waiting-screen" id="waiting-screen">
+              <!-- Success Header -->
+              <div class="waiting-header">
+                <div class="success-checkmark">
+                  <i class="ri-check-line"></i>
+                </div>
+                <h2>Talebiniz İletildi!</h2>
+                <p>Konumunuz yakındaki tüm çekicilere gönderildi.<br>En uygun çekici sizinle en kısa sürede iletişime geçecek.</p>
+              </div>
+
+              <!-- Countdown -->
+              <div class="countdown-section">
+                <p class="countdown-label">Tahmini Varış Süresi</p>
+
+                <div class="countdown-display">
+                  <div class="countdown-box">
+                    <div class="number" id="countdown-minutes">15</div>
+                    <div class="label">Dakika</div>
+                  </div>
+                  <span class="countdown-separator">:</span>
+                  <div class="countdown-box">
+                    <div class="number" id="countdown-seconds">00</div>
+                    <div class="label">Saniye</div>
+                  </div>
+                </div>
+
+                <div class="progress-container">
+                  <div class="progress-bar-track">
+                    <div class="progress-bar-fill" id="progress-fill"></div>
+                  </div>
+                </div>
+
+                <!-- Tow Truck Animation -->
+                <div class="tow-animation-container">
+                  <div class="distance-indicator" id="distance-text">Çekici yolda...</div>
+                  <div class="location-pin">
+                    <span class="car-warning">⚠️</span>
+                    <span>🚗</span>
+                  </div>
+                  <div class="tow-truck">🛻</div>
+                  <div class="road"></div>
+                </div>
+
+                <!-- Status Steps -->
+                <div class="status-steps">
+                  <div class="status-step completed" id="step-1">
+                    <div class="step-icon">
+                      <i class="ri-check-line"></i>
+                    </div>
+                    <div class="step-content">
+                      <h4>Talep Alındı</h4>
+                      <p>Çekici talebi başarıyla oluşturuldu</p>
+                    </div>
+                    <span class="step-time">Şimdi</span>
+                  </div>
+
+                  <div class="status-step active" id="step-2">
+                    <div class="step-icon">
+                      <i class="ri-search-line"></i>
+                    </div>
+                    <div class="step-content">
+                      <h4>Çekici Aranıyor</h4>
+                      <p>Size en yakın müsait çekici belirleniyor</p>
+                    </div>
+                    <span class="step-time">~2 dk</span>
+                  </div>
+
+                  <div class="status-step" id="step-3">
+                    <div class="step-icon">
+                      <i class="ri-truck-line"></i>
+                    </div>
+                    <div class="step-content">
+                      <h4>Çekici Yolda</h4>
+                      <p>Çekici konumunuza doğru hareket ediyor</p>
+                    </div>
+                    <span class="step-time">~10 dk</span>
+                  </div>
+
+                  <div class="status-step" id="step-4">
+                    <div class="step-icon">
+                      <i class="ri-flag-fill"></i>
+                    </div>
+                    <div class="step-content">
+                      <h4>Varış</h4>
+                      <p>Çekici konumunuza ulaştı</p>
+                    </div>
+                    <span class="step-time">--</span>
+                  </div>
+                </div>
+
+                <!-- Driver Contact Info (Shows after a delay) -->
+                <div class="contact-info hidden" id="driver-info">
+                  <div class="contact-avatar">
+                    <i class="ri-user-fill"></i>
+                  </div>
+                  <div class="contact-details">
+                    <h4>Mehmet Yılmaz</h4>
+                    <p>⭐ 4.9 • 234 tamamlanmış görev</p>
+                  </div>
+                  <button class="btn-call-driver">
+                    <i class="ri-phone-fill"></i>
+                    Ara
+                  </button>
+                </div>
+
+                <button class="btn-cancel" onclick="cancelRequest()">
+                  <i class="ri-close-line"></i> Talebi İptal Et
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Global Footer will be injected here -->
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Global Components -->
+  <script src="/components/global-header.js"></script>
+  <script src="/components/global-sidebar.js"></script>
+  <script src="/components/global-footer.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/components/bottom-nav.js"></script>
+
+  <script>
+    // Initialize variables
+    let map;
+    let userMarker;
+    let userLocation = null;
+    let countdownInterval;
+    let totalSeconds = 15 * 60; // 15 minutes
+    let isManualSelection = false;
+
+    // Default location (Çorlu)
+    const defaultLocation = [41.1591, 27.8003];
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      // Inject global components
+      injectGlobalSidebar('#main-layout');
+      injectGlobalFooter();
+
+      // Initialize map
+      initMap();
+    });
+
+    // Initialize Leaflet Map
+    function initMap() {
+      map = L.map('map', {
+        zoomControl: false
+      }).setView(defaultLocation, 14);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
+
+      // Add zoom control to bottom right
+      L.control.zoom({
+        position: 'bottomright'
+      }).addTo(map);
+    }
+
+    // Request user location
+    function requestLocation() {
+      if (navigator.geolocation) {
+        const overlay = document.getElementById('location-overlay');
+        overlay.querySelector('.location-prompt h3').textContent = 'Konum Alınıyor...';
+        overlay.querySelector('.btn-location').disabled = true;
+        overlay.querySelector('.btn-location').innerHTML = '<i class="ri-loader-4-line" style="animation: spin 1s linear infinite;"></i> Konum Alınıyor...';
+
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            userLocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            onLocationSuccess();
+          },
+          (error) => {
+            console.error('Location error:', error);
+            overlay.querySelector('.location-prompt h3').textContent = 'Konum Alınamadı';
+            overlay.querySelector('.location-prompt p').textContent = 'Lütfen haritadan manuel olarak konumunuzu seçin.';
+            overlay.querySelector('.btn-location').style.display = 'none';
+            setTimeout(() => enableManualSelection(), 1500);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+          }
+        );
+      } else {
+        alert('Tarayıcınız konum özelliğini desteklemiyor. Lütfen haritadan manuel seçim yapın.');
+        enableManualSelection();
+      }
+    }
+
+    // Location success handler
+    function onLocationSuccess() {
+      // Hide overlay
+      document.getElementById('location-overlay').classList.add('hidden');
+
+      // Show location bar
+      document.getElementById('location-bar').classList.remove('hidden');
+
+      // Enable call button
+      document.getElementById('btn-call').disabled = false;
+
+      // Center map on user location
+      map.setView([userLocation.lat, userLocation.lng], 16);
+
+      // Add user marker with pulse effect
+      addUserMarker(userLocation.lat, userLocation.lng);
+
+      // Get address (mock)
+      updateLocationText('Çorlu, Tekirdağ');
+    }
+
+    // Add user marker to map
+    function addUserMarker(lat, lng) {
+      if (userMarker) {
+        map.removeLayer(userMarker);
+      }
+
+      // Create custom icon
+      const customIcon = L.divIcon({
+        className: 'custom-div-icon',
+        html: `
+          <div style="position: relative;">
+            <div class="pulse-marker"></div>
+            <div style="width: 20px; height: 20px; background: #ef4444; border: 3px solid white; border-radius: 50%; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.5); position: relative; z-index: 2;"></div>
+          </div>
+        `,
+        iconSize: [40, 40],
+        iconAnchor: [20, 20]
+      });
+
+      userMarker = L.marker([lat, lng], { icon: customIcon }).addTo(map);
+    }
+
+    // Update location text
+    function updateLocationText(address) {
+      document.getElementById('location-text').textContent = address;
+    }
+
+    // Enable manual selection mode
+    function enableManualSelection() {
+      isManualSelection = true;
+      document.getElementById('location-overlay').classList.add('hidden');
+      document.getElementById('location-bar').classList.remove('hidden');
+      document.getElementById('location-text').textContent = 'Haritaya tıklayarak konum seçin';
+
+      // Enable map click
+      map.on('click', onMapClick);
+
+      // Add instruction
+      map.getContainer().style.cursor = 'crosshair';
+    }
+
+    // Map click handler
+    function onMapClick(e) {
+      userLocation = {
+        lat: e.latlng.lat,
+        lng: e.latlng.lng
+      };
+
+      addUserMarker(e.latlng.lat, e.latlng.lng);
+      document.getElementById('btn-call').disabled = false;
+      updateLocationText('Seçilen Konum: ' + e.latlng.lat.toFixed(4) + ', ' + e.latlng.lng.toFixed(4));
+      map.getContainer().style.cursor = '';
+    }
+
+    // Change location
+    function changeLocation() {
+      enableManualSelection();
+    }
+
+    // Call tow truck
+    function callTowTruck() {
+      if (!userLocation) {
+        alert('Lütfen önce konumunuzu belirleyin.');
+        return;
+      }
+
+      // Hide request card, show waiting screen
+      document.getElementById('request-card').style.display = 'none';
+      document.getElementById('waiting-screen').classList.add('active');
+
+      // Start countdown
+      startCountdown();
+
+      // Simulate status updates
+      simulateStatusUpdates();
+    }
+
+    // Start countdown
+    function startCountdown() {
+      const minutesEl = document.getElementById('countdown-minutes');
+      const secondsEl = document.getElementById('countdown-seconds');
+      const progressEl = document.getElementById('progress-fill');
+      const initialSeconds = totalSeconds;
+
+      countdownInterval = setInterval(() => {
+        totalSeconds--;
+
+        if (totalSeconds <= 0) {
+          clearInterval(countdownInterval);
+          totalSeconds = 0;
+        }
+
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+
+        minutesEl.textContent = minutes.toString().padStart(2, '0');
+        secondsEl.textContent = seconds.toString().padStart(2, '0');
+
+        // Update progress bar
+        const progress = ((initialSeconds - totalSeconds) / initialSeconds) * 100;
+        progressEl.style.width = (100 - progress) + '%';
+
+        // Update distance text
+        updateDistanceText(totalSeconds);
+
+      }, 1000);
+    }
+
+    // Update distance text based on time remaining
+    function updateDistanceText(seconds) {
+      const distanceEl = document.getElementById('distance-text');
+      if (seconds > 600) {
+        distanceEl.textContent = 'Çekici aranıyor...';
+      } else if (seconds > 300) {
+        distanceEl.textContent = '~5 km uzaklıkta';
+      } else if (seconds > 120) {
+        distanceEl.textContent = '~2 km uzaklıkta';
+      } else if (seconds > 60) {
+        distanceEl.textContent = 'Neredeyse geldi!';
+      } else {
+        distanceEl.textContent = 'Çekici ulaştı!';
+      }
+    }
+
+    // Simulate status updates
+    function simulateStatusUpdates() {
+      // After 3 seconds - step 2 completed, step 3 active
+      setTimeout(() => {
+        document.getElementById('step-2').classList.remove('active');
+        document.getElementById('step-2').classList.add('completed');
+        document.getElementById('step-2').querySelector('.step-icon i').className = 'ri-check-line';
+
+        document.getElementById('step-3').classList.add('active');
+
+        // Show driver info
+        document.getElementById('driver-info').classList.remove('hidden');
+      }, 3000);
+
+      // After 10 seconds - update distance
+      setTimeout(() => {
+        document.getElementById('distance-text').textContent = '~3 km uzaklıkta';
+      }, 10000);
+
+      // Demo: Speed up the countdown for demonstration
+      setTimeout(() => {
+        totalSeconds = 120; // Jump to 2 minutes for demo
+      }, 5000);
+    }
+
+    // Cancel request
+    function cancelRequest() {
+      if (confirm('Çekici talebini iptal etmek istediğinize emin misiniz?')) {
+        clearInterval(countdownInterval);
+
+        // Reset and show request card
+        document.getElementById('waiting-screen').classList.remove('active');
+        document.getElementById('request-card').style.display = 'block';
+
+        // Reset countdown
+        totalSeconds = 15 * 60;
+
+        // Reset steps
+        document.querySelectorAll('.status-step').forEach((step, index) => {
+          step.classList.remove('active', 'completed');
+          if (index === 0) step.classList.add('completed');
+          if (index === 1) step.classList.add('active');
+        });
+
+        // Hide driver info
+        document.getElementById('driver-info').classList.add('hidden');
+      }
+    }
+  </script>
+</body>
+
+</html>

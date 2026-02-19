@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mağaza İstatistikleri | TamirHanem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #FAFBFC;
+        }
+
+        .navbar {
+            background: linear-gradient(to right, #FFD32E, #FFC507);
+            height: 70px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(255, 197, 7, 0.25);
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0 20px;
+            max-width: 1140px;
+            margin: 0 auto;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .page-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .icon {
+            font-size: 5rem;
+            color: #14B8A6;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #6B7280;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #FFD32E, #FFC507);
+            color: #1A1A1A;
+            padding: 12px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <button class="back-btn" onclick="window.location.href='/pages/service-panel.html'"><i
+                    class="ri-arrow-left-line"></i></button>
+            <div class="page-title">Mağaza İstatistikleri</div>
+            <div style="width: 40px;"></div>
+        </div>
+    </nav>
+    <div class="container">
+        <i class="ri-bar-chart-box-line icon"></i>
+        <h1>Sayfa Hazırlanıyor</h1>
+        <p>Mağaza İstatistikleri sayfası geliştirilme aşamasındadır. Yakında gelir/gider raporlarınızı, performans
+            grafiklerinizi ve müşteri istatistiklerinizi görüntüleyebileceksiniz.</p>
+        <a href="/pages/service-panel.html" class="btn"><i class="ri-arrow-left-line"></i> Servis Paneline Dön</a>
+    </div>
+    <script src="/js/auth.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => { if (!auth.requireAuth()) return; });</script>
+</body>
+
+</html>

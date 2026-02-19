@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Kampanya Detayi | TamirHanem</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="/favicon/site.webmanifest">
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+
+  <!-- Global Dashboard CSS -->
+  <link rel="stylesheet" href="/css/global-dashboard.css">
+
+  <!-- Config (API URL) -->
+  <script src="/js/config.js"></script>
+
+  <style>
+    /* ========== PAGE SPECIFIC STYLES ========== */
+
+    /* Footer bottom spacing fix */
+    html {
+      height: 100%;
+    }
+
+    body {
+      min-height: 100%;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dashboard-main {
+      flex: 1 0 auto;
+    }
+
+    .dashboard-footer {
+      flex-shrink: 0;
+      margin-bottom: 0 !important;
+    }
+
+    body {
+      zoom: 0.765;
+    }
+
+    .dashboard-main {
+      padding-top: 32px;
+      padding-bottom: 100px;
+    }
+
+    /* Modern Breadcrumb Navigation */
+    .page-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .page-breadcrumb a {
+      color: #5a5a5a;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 18px;
+      background: white;
+      border-radius: 50px;
+      border: 1px solid #e5e7eb;
+      transition: all 0.3s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .page-breadcrumb a:hover {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border-color: #fbc707;
+      color: #92400e;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(251, 199, 7, 0.25);
+    }
+
+    .page-breadcrumb a i {
+      color: #fbc707;
+      font-size: 1rem;
+    }
+
+    .page-breadcrumb .sep {
+      color: #d1d5db;
+      font-size: 1.1rem;
+    }
+
+    .page-breadcrumb .current {
+      color: #5a4a00;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 10px 18px;
+      background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%);
+      border-radius: 50px;
+      box-shadow: 0 4px 15px rgba(251, 199, 7, 0.35);
+    }
+
+    /* Main Grid Layout */
+    .campaign-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ========== LEFT COLUMN - CAMPAIGN CARD ========== */
+    .campaign-detail-card {
+      background: white;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid rgba(251, 199, 7, 0.2);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Image Hero - Reasonable size, not fullscreen */
+    .campaign-image-hero {
+      position: relative;
+      width: 100%;
+      max-height: 380px;
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fbbf24 100%);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .campaign-image-hero img {
+      max-width: 100%;
+      max-height: 380px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      transition: transform 0.5s ease;
+    }
+
+    .campaign-detail-card:hover .campaign-image-hero img {
+      transform: scale(1.02);
+    }
+
+    .placeholder-icon {
+      font-size: 4rem;
+      color: #f59e0b;
+      opacity: 0.5;
+    }
+
+    /* Discount Badge */
+    .discount-badge-hero {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      padding: 12px 22px;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+      z-index: 10;
+      letter-spacing: 0.5px;
+    }
+
+    .discount-badge-hero i {
+      font-size: 1.2rem;
+    }
+
+    /* Campaign Body */
+    .campaign-body {
+      padding: 32px;
+    }
+
+    /* Meta Tags */
+    .campaign-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #92400e;
+      border: 1px solid rgba(251, 199, 7, 0.25);
+    }
+
+    .tag i {
+      color: #f59e0b;
+      font-size: 1rem;
+    }
+
+    /* Title Section */
+    .campaign-title-section {
+      margin-bottom: 28px;
+    }
+
+    .campaign-detail-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #5a5a5a;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    .campaign-detail-description {
+      font-size: 1.05rem;
+      color: #7a7a7a;
+      line-height: 1.85;
+      padding: 20px 24px;
+      background: linear-gradient(135deg, #fef9e7 0%, #fffbeb 100%);
+      border-radius: 16px;
+      border-left: 4px solid #fbc707;
+    }
+
+    /* Terms Section */
+    .terms-section {
+      margin-top: 28px;
+      background: #f8fafc;
+      border-radius: 20px;
+      padding: 24px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .terms-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .terms-icon-box {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #f59e0b;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 12px rgba(251, 199, 7, 0.25);
+    }
+
+    .terms-header h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #5a5a5a;
+    }
+
+    .terms-content {
+      font-size: 0.95rem;
+      color: #7a7a7a;
+      line-height: 1.75;
+    }
+
+    /* ========== RIGHT COLUMN - SIDEBAR ========== */
+    .campaign-sidebar {
+      position: sticky;
+      top: 32px;
+    }
+
+    .sidebar-card {
+      background: white;
+      border-radius: 24px;
+      padding: 28px;
+      border: 1px solid rgba(251, 199, 7, 0.2);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    /* CTA Button */
+    .btn-cta-primary {
+      width: 100%;
+      background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%);
+      color: #5a4a00;
+      border: none;
+      padding: 18px 24px;
+      border-radius: 16px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 10px 30px rgba(251, 199, 7, 0.35);
+      margin-bottom: 14px;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-cta-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(251, 199, 7, 0.45);
+    }
+
+    .btn-cta-primary i {
+      font-size: 1.3rem;
+    }
+
+    /* Share Button */
+    .btn-share {
+      width: 100%;
+      background: #f8fafc;
+      color: #5a5a5a;
+      border: 2px solid #e2e8f0;
+      padding: 14px 20px;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s;
+    }
+
+    .btn-share:hover {
+      background: #fef9e7;
+      border-color: #fbc707;
+      transform: translateY(-2px);
+    }
+
+    /* Info Box */
+    .info-box {
+      margin-top: 20px;
+      padding: 18px;
+      background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+      border-radius: 16px;
+      display: flex;
+      gap: 14px;
+      border: 1px solid rgba(14, 165, 233, 0.2);
+    }
+
+    .info-icon {
+      width: 42px;
+      height: 42px;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0284c7;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .info-box p {
+      font-size: 0.85rem;
+      color: #0369a1;
+      line-height: 1.6;
+      font-weight: 500;
+    }
+
+    /* Service Card */
+    .service-mini-card {
+      margin-top: 20px;
+      padding: 18px;
+      background: #f8fafc;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid #e2e8f0;
+    }
+
+    .service-mini-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(251, 199, 7, 0.15);
+      border-color: #fbc707;
+      background: white;
+    }
+
+    .service-avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      object-fit: cover;
+      background: white;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      border: 2px solid #fef3c7;
+    }
+
+    .service-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .service-details h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #5a5a5a;
+      margin-bottom: 4px;
+    }
+
+    .service-details p {
+      font-size: 0.82rem;
+      color: #7a7a7a;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .service-arrow {
+      color: #fbc707;
+      font-size: 1.5rem;
+    }
+
+    /* Loading Overlay */
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.4s;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(251, 199, 7, 0.2);
+      border-top-color: #fbc707;
+      border-radius: 50%;
+      animation: rotate 0.8s linear infinite;
+      margin-bottom: 18px;
+    }
+
+    .loading-screen p {
+      color: #7a7a7a;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    @keyframes rotate {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Error State */
+    .error-state {
+      text-align: center;
+      padding: 60px 20px;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .error-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 2rem;
+      color: #dc2626;
+    }
+
+    .error-state h3 {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      color: #5a5a5a;
+      font-weight: 700;
+    }
+
+    .error-state p {
+      color: #7a7a7a;
+      margin-bottom: 20px;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #fbc707 0%, #eeb902 100%);
+      color: #5a4a00;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-back:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(251, 199, 7, 0.4);
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 1100px) {
+      .campaign-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .campaign-sidebar {
+        position: static;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-main {
+        padding-bottom: 90px;
+      }
+
+      .campaign-detail-card {
+        border-radius: 20px;
+      }
+
+      .campaign-body {
+        padding: 24px;
+      }
+
+      .campaign-detail-title {
+        font-size: 1.6rem;
+      }
+
+      .campaign-image-hero {
+        max-height: 300px;
+      }
+
+      .campaign-image-hero img {
+        max-height: 300px;
+      }
+
+      .sidebar-card {
+        padding: 22px;
+        border-radius: 20px;
+      }
+
+      .btn-cta-primary {
+        padding: 16px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .campaign-detail-card {
+        border-radius: 16px;
+      }
+
+      .campaign-body {
+        padding: 20px;
+      }
+
+      .campaign-detail-title {
+        font-size: 1.4rem;
+      }
+
+      .campaign-detail-description {
+        font-size: 0.95rem;
+        padding: 16px;
+      }
+
+      .discount-badge-hero {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+        top: 14px;
+        left: 14px;
+      }
+
+      .sidebar-card {
+        padding: 18px;
+        border-radius: 16px;
+      }
+
+      .terms-section {
+        padding: 20px;
+        border-radius: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header and Loyalty Bar will be injected by global-header.js -->
+
+  <main class="dashboard-main">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <nav class="page-breadcrumb">
+        <a href="/dashboard.html"><i class="ri-home-5-line"></i> Anasayfa</a>
+        <span class="sep"><i class="ri-arrow-right-s-line"></i></span>
+        <a href="/pages/campaigns.html"><i class="ri-megaphone-line"></i> Kampanyalar</a>
+        <span class="sep"><i class="ri-arrow-right-s-line"></i></span>
+        <span id="breadcrumb-title" class="current">Yukleniyor...</span>
+      </nav>
+
+      <!-- Main Content Area -->
+      <div id="content-area">
+        <!-- Main Grid -->
+        <div class="campaign-grid">
+
+          <!-- Left: Campaign Card -->
+          <div class="campaign-detail-card">
+            <div class="campaign-image-hero">
+              <div id="discount-badge" class="discount-badge-hero" style="display: none;">
+                <i class="ri-price-tag-3-fill"></i>
+                <span id="discount-text"></span>
+              </div>
+              <img id="campaign-image" src="" alt="Kampanya Gorseli" style="display: none;">
+              <i id="image-placeholder" class="ri-gift-fill placeholder-icon"></i>
+            </div>
+
+            <div class="campaign-body">
+              <div class="campaign-tags">
+                <div class="tag">
+                  <i class="ri-calendar-event-line"></i>
+                  <span id="date-text">-</span>
+                </div>
+                <div class="tag">
+                  <i class="ri-fire-line"></i>
+                  <span>Ozel Kampanya</span>
+                </div>
+              </div>
+
+              <div class="campaign-title-section">
+                <h1 id="campaign-title" class="campaign-detail-title">Yukleniyor...</h1>
+                <div id="campaign-description" class="campaign-detail-description">Kampanya detaylari yukleniyor...</div>
+              </div>
+
+              <!-- Terms -->
+              <div id="terms-section" class="terms-section" style="display: none;">
+                <div class="terms-header">
+                  <div class="terms-icon-box">
+                    <i class="ri-file-list-3-line"></i>
+                  </div>
+                  <h3>Kampanya Kosullari</h3>
+                </div>
+                <div id="terms-content" class="terms-content"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Sidebar -->
+          <div class="campaign-sidebar">
+            <div class="sidebar-card">
+              <button id="btn-join" class="btn-cta-primary">
+                <i class="ri-calendar-check-line"></i>
+                Hemen Randevu Al
+              </button>
+
+              <button id="btn-share" class="btn-share">
+                <i class="ri-share-forward-line"></i>
+                Paylas
+              </button>
+
+              <div class="info-box">
+                <div class="info-icon">
+                  <i class="ri-information-line"></i>
+                </div>
+                <p>Kampanya kodu, randevunuz onaylandiginda SMS ve e-posta ile tarafiniza iletilecektir.</p>
+              </div>
+
+              <!-- Service Info -->
+              <div id="service-card" class="service-mini-card" style="display: none;">
+                <img id="service-logo" src="" alt="Servis" class="service-avatar">
+                <div class="service-details">
+                  <h4 id="service-name"></h4>
+                  <p><i class="ri-map-pin-line"></i> <span id="service-location">-</span></p>
+                </div>
+                <i class="ri-arrow-right-s-line service-arrow"></i>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-screen">
+    <div class="loading-spinner"></div>
+    <p>Kampanya yukleniyor...</p>
+  </div>
+
+  <!-- Global Header Component -->
+  <script src="/components/global-header.js"></script>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/components/footer.js"></script>
+  <script src="/js/components/bottom-nav.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const params = new URLSearchParams(window.location.search);
+      const campaignId = params.get('id');
+      const loadingOverlay = document.getElementById('loading-overlay');
+      const contentArea = document.getElementById('content-area');
+
+      // Helper function to extract image URL (same logic as campaigns.html)
+      function extractImageUrl(imgField) {
+        if (!imgField) return null;
+
+        let imageUrl = null;
+
+        // Flat format (direct url on object)
+        if (imgField.url) {
+          imageUrl = imgField.url;
+        }
+        // Strapi v4 with data.attributes wrapper
+        else if (imgField.data?.attributes?.url) {
+          imageUrl = imgField.data.attributes.url;
+        }
+        // Strapi v4 with just data.url
+        else if (imgField.data?.url) {
+          imageUrl = imgField.data.url;
+        }
+        // Maybe formats has url
+        else if (imgField.formats?.medium?.url) {
+          imageUrl = imgField.formats.medium.url;
+        }
+        else if (imgField.formats?.small?.url) {
+          imageUrl = imgField.formats.small.url;
+        }
+        else if (imgField.formats?.thumbnail?.url) {
+          imageUrl = imgField.formats.thumbnail.url;
+        }
+
+        if (imageUrl && !imageUrl.startsWith('http')) {
+          imageUrl = `https://api.tamirhanem.net${imageUrl}`;
+        }
+
+        return imageUrl;
+      }
+
+      // Show error state
+      function showError(message) {
+        loadingOverlay.style.display = 'none';
+        contentArea.innerHTML = `
+          <div class="error-state">
+            <div class="error-icon"><i class="ri-error-warning-line"></i></div>
+            <h3>Bir Sorun Olustu</h3>
+            <p>${message}</p>
+            <button class="btn-back" onclick="window.location.href='/pages/campaigns.html'">
+              <i class="ri-arrow-left-line"></i> Kampanyalara Don
+            </button>
+          </div>
+        `;
+      }
+
+      if (!campaignId) {
+        showError('Kampanya ID bulunamadi. Lutfen gecerli bir kampanya secin.');
+        return;
+      }
+
+      try {
+        // Use list endpoint with filter - same as campaigns.html which works
+        const apiUrl = `${CONFIG.API_BASE_URL}/campaigns?filters[id][$eq]=${campaignId}&populate[campaign_image][fields][0]=url&populate[campaign_image][fields][1]=formats&populate[service][fields][0]=id&populate[service][fields][1]=name&populate[service][fields][2]=location&populate[service][populate][ProfilePicture][fields][0]=url`;
+
+        const token = localStorage.getItem('tamirhanem_token');
+        const response = await fetch(apiUrl, {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+
+        if (!response.ok) {
+          throw new Error(`API hatasi: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Handle Strapi v4 list response (array) - get first item
+        const campaigns = data.data;
+        const campaign = Array.isArray(campaigns) ? campaigns[0] : campaigns;
+
+        if (!campaign) {
+          throw new Error('Kampanya verisi bos');
+        }
+
+        // Handle both Strapi v4 (attributes) and flat format
+        const attrs = campaign.attributes || campaign;
+        const campaignID = campaign.id || parseInt(campaignId);
+
+        // Update Page Title & Breadcrumb
+        const title = attrs.title || 'Kampanya';
+        document.title = `${title} | TamirHanem`;
+        document.getElementById('breadcrumb-title').textContent = title;
+
+        // Main Content
+        document.getElementById('campaign-title').textContent = title;
+        document.getElementById('campaign-description').textContent = attrs.description || 'Bu kampanya hakkinda detayli bilgi icin lutfen randevu alin.';
+
+        // Image
+        const imgEl = document.getElementById('campaign-image');
+        const placeholderEl = document.getElementById('image-placeholder');
+        const imageUrl = extractImageUrl(attrs.campaign_image);
+
+        if (imageUrl) {
+          imgEl.src = imageUrl;
+          imgEl.style.display = 'block';
+          placeholderEl.style.display = 'none';
+
+          imgEl.onerror = function() {
+            this.style.display = 'none';
+            placeholderEl.style.display = 'block';
+          };
+        } else {
+          imgEl.style.display = 'none';
+          placeholderEl.style.display = 'block';
+        }
+
+        // Discount Badge
+        if (attrs.discount_percentage) {
+          const badge = document.getElementById('discount-badge');
+          badge.style.display = 'flex';
+          document.getElementById('discount-text').textContent = `%${attrs.discount_percentage} INDIRIM`;
+        }
+
+        // Date
+        if (attrs.end_date) {
+          const endDate = new Date(attrs.end_date);
+          const today = new Date();
+          const diffTime = endDate - today;
+          const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          let dateStr = '';
+          if (daysRemaining <= 0) {
+            dateStr = 'Sona Erdi';
+          } else if (daysRemaining <= 3) {
+            dateStr = `Son ${daysRemaining} gun!`;
+          } else if (daysRemaining <= 7) {
+            dateStr = `${daysRemaining} gun kaldi`;
+          } else {
+            dateStr = `Son: ${endDate.toLocaleDateString('tr-TR')}`;
+          }
+          document.getElementById('date-text').textContent = dateStr;
+        } else {
+          document.getElementById('date-text').textContent = 'Suresiz Kampanya';
+        }
+
+        // Terms
+        if (attrs.terms_conditions) {
+          document.getElementById('terms-section').style.display = 'block';
+          document.getElementById('terms-content').innerHTML = attrs.terms_conditions.replace(/\n/g, '<br>');
+        }
+
+        // Service Info - handle all possible Strapi structures
+        let serviceId = null;
+        let sAttrs = null;
+
+        if (attrs.service) {
+          // Case 1: service is just an ID number
+          if (typeof attrs.service === 'number') {
+            serviceId = attrs.service;
+          }
+          // Case 2: Strapi v4 with data wrapper { data: { id, attributes } }
+          else if (attrs.service.data && attrs.service.data.id) {
+            serviceId = attrs.service.data.id;
+            sAttrs = attrs.service.data.attributes || attrs.service.data;
+          }
+          // Case 3: Direct object with id { id, attributes } or { id, name, ... }
+          else if (attrs.service.id) {
+            serviceId = attrs.service.id;
+            sAttrs = attrs.service.attributes || attrs.service;
+          }
+        }
+
+        if (serviceId && sAttrs) {
+          const serviceCard = document.getElementById('service-card');
+          serviceCard.style.display = 'flex';
+
+          document.getElementById('service-name').textContent = sAttrs.name || 'Servis';
+          document.getElementById('service-location').textContent = sAttrs.location || 'Konum bilgisi yok';
+
+          const serviceLogo = document.getElementById('service-logo');
+          const serviceImgUrl = extractImageUrl(sAttrs.ProfilePicture);
+          if (serviceImgUrl) {
+            serviceLogo.src = serviceImgUrl;
+          } else {
+            serviceLogo.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22100%22%20height%3D%22100%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20fill%3D%22%23fef3c7%22%20width%3D%22100%25%22%20height%3D%22100%25%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20fill%3D%22%23f59e0b%22%20font-family%3D%22sans-serif%22%20font-size%3D%2240%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3ES%3C%2Ftext%3E%3C%2Fsvg%3E';
+          }
+
+          if (serviceId) {
+            serviceCard.onclick = () => {
+              window.location.href = `/pages/service-detail.html?id=${serviceId}`;
+            };
+          }
+        }
+
+        // Join Button - navigate to appointment with service pre-selected
+        document.getElementById('btn-join').onclick = () => {
+          if (serviceId) {
+            window.location.href = `/pages/create-appointment.html?serviceId=${serviceId}&campaignId=${campaignID}`;
+          } else {
+            window.location.href = '/pages/create-appointment.html';
+          }
+        };
+
+        // Share Button
+        document.getElementById('btn-share').onclick = () => {
+          if (navigator.share) {
+            navigator.share({
+              title: title,
+              text: attrs.description || 'Bu kampanyaya goz atin!',
+              url: window.location.href
+            });
+          } else {
+            navigator.clipboard.writeText(window.location.href);
+            alert('Link kopyalandi!');
+          }
+        };
+
+        // Hide Loading
+        setTimeout(() => {
+          loadingOverlay.style.opacity = '0';
+          setTimeout(() => loadingOverlay.remove(), 400);
+        }, 300);
+
+      } catch (error) {
+        console.error('Error loading campaign:', error);
+        showError('Kampanya detaylari yuklenirken bir hata olustu: ' + error.message);
+      }
+    });
+  </script>
+</body>
+
+</html>

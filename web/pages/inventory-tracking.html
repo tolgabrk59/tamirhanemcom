@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stok Takibi | TamirHanem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/main.css">
+    <style>
+        :root {
+            --primary: #FFC507;
+            --primary-dark: #e0ac00;
+            --primary-light: #fff8db;
+            --text-dark: #5a5a5a;
+            --text-light: #888888;
+            --bg-light: #f8f9fa;
+            --white: #ffffff;
+            --danger: #ff4d4f;
+            --danger-bg: #fff1f0;
+            --success: #52c41a;
+            --border-radius: 16px;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Header Styling */
+        .page-header {
+            background: linear-gradient(135deg, #FFC507 0%, #FFD700 100%);
+            padding: 40px 20px 60px;
+            text-align: center;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(255, 197, 7, 0.2);
+            margin-bottom: -30px;
+            z-index: 1;
+        }
+
+        .page-header h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #2c3e50;
+            margin: 0 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .page-header p {
+            color: #4a5568;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        /* Header Buttons */
+        .back-btn,
+        .add-btn {
+            position: absolute;
+            top: 20px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.25rem;
+            color: #2c3e50;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-btn {
+            left: 20px;
+        }
+
+        .add-btn {
+            right: 20px;
+        }
+
+        .back-btn:hover,
+        .add-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            background: #fff;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 100px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 24px;
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+
+        .search-bar i {
+            color: var(--text-light);
+            font-size: 1.2rem;
+        }
+
+        .search-input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 1rem;
+            color: var(--text-dark);
+            font-family: inherit;
+        }
+
+        .search-input::placeholder {
+            color: #aaa;
+        }
+
+        /* Inventory Table */
+        .inventory-table {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .table th {
+            background-color: #333;
+            color: #fff;
+            padding: 16px 24px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table th:first-child {
+            border-top-left-radius: var(--border-radius);
+        }
+
+        .table th:last-child {
+            border-top-right-radius: var(--border-radius);
+        }
+
+        .table td {
+            padding: 16px 24px;
+            border-bottom: 1px solid #eee;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            vertical-align: middle;
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Zebra Striping */
+        .table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Hover Effect */
+        .table tbody tr:hover {
+            background-color: #fffbeb;
+        }
+
+        /* Low Stock Styling */
+        .table tbody tr.low-stock-row {
+            background-color: #fee2e2 !important;
+            /* Override zebra and hover */
+        }
+
+        .low-stock-icon {
+            color: #dc2626;
+            margin-right: 6px;
+            font-size: 1.1rem;
+            vertical-align: middle;
+        }
+
+        .low-stock-row td {
+            color: #7f1d1d;
+        }
+
+        .low-stock-row strong {
+            color: #991b1b;
+            font-weight: 800;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        .part-code {
+            font-family: 'Courier New', monospace;
+            background: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .low-stock-row .part-code {
+            background: rgba(255, 255, 255, 0.6);
+            color: #7f1d1d;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .btn-edit {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+
+        .btn-edit:hover {
+            background: #1890ff;
+            color: #fff;
+        }
+
+        .btn-delete {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .btn-delete:hover {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        /* States (Loading, Error, Empty) */
+        .loading-state,
+        .error-state,
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin-top: 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--bg-light);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .error-icon,
+        .empty-icon {
+            font-size: 4rem;
+            color: var(--text-light);
+            opacity: 0.3;
+            margin-bottom: 20px;
+        }
+
+        .error-icon {
+            color: var(--danger);
+            opacity: 0.8;
+        }
+
+        .empty-icon {
+            color: var(--primary);
+            opacity: 0.8;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        p {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        /* Modal Styling */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 32px;
+            width: 90%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--bg-light);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: var(--bg-light);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--danger-bg);
+            color: var(--danger);
+            transform: rotate(90deg);
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: var(--transition);
+            background: var(--bg-light);
+            color: #2c3e50;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(255, 197, 7, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #aaa;
+        }
+
+        /* Primary Button */
+        .btn-primary {
+            background: linear-gradient(135deg, #FFC507 0%, #FFD700 100%);
+            color: #2c3e50;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(255, 197, 7, 0.3);
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 197, 7, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: rgba(40, 40, 40, 0.95);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 50px;
+            margin-bottom: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transform: translateY(-30px) scale(0.9);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            min-width: 300px;
+            max-width: 90vw;
+            justify-content: center;
+            font-weight: 500;
+            pointer-events: auto;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .toast-success {
+            background: rgba(39, 174, 96, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .toast-error {
+            background: rgba(231, 76, 60, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px 80px;
+            }
+
+            .table th,
+            .table td {
+                padding: 12px 16px;
+                font-size: 0.9rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-icon {
+                width: 28px;
+                height: 28px;
+            }
+        }
+    </style>
+
+<body>
+    <div class="page-header">
+        <button class="back-btn" onclick="window.history.back()">
+            <i class="ri-arrow-left-line"></i>
+        </button>
+        <h1><i class="ri-box-3-line"></i> Stok Takibi</h1>
+        <p>Parça ve malzeme stoklarınızı yönetin</p>
+        <button class="add-btn" onclick="InventoryManager.openAddModal()">
+            <i class="ri-add-line"></i>
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <i class="ri-search-line"></i>
+            <input type="text" id="search-input" class="search-input" placeholder="Parça adı veya kodu ile ara..."
+                oninput="InventoryManager.handleSearch(this.value)">
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="loading-state">
+            <div class="loading-spinner"></div>
+            <h2>Yükleniyor...</h2>
+            <p>Stok bilgileri getiriliyor</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="error-state" style="display: none;">
+            <div class="error-icon"><i class="ri-error-warning-line"></i></div>
+            <h2>Bir Hata Oluştu</h2>
+            <p id="error-message"></p>
+            <button class="btn-retry" onclick="InventoryManager.init()">
+                <i class="ri-refresh-line"></i> Tekrar Dene
+            </button>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state" style="display: none;">
+            <div class="empty-icon"><i class="ri-inbox-line"></i></div>
+            <h2>Henüz Stok Kaydı Yok</h2>
+            <p>İlk parçanızı ekleyerek başlayın</p>
+            <button class="btn-primary" onclick="InventoryManager.openAddModal()">
+                <i class="ri-add-line"></i> Yeni Parça Ekle
+            </button>
+        </div>
+
+        <!-- Inventory Table -->
+        <div id="inventory-table" class="inventory-table" style="display: none;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Parça Adı</th>
+                        <th>Parça Kodu</th>
+                        <th>Mevcut Adet</th>
+                        <th>Min. Stok</th>
+                        <th>Birim Fiyat</th>
+                        <th>Tedarikçi</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-list">
+                    <!-- Dynamic content -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="inventory-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Yeni Parça Ekle</h2>
+                <button class="modal-close" onclick="InventoryManager.closeModal()">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <form id="inventory-form" onsubmit="InventoryManager.saveInventory(event)">
+                <div class="form-group">
+                    <label class="form-label">Parça Adı *</label>
+                    <input type="text" id="part-name" class="form-input" placeholder="Örn: Yağ Filtresi" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Parça Kodu *</label>
+                    <input type="text" id="part-code" class="form-input" placeholder="Örn: YF-001" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Mevcut Adet *</label>
+                        <input type="number" id="quantity" class="form-input" placeholder="0" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Min. Stok *</label>
+                        <input type="number" id="min-stock" class="form-input" placeholder="10" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Birim Fiyat (₺) *</label>
+                    <input type="number" id="unit-price" class="form-input" placeholder="0.00" step="0.01" min="0"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tedarikçi</label>
+                    <input type="text" id="supplier" class="form-input" placeholder="Tedarikçi adı">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="InventoryManager.closeModal()">
+                        İptal
+                    </button>
+                    <button type="submit" class="btn-primary" id="submit-btn">
+                        <i class="ri-save-line"></i> Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/config.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        // Check authentication
+        if (!auth.requireAuth()) {
+            // Redirect handled
+        }
+
+        const InventoryManager = {
+            serviceId: null,
+            inventoryData: [],
+            filteredData: [],
+            editingId: null,
+
+            async init() {
+                try {
+                    this.showLoading();
+
+                    const token = localStorage.getItem('tamirhanem_token');
+                    const userData = Utils.storage.get('tamirhanem_user');
+
+                    if (!token || !userData || !userData.serviceId) {
+                        throw new Error('Yetkilendirme bilgileri eksik veya servis seçilmemiş.');
+                    }
+
+                    this.serviceId = userData.serviceId;
+                    await this.fetchInventory();
+                } catch (error) {
+                    console.error('Init error:', error);
+                    this.showError(error.message);
+                }
+            },
+
+            async fetchInventory() {
+                try {
+                    const token = localStorage.getItem('tamirhanem_token');
+                    const response = await fetch(
+                        `${CONFIG.API_BASE_URL}/inventories?filters[service][id][$eq]=${this.serviceId}&populate=service`,
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        }
+                    );
+
+                    if (!response.ok) {
+                        throw new Error('Stok bilgileri yüklenemedi.');
+                    }
+
+                    const data = await response.json();
+                    this.inventoryData = data.data || [];
+                    this.filteredData = [...this.inventoryData];
+                    this.renderInventory();
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    throw error;
+                }
+            },
+
+            renderInventory() {
+                const tbody = document.getElementById('inventory-list');
+
+                if (this.filteredData.length === 0) {
+                    this.showEmpty();
+                    return;
+                }
+
+                tbody.innerHTML = this.filteredData.map(item => {
+                    const attrs = item.attributes;
+                    const isLowStock = this.checkLowStock(attrs.quantity, attrs.min_stock);
+                    const rowClass = isLowStock ? 'low-stock-row' : '';
+
+                    return `
+                        <tr class="${rowClass}">
+                            <td>
+                                ${isLowStock ? '<i class="ri-alert-line low-stock-icon"></i>' : ''}
+                                ${attrs.part_name}
+                            </td>
+                            <td><span class="part-code">${attrs.part_code}</span></td>
+                            <td><strong>${attrs.quantity}</strong></td>
+                            <td>${attrs.min_stock}</td>
+                            <td>${Utils.formatCurrency(attrs.unit_price)}</td>
+                            <td>${attrs.supplier || '-'}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon btn-edit" onclick="InventoryManager.openEditModal(${item.id})" title="Düzenle">
+                                        <i class="ri-edit-line"></i>
+                                    </button>
+                                    <button class="btn-icon btn-delete" onclick="InventoryManager.deleteInventory(${item.id})" title="Sil">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                this.showTable();
+            },
+
+            checkLowStock(quantity, minStock) {
+                return quantity <= minStock;
+            },
+
+            handleSearch(query) {
+                const searchTerm = query.toLowerCase().trim();
+
+                if (!searchTerm) {
+                    this.filteredData = [...this.inventoryData];
+                } else {
+                    this.filteredData = this.inventoryData.filter(item => {
+                        const attrs = item.attributes;
+                        return attrs.part_name.toLowerCase().includes(searchTerm) ||
+                            attrs.part_code.toLowerCase().includes(searchTerm);
+                    });
+                }
+
+                this.renderInventory();
+            },
+
+            openAddModal() {
+                this.editingId = null;
+                document.getElementById('modal-title').textContent = 'Yeni Parça Ekle';
+                document.getElementById('inventory-form').reset();
+                document.getElementById('inventory-modal').classList.add('show');
+            },
+
+            openEditModal(id) {
+                this.editingId = id;
+                const item = this.inventoryData.find(inv => inv.id === id);
+
+                if (!item) return;
+
+                const attrs = item.attributes;
+                document.getElementById('modal-title').textContent = 'Parça Düzenle';
+                document.getElementById('part-name').value = attrs.part_name;
+                document.getElementById('part-code').value = attrs.part_code;
+                document.getElementById('quantity').value = attrs.quantity;
+                document.getElementById('min-stock').value = attrs.min_stock;
+                document.getElementById('unit-price').value = attrs.unit_price;
+                document.getElementById('supplier').value = attrs.supplier || '';
+
+                document.getElementById('inventory-modal').classList.add('show');
+            },
+
+            closeModal() {
+                document.getElementById('inventory-modal').classList.remove('show');
+                document.getElementById('inventory-form').reset();
+                this.editingId = null;
+            },
+
+            async saveInventory(event) {
+                event.preventDefault();
+
+                const partName = document.getElementById('part-name').value.trim();
+                const partCode = document.getElementById('part-code').value.trim();
+                const quantity = parseInt(document.getElementById('quantity').value);
+                const minStock = parseInt(document.getElementById('min-stock').value);
+                const unitPrice = parseFloat(document.getElementById('unit-price').value);
+                const supplier = document.getElementById('supplier').value.trim();
+
+                if (!partName || !partCode) {
+                    Utils.showToast('Parça adı ve kodu zorunludur', 'error');
+                    return;
+                }
+
+                try {
+                    const submitBtn = document.getElementById('submit-btn');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="ri-loader-4-line"></i> Kaydediliyor...';
+
+                    const token = localStorage.getItem('tamirhanem_token');
+                    const requestBody = {
+                        data: {
+                            part_name: partName,
+                            part_code: partCode,
+                            quantity: quantity,
+                            min_stock: minStock,
+                            unit_price: unitPrice,
+                            supplier: supplier || null,
+                            service: this.serviceId
+                        }
+                    };
+
+                    const url = this.editingId
+                        ? `${CONFIG.API_BASE_URL}/inventories/${this.editingId}`
+                        : `${CONFIG.API_BASE_URL}/inventories`;
+
+                    const method = this.editingId ? 'PUT' : 'POST';
+
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error?.message || 'İşlem başarısız');
+                    }
+
+                    Utils.showToast(
+                        this.editingId ? 'Parça başarıyla güncellendi' : 'Parça başarıyla eklendi',
+                        'success'
+                    );
+
+                    this.closeModal();
+                    await this.fetchInventory();
+                } catch (error) {
+                    console.error('Save error:', error);
+                    Utils.showToast(error.message || 'İşlem başarısız', 'error');
+                } finally {
+                    const submitBtn = document.getElementById('submit-btn');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="ri-save-line"></i> Kaydet';
+                }
+            },
+
+            async deleteInventory(id) {
+                if (!confirm('Bu parçayı silmek istediğinizden emin misiniz?')) {
+                    return;
+                }
+
+                try {
+                    const token = localStorage.getItem('tamirhanem_token');
+                    const response = await fetch(
+                        `${CONFIG.API_BASE_URL}/inventories/${id}`,
+                        {
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        }
+                    );
+
+                    if (!response.ok) {
+                        throw new Error('Silme işlemi başarısız');
+                    }
+
+                    Utils.showToast('Parça başarıyla silindi', 'success');
+                    await this.fetchInventory();
+                } catch (error) {
+                    console.error('Delete error:', error);
+                    Utils.showToast(error.message || 'Silme işlemi başarısız', 'error');
+                }
+            },
+
+            showLoading() {
+                document.getElementById('loading-state').style.display = 'block';
+                document.getElementById('error-state').style.display = 'none';
+                document.getElementById('empty-state').style.display = 'none';
+                document.getElementById('inventory-table').style.display = 'none';
+            },
+
+            showError(message) {
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('error-state').style.display = 'block';
+                document.getElementById('empty-state').style.display = 'none';
+                document.getElementById('inventory-table').style.display = 'none';
+                document.getElementById('error-message').textContent = message;
+            },
+
+            showEmpty() {
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('error-state').style.display = 'none';
+                document.getElementById('empty-state').style.display = 'block';
+                document.getElementById('inventory-table').style.display = 'none';
+            },
+
+            showTable() {
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('error-state').style.display = 'none';
+                document.getElementById('empty-state').style.display = 'none';
+                document.getElementById('inventory-table').style.display = 'block';
+            }
+        };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            InventoryManager.init();
+        });
+    </script>
+</body>
+
+</html>

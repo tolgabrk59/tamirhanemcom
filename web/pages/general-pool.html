@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Genel Havuz | TamirHanem</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+
+  <style>
+    /* --- DESIGN SYSTEM --- */
+    :root {
+      --primary: #fbc707;
+      --primary-dark: #e0b000;
+      --primary-light: rgba(251, 199, 7, 0.15);
+
+      --custom-dark: #5a5a5a;
+      --custom-darker: #2d2d2d;
+
+      --neutral-900: #1a1a1a;
+      --neutral-800: #2d2d2d;
+      --neutral-700: #454545;
+      --neutral-500: #888888;
+      --neutral-100: #f4f6f8;
+      --white: #ffffff;
+
+      --success: #166534;
+      --success-bg: #dcfce7;
+      --warning: #854d0e;
+      --warning-bg: #fef9c3;
+      --error: #991b1b;
+      --error-bg: #fee2e2;
+
+      --radius-xl: 24px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+      --ease: cubic-bezier(0.25, 0.8, 0.25, 1);
+      --nav-height: 70px;
+      --bottom-nav-height: 80px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--neutral-100);
+      color: var(--neutral-800);
+      line-height: 1.5;
+      padding-bottom: calc(var(--bottom-nav-height) + 20px);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      color: var(--neutral-900);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    /* --- HEADER --- */
+    .dashboard-navbar {
+      background: var(--primary);
+      height: var(--nav-height);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(251, 199, 7, 0.25);
+      display: flex;
+      align-items: center;
+    }
+
+    .dashboard-navbar-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .dashboard-logo {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--neutral-900);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .dashboard-logo img {
+      height: 40px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .dashboard-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .action-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--neutral-900);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .action-btn:hover {
+      background: var(--white);
+      transform: translateY(-2px);
+    }
+
+    .user-profile-mini {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      padding: 4px;
+      padding-right: 12px;
+      border-radius: 50px;
+      transition: 0.3s;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      background: var(--neutral-900);
+      color: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    /* --- MAIN CONTENT --- */
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .dashboard-main {
+      padding-top: 20px;
+      animation: fadeIn 0.5s var(--ease);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Breadcrumb */
+    .breadcrumb-modern {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--white);
+      padding: 10px 20px;
+      border-radius: 50px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 25px;
+      border: 1px solid #eee;
+    }
+
+    .bc-item {
+      font-size: 0.85rem;
+      color: var(--neutral-500);
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .bc-item:hover {
+      color: var(--primary-dark);
+    }
+
+    .bc-separator {
+      color: var(--neutral-500);
+      font-size: 0.8rem;
+    }
+
+    .bc-item.active {
+      color: var(--neutral-900);
+      font-weight: 700;
+      background: var(--neutral-100);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    /* Pool List */
+    .pool-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+    }
+
+    .pool-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid #eee;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    .pool-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+
+    /* Teklif yapılmış kartlar */
+    .pool-card.offer-sent {
+      opacity: 0.7;
+      background: #f8f9fa;
+      border-color: #10b981;
+      position: relative;
+    }
+
+    .pool-card.offer-sent:hover {
+      transform: translateY(-2px);
+      opacity: 0.8;
+    }
+
+    .offer-sent-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      z-index: 5;
+    }
+
+    .offer-sent-badge i {
+      font-size: 12px;
+    }
+
+    /* Teklif yapıldı bildirimi (detay modal) */
+    .offer-sent-notice {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+      border: 1px solid #86efac;
+      border-radius: 12px;
+      margin-top: 20px;
+    }
+
+    .offer-sent-notice i {
+      font-size: 28px;
+      color: #10b981;
+    }
+
+    .offer-sent-notice strong {
+      color: #059669;
+      font-size: 14px;
+      display: block;
+    }
+
+    .offer-sent-notice p {
+      color: #047857;
+      font-size: 12px;
+      margin: 2px 0 0;
+    }
+
+    .pool-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+
+    .pool-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pool-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--neutral-900);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .pool-user-info h3 {
+      font-size: 1rem;
+      margin-bottom: 2px;
+    }
+
+    .pool-user-phone {
+      font-size: 0.85rem;
+      color: var(--neutral-500);
+    }
+
+    .pool-status {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--neutral-100);
+      color: var(--neutral-700);
+    }
+
+    .pool-divider {
+      height: 1px;
+      background: #eee;
+      margin: 15px 0;
+    }
+
+    .pool-details {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .pool-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: var(--neutral-700);
+    }
+
+    .pool-row i {
+      color: var(--neutral-500);
+      font-size: 1.1rem;
+    }
+
+    .pool-footer {
+      margin-top: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--neutral-500);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .detail-section {
+      margin-bottom: 20px;
+    }
+
+    .detail-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 10px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #f5f5f5;
+      font-size: 0.9rem;
+    }
+
+    .detail-label {
+      color: var(--neutral-500);
+    }
+
+    .detail-value {
+      font-weight: 500;
+      color: var(--neutral-900);
+    }
+
+    .date-option {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .date-option:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .date-option.selected {
+      border-color: var(--primary);
+      background: rgba(251, 199, 7, 0.1);
+    }
+
+    .date-radio {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #ddd;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .date-option.selected .date-radio {
+      border-color: var(--primary);
+    }
+
+    .date-radio::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: none;
+    }
+
+    .date-option.selected .date-radio::after {
+      display: block;
+    }
+
+    .btn-claim {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary);
+      color: var(--neutral-900);
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn-claim:disabled {
+      background: #eee;
+      color: #aaa;
+      cursor: not-allowed;
+    }
+
+    /* Bottom Nav */
+    .dashboard-tabs {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: var(--bottom-nav-height);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      z-index: 1000;
+      padding-bottom: 10px;
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.03);
+    }
+
+    .dashboard-tabs-container {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .tab-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--neutral-500);
+      font-size: 0.75rem;
+      font-weight: 600;
+      gap: 4px;
+      width: 60px;
+      transition: all 0.3s;
+      position: relative;
+      text-decoration: none;
+    }
+
+    .tab-link i {
+      font-size: 1.5rem;
+      transition: all 0.3s;
+    }
+
+    .tab-link.active {
+      color: var(--neutral-900);
+    }
+
+    .tab-link.active i {
+      color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .tab-link.active::after {
+      content: '';
+      position: absolute;
+      top: -10px;
+      width: 40px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 0 0 4px 4px;
+    }
+
+    #global-loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s;
+    }
+
+    #global-loading.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--neutral-100);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Enhanced Modal Sections */
+    .detail-card {
+      background: #F9FAFB;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .detail-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #E5E7EB;
+    }
+
+    .detail-card-header i {
+      color: var(--primary);
+      font-size: 1.2rem;
+    }
+
+    .detail-card-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .chip-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      background: rgba(251, 199, 7, 0.15);
+      color: #B45309;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 1px solid rgba(251, 199, 7, 0.3);
+    }
+
+    .schedule-block {
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #E5E7EB;
+    }
+
+    .schedule-block:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .schedule-title {
+      font-size: 0.8rem;
+      color: #6B7280;
+      font-weight: 600;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .schedule-date {
+      font-size: 1rem;
+      color: var(--neutral-900);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .info-tile {
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #E5E7EB;
+    }
+
+    .info-tile-label {
+      font-size: 0.75rem;
+      color: #6B7280;
+      font-weight: 600;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .info-tile-value {
+      font-size: 0.95rem;
+      color: var(--neutral-900);
+      font-weight: 600;
+    }
+
+    .detail-description {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--neutral-700);
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #E5E7EB;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="dashboard-navbar">
+    <div class="container dashboard-navbar-container">
+      <a href="/dashboard.html" class="dashboard-logo">
+        <img src="/images/logo.png" alt="TamirHanem">
+      </a>
+      <div class="dashboard-actions">
+        <button class="action-btn" id="notifications-btn"><i class="ri-notification-3-line"></i></button>
+        <div class="user-profile-mini" onclick="window.location.href='/dashboard.html#profile'">
+          <div class="user-avatar" id="user-avatar">S</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="dashboard-main">
+    <div class="container">
+
+      <div class="breadcrumb-modern">
+        <a href="/dashboard.html" class="bc-item"><i class="ri-home-5-line"></i> Anasayfa</a>
+        <i class="ri-arrow-right-s-line bc-separator"></i>
+        <a href="/pages/service-panel.html" class="bc-item">Servis Paneli</a>
+        <i class="ri-arrow-right-s-line bc-separator"></i>
+        <span class="bc-item active">Genel Havuz</span>
+      </div>
+
+      <div class="pool-container" id="pool-list">
+        <!-- JS ile doldurulacak -->
+      </div>
+
+      <div id="empty-state" class="empty-state" style="display: none;">
+        <div class="empty-icon"><i class="ri-inbox-line"></i></div>
+        <h2 class="empty-title">Havuz Boş</h2>
+        <p class="empty-text">Şu anda genel havuzda bekleyen müşteri bulunmuyor.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Detail Modal -->
+  <div class="modal" id="detail-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Randevu Detayları</div>
+        <button class="modal-close" onclick="closeModal('detail-modal')"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body" id="detail-modal-body">
+        <!-- JS ile doldurulacak -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Date Selection Modal -->
+  <div class="modal" id="date-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Tarih Seçin</div>
+        <button class="modal-close" onclick="closeModal('date-modal')"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom: 15px; color: var(--neutral-500);">Müşterinin uygun olduğu tarihlerden birini seçerek
+          teklif yapın:</p>
+        <div id="date-options">
+          <!-- JS ile doldurulacak -->
+        </div>
+        <button class="btn-claim" id="confirm-claim-btn" disabled onclick="confirmClaim()">
+          <i class="ri-check-double-line"></i> Teklifi Gönder
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-tabs">
+    <div class="dashboard-tabs-container">
+      <a href="/dashboard.html#home" class="tab-link"><i class="ri-home-5-line"></i><span>Anasayfa</span></a>
+      <a href="/dashboard.html#appointments" class="tab-link"><i
+          class="ri-calendar-event-line"></i><span>Randevular</span></a>
+      <a href="/dashboard.html#campaigns" class="tab-link"><i class="ri-coupon-2-line"></i><span>Fırsatlar</span></a>
+      <a href="/dashboard.html#assistant" class="tab-link"><i class="ri-robot-2-line"></i><span>Asistan</span></a>
+      <a href="/dashboard.html#profile" class="tab-link"><i class="ri-user-3-line"></i><span>Profil</span></a>
+    </div>
+  </div>
+
+  <div id="global-loading">
+    <div class="spinner"></div>
+  </div>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    if (!auth.requireAuth()) { }
+
+    let poolAppointments = [];
+    let selectedAppointment = null;
+    let selectedDate = null;
+
+    async function loadPool() {
+      Utils.showLoading();
+      try {
+        const token = auth.getToken();
+        console.log('Fetching General Pool from:', `${CONFIG.API_BASE_URL}/appointments/general-pool`);
+
+        const response = await fetch(`${CONFIG.API_BASE_URL}/appointments/general-pool`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+          console.error('Pool API Error:', response.status, response.statusText);
+          throw new Error('Havuz verisi alınamadı');
+        }
+
+        const json = await response.json();
+        console.log('Pool API Response:', json);
+
+        // Mobile app expects direct array or data property
+        poolAppointments = Array.isArray(json) ? json : (Array.isArray(json.data) ? json.data : []);
+
+        renderPool();
+      } catch (error) {
+        console.error('Pool Load Error:', error);
+        Utils.showToast('Havuz yüklenirken hata oluştu', 'error');
+      } finally {
+        Utils.hideLoading();
+      }
+    }
+
+    // Helper function to get avatar URL
+    function getAvatarUrl(user) {
+      if (!user || !user.avatar) return null;
+
+      let avatarUrl = null;
+      if (user.avatar.data?.attributes?.url) {
+        avatarUrl = user.avatar.data.attributes.url;
+      } else if (user.avatar.url) {
+        avatarUrl = user.avatar.url;
+      } else if (typeof user.avatar === 'string') {
+        avatarUrl = user.avatar;
+      }
+
+      if (!avatarUrl) return null;
+      return avatarUrl.startsWith('http') ? avatarUrl : `https://api.tamirhanem.net${avatarUrl}`;
+    }
+
+    function renderPool() {
+      const container = document.getElementById('pool-list');
+      const emptyState = document.getElementById('empty-state');
+
+      if (!poolAppointments || poolAppointments.length === 0) {
+        container.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      container.style.display = 'grid';
+      emptyState.style.display = 'none';
+
+      // Mevcut servis ID'sini al
+      const currentServiceId = parseInt(localStorage.getItem('selectedServiceId')) || 0;
+
+      container.innerHTML = poolAppointments.map(item => {
+        const apt = item.attributes || item;
+        const user = apt.user?.data?.attributes || apt.user || {};
+        const vehicle = apt.vehicle?.data?.attributes || apt.vehicle || {};
+        const category = apt.category?.data?.attributes || apt.category || {};
+
+        // Bu servisten teklif yapılmış mı kontrol et
+        let poolOffers = [];
+        try {
+          poolOffers = typeof apt.poolOffers === 'string' ? JSON.parse(apt.poolOffers) : (apt.poolOffers || []);
+        } catch(e) { poolOffers = []; }
+
+        const hasMyOffer = poolOffers.some(o => o.serviceId === currentServiceId);
+        const cardClass = hasMyOffer ? 'pool-card offer-sent' : 'pool-card';
+
+        const userName = `${user.name || ''} ${user.surname || ''}`.trim() || user.username || 'İsimsiz Müşteri';
+        const initial = userName.charAt(0).toUpperCase();
+        const phone = user.phoneNumber || user.phone || user.gsm || user.mobile || 'Telefon yok';
+        const avatarUrl = getAvatarUrl(user);
+        const avatarHtml = avatarUrl
+          ? `<img src="${avatarUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`
+          : initial;
+        const date = new Date(apt.createdAt).toLocaleDateString('tr-TR');
+
+        // Format preferred date
+        let prefDate = 'Belirtilmemiş';
+        if (apt.preferredDateTime) {
+          prefDate = new Date(apt.preferredDateTime).toLocaleDateString('tr-TR', {
+            day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
+          });
+        }
+
+        return `
+          <div class="${cardClass}" onclick="openDetail(${item.id})">
+            ${hasMyOffer ? '<div class="offer-sent-badge"><i class="ri-check-line"></i> Teklif Yapıldı</div>' : ''}
+            <div class="pool-header">
+              <div class="pool-user">
+                <div class="pool-avatar">${avatarHtml}</div>
+                <div class="pool-user-info">
+                  <h3>${userName}</h3>
+                  <div class="pool-user-phone">${phone}</div>
+                </div>
+              </div>
+              <div class="pool-status">${apt.status || 'Beklemede'}</div>
+            </div>
+
+            <div class="pool-details">
+              <div class="pool-row">
+                <i class="ri-car-line"></i>
+                ${vehicle.brand || ''} ${vehicle.model || ''} - ${vehicle.plate || 'Plaka yok'}
+              </div>
+              <div class="pool-row">
+                <i class="ri-tools-line"></i>
+                ${category.name || apt.faultDescription || 'Arıza belirtilmemiş'}
+              </div>
+              <div class="pool-row">
+                <i class="ri-calendar-line"></i>
+                Tercih: ${prefDate}
+              </div>
+            </div>
+
+            <div class="pool-divider"></div>
+
+            <div class="pool-footer">
+              <span>${date} tarihinde oluşturuldu</span>
+              <i class="ri-arrow-right-line" style="color: var(--primary); font-size: 1.2rem;"></i>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openDetail(id) {
+      selectedAppointment = poolAppointments.find(a => a.id === id);
+      if (!selectedAppointment) return;
+
+      const apt = selectedAppointment.attributes || selectedAppointment;
+      const user = apt.user?.data?.attributes || apt.user || {};
+      const vehicle = apt.vehicle?.data?.attributes || apt.vehicle || {};
+      const category = apt.category?.data?.attributes || apt.category || {};
+
+      const name = `${user.name || ''} ${user.surname || ''}`.trim() || user.username || 'Müşteri';
+      const phone = user.phoneNumber || user.phone || user.gsm || user.mobile || 'Belirtilmemiş';
+      const status = apt.status || 'Bekliyor';
+
+      const body = document.getElementById('detail-modal-body');
+
+      const avatarUrl = getAvatarUrl(user);
+      const avatarHtml = avatarUrl
+        ? `<img src="${avatarUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`
+        : name.charAt(0).toUpperCase();
+
+      let html = `
+        <!-- User Header -->
+        <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
+          <div style="width:60px; height:60px; border-radius:50%; background:#eee; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.5rem; color:#666; overflow:hidden;">
+            ${avatarHtml}
+          </div>
+          <div>
+            <h3 style="font-size:1.2rem; font-weight:700;">${name}</h3>
+            <p style="color:#666;">${phone}</p>
+          </div>
+        </div>
+
+        <!-- Basic Info -->
+        <div class="detail-card">
+          <div class="detail-card-header">
+            <i class="ri-information-line"></i>
+            <div class="detail-card-title">Temel Bilgiler</div>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Kategori</span>
+            <span class="detail-value">${category.name || 'Genel'}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Durum</span>
+            <span class="detail-value">${status}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Oluşturulma</span>
+            <span class="detail-value">${new Date(apt.createdAt).toLocaleDateString('tr-TR')}</span>
+          </div>
+        </div>
+      `;
+
+      // Preferred Dates Section
+      if (apt.preferredDateTime || (apt.availableDates && apt.availableDates.length > 0)) {
+        html += `
+          <div class="detail-card">
+            <div class="detail-card-header">
+              <i class="ri-calendar-check-line"></i>
+              <div class="detail-card-title">Tercih Edilen Tarihler</div>
+            </div>
+        `;
+
+        if (apt.preferredDateTime) {
+          const prefDate = new Date(apt.preferredDateTime);
+          html += `
+            <div class="schedule-block">
+              <div class="schedule-title">Tercih Edilen Gün</div>
+              <div class="schedule-date">${prefDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+          `;
+
+          if (apt.availableDates && apt.availableDates.length > 0) {
+            html += '<div class="chip-container">';
+            apt.availableDates.forEach(slot => {
+              if (slot.timeSlot) {
+                html += `<div class="chip">${slot.timeSlot}</div>`;
+              }
+            });
+            html += '</div>';
+          }
+
+          html += '</div>';
+        }
+
+        // Alternative dates
+        if (apt.availableDates && apt.availableDates.length > 1) {
+          const altDates = apt.availableDates.slice(1);
+          altDates.forEach((dateSlot, index) => {
+            if (dateSlot.date) {
+              const altDate = new Date(dateSlot.date);
+              html += `
+                <div class="schedule-block">
+                  <div class="schedule-title">Alternatif Gün ${index + 1}</div>
+                  <div class="schedule-date">${altDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}</div>
+                  ${dateSlot.timeSlot ? `<div class="chip-container"><div class="chip">${dateSlot.timeSlot}</div></div>` : ''}
+                </div>
+              `;
+            }
+          });
+        }
+
+        html += '</div>';
+      }
+
+      // Vehicle Details Grid
+      if (vehicle.brand || vehicle.plate) {
+        html += `
+          <div class="detail-card">
+            <div class="detail-card-header">
+              <i class="ri-car-line"></i>
+              <div class="detail-card-title">Araç Bilgileri</div>
+            </div>
+            <div class="info-grid">
+        `;
+
+        if (vehicle.brand && vehicle.model) {
+          html += `
+            <div class="info-tile">
+              <div class="info-tile-label">Araç</div>
+              <div class="info-tile-value">${vehicle.brand} ${vehicle.model}</div>
+            </div>
+          `;
+        }
+
+        if (vehicle.plate) {
+          html += `
+            <div class="info-tile">
+              <div class="info-tile-label">Plaka</div>
+              <div class="info-tile-value">${vehicle.plate}</div>
+            </div>
+          `;
+        }
+
+        if (vehicle.year) {
+          html += `
+            <div class="info-tile">
+              <div class="info-tile-label">Yıl</div>
+              <div class="info-tile-value">${vehicle.year}</div>
+            </div>
+          `;
+        }
+
+        if (vehicle.fuelType) {
+          html += `
+            <div class="info-tile">
+              <div class="info-tile-label">Yakıt Türü</div>
+              <div class="info-tile-value">${vehicle.fuelType}</div>
+            </div>
+          `;
+        }
+
+        if (vehicle.km || vehicle.mileage) {
+          html += `
+            <div class="info-tile">
+              <div class="info-tile-label">Kilometre</div>
+              <div class="info-tile-value">${vehicle.km || vehicle.mileage} km</div>
+            </div>
+          `;
+        }
+
+        html += '</div></div>';
+      }
+
+      // Fault Description
+      if (apt.faultDescription) {
+        html += `
+          <div class="detail-card">
+            <div class="detail-card-header">
+              <i class="ri-tools-line"></i>
+              <div class="detail-card-title">Sorun Detayı</div>
+            </div>
+            <div class="detail-description">${apt.faultDescription}</div>
+          </div>
+        `;
+      }
+
+      // Appointment Note
+      if (apt.note) {
+        html += `
+          <div class="detail-card">
+            <div class="detail-card-header">
+              <i class="ri-file-text-line"></i>
+              <div class="detail-card-title">Randevu Notu</div>
+            </div>
+            <div class="detail-description">${apt.note}</div>
+          </div>
+        `;
+      }
+
+      // User Note
+      if (apt.randevunotu) {
+        html += `
+          <div class="detail-card">
+            <div class="detail-card-header">
+              <i class="ri-user-voice-line"></i>
+              <div class="detail-card-title">Kullanıcı Notu</div>
+            </div>
+            <div class="detail-description">${apt.randevunotu}</div>
+          </div>
+        `;
+      }
+
+      // Bu servisten teklif yapılmış mı kontrol et
+      const currentServiceId = parseInt(localStorage.getItem('selectedServiceId')) || 0;
+      let poolOffers = [];
+      try {
+        poolOffers = typeof apt.poolOffers === 'string' ? JSON.parse(apt.poolOffers) : (apt.poolOffers || []);
+      } catch(e) { poolOffers = []; }
+
+      const hasMyOffer = poolOffers.some(o => o.serviceId === currentServiceId);
+
+      if (hasMyOffer) {
+        html += `
+          <div class="offer-sent-notice">
+            <i class="ri-check-double-line"></i>
+            <div>
+              <strong>Teklifiniz Gönderildi</strong>
+              <p>Kullanıcının cevabı bekleniyor...</p>
+            </div>
+          </div>
+        `;
+      } else {
+        html += `
+          <button class="btn-claim" onclick="openDateSelection()">
+            <i class="ri-check-circle-line"></i> Randevu Teklifi Yap
+          </button>
+        `;
+      }
+
+      body.innerHTML = html;
+      document.getElementById('detail-modal').classList.add('active');
+    }
+
+    function openDateSelection() {
+      closeModal('detail-modal');
+      const modal = document.getElementById('date-modal');
+      const container = document.getElementById('date-options');
+
+      if (!selectedAppointment.availableDates || selectedAppointment.availableDates.length === 0) {
+        Utils.showToast('Bu randevu için uygun tarih bulunmuyor', 'warning');
+        return;
+      }
+
+      selectedDate = null;
+      document.getElementById('confirm-claim-btn').disabled = true;
+
+      container.innerHTML = selectedAppointment.availableDates.map((date, index) => `
+        <div class="date-option" onclick="selectDate(${index}, this)">
+          <div class="date-radio"></div>
+          <div>
+            <div style="font-weight: 600;">${formatDate(date.date)}</div>
+            <div style="font-size: 0.85rem; color: #666;">${date.timeSlot || 'Tam gün'}</div>
+          </div>
+        </div>
+      `).join('');
+
+      modal.classList.add('active');
+    }
+
+    function selectDate(index, element) {
+      document.querySelectorAll('.date-option').forEach(el => el.classList.remove('selected'));
+      element.classList.add('selected');
+      selectedDate = selectedAppointment.availableDates[index];
+      document.getElementById('confirm-claim-btn').disabled = false;
+    }
+
+    async function confirmClaim() {
+      if (!selectedAppointment || !selectedDate) return;
+
+      Utils.showLoading();
+      try {
+        const token = auth.getToken();
+        // Seçili servis ID'sini al
+        const selectedServiceId = parseInt(localStorage.getItem('selectedServiceId')) || null;
+
+        if (!selectedServiceId) {
+          Utils.showToast('Servis seçilmedi', 'error');
+          return;
+        }
+
+        // Yeni endpoint: send-offer-from-pool - randevu havuzda kalır, teklif eklenir
+        const response = await fetch(`${CONFIG.API_BASE_URL}/appointments/${selectedAppointment.id}/send-offer-from-pool`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            serviceId: selectedServiceId,
+            matchedDate: {
+              date: selectedDate.date,
+              timeSlot: selectedDate.timeSlot
+            },
+            price: selectedAppointment.offerPrice || null,
+            message: null
+          })
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error?.message || 'Teklif gönderilemedi');
+        }
+
+        Utils.showToast('Teklif başarıyla gönderildi!', 'success');
+        closeModal('date-modal');
+        loadPool(); // Reload list - teklif yapılan kart silik görünecek
+
+      } catch (error) {
+        console.error(error);
+        Utils.showToast(error.message, 'error');
+      } finally {
+        Utils.hideLoading();
+      }
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      return new Date(dateStr).toLocaleDateString('tr-TR');
+    }
+
+    loadPool();
+  </script>
+</body>
+
+</html>

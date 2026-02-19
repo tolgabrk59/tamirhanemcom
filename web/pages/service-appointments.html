@@ -1,0 +1,2270 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Randevular | TamirHanem</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <!-- Modern Appointment Components -->
+  <link rel="stylesheet" href="/css/appointment-components.css">
+  <script src="/js/appointment-components.js"></script>
+  <style>
+    /* --- NEW DESIGN SYSTEM (SaaS Style) --- */
+    :root {
+      /* Brand Colors - Refined */
+      --primary: #FFC507;
+      --primary-dark: #e6b006;
+      --primary-light: #fff8e1;
+      --secondary: #1A1A1A;
+
+      /* Functional Colors */
+      --success: #10B981;
+      --success-light: #D1FAE5;
+      --warning: #F59E0B;
+      --warning-light: #FEF3C7;
+      --danger: #EF4444;
+      --danger-light: #FEE2E2;
+      --info: #3B82F6;
+      --info-light: #DBEAFE;
+
+      /* Neutrals */
+      --bg-body: #F3F4F6;
+      --bg-surface: #FFFFFF;
+      --bg-glass: rgba(255, 255, 255, 0.8);
+
+      --text-main: #111827;
+      --text-muted: #6B7280;
+      --text-light: #9CA3AF;
+
+      --border-color: #E5E7EB;
+      --border-light: #F3F4F6;
+
+      /* Shadows */
+      --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+      /* Spacing & Radius */
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+      --radius-xl: 1rem;
+      --radius-2xl: 1.5rem;
+
+      --nav-height: 72px;
+      --bottom-nav-height: 80px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding-bottom: 100px;
+    }
+
+    /* Page Header (matching past-offers.html) */
+    .page-header {
+      background: linear-gradient(135deg, #FFC507 0%, #FFD700 100%);
+      padding: 40px 20px 60px;
+      text-align: center;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(255, 197, 7, 0.2);
+      margin-bottom: -30px;
+      z-index: 1;
+    }
+
+    .page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #2c3e50;
+      margin: 0 0 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .page-header p {
+      color: #4a5568;
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.25rem;
+      color: #2c3e50;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-btn:hover {
+      transform: translateY(-2px) scale(1.05);
+      background: #fff;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .add-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.25rem;
+      color: #2c3e50;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .add-btn:hover {
+      transform: translateY(-2px) scale(1.05);
+      background: #fff;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      transition: 0.2s;
+    }
+
+    button {
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* --- Navbar --- */
+    .dashboard-navbar {
+      height: var(--nav-height);
+      background: linear-gradient(to right, #FFC507, #FFD700);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(255, 197, 7, 0.3);
+    }
+
+    .dashboard-navbar-container {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-brand img {
+      height: auto;
+      width: 200px;
+    }
+
+    .nav-title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-weight: 700;
+      font-size: 1rem;
+      color: #1A1A1A;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-btn-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      transition: all 0.2s;
+    }
+
+    .nav-btn-icon:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .nav-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 12px 4px 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-profile:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .nav-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--bg-body);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--primary);
+      overflow: hidden;
+    }
+
+    .nav-user-info {
+      display: none;
+      flex-direction: column;
+      line-height: 1.2;
+      padding-right: 4px;
+    }
+
+    @media (min-width: 768px) {
+      .nav-user-info {
+        display: flex;
+      }
+    }
+
+    .nav-user-name {
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: var(--text-main);
+    }
+
+    .nav-user-role {
+      font-size: 0.75rem;
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    /* --- Filter Tabs --- */
+    .filter-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 12px 20px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      position: relative;
+      z-index: 10;
+      margin-top: -30px;
+      /* Overlap header by half */
+    }
+
+    .filter-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-chip {
+      padding: 10px 20px;
+      background: white;
+      border: 2px solid var(--border-color);
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .filter-chip:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .filter-chip.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: var(--text-main);
+      box-shadow: 0 6px 20px rgba(255, 197, 7, 0.3);
+    }
+
+    /* --- Appointment Cards --- */
+    .appointments-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+      padding-top: 10px;
+    }
+
+    .appointment-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .appointment-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+
+    /* Customer Preferences in Card */
+    .customer-preferences {
+      background: var(--bg-body);
+      border-radius: var(--radius-lg);
+      padding: 12px;
+      margin-top: 8px;
+      min-height: 100px;
+      /* Fixed height to keep cards equal */
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pref-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .date-slot-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin: 4px;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .date-slot-chip i {
+      color: var(--primary);
+      font-size: 1rem;
+    }
+
+    /* Date Selection Buttons */
+    .date-selection-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .date-option-btn {
+      padding: 16px;
+      background: white;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .date-option-btn:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .date-option-btn.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(255, 197, 7, 0.2);
+    }
+
+    .date-option-date {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .date-option-slots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .time-slot-badge {
+      padding: 4px 10px;
+      background: var(--info-light);
+      color: var(--info);
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .user-info {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .user-avatar {
+      width: 56px;
+      height: 56px;
+      min-width: 56px;
+      min-height: 56px;
+      max-width: 56px;
+      max-height: 56px;
+      aspect-ratio: 1 / 1;
+      border-radius: 50% !important;
+      background: var(--bg-body);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      overflow: hidden;
+      border: 2px solid white;
+      box-shadow: var(--shadow-sm);
+      flex-shrink: 0;
+    }
+
+    .user-avatar img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover;
+      border-radius: 50% !important;
+    }
+
+    .user-details h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .user-details p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-pending {
+      background: var(--warning-light);
+      color: var(--warning);
+    }
+
+    .status-approved {
+      background: var(--success-light);
+      color: var(--success);
+    }
+
+    .status-completed {
+      background: var(--info-light);
+      color: var(--info);
+    }
+
+    .status-cancelled {
+      background: var(--danger-light);
+      color: var(--danger);
+    }
+
+    .card-body {
+      background: var(--bg-body);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .info-row i {
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: var(--radius-lg);
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.95rem;
+      transition: 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--text-main);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-outline {
+      background: white;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--text-muted);
+      color: var(--text-main);
+    }
+
+    .btn-whatsapp {
+      background: #DCFCE7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .btn-whatsapp:hover {
+      background: #bbf7d0;
+    }
+
+    /* --- Modal Styles --- */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-xl);
+      animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* --- Bottom Nav --- */
+    .dashboard-tabs {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: var(--bottom-nav-height);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      z-index: 1000;
+      padding-bottom: 10px;
+    }
+
+    .dashboard-tabs-container {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .tab-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+
+    .tab-link:hover {
+      color: var(--primary);
+    }
+
+    .tab-link.active {
+      color: var(--primary-dark);
+    }
+
+    .tab-link.active i {
+      color: var(--primary-dark);
+    }
+
+    .tab-link i {
+      font-size: 1.5rem;
+      margin-bottom: 2px;
+    }
+
+
+
+
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 10;
+    }
+
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .close-btn {
+      background: #f3f4f6;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .modal-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .detail-section {
+      background: #F9FAFB;
+      padding: 15px;
+      border-radius: 16px;
+    }
+
+    .detail-label {
+      font-size: 0.8rem;
+      color: #6B7280;
+      font-weight: 600;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .detail-value {
+      font-size: 1rem;
+      color: #1A1A1A;
+      font-weight: 500;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+
+    .detail-row:last-child {
+      margin-bottom: 0;
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .loading-spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 30px auto;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Enhanced Modal Sections */
+    .detail-card {
+      background: #F9FAFB;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .detail-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #E5E7EB;
+    }
+
+    .detail-card-header i {
+      color: var(--primary);
+      font-size: 1.2rem;
+    }
+
+    .detail-card-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Chips */
+    .card-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .card-actions .btn {
+      width: 100%;
+      margin: 0;
+    }
+
+    /* Full width for single button in row */
+    .card-actions .btn:last-child:nth-child(odd) {
+      grid-column: span 2;
+    }
+
+    .chip {
+      background: rgba(255, 197, 7, 0.15);
+      color: #B45309;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 1px solid rgba(255, 197, 7, 0.3);
+    }
+
+    .schedule-block {
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #E5E7EB;
+    }
+
+    .schedule-block:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .schedule-title {
+      font-size: 0.8rem;
+      color: #6B7280;
+      font-weight: 600;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .schedule-date {
+      font-size: 1rem;
+      color: var(--text-primary);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    /* Vehicle Details Grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .info-tile {
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #E5E7EB;
+    }
+
+    .info-tile-label {
+      font-size: 0.75rem;
+      color: #6B7280;
+      font-weight: 600;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .info-tile-value {
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* Description Text */
+    .detail-description {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #E5E7EB;
+    }
+
+    /* Media Attachments */
+    .media-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 8px 0;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .media-item {
+      flex-shrink: 0;
+      width: 120px;
+      height: 120px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #E5E7EB;
+    }
+
+    .media-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Expandable Card Styles */
+    .card-collapsed {
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .card-collapsed:hover {
+      background: var(--bg-light);
+    }
+
+    .card-summary {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .expand-indicator {
+      display: flex;
+      justify-content: center;
+      padding-top: 8px;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+    }
+
+    .card-expanded {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 2px solid var(--primary);
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Detail Tabs */
+    .detail-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border-light);
+      padding-bottom: 8px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 16px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .tab-btn:hover {
+      background: var(--bg-light);
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: var(--text-main);
+    }
+
+    .tab-content {
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* General Pool Badge */
+    .general-pool-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: var(--info-light);
+      color: var(--info);
+      margin-left: 8px;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Page Header (matching past-offers.html) -->
+  <div class="page-header">
+    <button class="back-btn" onclick="window.history.back()">
+      <i class="ri-arrow-left-line"></i>
+    </button>
+    <button class="add-btn" onclick="window.location.href='/dashboard.html#profile'">
+      <i class="ri-notification-3-line"></i>
+    </button>
+    <h1><i class="ri-calendar-check-line"></i> Randevularınız</h1>
+    <p>Servis randevularınızı yönetin</p>
+  </div>
+
+  <div class="container" style="padding-top: 0;">
+    <div class="filter-scroll">
+      <div class="filter-chip active" onclick="filterAppointments('all', this)">Tümü</div>
+      <div class="filter-chip" onclick="filterAppointments('pending', this)">Bekleyen</div>
+      <div class="filter-chip" onclick="filterAppointments('confirmed', this)">Onaylanan</div>
+      <div class="filter-chip" onclick="filterAppointments('completed', this)">Tamamlanan</div>
+      <div class="filter-chip" onclick="filterAppointments('cancelled', this)">İptal</div>
+    </div>
+  </div>
+
+  <main class="container" id="appointment-list" style="padding-bottom: 20px;">
+    <div class="loading-spinner"></div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="dashboard-tabs">
+    <div class="container dashboard-tabs-container">
+      <a href="/pages/service-panel.html" class="tab-link">
+        <i class="ri-dashboard-line"></i>
+        <span>Panel</span>
+      </a>
+      <a href="/pages/service-appointments.html" class="tab-link active">
+        <i class="ri-calendar-check-line"></i>
+        <span>Randevular</span>
+      </a>
+      <a href="/pages/qr-scanner.html" class="tab-link">
+        <i class="ri-qr-code-line"></i>
+        <span>QR/Kamera</span>
+      </a>
+      <a href="/dashboard.html#profile" class="tab-link">
+        <i class="ri-user-line"></i>
+        <span>Profil</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Date Suggestion Modal -->
+  <div id="date-suggestion-modal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+      <div class="modal-header">
+        <div class="modal-title"><i class="ri-calendar-check-line"></i> Randevu Tarihi Seç</div>
+        <button class="close-btn" onclick="closeDateSuggestionModal()"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body">
+        <div
+          style="background:#FFF8E1; padding:16px; border-radius:12px; margin-bottom:20px; border-left:4px solid #FFE082;">
+          <div style="font-weight:700; color:#F57C00; margin-bottom:8px;">
+            <i class="ri-information-line"></i> Bilgi
+          </div>
+          <div style="color:#5D4037; font-size:0.9rem;">
+            Müşterinin belirttiği tarih ve saat seçeneklerinden birini seçerek randevu öneriniz.
+          </div>
+        </div>
+
+        <!-- Customer Preferred Dates as Buttons -->
+        <div id="date-selection-container">
+          <!-- Will be populated by JavaScript -->
+        </div>
+
+        <!-- Optional Note -->
+        <div class="detail-section" style="margin-top: 20px;">
+          <div class="detail-label" style="margin-bottom: 8px;">Not (Opsiyonel)</div>
+          <textarea id="suggestion-note" rows="2" class="form-input"
+            style="width:100%; padding:12px; border:1px solid #E5E7EB; border-radius:8px; font-size:0.95rem;"
+            placeholder="Randevu için ek notunuz..."></textarea>
+        </div>
+      </div>
+      <div style="padding: 20px; border-top: 1px solid #eee; display: flex; gap: 10px;">
+        <button class="btn btn-outline" onclick="closeDateSuggestionModal()">İptal</button>
+        <button class="btn btn-primary" onclick="submitDateSuggestion()" id="confirm-date-btn" disabled>
+          <i class="ri-check-line"></i> Tarihi Onayla
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div id="detail-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Randevu Detayı</div>
+        <button class="close-btn" onclick="closeDetailModal()"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body" id="modal-body-content">
+        <!-- Content injected via JS -->
+      </div>
+      <div style="padding: 20px; border-top: 1px solid #eee; display: flex; gap: 10px;">
+        <button class="btn btn-outline" onclick="closeDetailModal()">Kapat</button>
+        <button class="btn btn-primary" id="modal-action-btn">İşlem Yap</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+
+  <script>
+    let allAppointments = [];
+    let serviceId = localStorage.getItem('selectedServiceId');
+    const PENDING_STATUSES = ['Bekliyor', 'Beklemede', 'Tarih Belirlendi'];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!auth.requireAuth()) return;
+
+      // Service Discovery Logic
+      if (!serviceId) {
+        serviceId = await discoverUserService();
+      }
+
+      if (!serviceId) {
+        document.getElementById('appointment-list').innerHTML = '<div style="text-align:center; padding:20px; color:red;">Servis bilgisi bulunamadı.</div>';
+        return;
+      }
+
+      // Load data FIRST
+      await loadAppointments();
+
+      // THEN apply filter from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const filter = urlParams.get('filter');
+      if (filter) {
+        const chip = document.querySelector(`.filter-chip[onclick*="${filter}"]`);
+        if (chip) filterAppointments(filter, chip);
+      }
+    });
+
+    async function discoverUserService() {
+      try {
+        const user = auth.getUser();
+        if (!user) return null;
+        const token = auth.getToken();
+
+        const meRes = await fetch(`${CONFIG.API_BASE_URL}/users/me?populate=service`, { headers: { Authorization: `Bearer ${token}` } });
+        const meData = await meRes.json();
+        if (meData.service && meData.service.id) {
+          localStorage.setItem('selectedServiceId', meData.service.id);
+          return meData.service.id;
+        }
+
+        const searchRes = await fetch(`${CONFIG.API_BASE_URL}/services?filters[owner][id][$eq]=${user.id}`, { headers: { Authorization: `Bearer ${token}` } });
+        const searchData = await searchRes.json();
+        if (searchData.data && searchData.data.length > 0) {
+          const sId = searchData.data[0].id;
+          localStorage.setItem('selectedServiceId', sId);
+          return sId;
+        }
+        return null;
+      } catch (e) { return null; }
+    }
+
+    async function loadAppointments() {
+      try {
+        const token = auth.getToken();
+        const url = `${CONFIG.API_BASE_URL}/appointments?` +
+          `populate[user][populate]=avatar` +
+          `&populate[service][populate]=ProfilePicture` +
+          `&populate[vehicle][populate]=*` +
+          `&populate[category][populate]=*` +
+          `&populate[attachments][populate]=*` +
+          `&filters[service][id][$eq]=${serviceId}` +
+          `&filters[isOfferRequest][$eq]=false` +
+          `&pagination[pageSize]=200&sort[0]=createdAt:desc`;
+
+        console.log('🔍 [DEBUG] API URL:', url);
+        console.log('🔍 [DEBUG] Service ID:', serviceId);
+
+        const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+        const json = await res.json();
+
+        console.log('🔍 [DEBUG] Raw API Response:', json);
+
+        // Robust Parsing
+        let allRecords = Array.isArray(json) ? json : (Array.isArray(json.data) ? json.data : []);
+
+        console.log('🔍 [DEBUG] Total Records (before filter):', allRecords.length);
+
+        // CLIENT-SIDE FILTERING: Strapi boolean filter çalışmıyor, manuel filtrele
+        allAppointments = allRecords.filter(item => {
+          const attrs = item.attributes || item;
+          return attrs.isOfferRequest !== true; // Teklif isteklerini hariç tut
+        });
+
+        console.log('🔍 [DEBUG] Total Appointments (after isOfferRequest≠true filter):', allAppointments.length);
+
+        // DEBUG: Check isOfferRequest values
+        console.log('🔍 [DEBUG] Appointment isOfferRequest values:');
+        allAppointments.forEach((item, idx) => {
+          const attrs = item.attributes || item;
+          console.log(`  [${idx}] ID: ${item.id}, isOfferRequest: ${attrs.isOfferRequest}, status: ${attrs.status}`);
+        });
+
+        renderAppointments(allAppointments);
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('appointment-list').innerHTML = '<div style="text-align:center; padding:20px;">Yüklenirken hata oluştu.</div>';
+      }
+    }
+
+    function renderAppointments(list) {
+      const container = document.getElementById('appointment-list');
+      if (list.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:40px; color:#888;">Randevu bulunamadı.</div>';
+        return;
+      }
+
+      const cardsHTML = list.map(item => {
+        const attrs = item.attributes || item;
+        const user = attrs.user?.data?.attributes || attrs.user || {};
+        const vehicle = attrs.vehicle?.data?.attributes || attrs.vehicle || {};
+        const category = attrs.category?.data?.attributes || attrs.category || {};
+
+        const name = `${user.name || ''} ${user.surname || ''}`.trim() || user.username || 'Müşteri';
+        const vehicleText = vehicle.brand ? `${vehicle.brand} ${vehicle.model}` : 'Araç bilgisi yok';
+        const plate = vehicle.plate || vehicle.licensePlate || '';
+
+        // CRITICAL: Show matchedDate if exists, otherwise createdAt
+        let displayDate = '';
+        if (attrs.matchedDate && Array.isArray(attrs.matchedDate) && attrs.matchedDate.length > 0) {
+          // Show matched date (service proposed date)
+          const matchedSlot = attrs.matchedDate[0];
+          const matchedDateObj = new Date(matchedSlot.date || matchedSlot);
+          displayDate = matchedDateObj.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+          const timeSlot = matchedSlot.timeSlot || '';
+          if (timeSlot) {
+            displayDate += ` • ${timeSlot}`;
+          }
+        } else if (attrs.preferredDateTime) {
+          // Show preferred date
+          const prefDate = new Date(attrs.preferredDateTime);
+          displayDate = prefDate.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+        } else {
+          // Fallback to created date
+          displayDate = new Date(attrs.createdAt).toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+        }
+
+        const status = attrs.status || 'Bekliyor';
+        const faultDesc = attrs.faultDescription || attrs.description || '';
+
+        const avatarUrl = getAvatarUrl(user);
+        const avatarHtml = avatarUrl
+          ? `<img src="${avatarUrl}">`
+          : name.charAt(0).toUpperCase();
+
+        const badgeClass = getStatusClass(status);
+        const phone = user.phoneNumber || user.phone || user.gsm || user.mobile;
+
+        // Check if from general pool
+        const isFromGeneralPool = attrs.isOfferRequest === true || attrs.fromGeneralPool === true;
+
+        // Build customer preferences display
+        let preferencesHTML = '';
+        if (attrs.preferredDateTime || (attrs.availableDates && attrs.availableDates.length > 0)) {
+          preferencesHTML = '<div class="customer-preferences">';
+          preferencesHTML += '<div class="pref-label"><i class="ri-calendar-check-line"></i> Müşteri Tercihleri</div>';
+
+          let chipCount = 0;
+          const maxChips = 3; // Maximum 3 total chips
+
+          // Preferred date
+          if (attrs.preferredDateTime && chipCount < maxChips) {
+            const prefDate = new Date(attrs.preferredDateTime);
+            const dateStr = prefDate.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long' });
+            const timeStr = prefDate.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+            preferencesHTML += `
+              <div class="date-slot-chip">
+                <i class="ri-star-fill"></i>
+                <span>${dateStr} • ${timeStr}</span>
+              </div>
+            `;
+            chipCount++;
+          }
+
+          // Available dates - group by date to detect full day
+          if (attrs.availableDates && Array.isArray(attrs.availableDates) && chipCount < maxChips) {
+            // Group slots by date
+            const dateGroups = {};
+            attrs.availableDates.forEach(slot => {
+              if (slot.date) {
+                const dateKey = new Date(slot.date).toISOString().split('T')[0];
+                if (!dateGroups[dateKey]) {
+                  dateGroups[dateKey] = [];
+                }
+                dateGroups[dateKey].push(slot);
+              }
+            });
+
+            // Convert to array and sort by date
+            const sortedDates = Object.entries(dateGroups).sort((a, b) => a[0].localeCompare(b[0]));
+
+            // Define full day slots
+            const FULL_DAY_SLOTS = ['09:00-12:00', '12:00-15:00', '15:00-18:00'];
+
+            for (const [dateKey, slots] of sortedDates) {
+              if (chipCount >= maxChips) break;
+
+              const date = new Date(dateKey);
+              const dateStr = date.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long' });
+
+              // Check if this is a full day (all 3 required slots)
+              const slotTimes = slots.map(s => s.timeSlot).filter(Boolean);
+              const isFullDay = FULL_DAY_SLOTS.every(slot => slotTimes.includes(slot));
+
+              if (isFullDay) {
+                // Show as "Tüm Gün"
+                preferencesHTML += `
+                  <div class="date-slot-chip">
+                    <i class="ri-calendar-line"></i>
+                    <span>${dateStr} • Tüm Gün</span>
+                  </div>
+                `;
+                chipCount++;
+              } else {
+                // Show individual slots
+                for (const slot of slots) {
+                  if (chipCount >= maxChips) break;
+                  const timeSlot = slot.timeSlot || '';
+                  preferencesHTML += `
+                    <div class="date-slot-chip">
+                      <i class="ri-calendar-line"></i>
+                      <span>${dateStr}${timeSlot ? ' • ' + timeSlot : ''}</span>
+                    </div>
+                  `;
+                  chipCount++;
+                }
+              }
+            }
+          }
+
+          // If no dates shown, show placeholder
+          if (chipCount === 0) {
+            preferencesHTML += '<div style="color:#888; font-size:0.85rem; text-align:center; padding:12px;">Tercih belirtilmemiş</div>';
+          }
+
+          preferencesHTML += '</div>';
+        }
+
+        // Compact collapsed card with action buttons visible
+        return `
+          <div class="appointment-card" id="card-${item.id}" data-expanded="false">
+            <div class="card-collapsed">
+              <div class="card-header" onclick="toggleCardExpand(${item.id})" style="cursor:pointer;">
+                <div class="user-info">
+                  <div class="user-avatar">${avatarHtml}</div>
+                  <div class="user-details">
+                    <h3>
+                      ${name}
+                      ${isFromGeneralPool ? '<span class="general-pool-badge">Genel Havuz</span>' : ''}
+                    </h3>
+                    <p><i class="ri-car-line"></i> ${vehicleText}${plate ? ' • ' + plate : ''}</p>
+                  </div>
+                </div>
+                <span class="status-badge ${badgeClass}">${status}</span>
+              </div>
+              
+              <div class="card-summary" onclick="toggleCardExpand(${item.id})" style="cursor:pointer;">
+                <div class="info-row"><i class="ri-calendar-line"></i> ${displayDate}</div>
+                ${faultDesc ? `<div class="info-row"><i class="ri-file-text-line"></i> ${faultDesc.substring(0, 60)}${faultDesc.length > 60 ? '...' : ''}</div>` : ''}
+              </div>
+
+              ${preferencesHTML}
+
+              <!-- Action Buttons (ALWAYS VISIBLE in collapsed view) -->
+              <div class="card-actions" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #E5E7EB;">
+                ${(() => {
+            console.log(`🔍 Card ${item.id} - Status: "${status}", PENDING_STATUSES:`, PENDING_STATUSES, 'Match:', PENDING_STATUSES.includes(status));
+            return '';
+          })()}
+                ${PENDING_STATUSES.includes(status) ? `
+                  <button class="btn btn-primary" onclick="event.stopPropagation(); openDateSuggestionModal(${item.id})">
+                    <i class="ri-calendar-check-line"></i> Tarih Öner
+                  </button>
+                  <button class="btn btn-primary" onclick="event.stopPropagation(); approveAppointment(${item.id})">
+                    <i class="ri-check-line"></i> Onayla
+                  </button>
+                  <button class="btn btn-outline" style="color:#EF4444; border-color:#EF4444;" onclick="event.stopPropagation(); rejectAppointment(${item.id})">
+                    <i class="ri-close-line"></i> Reddet
+                  </button>
+                ` : ''}
+                <button class="btn btn-whatsapp" onclick="event.stopPropagation(); startChat(${item.id})" ${!phone ? 'style="display:none;"' : ''}>
+                  <i class="ri-whatsapp-line"></i> WhatsApp
+                </button>
+                <button class="btn btn-outline" onclick="event.stopPropagation(); toggleCardExpand(${item.id})">
+                  <i class="ri-eye-line"></i> Detay
+                </button>
+              </div>
+            </div>
+
+            <!-- Expanded content (hidden by default) -->
+            <div class="card-expanded" style="display: none;">
+              <div class="expanded-content">
+                ${buildExpandedContent(item, user, vehicle, category, attrs, phone)}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Wrap in grid
+      container.innerHTML = `<div class="appointments-grid">${cardsHTML}</div>`;
+    }
+
+    function buildExpandedContent(item, user, vehicle, category, attrs, phone) {
+      const name = `${user.name || ''} ${user.surname || ''}`.trim() || user.username || 'Müşteri';
+      const email = user.email || 'Belirtilmemiş';
+      const status = attrs.status || 'Bekliyor';
+      const categoryName = category.name || 'Genel';
+      const faultDesc = attrs.faultDescription || attrs.description || 'Belirtilmemiş';
+      const note = attrs.randevunotu || attrs.note || '';
+
+      // Dates
+      const createdDate = new Date(attrs.createdAt).toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+      const createdTime = new Date(attrs.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+      const matchedDate = attrs.matchedDate ? new Date(attrs.matchedDate).toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' }) : null;
+      const matchedTime = attrs.matchedTime || null;
+
+      // Tabs for organizing info
+      let html = `
+        <div class="detail-tabs">
+          <button class="tab-btn active" onclick="switchTab(${item.id}, 'customer')">Müşteri</button>
+          <button class="tab-btn" onclick="switchTab(${item.id}, 'vehicle')">Araç</button>
+          <button class="tab-btn" onclick="switchTab(${item.id}, 'appointment')">Randevu</button>
+        </div>
+
+        <!-- Customer Tab -->
+        <div class="tab-content active" id="tab-customer-${item.id}">
+          <div class="detail-section">
+            <div class="detail-row">
+              <span style="color:#6B7280;">Ad Soyad</span>
+              <strong>${name}</strong>
+            </div>
+            <div class="detail-row">
+              <span style="color:#6B7280;">Telefon</span>
+              <strong>${phone || 'Belirtilmemiş'}</strong>
+            </div>
+            <div class="detail-row">
+              <span style="color:#6B7280;">Email</span>
+              <strong>${email}</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vehicle Tab -->
+        <div class="tab-content" id="tab-vehicle-${item.id}" style="display:none;">
+          <div class="detail-section">
+            <div class="info-grid">
+              ${vehicle.brand ? `
+                <div class="info-tile">
+                  <div class="info-tile-label">Araç</div>
+                  <div class="info-tile-value">${vehicle.brand} ${vehicle.model || ''}</div>
+                </div>
+              ` : ''}
+              ${vehicle.plate || vehicle.licensePlate ? `
+                <div class="info-tile">
+                  <div class="info-tile-label">Plaka</div>
+                  <div class="info-tile-value">${vehicle.plate || vehicle.licensePlate}</div>
+                </div>
+              ` : ''}
+              ${vehicle.year ? `
+                <div class="info-tile">
+                  <div class="info-tile-label">Yıl</div>
+                  <div class="info-tile-value">${vehicle.year}</div>
+                </div>
+              ` : ''}
+              ${vehicle.fuelType ? `
+                <div class="info-tile">
+                  <div class="info-tile-label">Yakıt</div>
+                  <div class="info-tile-value">${vehicle.fuelType}</div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+
+        <!-- Appointment Tab -->
+        <div class="tab-content" id="tab-appointment-${item.id}" style="display:none;">
+          <div class="detail-section">
+            <div class="detail-row">
+              <span style="color:#6B7280;">Kategori</span>
+              <strong>${categoryName}</strong>
+            </div>
+            <div class="detail-row">
+              <span style="color:#6B7280;">Durum</span>
+              <span class="status-badge ${getStatusClass(status)}">${status}</span>
+            </div>
+            <div class="detail-row">
+              <span style="color:#6B7280;">Oluşturulma</span>
+              <strong>${createdDate} • ${createdTime}</strong>
+            </div>
+            ${matchedDate ? `
+              <div class="detail-row">
+                <span style="color:#6B7280;">Önerilen Tarih</span>
+                <strong>${matchedDate}${matchedTime ? ' • ' + matchedTime : ''}</strong>
+              </div>
+            ` : ''}
+            ${faultDesc ? `
+              <div class="detail-row" style="flex-direction:column; align-items:flex-start;">
+                <span style="color:#6B7280; margin-bottom:8px;">Arıza Açıklaması</span>
+                <div class="detail-description">${faultDesc}</div>
+              </div>
+            ` : ''}
+            ${note ? `
+              <div class="detail-row" style="flex-direction:column; align-items:flex-start;">
+                <span style="color:#6B7280; margin-bottom:8px;">Notlar</span>
+                <div class="detail-description">${note}</div>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="card-actions" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #E5E7EB;">
+          ${PENDING_STATUSES.includes(status) ? `
+            <button class="btn btn-primary" onclick="openDateSuggestionModal(${item.id})">
+              <i class="ri-calendar-check-line"></i> Tarih Öner
+            </button>
+            <button class="btn btn-primary" onclick="approveAppointment(${item.id})">
+              <i class="ri-check-line"></i> Onayla
+            </button>
+            <button class="btn btn-outline" style="color:#EF4444; border-color:#EF4444;" onclick="rejectAppointment(${item.id})">
+              <i class="ri-close-line"></i> Reddet
+            </button>
+          ` : ''}
+          ${phone ? `
+            <button class="btn btn-whatsapp" onclick="startChat(${item.id})">
+              <i class="ri-whatsapp-line"></i> WhatsApp
+            </button>
+          ` : ''}
+        </div>
+      `;
+
+      return html;
+    }
+
+    function toggleCardExpand(id) {
+      const card = document.getElementById(`card-${id}`);
+      if (!card) return;
+
+      const isExpanded = card.getAttribute('data-expanded') === 'true';
+
+      const expandedContent = card.querySelector('.card-expanded');
+      if (!expandedContent) return;
+
+      const indicator = card.querySelector('.expand-indicator i');
+
+      if (isExpanded) {
+        // Collapse
+        expandedContent.style.display = 'none';
+        if (indicator) {
+          indicator.classList.remove('ri-arrow-up-s-line');
+          indicator.classList.add('ri-arrow-down-s-line');
+        }
+        card.setAttribute('data-expanded', 'false');
+      } else {
+        // Expand
+        expandedContent.style.display = 'block';
+        if (indicator) {
+          indicator.classList.remove('ri-arrow-down-s-line');
+          indicator.classList.add('ri-arrow-up-s-line');
+        }
+        card.setAttribute('data-expanded', 'true');
+      }
+    }
+
+    function switchTab(appointmentId, tabName) {
+      // Hide all tabs
+      const card = document.getElementById(`card-${appointmentId}`);
+      card.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
+      card.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+      // Show selected tab
+      document.getElementById(`tab-${tabName}-${appointmentId}`).style.display = 'block';
+      event.target.classList.add('active');
+    }
+
+    function getAvatarUrl(user) {
+      if (!user) return null;
+      const avatar = user.avatar;
+      if (!avatar) return null;
+      let url = avatar.url || (avatar.data && avatar.data.attributes && avatar.data.attributes.url) || null;
+      if (url && !url.startsWith('http')) url = `https://api.tamirhanem.net${url}`;
+      return url;
+    }
+
+    function getStatusClass(status) {
+      if (PENDING_STATUSES.includes(status)) return 'status-pending';
+      if (status === 'Onaylandı' || status === 'Confirmed') return 'status-confirmed';
+      if (status === 'Tamamlandı' || status === 'Completed') return 'status-completed';
+      if (status === 'İptal' || status === 'Cancelled') return 'status-cancelled';
+      return 'status-pending';
+    }
+
+    function filterAppointments(type, element) {
+      document.querySelectorAll('.filter-chip').forEach(el => el.classList.remove('active'));
+      if (element) element.classList.add('active');
+      else document.querySelector('.filter-chip').classList.add('active');
+
+      let filtered = [];
+      if (type === 'all') {
+        filtered = allAppointments;
+      } else if (type === 'pending') {
+        filtered = allAppointments.filter(item => {
+          const s = (item.attributes || item).status || '';
+          return PENDING_STATUSES.includes(s);
+        });
+      } else if (type === 'confirmed') {
+        filtered = allAppointments.filter(item => (item.attributes || item).status === 'Onaylandı');
+      } else if (type === 'completed') {
+        filtered = allAppointments.filter(item => (item.attributes || item).status === 'Tamamlandı');
+      } else if (type === 'cancelled') {
+        filtered = allAppointments.filter(item => (item.attributes || item).status === 'İptal');
+      }
+
+      renderAppointments(filtered);
+    }
+
+    function startChat(id) {
+      window.location.href = `/pages/service-chat.html?appointmentId=${id}`;
+    }
+
+    //Date Suggestion Functions
+    let currentDateSuggestionId = null;
+    let selectedDateSlot = null; // Store selected date/time slot
+
+    function openDateSuggestionModal(id) {
+      currentDateSuggestionId = id;
+      selectedDateSlot = null;
+
+      // Find appointment toshow customer preferences
+      const appointment = allAppointments.find(a => a.id === id);
+      const attrs = appointment?.attributes || appointment || {};
+
+      document.getElementById('date-suggestion-modal').classList.add('active');
+
+      // Reset form
+      document.getElementById('suggestion-note').value = '';
+      document.getElementById('confirm-date-btn').disabled = true;
+
+      // Build date selection buttons
+      const container = document.getElementById('date-selection-container');
+      let buttonsHTML = '';
+
+      const dateOptions = [];
+
+      // Add preferred date if exists
+      if (attrs.preferredDateTime) {
+        const prefDate = new Date(attrs.preferredDateTime);
+        const dateKey = prefDate.toISOString().split('T')[0];
+        const hour = prefDate.getHours();
+        let timeSlot = '';
+
+        if (hour >= 9 && hour < 12) timeSlot = '09:00-12:00';
+        else if (hour >= 12 && hour < 15) timeSlot = '12:00-15:00';
+        else if (hour >= 15 && hour < 18) timeSlot = '15:00-18:00';
+        else if (hour >= 18 && hour < 21) timeSlot = '18:00-21:00';
+
+        if (timeSlot) {
+          dateOptions.push({
+            date: dateKey,
+            timeSlot: timeSlot,
+            label: prefDate.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric', weekday: 'long' }),
+            isPreferred: true
+          });
+        }
+      }
+
+      // Add available dates - group by date to detect full day
+      if (attrs.availableDates && Array.isArray(attrs.availableDates)) {
+        // Group slots by date
+        const dateGroups = {};
+        attrs.availableDates.forEach(slot => {
+          if (slot.date && slot.timeSlot) {
+            const dateKey = new Date(slot.date).toISOString().split('T')[0];
+            if (!dateGroups[dateKey]) {
+              dateGroups[dateKey] = [];
+            }
+            dateGroups[dateKey].push(slot);
+          }
+        });
+
+        // Define full day slots
+        const FULL_DAY_SLOTS = ['09:00-12:00', '12:00-15:00', '15:00-18:00'];
+
+        // Process each date group
+        Object.entries(dateGroups).forEach(([dateKey, slots]) => {
+          const slotTimes = slots.map(s => s.timeSlot).filter(Boolean);
+          const isFullDay = FULL_DAY_SLOTS.every(slot => slotTimes.includes(slot));
+
+          const date = new Date(dateKey);
+          const label = date.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric', weekday: 'long' });
+
+          if (isFullDay) {
+            // Add single "Tüm Gün" option for this date
+            dateOptions.push({
+              date: dateKey,
+              timeSlot: 'Tüm Gün',
+              slots: FULL_DAY_SLOTS, // Store all 3 slots for submission
+              label: label,
+              isPreferred: false,
+              isFullDay: true
+            });
+          } else {
+            // Add individual slots
+            slots.forEach(slot => {
+              dateOptions.push({
+                date: slot.date,
+                timeSlot: slot.timeSlot,
+                label: label,
+                isPreferred: false
+              });
+            });
+          }
+        });
+      }
+
+      if (dateOptions.length === 0) {
+        buttonsHTML = `
+          <div style="text-align:center; padding:40px; color:#888;">
+            <i class="ri-calendar-close-line" style="font-size:3rem; opacity:0.3; margin-bottom:12px; display:block;"></i>
+            Müşteri tercih belirtmemiş
+          </div>
+        `;
+      } else {
+        buttonsHTML = '<div class="date-selection-grid">';
+
+        dateOptions.forEach((option, index) => {
+          const displayTimeSlot = option.isFullDay ? 'Tüm Gün (09:00-18:00)' : option.timeSlot;
+          buttonsHTML += `
+            <div class="date-option-btn" onclick="selectDateOption(${index})">
+              <div class="date-option-date">
+                ${option.isPreferred ? '<i class="ri-star-fill" style="color:var(--warning);"></i>' : '<i class="ri-calendar-line" style="color:var(--primary);"></i>'}
+                <span>${option.label}</span>
+              </div>
+              <div class="date-option-slots">
+                <div class="time-slot-badge">${displayTimeSlot}</div>
+              </div>
+              ${option.isPreferred ? '<div style="font-size:0.75rem; color:var(--warning); margin-top:6px;"><i class="ri-pushpin-fill"></i> Tercih Edilen</div>' : ''}
+            </div>
+          `;
+        });
+
+        buttonsHTML += '</div>';
+      }
+
+      container.innerHTML = buttonsHTML;
+
+      // Store dateOptions globally for selectDateOption to access
+      window.currentDateOptions = dateOptions;
+    }
+
+    function selectDateOption(index) {
+      // Remove previous selection
+      document.querySelectorAll('.date-option-btn').forEach(btn => btn.classList.remove('selected'));
+
+      // Select clicked option
+      const buttons = document.querySelectorAll('.date-option-btn');
+      if (buttons[index]) {
+        buttons[index].classList.add('selected');
+      }
+
+      // Store selection
+      const option = window.currentDateOptions[index];
+      if (option.isFullDay) {
+        // For full day, we need to submit all 3 time slots
+        selectedDateSlot = {
+          date: option.date,
+          isFullDay: true,
+          slots: option.slots // ['09:00-12:00', '12:00-15:00', '15:00-18:00']
+        };
+      } else {
+        selectedDateSlot = {
+          date: option.date,
+          timeSlot: option.timeSlot,
+          isFullDay: false
+        };
+      }
+
+      // Enable confirm button
+      document.getElementById('confirm-date-btn').disabled = false;
+    }
+
+    function closeDateSuggestionModal() {
+      document.getElementById('date-suggestion-modal').classList.remove('active');
+      currentDateSuggestionId = null;
+      selectedDateSlot = null;
+    }
+
+    async function submitDateSuggestion() {
+      if (!selectedDateSlot) {
+        Utils.showToast('Lütfen bir tarih seçin', 'error');
+        return;
+      }
+
+      const note = document.getElementById('suggestion-note').value;
+
+      try {
+        const token = auth.getToken();
+
+        // Format matchedDate as array (like mobile app)
+        let matchedDate;
+
+        if (selectedDateSlot.isFullDay) {
+          // Full day: create 3 slots for the same date
+          matchedDate = selectedDateSlot.slots.map(timeSlot => ({
+            date: selectedDateSlot.date,
+            timeSlot: timeSlot
+          }));
+        } else {
+          // Single slot
+          matchedDate = [{
+            date: selectedDateSlot.date,
+            timeSlot: selectedDateSlot.timeSlot
+          }];
+        }
+
+        console.log('📤 [DATE SUGGESTION] Sending:', { matchedDate, status: 'Tarih Belirlendi' });
+
+        const response = await fetch(`${CONFIG.API_BASE_URL}/appointments/${currentDateSuggestionId}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            data: {
+              matchedDate: matchedDate,
+              status: 'Tarih Belirlendi',
+              ...(note ? { randevunotu: note } : {})
+            }
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.error('❌ [DATE SUGGESTION] Error response:', errorData);
+          throw new Error('Tarih önerisi gönderilemedi');
+        }
+
+        Utils.showToast('Tarih önerisi başarıyla gönderildi', 'success');
+        closeDateSuggestionModal();
+        await loadAppointments(); // Reload to show updated data
+      } catch (error) {
+        console.error('Date suggestion error:', error);
+        Utils.showToast(error.message || 'Bir hata oluştu', 'error');
+      }
+    }
+
+    // Approve Appointment
+    async function approveAppointment(id) {
+      if (!confirm('Randevuyu onaylamak istediğinize emin misiniz?')) return;
+
+      try {
+        const token = auth.getToken();
+        const response = await fetch(`${CONFIG.API_BASE_URL}/appointments/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            data: {
+              status: 'Onaylandı'
+            }
+          })
+        });
+
+        if (!response.ok) throw new Error('Randevu onaylanamadı');
+
+        Utils.showToast('Randevu onaylandı', 'success');
+        await loadAppointments();
+      } catch (error) {
+        console.error('Approve error:', error);
+        Utils.showToast(error.message || 'Bir hata oluştu', 'error');
+      }
+    }
+
+    // Reject Appointment
+    async function rejectAppointment(id) {
+      const reason = prompt('Red nedeninizi girin (opsiyonel):');
+      if (reason === null) return; // User cancelled
+
+      if (!confirm('Randevuyu reddetmek istediğinize emin misiniz?')) return;
+
+      try {
+        const token = auth.getToken();
+        const response = await fetch(`${CONFIG.API_BASE_URL}/appointments/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            data: {
+              status: 'İptal Edildi',
+              ...(reason ? { randevunotu: `RED NEDENİ: ${reason}` } : {})
+            }
+          })
+        });
+
+        if (!response.ok) throw new Error('Randevu reddedilemedi');
+
+        Utils.showToast('Randevu reddedildi', 'success');
+        await loadAppointments();
+      } catch (error) {
+        console.error('Reject error:', error);
+        Utils.showToast(error.message || 'Bir hata oluştu', 'error');
+      }
+    }
+
+    // --- Modal Logic ---
+    function openDetailModal(id) {
+      const item = allAppointments.find(a => a.id === id);
+      if (!item) return;
+
+      const attrs = item.attributes || item;
+      const user = attrs.user?.data?.attributes || attrs.user || {};
+      const vehicle = attrs.vehicle?.data?.attributes || attrs.vehicle || {};
+      const category = attrs.category?.data?.attributes || attrs.category || {};
+
+      const name = `${user.name || ''} ${user.surname || ''}`.trim() || user.username || 'Müşteri';
+      const phone = user.phoneNumber || user.phone || user.gsm || user.mobile || 'Belirtilmemiş';
+      const status = attrs.status || 'Bekliyor';
+
+      const avatarUrl = getAvatarUrl(user);
+      const avatarHtml = avatarUrl
+        ? `<img src="${avatarUrl}" style="width:100%; height:100%; object-fit:cover;">`
+        : name.charAt(0).toUpperCase();
+
+      let html = `
+        <!-- User Header -->
+        <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
+          <div class="user-avatar" style="width:60px; height:60px; font-size:1.5rem;">${avatarHtml}</div>
+          <div>
+            <h3 style="font-size:1.2rem; font-weight:700;">${name}</h3>
+            <p style="color:#666;">${phone}</p>
+          </div>
+        </div>
+
+        <!-- Basic Info Card -->
+        <div class="detail-card">
+          <div class="detail-card-header">
+            <i class="ri-information-line"></i>
+            <div class="detail-card-title">Temel Bilgiler</div>
+          </div>
+          <div class="detail-row">
+            <div>
+              <div class="detail-label">Kategori</div>
+              <div class="detail-value">${category.name || 'Genel'}</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="detail-label">Durum</div>
+              <div class="status-badge ${getStatusClass(status)}">${status}</div>
+            </div>
+          </div>
+          <div class="detail-row">
+            <div>
+              <div class="detail-label">Oluşturulma</div>
+              <div class="detail-value">${new Date(attrs.createdAt).toLocaleDateString('tr-TR')}</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="detail-label">Saat</div>
+              <div class="detail-value">${new Date(attrs.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Preferred Dates Section
+      if (attrs.preferredDateTime || (attrs.availableDates && attrs.availableDates.length > 0)) {
+        html += `
+          <div class="detail-card">
+            <div class="detail-card-header">
+              <i class="ri-calendar-check-line"></i>
+              <div class="detail-card-title">Tercih Edilen Tarihler</div>
+            </div>
+        `;
+
+        if (attrs.preferredDateTime) {
+          const prefDate = new Date(attrs.preferredDateTime);
+          html += `
+            <div class="schedule-block">
+              <div class="schedule-title">Tercih Edilen Gün</div>
+              <div class="schedule-date">${prefDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+          `;
+
+          // Show time slots if available
+          if (attrs.availableDates && attrs.availableDates.length > 0) {
+            html += '<div class="chip-container">';
+            attrs.availableDates.forEach(slot => {
+              if (slot.timeSlot) {
+                html += `<div class="chip">${slot.timeSlot}</div>`;
+              }
+            });
+            html += '</div>';
+          }
+
+          html += '</div>';
+        }
+
+        // Alternative dates
+        if (attrs.availableDates && attrs.availableDates.length > 1) {
+          const altDates = attrs.availableDates.slice(1);
+          altDates.forEach((dateSlot, index) => {
+            if (dateSlot.date) {
+              const altDate = new Date(dateSlot.date);
+              html += `
+                <div class="schedule-block">
+                  <div class="schedule-title">Alternatif Gün ${index + 1}</div>
+                  <div class="schedule-date">${altDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}</div>
+                  ${dateSlot.timeSlot ? `<div class="chip-container"><div class="chip">${dateSlot.timeSlot}</div></div>` : ''}
+                </div>
+              `;
+            }
+          });
+        }
+
+        html += '</div>';
+      }
+
+      // Vehicle Details Grid
+      if (vehicle.brand || vehicle.plate) {
+        html += `
+          <div class="detail-card">
+            <div class="detail-card-header">
+              <i class="ri-car-line"></i>
+              <div class="detail-card-title">Araç Bilgileri</div>
+            </div>
+            <div class="info-grid">
+        `;
+
+        if (vehicle.brand && vehicle.model) {
+          html += `
+            <div class="info-tile">
+              <div class="info-tile-label">Araç</div>
+              <div class="info-tile-value">${vehicle.brand} ${vehicle.model}</div>
+            </div>
+          `;
+        }
+
+        if (vehicle.plate) {
+          html += `
+            <div class="info-tile">
+              <div class="info-tile-label">Plaka</div>
+              <div class="info-tile-value">${vehicle.plate}</div>
+            </div>
+          `;
+        }
+
+        if (vehicle.year) {
+          html += `
+            <div class="info-tile">
+              <div class="info-tile-label">Yıl</div>
+              <div class="info-tile-value">${vehicle.year}</div>
+            </div>
+          `;
+        }
+
+        if (vehicle.fuelType) {
+          html += `
+            <div class="info-tile">
+              <div class="info-tile-label">Yakıt Türü</div>
+              <div class="info-tile-value">${vehicle.fuelType}</div>
+            </div>
+          `;
+        }
+
+        if (vehicle.km || vehicle.mileage) {
+          html += `
+            <div class="info-tile">
+              <div class="info-tile-label">Kilometre</div>
+              <div class="info-tile-value">${vehicle.km || vehicle.mileage} km</div>
+            </div>
+          `;
+        }
+
+        if (vehicle.lastMaintenanceMileage) {
+          html += `
+            <div class="info-tile">
+              <div class="info-tile-label">Son Bakım KM</div>
+              <div class="info-tile-value">${vehicle.lastMaintenanceMileage} km</div>
+            </div>
+          `;
+        }
+
+        html += '</div></div>';
+      }
+
+      // Fault Description
+      if (attrs.faultDescription) {
+        html += `
+          <div class="detail-card">
+            <div class="detail-card-header">
+              <i class="ri-tools-line"></i>
+              <div class="detail-card-title">Sorun Detayı</div>
+            </div>
+            <div class="detail-description">${attrs.faultDescription}</div>
+          </div>
+        `;
+      }
+
+      // Appointment Note
+      if (attrs.note) {
+        html += `
+          <div class="detail-card">
+            <div class="detail-card-header">
+              <i class="ri-file-text-line"></i>
+              <div class="detail-card-title">Randevu Notu</div>
+            </div>
+            <div class="detail-description">${attrs.note}</div>
+          </div>
+        `;
+      }
+
+      // User Note
+      if (attrs.randevunotu) {
+        html += `
+          <div class="detail-card">
+            <div class="detail-card-header">
+              <i class="ri-user-voice-line"></i>
+              <div class="detail-card-title">Kullanıcı Notu</div>
+            </div>
+            <div class="detail-description">${attrs.randevunotu}</div>
+          </div>
+        `;
+      }
+
+      // Attachments/Media
+      if (attrs.attachments && attrs.attachments.data && attrs.attachments.data.length > 0) {
+        html += `
+          <div class="detail-card">
+            <div class="detail-card-header">
+              <i class="ri-image-line"></i>
+              <div class="detail-card-title">Medya</div>
+            </div>
+            <div class="media-scroll">
+        `;
+
+        attrs.attachments.data.forEach(media => {
+          const mediaUrl = media.attributes?.url || media.url;
+          if (mediaUrl) {
+            const fullUrl = mediaUrl.startsWith('http') ? mediaUrl : `https://api.tamirhanem.net${mediaUrl}`;
+            html += `
+              <div class="media-item">
+                <img src="${fullUrl}" alt="Ek">
+              </div>
+            `;
+          }
+        });
+
+        html += '</div></div>';
+      }
+
+      document.getElementById('modal-body-content').innerHTML = html;
+
+      // Configure Action Button
+      const actionBtn = document.getElementById('modal-action-btn');
+      if (PENDING_STATUSES.includes(status)) {
+        actionBtn.textContent = 'Onayla';
+        actionBtn.onclick = () => updateStatus(id, 'Onaylandı');
+        actionBtn.style.display = 'block';
+      } else if (status === 'Onaylandı') {
+        actionBtn.textContent = 'Tamamla';
+        actionBtn.onclick = () => updateStatus(id, 'Tamamlandı');
+        actionBtn.style.display = 'block';
+      } else {
+        actionBtn.style.display = 'none';
+      }
+
+      document.getElementById('detail-modal').classList.add('active');
+    }
+
+    function closeDetailModal() {
+      document.getElementById('detail-modal').classList.remove('active');
+    }
+  </script>
+</body>
+
+</html>

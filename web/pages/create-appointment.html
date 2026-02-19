@@ -1,0 +1,5204 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Randevu Oluştur - TamirHanem">
+  <title>Randevu Oluştur | TamirHanem</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" href="/images/favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/global-dashboard.css">
+
+  <style>
+    /* === MODERN GLASSMORPHISM DESIGN === */
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.4);
+      --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+      --primary-glow: rgba(251, 199, 7, 0.4);
+      --success-color: #10b981;
+      --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      zoom: 0.765;
+      background: linear-gradient(135deg, #fefefe 0%, #f8f6f0 50%, #fdf9ed 100%);
+      min-height: 100vh;
+    }
+
+    /* Animated background particles */
+    .appointment-page::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        radial-gradient(circle at 20% 80%, rgba(251, 199, 7, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(251, 199, 7, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.04) 0%, transparent 40%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .appointment-page {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 32px 24px 120px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .appointment-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .appointment-main {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .appointment-sidebar {
+      position: sticky;
+      top: 32px;
+    }
+
+    /* === GLASSMORPHISM SUMMARY CARD === */
+    .summary-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 28px;
+      padding: 28px;
+      border: 1px solid var(--glass-border);
+      box-shadow:
+        var(--glass-shadow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      transition: all 0.4s var(--transition-smooth);
+    }
+
+    .summary-card:hover {
+      box-shadow:
+        0 12px 48px rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+
+    .summary-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .summary-icon {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, #fbc707 0%, #f59e0b 100%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      box-shadow: 0 8px 24px var(--primary-glow);
+      animation: iconPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes iconPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .summary-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #1f2937;
+      letter-spacing: -0.02em;
+    }
+
+    .summary-subtitle {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+
+    /* === MODERN PROGRESS STEPS === */
+    .summary-progress {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      position: relative;
+      padding: 0 8px;
+    }
+
+    .summary-progress::before {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: 32px;
+      right: 32px;
+      height: 4px;
+      background: linear-gradient(90deg, #e5e7eb 0%, #f3f4f6 100%);
+      border-radius: 4px;
+      z-index: 0;
+    }
+
+    .progress-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+      transition: all 0.4s var(--transition-smooth);
+    }
+
+    .progress-dot {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #9ca3af;
+      transition: all 0.4s var(--transition-smooth);
+      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .progress-step.active .progress-dot {
+      background: linear-gradient(135deg, #fbc707 0%, #f59e0b 100%);
+      color: white;
+      transform: scale(1.15);
+      box-shadow: 0 6px 20px var(--primary-glow);
+      animation: activePulse 2s ease-in-out infinite;
+    }
+
+    @keyframes activePulse {
+      0%, 100% { box-shadow: 0 6px 20px var(--primary-glow); }
+      50% { box-shadow: 0 8px 28px rgba(251, 199, 7, 0.6); }
+    }
+
+    .progress-step.completed .progress-dot {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+    }
+
+    .progress-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #9ca3af;
+      text-align: center;
+      max-width: 56px;
+      transition: all 0.3s;
+    }
+
+    .progress-step.active .progress-label,
+    .progress-step.completed .progress-label {
+      color: #374151;
+      font-weight: 700;
+    }
+
+    /* === MODERN SUMMARY ITEMS === */
+    .summary-items {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .summary-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      background: rgba(248, 250, 252, 0.8);
+      backdrop-filter: blur(8px);
+      border-radius: 16px;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      transition: all 0.4s var(--transition-smooth);
+      transform: translateX(0);
+    }
+
+    .summary-item:hover {
+      transform: translateX(4px);
+    }
+
+    .summary-item.filled {
+      background: linear-gradient(135deg, rgba(254, 252, 232, 0.9) 0%, rgba(254, 243, 199, 0.9) 100%);
+      border-color: rgba(251, 199, 7, 0.25);
+      box-shadow: 0 4px 16px rgba(251, 199, 7, 0.12);
+    }
+
+    .summary-item-icon {
+      width: 42px;
+      height: 42px;
+      min-width: 42px;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      color: #9ca3af;
+      transition: all 0.4s var(--transition-smooth);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .summary-item.filled .summary-item-icon {
+      background: linear-gradient(135deg, #fbc707 0%, #f59e0b 100%);
+      color: white;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+
+    .summary-item-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .summary-item-label {
+      font-size: 0.7rem;
+      color: #9ca3af;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 2px;
+    }
+
+    .summary-item-value {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #374151;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .summary-item.empty .summary-item-value {
+      color: #cbd5e1;
+      font-style: normal;
+      font-weight: 500;
+    }
+
+    /* === MODERN ACTION BUTTONS === */
+    .summary-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .summary-btn {
+      width: 100%;
+      padding: 18px 24px;
+      border-radius: 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.4s var(--transition-smooth);
+      border: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .summary-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.6s;
+    }
+
+    .summary-btn:hover::before {
+      left: 100%;
+    }
+
+    .summary-btn.primary {
+      background: linear-gradient(135deg, #fbc707 0%, #f59e0b 100%);
+      color: white;
+      box-shadow: 0 8px 28px var(--primary-glow);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .summary-btn.primary:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 40px rgba(251, 199, 7, 0.5);
+    }
+
+    .summary-btn.primary:active:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    .summary-btn.primary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .summary-btn.secondary {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
+      color: #475569;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .summary-btn.secondary:hover {
+      background: white;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+    }
+
+    /* Embedded Mode */
+    body.embedded-mode .dashboard-navbar,
+    body.embedded-mode .loyalty-bar-wrapper,
+    body.embedded-mode .bottom-nav,
+    body.embedded-mode .dashboard-footer {
+      display: none !important;
+    }
+
+    body.embedded-mode {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    body.embedded-mode .appointment-page {
+      padding-top: 20px !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      .appointment-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .appointment-sidebar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        padding: 0;
+      }
+
+      .summary-card {
+        border-radius: 24px 24px 0 0;
+        padding: 20px;
+        box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.15);
+        backdrop-filter: blur(24px);
+      }
+
+      .summary-header,
+      .summary-progress,
+      .summary-items {
+        display: none;
+      }
+
+      .summary-actions {
+        flex-direction: row;
+      }
+
+      .appointment-page {
+        padding-bottom: 120px;
+      }
+    }
+
+    /* === MODAL STYLES === */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: #fff;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+      overflow: hidden;
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: #1e293b;
+    }
+
+    .close-modal-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: #64748b;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+
+    .close-modal-btn:hover {
+      background: #e2e8f0;
+      color: #ef4444;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .modal-body p {
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+      color: #334155;
+      line-height: 1.6;
+    }
+
+    .modal-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* === MODERN STEP CARDS === */
+    .step-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 24px;
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      overflow: hidden;
+      transition: all 0.5s var(--transition-smooth);
+      opacity: 0.6;
+      transform: scale(0.98);
+    }
+
+    .step-card.active {
+      opacity: 1;
+      transform: scale(1);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .step-card.completed {
+      opacity: 0.85;
+      transform: scale(0.99);
+    }
+
+    .step-card-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px 24px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.9) 100%);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      cursor: pointer;
+      transition: all 0.3s var(--transition-smooth);
+    }
+
+    .step-card.active .step-card-header {
+      background: linear-gradient(135deg, rgba(254, 252, 232, 0.95) 0%, rgba(254, 243, 199, 0.9) 100%);
+    }
+
+    .step-card.completed .step-card-header {
+      background: linear-gradient(135deg, rgba(240, 253, 244, 0.95) 0%, rgba(220, 252, 231, 0.9) 100%);
+    }
+
+    .step-number {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #9ca3af;
+      transition: all 0.4s var(--transition-smooth);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .step-card.active .step-number {
+      background: linear-gradient(135deg, #fbc707 0%, #f59e0b 100%);
+      color: white;
+      box-shadow: 0 6px 20px var(--primary-glow);
+      transform: scale(1.05);
+    }
+
+    .step-card.completed .step-number {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+    }
+
+    .step-info {
+      flex: 1;
+    }
+
+    .step-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 2px;
+      letter-spacing: -0.01em;
+    }
+
+    .step-card.completed .step-title {
+      color: #059669;
+    }
+
+    .step-subtitle {
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+
+    .step-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 20px;
+      transition: all 0.3s;
+    }
+
+    .step-card.active .step-status {
+      background: rgba(251, 199, 7, 0.15);
+      color: #b45309;
+    }
+
+    .step-card.completed .step-status {
+      background: rgba(16, 185, 129, 0.15);
+      color: #059669;
+    }
+
+    .step-card-body {
+      padding: 24px;
+      display: none;
+      animation: slideDown 0.4s var(--transition-smooth);
+    }
+
+    .step-card.active .step-card-body {
+      display: block;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Legacy wizard support */
+    .wizard-card {
+      display: none;
+    }
+
+    .wizard-step-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #1f2937;
+    }
+
+    .wizard-step-subtitle {
+      color: #6b7280;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+    }
+
+    /* === PRESELECTED SERVICE === */
+    .preselected-info {
+      margin-bottom: 10px;
+    }
+
+    .preselected-service-card {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border: 2px solid #86efac;
+      border-radius: 10px;
+      padding: 8px 10px;
+      position: relative;
+    }
+
+    .preselected-badge {
+      position: absolute;
+      top: -7px;
+      left: 10px;
+      background: #166534;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .preselected-content {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .preselected-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 2px solid white;
+    }
+
+    .preselected-info-text h4 {
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 1px;
+    }
+
+    .preselected-info-text p {
+      font-size: 0.7rem;
+      color: #666;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin: 0;
+    }
+
+    /* === MODERN VEHICLE CARDS === */
+    .vehicle-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+    }
+
+    .vehicle-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border: 2px solid rgba(0, 0, 0, 0.06);
+      border-radius: 18px;
+      padding: 18px 20px;
+      cursor: pointer;
+      transition: all 0.4s var(--transition-smooth);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vehicle-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(251, 199, 7, 0.05) 100%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .vehicle-card:hover {
+      border-color: rgba(251, 199, 7, 0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .vehicle-card:hover::before {
+      opacity: 1;
+    }
+
+    .vehicle-card.selected {
+      border-color: #fbc707;
+      background: linear-gradient(135deg, rgba(254, 252, 232, 0.95) 0%, rgba(254, 243, 199, 0.9) 100%);
+      box-shadow: 0 8px 28px var(--primary-glow);
+    }
+
+    .vehicle-card.selected::before {
+      opacity: 0;
+    }
+
+    .vehicle-card-icon {
+      width: 52px;
+      height: 52px;
+      min-width: 52px;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: #64748b;
+      transition: all 0.4s var(--transition-smooth);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .vehicle-card.selected .vehicle-card-icon {
+      background: linear-gradient(135deg, #fbc707 0%, #f59e0b 100%);
+      color: white;
+      box-shadow: 0 6px 20px var(--primary-glow);
+    }
+
+    .vehicle-card-info {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .vehicle-card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #1e293b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .vehicle-card-subtitle {
+      font-size: 0.85rem;
+      color: #64748b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .vehicle-card-subtitle .plate {
+      font-style: normal;
+      color: #94a3b8;
+      margin-left: 6px;
+      font-size: 0.8rem;
+    }
+
+    .vehicle-card-details {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    .add-vehicle-card {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(8px);
+      border: 2px dashed rgba(251, 199, 7, 0.5);
+      border-radius: 18px;
+      padding: 24px 20px;
+      cursor: pointer;
+      transition: all 0.4s var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 88px;
+    }
+
+    .add-vehicle-card:hover {
+      border-color: #fbc707;
+      background: rgba(254, 252, 232, 0.8);
+      transform: translateY(-2px);
+    }
+
+    .add-vehicle-card i {
+      font-size: 1.8rem;
+      color: #f59e0b;
+    }
+
+    .add-vehicle-card span {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #b45309;
+    }
+
+    /* === MODERN CATEGORY PILLS === */
+    .category-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .category-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      border: 2px solid rgba(0, 0, 0, 0.06);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.35s var(--transition-smooth);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    .category-pill i {
+      font-size: 1.1rem;
+      color: #94a3b8;
+      transition: all 0.3s;
+    }
+
+    .category-pill:hover {
+      border-color: rgba(251, 199, 7, 0.4);
+      background: rgba(254, 252, 232, 0.9);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .category-pill:hover i {
+      color: #f59e0b;
+    }
+
+    .category-pill.selected {
+      border-color: #fbc707;
+      background: linear-gradient(135deg, rgba(254, 252, 232, 0.98) 0%, rgba(254, 243, 199, 0.95) 100%);
+      color: #92400e;
+      box-shadow: 0 6px 24px var(--primary-glow);
+    }
+
+    .category-pill.selected i {
+      color: #f59e0b;
+    }
+
+    /* Legacy category support */
+    .category-list-container {
+      display: none;
+    }
+
+    /* === MODERN SERVICE SELECTION === */
+    .service-search-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(8px);
+      border: 2px solid rgba(0, 0, 0, 0.06);
+      border-radius: 16px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      transition: all 0.3s var(--transition-smooth);
+    }
+
+    .service-search-box:focus-within {
+      border-color: rgba(251, 199, 7, 0.5);
+      box-shadow: 0 4px 16px var(--primary-glow);
+    }
+
+    .service-search-box i {
+      color: #94a3b8;
+      font-size: 1.2rem;
+    }
+
+    .service-search-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 0.95rem;
+      outline: none;
+      color: #1e293b;
+    }
+
+    .service-search-input::placeholder {
+      color: #94a3b8;
+    }
+
+    .service-filter-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .service-filter-tab {
+      padding: 10px 20px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(4px);
+      border: 2px solid rgba(0, 0, 0, 0.04);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.35s var(--transition-smooth);
+      color: #64748b;
+    }
+
+    .service-filter-tab:hover {
+      border-color: rgba(251, 199, 7, 0.3);
+      background: rgba(254, 252, 232, 0.8);
+      color: #92400e;
+    }
+
+    .service-filter-tab.active {
+      background: linear-gradient(135deg, #fbc707 0%, #f59e0b 100%);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 4px 16px var(--primary-glow);
+    }
+
+    .service-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+    }
+
+    .service-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      border: 2px solid rgba(0, 0, 0, 0.05);
+      border-radius: 18px;
+      padding: 18px 14px;
+      cursor: pointer;
+      transition: all 0.4s var(--transition-smooth);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(251, 199, 7, 0.08) 100%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .service-card:hover {
+      border-color: rgba(251, 199, 7, 0.35);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .service-card:hover::before {
+      opacity: 1;
+    }
+
+    .service-card.selected {
+      border-color: #fbc707;
+      background: linear-gradient(135deg, rgba(254, 252, 232, 0.98) 0%, rgba(254, 243, 199, 0.95) 100%);
+      box-shadow: 0 8px 28px var(--primary-glow);
+    }
+
+    .service-card.selected::before {
+      opacity: 0;
+    }
+
+    .service-card.quick-service {
+      background: linear-gradient(135deg, rgba(240, 253, 244, 0.95) 0%, rgba(220, 252, 231, 0.9) 100%);
+      border-color: rgba(16, 185, 129, 0.25);
+    }
+
+    .service-card.quick-service:hover {
+      border-color: rgba(16, 185, 129, 0.5);
+    }
+
+    .service-card.quick-service.selected {
+      border-color: #10b981;
+      box-shadow: 0 8px 28px rgba(16, 185, 129, 0.35);
+    }
+
+    .service-card-img {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background-size: cover;
+      background-position: center;
+      background-color: #f1f5f9;
+      margin: 0 auto 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s;
+    }
+
+    .service-card:hover .service-card-img {
+      transform: scale(1.05);
+    }
+
+    .service-card-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      font-size: 1.6rem;
+      color: #64748b;
+      transition: all 0.4s var(--transition-smooth);
+    }
+
+    .service-card.selected .service-card-icon {
+      background: linear-gradient(135deg, #fbc707 0%, #f59e0b 100%);
+      color: white;
+      box-shadow: 0 6px 20px var(--primary-glow);
+    }
+
+    .service-card.quick-service .service-card-icon {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+    }
+
+    .service-card-name {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+      color: #1e293b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .service-card-desc {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    .service-card-meta {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-top: 8px;
+    }
+
+    .service-card-rating {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .service-card-rating i {
+      color: #fbc507;
+      font-size: 0.7rem;
+    }
+
+    .service-card-distance {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .service-card-distance i {
+      color: #888;
+      font-size: 0.7rem;
+    }
+
+    /* Hızlı Servis Card - Special */
+    .service-card.quick-service {
+      background: linear-gradient(135deg, #fbc507 0%, #f0b800 100%);
+      border-color: #e5a800;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .service-card.quick-service::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .service-card.quick-service .service-card-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 8px;
+    }
+
+    .service-card.quick-service .service-card-icon i {
+      font-size: 1.8rem;
+      color: #1a1a1a;
+    }
+
+    .service-card.quick-service .service-card-name {
+      color: #1a1a1a;
+      font-weight: 700;
+    }
+
+    .service-card.quick-service .service-card-desc {
+      font-size: 0.75rem;
+      color: rgba(0, 0, 0, 0.7);
+      margin-top: 4px;
+    }
+
+    .service-card.quick-service.selected {
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .no-services-message {
+      text-align: center;
+      padding: 30px;
+      color: #888;
+    }
+
+    .no-services-message i {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      display: block;
+      color: #ccc;
+    }
+
+    /* === SERVICES LIST (legacy) === */
+    .services-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 8px;
+    }
+
+    .service-list-item {
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .service-list-item:hover {
+      background: #f4f6f8;
+    }
+
+    .service-list-item.selected {
+      border-color: var(--primary);
+      background: #fffdf0;
+    }
+
+    .service-list-item-image {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: #eee;
+    }
+
+    .service-list-item-title {
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    .service-list-item-location {
+      font-size: 0.7rem;
+      color: #888;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .service-list-item-rating {
+      font-size: 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin-top: 1px;
+    }
+
+    /* === INPUTS === */
+    .input-group {
+      margin-bottom: 10px;
+    }
+
+    .input-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-size: 0.8rem;
+    }
+
+    .text-error {
+      color: #dc2626;
+    }
+
+    .textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-family: inherit;
+      resize: none;
+      font-size: 0.8rem;
+      transition: 0.3s;
+    }
+
+    .textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(251, 199, 7, 0.15);
+    }
+
+    .input-help {
+      font-size: 0.65rem;
+      color: #888;
+      text-align: right;
+      margin-top: 2px;
+    }
+
+    /* === CALENDAR & TIME === */
+    .datetime-picker {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 12px;
+    }
+
+    @media(max-width: 600px) {
+      .datetime-picker {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .calendar-nav-btn {
+      background: none;
+      border: 1px solid #eee;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .calendar-month {
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+      text-align: center;
+    }
+
+    .calendar-day-header {
+      font-size: 0.6rem;
+      color: #888;
+      font-weight: 600;
+      padding-bottom: 2px;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.7rem;
+      border: 1px solid transparent;
+    }
+
+    .calendar-day:hover:not(.disabled):not(.empty) {
+      background: #f4f6f8;
+    }
+
+    .calendar-day.selected {
+      background: var(--primary);
+      color: #333;
+      font-weight: 700;
+    }
+
+    .calendar-day.today {
+      border-color: var(--primary);
+      font-weight: 700;
+    }
+
+    .calendar-day.disabled {
+      color: #ccc;
+      pointer-events: none;
+    }
+
+    .calendar-day.empty {
+      pointer-events: none;
+    }
+
+    .time-picker-container {
+      padding-top: 4px;
+    }
+
+    .time-picker-label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.8rem;
+    }
+
+    .time-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+    }
+
+    .time-slot {
+      padding: 6px 4px;
+      border: 1px solid #eee;
+      border-radius: 5px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+
+    .time-slot:hover {
+      background: #f4f6f8;
+    }
+
+    .time-slot.selected {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #333;
+      font-weight: 700;
+    }
+
+    /* === SUMMARY === */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    @media(max-width: 600px) {
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .summary-card {
+      background: #f4f6f8;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .summary-card-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 5px;
+    }
+
+    .summary-card-icon {
+      font-size: 0.9rem;
+    }
+
+    .summary-card-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3px;
+      font-size: 0.75rem;
+    }
+
+    .summary-item-label {
+      color: #888;
+    }
+
+    .summary-item-value {
+      font-weight: 600;
+      text-align: right;
+      max-width: 60%;
+    }
+
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-size: 0.75rem;
+    }
+
+    .checkbox-wrapper input {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--primary);
+    }
+
+    /* === NAVIGATION FOOTER === */
+    .wizard-navigation {
+      padding: 10px 20px;
+      border-top: 1px solid #eee;
+      background: #fafafa;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .wizard-nav-info {
+      color: #888;
+      font-weight: 600;
+      font-size: 0.75rem;
+    }
+
+    .wizard-nav-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      border: none;
+      padding: 7px 16px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: 0.3s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #333;
+    }
+
+    .btn-primary:hover {
+      background: #e0b000;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: #555;
+    }
+
+    .btn-ghost:hover {
+      background: #f4f6f8;
+    }
+
+    /* === STATES === */
+    .empty-state,
+    .error-state {
+      text-align: center;
+      padding: 15px;
+      color: #888;
+      font-size: 0.8rem;
+    }
+
+    .error-state {
+      color: #dc2626;
+    }
+
+    .empty-vehicles {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .empty-vehicles i {
+      font-size: 1.8rem;
+      color: #888;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .empty-vehicles p {
+      margin: 6px 0;
+      color: #888;
+      font-size: 0.8rem;
+    }
+
+    .btn-add-vehicle {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--primary);
+      color: #333;
+      padding: 6px 14px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-decoration: none;
+      margin-top: 6px;
+    }
+
+    .skeleton {
+      background: #eee;
+      border-radius: 8px;
+      animation: pulse 1.5s infinite;
+    }
+
+    .skeleton-card {
+      height: 50px;
+      width: 100%;
+    }
+
+    @keyframes pulse {
+      0% {
+        opacity: 0.6;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0.6;
+      }
+    }
+
+    /* === CUSTOM BOTTOM NAV BUBBLE === */
+    .appointment-bubble {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-bottom: 8px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 2px solid var(--primary);
+      border-radius: 16px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 30px rgba(251, 199, 7, 0.35), 0 4px 15px rgba(0, 0, 0, 0.1);
+      white-space: nowrap;
+      animation: bubbleFloat 3s ease-in-out infinite;
+      z-index: 10;
+    }
+
+    .appointment-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid var(--primary);
+    }
+
+    .appointment-bubble i {
+      font-size: 1.1rem;
+      color: #d97706;
+    }
+
+    .appointment-bubble span {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #333;
+    }
+
+    @keyframes bubbleFloat {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(-4px);
+      }
+    }
+
+    /* Make appointments nav item container for bubble */
+    .nav-item[data-id="appointments"] {
+      position: relative;
+    }
+
+    .nav-item[data-id="appointments"].has-bubble .nav-icon-wrapper::before {
+      content: '';
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      background: rgba(251, 199, 7, 0.15);
+      border-radius: 50%;
+      z-index: 1;
+      animation: pulseGlow 2s infinite;
+    }
+
+    @keyframes pulseGlow {
+      0% {
+        transform: scale(0.8);
+        opacity: 0.5;
+      }
+
+      50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+      }
+
+      100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+      }
+    }
+
+    /* === NEW ACCORDION SECTIONS === */
+    .main-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    .preselected-banner {
+      background: rgba(220, 252, 231, 0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(134, 239, 172, 0.5);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      margin-bottom: 16px;
+      display: none;
+      text-align: center;
+    }
+
+    .preselected-banner.show {
+      display: block;
+    }
+
+    .preselected-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #166534;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .preselected-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .preselected-img {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      object-fit: cover;
+      border: 2px solid white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .preselected-info {
+      text-align: left;
+    }
+
+    .preselected-info h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 2px;
+    }
+
+    .preselected-info p {
+      font-size: 0.75rem;
+      color: var(--neutral-700);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .section-card {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: var(--radius-xl);
+      margin-bottom: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+      transition: all 0.4s var(--ease);
+    }
+
+    .section-card.active {
+      box-shadow: 0 6px 24px rgba(251, 199, 7, 0.2);
+      border-color: rgba(251, 199, 7, 0.3);
+    }
+
+    .section-card.complete {
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .section-card.disabled {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: background 0.3s var(--ease);
+      user-select: none;
+    }
+
+    .section-header:hover {
+      background: rgba(251, 199, 7, 0.05);
+    }
+
+    .section-indicator {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--neutral-100);
+      border: 2px solid #d1d5db;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      transition: all 0.3s var(--ease);
+      flex-shrink: 0;
+    }
+
+    .section-indicator.active {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .section-indicator.complete {
+      background: #10b981;
+      border-color: #10b981;
+    }
+
+    .section-number {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #6b7280;
+    }
+
+    .section-indicator.active .section-number,
+    .section-indicator.complete .section-number {
+      color: white;
+    }
+
+    .section-indicator i {
+      font-size: 1rem;
+      color: white;
+    }
+
+    .section-title-wrap {
+      flex: 1;
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 1px;
+    }
+
+    .section-subtitle {
+      font-size: 0.7rem;
+      color: #6b7280;
+    }
+
+    .section-toggle {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s var(--ease);
+    }
+
+    .section-toggle i {
+      font-size: 1.1rem;
+      color: #6b7280;
+    }
+
+    .section-card.expanded .section-toggle {
+      transform: rotate(180deg);
+    }
+
+    .section-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s var(--ease), padding 0.4s var(--ease);
+      padding: 0 20px;
+    }
+
+    .section-card.expanded .section-content {
+      max-height: 2000px;
+      padding: 8px 20px 20px;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .input-label .required {
+      color: #ef4444;
+    }
+
+    .vehicle-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .vehicle-card {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(229, 231, 235, 0.8);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+      min-width: 200px;
+      max-width: 220px;
+    }
+
+    .vehicle-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .vehicle-card.selected {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, #fff9c4 0%, #fffde7 100%);
+      box-shadow: 0 4px 12px rgba(251, 199, 7, 0.25);
+    }
+
+    .vehicle-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .vehicle-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      background: rgba(251, 199, 7, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .vehicle-icon i {
+      font-size: 1.3rem;
+      color: #e0b000;
+    }
+
+    .vehicle-card.selected .vehicle-icon {
+      background: var(--primary);
+    }
+
+    .vehicle-card.selected .vehicle-icon i {
+      color: white;
+    }
+
+    .vehicle-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .vehicle-brand {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 2px;
+    }
+
+    .vehicle-model {
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+
+    .vehicle-model .plate {
+      font-style: italic;
+      margin-left: 6px;
+      color: #9ca3af;
+    }
+
+    .add-vehicle-card {
+      background: rgba(255, 255, 255, 0.5);
+      border: 2px dashed #d1d5db;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 90px;
+      min-width: 200px;
+      max-width: 220px;
+    }
+
+    .add-vehicle-card:hover {
+      border-color: var(--primary);
+      background: rgba(251, 199, 7, 0.1);
+    }
+
+    .add-vehicle-card i {
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+
+    .add-vehicle-card span {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+    }
+
+    .category-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .category-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(229, 231, 235, 0.8);
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+    }
+
+    .category-pill:hover {
+      border-color: var(--primary);
+      background: rgba(251, 199, 7, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .category-pill.selected {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: var(--neutral-900);
+      box-shadow: 0 4px 12px rgba(251, 199, 7, 0.35);
+      transform: scale(1.02);
+    }
+
+    .category-pill i {
+      font-size: 0.95rem;
+    }
+
+    .textarea-wrapper {
+      position: relative;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    .modern-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 14px;
+      border: 2px solid rgba(229, 231, 235, 0.8);
+      border-radius: var(--radius-lg);
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--neutral-900);
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      resize: vertical;
+      transition: all 0.3s var(--ease);
+    }
+
+    .modern-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(251, 199, 7, 0.15);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .modern-textarea::placeholder {
+      color: #9ca3af;
+    }
+
+    .char-counter {
+      position: absolute;
+      bottom: 8px;
+      right: 10px;
+      font-size: 0.65rem;
+      color: #9ca3af;
+    }
+
+    .media-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .media-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(229, 231, 235, 0.8);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+      font-family: inherit;
+    }
+
+    .media-btn:hover {
+      border-color: var(--primary);
+      background: rgba(251, 199, 7, 0.1);
+    }
+
+    .media-btn i {
+      font-size: 1.1rem;
+      color: var(--primary);
+    }
+
+    .media-btn.recording {
+      background: #fee2e2;
+      border-color: #ef4444;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.02);
+      }
+    }
+
+    .media-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .media-preview-item {
+      position: relative;
+      width: 55px;
+      height: 55px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 2px solid #e5e7eb;
+    }
+
+    .media-preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .media-preview-item .media-icon {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--neutral-100);
+    }
+
+    .media-preview-item .media-icon i {
+      font-size: 1.2rem;
+      color: var(--primary);
+    }
+
+    .media-remove {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ef4444;
+      border: 2px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .media-remove i {
+      font-size: 0.65rem;
+      color: white;
+    }
+
+    .audio-preview {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(251, 199, 7, 0.15);
+      border: 2px solid var(--primary);
+      border-radius: var(--radius-lg);
+      margin-top: 10px;
+    }
+
+    .audio-preview-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .audio-preview-icon i {
+      font-size: 1rem;
+      color: white;
+    }
+
+    .audio-preview-info {
+      flex: 1;
+    }
+
+    .audio-preview-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--neutral-900);
+    }
+
+    .audio-preview-duration {
+      font-size: 0.7rem;
+      color: #6b7280;
+    }
+
+    .audio-preview-delete {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #fee2e2;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .audio-preview-delete i {
+      font-size: 0.85rem;
+      color: #ef4444;
+    }
+
+    .calendar-container {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-lg);
+      border: 2px solid rgba(229, 231, 235, 0.8);
+      overflow: hidden;
+      max-width: 320px;
+      margin: 0 auto;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    .calendar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      background: linear-gradient(135deg, #ffd32e 0%, #ffc507 100%);
+    }
+
+    .calendar-nav {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+    }
+
+    .calendar-nav:hover {
+      background: white;
+      transform: scale(1.1);
+    }
+
+    .calendar-nav i {
+      font-size: 0.9rem;
+      color: var(--neutral-700);
+    }
+
+    .calendar-month {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+    }
+
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      padding: 6px 4px;
+      background: #f8f9fa;
+    }
+
+    .calendar-weekday {
+      text-align: center;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #6b7280;
+    }
+
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      padding: 4px;
+      gap: 2px;
+    }
+
+    .calendar-day {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--neutral-700);
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+      margin: auto;
+    }
+
+    .calendar-day:hover:not(.disabled):not(.selected) {
+      background: rgba(251, 199, 7, 0.2);
+    }
+
+    .calendar-day.today {
+      background: rgba(251, 199, 7, 0.15);
+      border: 2px solid var(--primary);
+    }
+
+    .calendar-day.selected {
+      background: var(--primary);
+      color: var(--neutral-900);
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(251, 199, 7, 0.4);
+    }
+
+    /* Daha önce eklenen tarihler için işaret */
+    .calendar-day.has-date {
+      background: linear-gradient(135deg, rgba(251, 199, 7, 0.25) 0%, rgba(245, 158, 11, 0.2) 100%);
+      color: var(--neutral-900);
+      font-weight: 600;
+      position: relative;
+    }
+
+    .calendar-day.has-date::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 5px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+
+    .calendar-day.disabled {
+      color: #d1d5db;
+      cursor: not-allowed;
+    }
+
+    .calendar-day.other-month {
+      color: #d1d5db;
+    }
+
+    .section-next-btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 16px;
+      background: linear-gradient(135deg, #ffd32e 0%, #ffc507 100%);
+      border: none;
+      border-radius: var(--radius-lg);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .section-next-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(251, 199, 7, 0.4);
+    }
+
+    .section-next-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .time-slots {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+      max-width: 360px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .time-slot {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(229, 231, 235, 0.8);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+    }
+
+    .time-slot:hover {
+      border-color: var(--primary);
+      background: rgba(251, 199, 7, 0.1);
+    }
+
+    .time-slot.selected {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .time-slot-emoji {
+      font-size: 1.1rem;
+    }
+
+    .time-slot-text {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+    }
+
+    .time-slot.selected .time-slot-text {
+      color: var(--neutral-900);
+    }
+
+    .selected-dates {
+      margin-top: 14px;
+      padding: 14px;
+      background: rgba(220, 252, 231, 0.7);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(16, 185, 129, 0.5);
+      border-radius: var(--radius-lg);
+      max-width: 360px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .selected-dates-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #166534;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .selected-date-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      background: white;
+      border-radius: var(--radius-sm);
+      margin-bottom: 5px;
+    }
+
+    .selected-date-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .selected-date-text {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--neutral-900);
+    }
+
+    .selected-date-remove {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fee2e2;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .selected-date-remove i {
+      font-size: 0.75rem;
+      color: #ef4444;
+    }
+
+    .guarantee-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .guarantee-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(229, 231, 235, 0.8);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+    }
+
+    .guarantee-option:hover {
+      border-color: var(--primary);
+    }
+
+    .guarantee-option.selected {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, #fff9c4 0%, #fffde7 100%);
+      box-shadow: 0 3px 12px rgba(251, 199, 7, 0.2);
+    }
+
+    .guarantee-radio {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid #d1d5db;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+      transition: all 0.3s var(--ease);
+    }
+
+    .guarantee-option.selected .guarantee-radio {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+
+    .guarantee-radio-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: white;
+      opacity: 0;
+      transition: opacity 0.3s var(--ease);
+    }
+
+    .guarantee-option.selected .guarantee-radio-dot {
+      opacity: 1;
+    }
+
+    .guarantee-content {
+      flex: 1;
+    }
+
+    .guarantee-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .guarantee-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 6px;
+      background: var(--primary);
+      border-radius: 20px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+    }
+
+    .guarantee-description {
+      font-size: 0.75rem;
+      color: #6b7280;
+      line-height: 1.4;
+    }
+
+    .guarantee-info-toggle {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 12px;
+      padding: 8px 12px;
+      background: var(--neutral-100);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #e0b000;
+    }
+
+    .guarantee-info-box {
+      margin-top: 10px;
+      padding: 12px;
+      background: linear-gradient(135deg, #fff9c4 0%, rgba(251, 199, 7, 0.1) 100%);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(251, 199, 7, 0.3);
+      display: none;
+    }
+
+    .guarantee-info-box.show {
+      display: block;
+    }
+
+    .guarantee-info-text {
+      font-size: 0.8rem;
+      color: var(--neutral-700);
+      line-height: 1.5;
+    }
+
+    .guarantee-info-text strong {
+      color: var(--neutral-900);
+    }
+
+    .submit-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255, 255, 255, 0.5);
+      z-index: 90;
+    }
+
+    .submit-buttons {
+      display: flex;
+      gap: 10px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .submit-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 18px;
+      border-radius: var(--radius-lg);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+      border: none;
+    }
+
+    .submit-btn.primary {
+      background: linear-gradient(135deg, #ffd32e 0%, #ffc507 100%);
+      color: var(--neutral-900);
+      box-shadow: 0 4px 12px rgba(251, 199, 7, 0.4);
+    }
+
+    .submit-btn.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 18px rgba(251, 199, 7, 0.5);
+    }
+
+    .submit-btn.primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .submit-btn.secondary {
+      background: var(--white);
+      color: var(--neutral-700);
+      border: 2px solid #e5e7eb;
+    }
+
+    .submit-btn.secondary:hover {
+      border-color: var(--primary);
+      background: rgba(251, 199, 7, 0.1);
+    }
+
+    .submit-btn i {
+      font-size: 1rem;
+    }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .loading-overlay.show {
+      display: flex;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #e5e7eb;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (max-width: 600px) {
+
+      .time-slots,
+      .vehicle-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .media-buttons,
+      .submit-buttons {
+        flex-direction: column;
+      }
+    }
+
+    /* === GUARANTEE MODAL === */
+    .guarantee-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .guarantee-modal-overlay.show {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .guarantee-modal {
+      background: white;
+      border-radius: 24px;
+      max-width: 420px;
+      width: 100%;
+      max-height: 85vh;
+      overflow: hidden;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+      animation: slideUp 0.4s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .guarantee-modal-header {
+      background: linear-gradient(135deg, #ffd32e 0%, #ffc507 100%);
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .guarantee-modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .guarantee-modal-close i {
+      font-size: 1.2rem;
+      color: #5a5a5a;
+    }
+
+    .guarantee-modal-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: white;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .guarantee-modal-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+
+    .guarantee-modal-subtitle {
+      font-size: 0.85rem;
+      color: #5a5a5a;
+    }
+
+    .guarantee-modal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #166534;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
+    .guarantee-modal-body {
+      padding: 20px;
+      max-height: 45vh;
+      overflow-y: auto;
+    }
+
+    .guarantee-benefit {
+      display: flex;
+      gap: 12px;
+      padding: 14px;
+      background: #f8f9fa;
+      border-radius: 14px;
+      margin-bottom: 12px;
+    }
+
+    .guarantee-benefit:last-child {
+      margin-bottom: 0;
+    }
+
+    .guarantee-benefit-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .guarantee-benefit-icon.yellow {
+      background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    }
+
+    .guarantee-benefit-icon.blue {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+
+    .guarantee-benefit-icon.orange {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .guarantee-benefit-icon.green {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .guarantee-benefit-content {
+      flex: 1;
+    }
+
+    .guarantee-benefit-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+
+    .guarantee-benefit-desc {
+      font-size: 0.8rem;
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    .guarantee-modal-footer {
+      padding: 16px 20px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .guarantee-modal-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border: none;
+      border-radius: 14px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .guarantee-modal-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* === SUCCESS POPUP === */
+    .success-popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .success-popup-overlay.show {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .success-popup {
+      background: white;
+      border-radius: 24px;
+      max-width: 380px;
+      width: 100%;
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+      animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    @keyframes popIn {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .success-popup-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: successPulse 2s infinite;
+    }
+
+    @keyframes successPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+      }
+
+      50% {
+        box-shadow: 0 0 0 15px rgba(16, 185, 129, 0);
+      }
+    }
+
+    .success-popup-icon i {
+      font-size: 2.5rem;
+      color: white;
+    }
+
+    .success-popup-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+    }
+
+    .success-popup-message {
+      font-size: 0.95rem;
+      color: #6b7280;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .success-popup-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #ffd32e 0%, #ffc507 100%);
+      border: none;
+      border-radius: 14px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      cursor: pointer;
+    }
+
+    .success-popup-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* === VEHICLE VERIFICATION WARNING MODAL === */
+    .verification-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 10001;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+      padding: 20px;
+    }
+    .verification-modal-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    .verification-modal {
+      background: #fff;
+      width: 100%;
+      max-width: 380px;
+      border-radius: 24px;
+      padding: 32px;
+      text-align: center;
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    .verification-modal-overlay.show .verification-modal {
+      transform: translateY(0);
+    }
+    .verification-modal-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffd740 0%, #ffc507 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 8px 24px rgba(251, 199, 7, 0.4);
+    }
+    .verification-modal-icon i {
+      font-size: 2.5rem;
+      color: #fff;
+    }
+    .verification-modal-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 12px;
+    }
+    .verification-modal-message {
+      font-size: 0.95rem;
+      color: #4a4a4a;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+    .verification-modal-submessage {
+      font-size: 0.85rem;
+      color: #6b7280;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+    .verification-modal-actions {
+      display: flex;
+      gap: 12px;
+    }
+    .verification-modal-btn {
+      flex: 1;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+    }
+    .verification-modal-btn.secondary {
+      background: #f1f5f9;
+      color: #4a4a4a;
+    }
+    .verification-modal-btn.secondary:hover {
+      background: #e2e8f0;
+    }
+    .verification-modal-btn.primary {
+      background: linear-gradient(135deg, #ffd32e 0%, #ffc507 100%);
+      color: #1a1a1a;
+      box-shadow: 0 4px 16px rgba(251, 199, 7, 0.4);
+    }
+    .verification-modal-btn.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(251, 199, 7, 0.5);
+    }
+
+    /* === DATE INFO MODAL === */
+    .date-info-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10001;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s var(--transition-smooth);
+    }
+    .date-info-modal-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    .date-info-modal {
+      background: linear-gradient(135deg, rgba(255, 251, 235, 0.95) 0%, rgba(254, 243, 199, 0.92) 100%);
+      backdrop-filter: blur(24px);
+      border-radius: 28px;
+      padding: 32px;
+      max-width: 420px;
+      width: 90%;
+      border: 1px solid rgba(251, 199, 7, 0.25);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+      transform: translateY(20px) scale(0.95);
+      transition: all 0.4s var(--transition-smooth);
+    }
+    .date-info-modal-overlay.show .date-info-modal {
+      transform: translateY(0) scale(1);
+    }
+    .date-info-modal-header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(251, 199, 7, 0.2);
+    }
+    .date-info-modal-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, #fbc707 0%, #f59e0b 100%);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      box-shadow: 0 8px 24px rgba(251, 199, 7, 0.35);
+    }
+    .date-info-modal-icon i {
+      font-size: 1.8rem;
+      color: white;
+    }
+    .date-info-modal-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 4px;
+    }
+    .date-info-modal-subtitle {
+      font-size: 0.9rem;
+      color: #b45309;
+      font-weight: 600;
+    }
+    .date-info-modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    .date-info-feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+    .date-info-feature:not(:last-child) {
+      margin-bottom: 4px;
+    }
+    .date-info-feature:hover {
+      background: rgba(254, 252, 232, 0.8);
+    }
+    .date-info-feature-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, rgba(251, 199, 7, 0.15) 0%, rgba(245, 158, 11, 0.1) 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .date-info-feature-icon i {
+      font-size: 1.1rem;
+      color: #b45309;
+    }
+    .date-info-feature-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .date-info-feature-text strong {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .date-info-feature-text span {
+      font-size: 0.8rem;
+      color: #64748b;
+      line-height: 1.4;
+    }
+    .date-info-modal-actions {
+      display: flex;
+      gap: 12px;
+    }
+    .date-info-modal-btn {
+      flex: 1;
+      padding: 14px 18px;
+      border-radius: 14px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      transition: all 0.3s ease;
+    }
+    .date-info-modal-btn.add-date {
+      background: white;
+      color: #b45309;
+      border: 2px solid rgba(251, 199, 7, 0.4);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+    .date-info-modal-btn.add-date:hover {
+      transform: translateY(-2px);
+      background: rgba(254, 252, 232, 1);
+      border-color: #fbc707;
+      box-shadow: 0 8px 20px rgba(251, 199, 7, 0.2);
+    }
+    .date-info-modal-btn.continue {
+      background: linear-gradient(135deg, #fbc707 0%, #f59e0b 100%);
+      color: white;
+      box-shadow: 0 6px 20px rgba(251, 199, 7, 0.35);
+    }
+    .date-info-modal-btn.continue:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(251, 199, 7, 0.45);
+    }
+
+    /* === PAYMENT MODAL === */
+    .payment-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10002;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s var(--transition-smooth);
+      padding: 20px;
+    }
+    .payment-modal-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    .payment-modal {
+      background: linear-gradient(135deg, rgba(255, 251, 235, 0.97) 0%, rgba(254, 243, 199, 0.95) 100%);
+      backdrop-filter: blur(24px);
+      border-radius: 32px;
+      max-width: 480px;
+      width: 100%;
+      border: 1px solid rgba(251, 199, 7, 0.3);
+      box-shadow: 0 32px 100px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+      transform: translateY(30px) scale(0.9);
+      transition: all 0.5s var(--transition-smooth);
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .payment-modal-overlay.show .payment-modal {
+      transform: translateY(0) scale(1);
+    }
+    .payment-modal-header {
+      text-align: center;
+      padding: 32px 32px 24px;
+      background: linear-gradient(135deg, rgba(251, 199, 7, 0.15) 0%, rgba(245, 158, 11, 0.1) 100%);
+      border-bottom: 1px solid rgba(251, 199, 7, 0.2);
+    }
+    .payment-modal-icon {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(135deg, #fbc707 0%, #f59e0b 100%);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      box-shadow: 0 12px 32px var(--primary-glow);
+    }
+    .payment-modal-icon i {
+      font-size: 2.2rem;
+      color: white;
+    }
+    .payment-modal-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 8px;
+    }
+    .payment-modal-subtitle {
+      font-size: 1.1rem;
+      color: #b45309;
+      font-weight: 700;
+    }
+    .payment-modal-body {
+      padding: 24px 28px;
+      overflow-y: auto;
+      flex: 1;
+      background: white;
+    }
+    .payment-benefits {
+      margin-bottom: 20px;
+    }
+    .payment-benefit-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 16px;
+      background: rgba(254, 252, 232, 0.8);
+      border-radius: 14px;
+      margin-bottom: 10px;
+      border: 1px solid rgba(251, 199, 7, 0.15);
+    }
+    .payment-benefit-icon {
+      width: 38px;
+      height: 38px;
+      min-width: 38px;
+      background: linear-gradient(135deg, #fbc707 0%, #f59e0b 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+    .payment-benefit-text {
+      font-size: 0.9rem;
+      color: #475569;
+      line-height: 1.5;
+    }
+    .payment-benefit-text strong {
+      color: #1e293b;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .payment-placeholder {
+      background: white;
+      border: 2px dashed rgba(251, 199, 7, 0.4);
+      border-radius: 20px;
+      padding: 40px 24px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .payment-placeholder-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+      color: #f59e0b;
+    }
+    .payment-placeholder-text {
+      font-size: 0.95rem;
+      color: #b45309;
+      font-weight: 500;
+    }
+    .payment-contract {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      background: rgba(254, 252, 232, 0.9);
+      border-radius: 14px;
+      border: 1px solid rgba(251, 199, 7, 0.25);
+      cursor: pointer;
+    }
+    .payment-checkbox {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      border: 2px solid #d1d5db;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      background: white;
+    }
+    .payment-checkbox.checked {
+      background: linear-gradient(135deg, #fbc707 0%, #f59e0b 100%);
+      border-color: #f59e0b;
+    }
+    .payment-checkbox.checked i {
+      color: white;
+      font-size: 0.9rem;
+    }
+    .payment-contract-text {
+      font-size: 0.9rem;
+      color: #475569;
+      line-height: 1.5;
+    }
+    .payment-contract-link {
+      color: #b45309;
+      font-weight: 600;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .payment-modal-footer {
+      padding: 20px 28px 24px;
+      border-top: 1px solid rgba(251, 199, 7, 0.2);
+      display: flex;
+      gap: 12px;
+      background: linear-gradient(135deg, rgba(255, 251, 235, 0.97) 0%, rgba(254, 243, 199, 0.95) 100%);
+    }
+    .payment-modal-btn {
+      flex: 1;
+      padding: 16px 24px;
+      border-radius: 16px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      transition: all 0.4s var(--transition-smooth);
+    }
+    .payment-modal-btn.cancel {
+      background: white;
+      color: #64748b;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .payment-modal-btn.cancel:hover {
+      background: #f8fafc;
+    }
+    .payment-modal-btn.confirm {
+      background: linear-gradient(135deg, #fbc707 0%, #f59e0b 100%);
+      color: white;
+      box-shadow: 0 8px 24px var(--primary-glow);
+    }
+    .payment-modal-btn.confirm:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(251, 199, 7, 0.5);
+    }
+    .payment-modal-btn.confirm:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header and Loyalty Bar will be injected by global-header.js -->
+
+  <main class="appointment-page">
+    <div class="appointment-grid">
+      <!-- LEFT COLUMN: Step Content -->
+      <div class="appointment-main">
+
+        <div class="preselected-banner" id="preselected-banner">
+      <div class="preselected-badge"><i class="ri-checkbox-circle-fill"></i> Seçili Servis</div>
+      <div class="preselected-content">
+        <img src="" alt="" class="preselected-img" id="preselected-img">
+        <div class="preselected-info">
+          <h4 id="preselected-name"></h4>
+          <p><i class="ri-map-pin-line"></i> <span id="preselected-location"></span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 1 -->
+    <div class="section-card expanded active" id="section-1">
+      <div class="section-header" onclick="toggleSection(1)">
+        <div class="section-indicator active" id="indicator-1"><span class="section-number">1</span></div>
+        <div class="section-title-wrap">
+          <h3 class="section-title">Araç ve Hizmet Seçimi</h3>
+          <p class="section-subtitle">Aracınızı ve hizmet kategorisini seçin</p>
+        </div>
+        <div class="section-toggle"><i class="ri-arrow-down-s-line"></i></div>
+      </div>
+      <div class="section-content">
+        <div class="input-group">
+          <label class="input-label">Hangi Aracınız İçin? <span class="required">*</span></label>
+          <div class="vehicle-grid" id="vehicle-list"></div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Hizmet Kategorisi <span class="required">*</span></label>
+          <div class="category-list" id="category-list"></div>
+        </div>
+        <button class="section-next-btn" id="section1-next-btn" onclick="goToSection2()" disabled>Devam <i
+            class="ri-arrow-right-line"></i></button>
+      </div>
+    </div>
+
+    <!-- SECTION 2: SERVİS SEÇİMİ -->
+    <div class="section-card disabled" id="section-2">
+      <div class="section-header" onclick="toggleSection(2)">
+        <div class="section-indicator" id="indicator-2"><span class="section-number">2</span></div>
+        <div class="section-title-wrap">
+          <h3 class="section-title">Servis Seçimi</h3>
+          <p class="section-subtitle">Size en uygun servisi seçin</p>
+        </div>
+        <div class="section-toggle"><i class="ri-arrow-down-s-line"></i></div>
+      </div>
+      <div class="section-content">
+        <!-- Arama Çubuğu -->
+        <div class="service-search-box">
+          <i class="ri-search-line"></i>
+          <input type="text" class="service-search-input" id="service-search" placeholder="Servis adı ara...">
+        </div>
+
+        <!-- Filtreleme Butonları -->
+        <div class="service-filter-tabs">
+          <button class="service-filter-tab active" data-filter="all" onclick="filterServices('all')">Tümü</button>
+          <button class="service-filter-tab" data-filter="rating" onclick="filterServices('rating')">Puan</button>
+          <button class="service-filter-tab" data-filter="distance"
+            onclick="filterServices('distance')">Yakınlık</button>
+        </div>
+
+        <!-- Servis Kartları -->
+        <div class="service-cards-grid" id="service-cards-grid">
+          <!-- Hızlı Servis Kartı -->
+          <div class="service-card quick-service" onclick="selectServiceCard(null)">
+            <div class="service-card-icon"><i class="ri-flashlight-line"></i></div>
+            <div class="service-card-name">Hızlı Servis</div>
+            <div class="service-card-desc">Tüm servislere açık</div>
+          </div>
+          <!-- Diğer servisler dinamik yüklenecek -->
+        </div>
+
+        <button class="section-next-btn" id="section2-next-btn" onclick="goToSection3()" disabled>Devam <i
+            class="ri-arrow-right-line"></i></button>
+      </div>
+    </div>
+
+    <!-- SECTION 3: SORUN VE DETAYLAR -->
+    <div class="section-card disabled" id="section-3">
+      <div class="section-header" onclick="toggleSection(3)">
+        <div class="section-indicator" id="indicator-3"><span class="section-number">3</span></div>
+        <div class="section-title-wrap">
+          <h3 class="section-title">Sorun ve Detaylar</h3>
+          <p class="section-subtitle">Aracınızın sorununu açıklayın</p>
+        </div>
+        <div class="section-toggle"><i class="ri-arrow-down-s-line"></i></div>
+      </div>
+      <div class="section-content">
+        <div class="input-group">
+          <label class="input-label">Aracınızın Sorunu Nedir? <span class="required">*</span></label>
+          <div class="textarea-wrapper">
+            <textarea class="modern-textarea" id="fault-description" placeholder="Örn: Frenlerden yüksek ses geliyor..."
+              maxlength="1000"></textarea>
+            <span class="char-counter"><span id="char-count">0</span>/1000</span>
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Foto/Video/Ses Ekle (Opsiyonel)</label>
+          <div class="media-buttons">
+            <button class="media-btn" onclick="pickMedia()"><i class="ri-camera-line"></i> Foto/Video</button>
+            <button class="media-btn" id="audio-btn" onclick="toggleRecording()"><i class="ri-mic-line"></i> <span
+                id="audio-btn-text">Ses Kaydı</span></button>
+          </div>
+          <div class="media-preview" id="media-preview"></div>
+          <div class="audio-preview" id="audio-preview" style="display:none;">
+            <div class="audio-preview-icon"><i class="ri-mic-fill"></i></div>
+            <div class="audio-preview-info">
+              <div class="audio-preview-title">Ses Kaydı</div>
+              <div class="audio-preview-duration" id="audio-duration">0:00</div>
+            </div>
+            <button class="audio-preview-delete" onclick="deleteAudio()"><i class="ri-delete-bin-line"></i></button>
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Ek Notlar (Opsiyonel)</label>
+          <textarea class="modern-textarea" id="appointment-notes" placeholder="Servise iletmek istediğiniz notlar..."
+            style="min-height:80px;"></textarea>
+        </div>
+        <button class="section-next-btn" id="section3-next-btn" onclick="goToSection4()" disabled>Devam <i
+            class="ri-arrow-right-line"></i></button>
+      </div>
+    </div>
+
+    <!-- SECTION 4: TARİH VE SAAT -->
+    <div class="section-card disabled" id="section-4">
+      <div class="section-header" onclick="toggleSection(4)">
+        <div class="section-indicator" id="indicator-4"><span class="section-number">4</span></div>
+        <div class="section-title-wrap">
+          <h3 class="section-title">Tarih ve Saat</h3>
+          <p class="section-subtitle">Uygun olduğunuz zamanları seçin</p>
+        </div>
+        <div class="section-toggle"><i class="ri-arrow-down-s-line"></i></div>
+      </div>
+      <div class="section-content">
+        <div class="input-group">
+          <label class="input-label">Tarih Seçin <span class="required">*</span></label>
+          <div class="calendar-container">
+            <div class="calendar-header">
+              <button class="calendar-nav" onclick="prevMonth()"><i class="ri-arrow-left-s-line"></i></button>
+              <span class="calendar-month" id="calendar-month"></span>
+              <button class="calendar-nav" onclick="nextMonth()"><i class="ri-arrow-right-s-line"></i></button>
+            </div>
+            <div class="calendar-weekdays">
+              <span class="calendar-weekday">Pzt</span><span class="calendar-weekday">Sal</span>
+              <span class="calendar-weekday">Çar</span><span class="calendar-weekday">Per</span>
+              <span class="calendar-weekday">Cum</span><span class="calendar-weekday">Cmt</span>
+              <span class="calendar-weekday">Paz</span>
+            </div>
+            <div class="calendar-days" id="calendar-days"></div>
+          </div>
+        </div>
+        <div class="input-group" id="time-slot-section" style="display:none;">
+          <label class="input-label">Saat Aralığı Seçin <span class="required">*</span></label>
+          <div class="time-slots">
+            <div class="time-slot" data-value="09:00-12:00" onclick="selectTimeSlot(this)"><span
+                class="time-slot-emoji">🌅</span><span class="time-slot-text">09:00 - 12:00</span></div>
+            <div class="time-slot" data-value="12:00-15:00" onclick="selectTimeSlot(this)"><span
+                class="time-slot-emoji">☀️</span><span class="time-slot-text">12:00 - 15:00</span></div>
+            <div class="time-slot" data-value="15:00-18:00" onclick="selectTimeSlot(this)"><span
+                class="time-slot-emoji">🌇</span><span class="time-slot-text">15:00 - 18:00</span></div>
+            <div class="time-slot" data-value="FULL_DAY" onclick="selectTimeSlot(this)"><span
+                class="time-slot-emoji">🕐</span><span class="time-slot-text">Tüm Gün</span></div>
+          </div>
+        </div>
+        <div class="selected-dates" id="selected-dates" style="display:none;">
+          <div class="selected-dates-title"><i class="ri-calendar-check-fill"></i> Seçili Tarihler</div>
+          <div id="selected-dates-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 5: RANDEVU TÜRÜ -->
+    <div class="section-card disabled" id="section-5">
+      <div class="section-header" onclick="toggleSection(5)">
+        <div class="section-indicator" id="indicator-5"><span class="section-number">5</span></div>
+        <div class="section-title-wrap">
+          <h3 class="section-title">Randevu Türü</h3>
+          <p class="section-subtitle">Güvence seçeneğini belirleyin</p>
+        </div>
+        <div class="section-toggle"><i class="ri-arrow-down-s-line"></i></div>
+      </div>
+      <div class="section-content">
+        <div class="input-group">
+          <label class="input-label">Randevu Güvencesi <span class="required">*</span></label>
+          <div class="guarantee-options">
+            <div class="guarantee-option" data-value="standard" onclick="selectGuarantee(this)">
+              <div class="guarantee-radio">
+                <div class="guarantee-radio-dot"></div>
+              </div>
+              <div class="guarantee-content">
+                <div class="guarantee-title">Standart Randevu</div>
+                <div class="guarantee-description">Ücretsiz randevu talebi oluşturun.</div>
+              </div>
+            </div>
+            <div class="guarantee-option" data-value="guaranteed" onclick="selectGuarantee(this)">
+              <div class="guarantee-radio">
+                <div class="guarantee-radio-dot"></div>
+              </div>
+              <div class="guarantee-content">
+                <div class="guarantee-title"><span>🛡️ TamirHanem Güvencesi</span><span
+                    class="guarantee-badge">Önerilen</span></div>
+                <div class="guarantee-description">100 TL depozito ile randevunuz güvence altında.</div>
+              </div>
+            </div>
+          </div>
+          <div class="guarantee-info-toggle" onclick="toggleGuaranteeInfo()"><i class="ri-question-line"></i> TamirHanem
+            Güvencesi nedir?</div>
+          <div class="guarantee-info-box" id="guarantee-info-box">
+            <div class="guarantee-info-text">🛡️ <strong>TamirHanem Güvencesi</strong> ile randevunuz koruma altına
+              alınır. Ödediğiniz <strong>100 TL depozito</strong>, randevunuz tamamlandığında <strong>cüzdanınıza
+                iade</strong> edilir.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+      </div>
+      <!-- END LEFT COLUMN -->
+
+      <!-- RIGHT COLUMN: Summary Sidebar -->
+      <div class="appointment-sidebar">
+        <div class="summary-card">
+          <div class="summary-header">
+            <div class="summary-icon"><i class="ri-calendar-check-line"></i></div>
+            <div>
+              <div class="summary-title">Randevu Özeti</div>
+              <div class="summary-subtitle">Seçimlerinizi gözden geçirin</div>
+            </div>
+          </div>
+
+          <!-- Progress Steps -->
+          <div class="summary-progress">
+            <div class="progress-step active" id="sp-step-1">
+              <div class="progress-dot">1</div>
+              <div class="progress-label">Araç</div>
+            </div>
+            <div class="progress-step" id="sp-step-2">
+              <div class="progress-dot">2</div>
+              <div class="progress-label">Servis</div>
+            </div>
+            <div class="progress-step" id="sp-step-3">
+              <div class="progress-dot">3</div>
+              <div class="progress-label">Sorun</div>
+            </div>
+            <div class="progress-step" id="sp-step-4">
+              <div class="progress-dot">4</div>
+              <div class="progress-label">Tarih</div>
+            </div>
+            <div class="progress-step" id="sp-step-5">
+              <div class="progress-dot">5</div>
+              <div class="progress-label">Tür</div>
+            </div>
+          </div>
+
+          <!-- Summary Items -->
+          <div class="summary-items">
+            <div class="summary-item empty" id="summary-vehicle">
+              <div class="summary-item-icon"><i class="ri-car-line"></i></div>
+              <div class="summary-item-content">
+                <div class="summary-item-label">Araç</div>
+                <div class="summary-item-value">Seçilmedi</div>
+              </div>
+            </div>
+            <div class="summary-item empty" id="summary-category">
+              <div class="summary-item-icon"><i class="ri-tools-line"></i></div>
+              <div class="summary-item-content">
+                <div class="summary-item-label">Kategori</div>
+                <div class="summary-item-value">Seçilmedi</div>
+              </div>
+            </div>
+            <div class="summary-item empty" id="summary-service">
+              <div class="summary-item-icon"><i class="ri-building-2-line"></i></div>
+              <div class="summary-item-content">
+                <div class="summary-item-label">Servis</div>
+                <div class="summary-item-value">Seçilmedi</div>
+              </div>
+            </div>
+            <div class="summary-item empty" id="summary-date">
+              <div class="summary-item-icon"><i class="ri-calendar-line"></i></div>
+              <div class="summary-item-content">
+                <div class="summary-item-label">Tarih</div>
+                <div class="summary-item-value">Seçilmedi</div>
+              </div>
+            </div>
+            <div class="summary-item empty" id="summary-guarantee">
+              <div class="summary-item-icon"><i class="ri-shield-check-line"></i></div>
+              <div class="summary-item-content">
+                <div class="summary-item-label">Güvence</div>
+                <div class="summary-item-value">Seçilmedi</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="summary-actions">
+            <button class="summary-btn primary" id="submit-btn" onclick="createAppointment()" disabled>
+              <i class="ri-calendar-check-line"></i> Randevu Oluştur
+            </button>
+            <button class="summary-btn secondary" id="quote-btn" onclick="createOffer()">
+              <i class="ri-price-tag-3-line"></i> Teklif Al
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- END RIGHT COLUMN -->
+
+    </div>
+  </main>
+
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- GUARANTEE MODAL -->
+  <div class="guarantee-modal-overlay" id="guarantee-modal">
+    <div class="guarantee-modal">
+      <div class="guarantee-modal-header">
+        <button class="guarantee-modal-close" onclick="closeGuaranteeModal()"><i class="ri-close-line"></i></button>
+        <div class="guarantee-modal-icon">🛡️</div>
+        <div class="guarantee-modal-title">TamirHanem Güvencesi</div>
+        <div class="guarantee-modal-subtitle">Randevunuz Güvence Altında</div>
+        <div class="guarantee-modal-badge"><i class="ri-shield-check-fill"></i> 100 TL İadeli Depozito</div>
+      </div>
+      <div class="guarantee-modal-body">
+        <div class="guarantee-benefit">
+          <div class="guarantee-benefit-icon yellow">⚡</div>
+          <div class="guarantee-benefit-content">
+            <div class="guarantee-benefit-title">Öncelikli Talep & Hızlı Onay</div>
+            <div class="guarantee-benefit-desc">Randevu talebiniz, servisin önüne 'Öncelikli Talep' olarak düşer.
+              Servisler, güvenceli randevulara her zaman daha hızlı dönüş yapar.</div>
+          </div>
+        </div>
+        <div class="guarantee-benefit">
+          <div class="guarantee-benefit-icon blue">🤝</div>
+          <div class="guarantee-benefit-content">
+            <div class="guarantee-benefit-title">Servis İşlemleri Sonrası Aracılık</div>
+            <div class="guarantee-benefit-desc">Hizmet sonrası servis ile anlaşmazlık mı yaşadınız? TamirHanem Güvencesi
+              ile 'Müşteri Temsilcisi Desteği' hakkı kazanırsınız.</div>
+          </div>
+        </div>
+        <div class="guarantee-benefit">
+          <div class="guarantee-benefit-icon orange">🎯</div>
+          <div class="guarantee-benefit-content">
+            <div class="guarantee-benefit-title">Ciddiyet Teminatı</div>
+            <div class="guarantee-benefit-desc">Depozitonuz, servise bu randevu konusunda ciddi olduğunuzu gösterir.
+              Servisler, güvenceli müşterilerin randevularına öncelik verir.</div>
+          </div>
+        </div>
+        <div class="guarantee-benefit">
+          <div class="guarantee-benefit-icon green">💰</div>
+          <div class="guarantee-benefit-content">
+            <div class="guarantee-benefit-title">%100 Cüzdan İadesi ve Ayrıcalıklar</div>
+            <div class="guarantee-benefit-desc">Randevuya katılım sağlamanız durumunda güvence tutarının tamamı
+              cüzdanınıza iade edilir. Bu tutar ile ücretsiz check-up, yıkama veya indirim kazanabilirsiniz.</div>
+          </div>
+        </div>
+      </div>
+      <div class="guarantee-modal-footer">
+        <button class="guarantee-modal-btn" onclick="closeGuaranteeModal()"><i class="ri-checkbox-circle-fill"></i>
+          Anladım</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS POPUP -->
+  <div class="success-popup-overlay" id="success-popup">
+    <div class="success-popup">
+      <div class="success-popup-icon"><i class="ri-check-line"></i></div>
+      <div class="success-popup-title" id="success-title">Randevunuz Oluşturuldu!</div>
+      <div class="success-popup-message" id="success-message">Randevu talebiniz başarıyla gönderildi. Servis en kısa
+        sürede sizinle iletişime geçecektir.</div>
+      <button class="success-popup-btn" onclick="goToAppointments()">Randevularıma Git</button>
+    </div>
+  </div>
+
+  <!-- VEHICLE VERIFICATION WARNING MODAL -->
+  <div class="verification-modal-overlay" id="verification-modal">
+    <div class="verification-modal">
+      <div class="verification-modal-icon">
+        <i class="ri-shield-check-line"></i>
+      </div>
+      <div class="verification-modal-title">Plaka Doğrulaması Gerekli</div>
+      <div class="verification-modal-message">
+        Randevu işleminizin tamamlanması ve servise iletilmesi için sisteme eklediğiniz araca plaka doğrulaması yapmanız gerekmektedir.
+      </div>
+      <div class="verification-modal-submessage">
+        Plaka doğrulaması sonrası randevu talebiniz otomatik olarak servise iletilecektir.
+      </div>
+      <div class="verification-modal-actions">
+        <button class="verification-modal-btn secondary" onclick="closeVerificationModal()">Daha Sonra</button>
+        <button class="verification-modal-btn primary" onclick="goToVehicleVerification()">
+          <i class="ri-shield-check-line"></i> Plaka Doğrula
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATE INFO MODAL -->
+  <div class="date-info-modal-overlay" id="date-info-modal">
+    <div class="date-info-modal">
+      <div class="date-info-modal-header">
+        <div class="date-info-modal-icon">
+          <i class="ri-calendar-check-line"></i>
+        </div>
+        <div class="date-info-modal-title">Tarih Seçimi</div>
+        <div class="date-info-modal-subtitle">Randevu şansınızı artırın</div>
+      </div>
+      <div class="date-info-modal-content">
+        <div class="date-info-feature">
+          <div class="date-info-feature-icon"><i class="ri-add-circle-line"></i></div>
+          <div class="date-info-feature-text">
+            <strong>Ek Tarihler Ekleyin</strong>
+            <span>Toplam 3 farklı tarih seçebilirsiniz</span>
+          </div>
+        </div>
+        <div class="date-info-feature">
+          <div class="date-info-feature-icon"><i class="ri-time-line"></i></div>
+          <div class="date-info-feature-text">
+            <strong>Esnek Saatler</strong>
+            <span>Her tarih için farklı saat aralıkları belirleyebilirsiniz</span>
+          </div>
+        </div>
+        <div class="date-info-feature">
+          <div class="date-info-feature-icon"><i class="ri-checkbox-circle-line"></i></div>
+          <div class="date-info-feature-text">
+            <strong>Servis Seçimi</strong>
+            <span>Servis, uygun olan tarihlerden birini seçecektir</span>
+          </div>
+        </div>
+      </div>
+      <div class="date-info-modal-actions">
+        <button class="date-info-modal-btn add-date" onclick="handleAddExtraDates()">
+          <i class="ri-calendar-2-line"></i> Tarih Ekle
+        </button>
+        <button class="date-info-modal-btn continue" onclick="handleDateContinue()">
+          <i class="ri-arrow-right-line"></i> Devam Et
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYMENT MODAL (TamirHanem Güvencesi) -->
+  <div class="payment-modal-overlay" id="payment-modal">
+    <div class="payment-modal">
+      <div class="payment-modal-header">
+        <div class="payment-modal-icon">
+          <i class="ri-shield-check-fill"></i>
+        </div>
+        <div class="payment-modal-title">TamirHanem Güvencesi</div>
+        <div class="payment-modal-subtitle">100 TL Depozito Ödemesi</div>
+      </div>
+      <div class="payment-modal-body">
+        <div class="payment-benefits">
+          <div class="payment-benefit-item">
+            <div class="payment-benefit-icon">⚡</div>
+            <div class="payment-benefit-text">
+              <strong>Öncelikli Talep & Hızlı Onay</strong>
+              Servisler güvenceli randevulara daha hızlı dönüş yapar.
+            </div>
+          </div>
+          <div class="payment-benefit-item">
+            <div class="payment-benefit-icon">🤝</div>
+            <div class="payment-benefit-text">
+              <strong>Müşteri Temsilcisi Desteği</strong>
+              Anlaşmazlık durumunda TamirHanem aracılık yapar.
+            </div>
+          </div>
+          <div class="payment-benefit-item">
+            <div class="payment-benefit-icon">💰</div>
+            <div class="payment-benefit-text">
+              <strong>%100 Cüzdan İadesi</strong>
+              Randevuya katılım sağladığınızda depozito iade edilir.
+            </div>
+          </div>
+        </div>
+
+        <div class="payment-placeholder">
+          <div class="payment-placeholder-icon"><i class="ri-bank-card-line"></i></div>
+          <div class="payment-placeholder-text">Buraya ödeme ekranı gösterilecek</div>
+        </div>
+
+        <div class="payment-contract" onclick="togglePaymentContract()">
+          <div class="payment-checkbox" id="payment-checkbox">
+            <i class="ri-check-line" style="display: none;"></i>
+          </div>
+          <div class="payment-contract-text">
+            <span class="payment-contract-link" onclick="event.stopPropagation(); toggleGuaranteeInfo();">"TamirHanem Güvencesi Hizmet Sözleşmesi"</span>ni okudum ve kabul ediyorum.
+          </div>
+        </div>
+      </div>
+      <div class="payment-modal-footer">
+        <button class="payment-modal-btn cancel" onclick="closePaymentModal()">İptal</button>
+        <button class="payment-modal-btn confirm" id="payment-confirm-btn" onclick="confirmPayment()" disabled>
+          <i class="ri-shield-check-line"></i> 100 TL Öde ve Onayla
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Header Component -->
+  <script src="/components/global-header.js"></script>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/api.js"></script>
+  <script>
+    const appointmentData = { vehicle: null, category: null, service: undefined, faultDescription: '', notes: '', availableDates: [], selectedDate: null, selectedTimeSlot: null, attachments: [], audio: null, isGuaranteed: null };
+    let vehicles = [], categories = [], services = [], currentMonth = new Date(), preSelectedServiceId = null, preSelectedService = null, isRecording = false, recordingTimer = null, recordingDuration = 0;
+    const params = Utils.getQueryParams();
+    preSelectedServiceId = params.service || params.serviceId;
+    const isQuickServiceMode = params.quickService === 'true';
+    const isEmbeddedMode = params.embedded === 'true';
+
+    // Apply embedded mode class to body if opened in iframe
+    if (isEmbeddedMode) {
+      document.body.classList.add('embedded-mode');
+    }
+
+    function toggleSection(num) {
+      const section = document.getElementById(`section-${num}`);
+      if (section.classList.contains('disabled')) return;
+      if (num === 2 && !isSection1Complete()) return;
+      if (num === 3 && !isSection2Complete()) return;
+      if (num === 4 && !isSection3Complete()) return;
+      if (num === 5 && !isSection4Complete()) return;
+      if (section.classList.contains('expanded')) { section.classList.remove('expanded'); }
+      else { document.querySelectorAll('.section-card').forEach(s => s.classList.remove('expanded')); section.classList.add('expanded'); }
+    }
+
+    function openSection(num) {
+      document.querySelectorAll('.section-card').forEach(s => s.classList.remove('expanded'));
+      const section = document.getElementById(`section-${num}`);
+      section.classList.remove('disabled'); section.classList.add('expanded', 'active');
+    }
+
+    function completeSection(num) {
+      const section = document.getElementById(`section-${num}`);
+      const indicator = document.getElementById(`indicator-${num}`);
+      section.classList.remove('active'); section.classList.add('complete');
+      indicator.classList.remove('active'); indicator.classList.add('complete');
+      indicator.innerHTML = '<i class="ri-check-line"></i>';
+      if (num < 5) openSection(num + 1);
+      updateSubmitButton();
+    }
+
+    function isSection1Complete() { return appointmentData.vehicle && appointmentData.category; }
+    function isSection2Complete() { return appointmentData.service !== undefined; } // Servis seçimi (null = Hızlı Servis, id = belirli servis)
+    function isSection3Complete() { return appointmentData.faultDescription.trim().length >= 15; }
+    function isSection4Complete() { return appointmentData.availableDates.length > 0; }
+    function isSection5Complete() { return appointmentData.isGuaranteed !== null; }
+    function checkSection1() {
+      if (isSection1Complete()) {
+        // Otomatik Section 2'ye geç
+        goToSection2();
+      }
+    }
+    function checkSection2() { document.getElementById('section2-next-btn').disabled = !isSection2Complete(); }
+    function checkSection3() { document.getElementById('section3-next-btn').disabled = !isSection3Complete(); }
+    function checkSection4() { if (isSection4Complete()) completeSection(4); }
+    function updateSubmitButton() { document.getElementById('submit-btn').disabled = !(isSection1Complete() && isSection2Complete() && isSection3Complete() && isSection4Complete() && isSection5Complete()); }
+
+    // ===== SUMMARY SIDEBAR UPDATE FUNCTIONS =====
+    function updateSummary() {
+      // Update vehicle
+      const vehicleItem = document.getElementById('summary-vehicle');
+      if (appointmentData.vehicle && vehicles.length > 0) {
+        const v = vehicles.find(x => x.id === appointmentData.vehicle);
+        if (v) {
+          const a = v.attributes || v;
+          vehicleItem.classList.add('filled');
+          vehicleItem.classList.remove('empty');
+          vehicleItem.querySelector('.summary-item-value').textContent = `${a.brand || ''} ${a.model || ''}`.trim();
+        }
+      } else {
+        vehicleItem.classList.remove('filled');
+        vehicleItem.classList.add('empty');
+        vehicleItem.querySelector('.summary-item-value').textContent = 'Seçilmedi';
+      }
+
+      // Update category
+      const categoryItem = document.getElementById('summary-category');
+      if (appointmentData.category && categories.length > 0) {
+        const cat = categories.find(x => x.id === appointmentData.category);
+        if (cat) {
+          const a = cat.attributes || cat;
+          categoryItem.classList.add('filled');
+          categoryItem.classList.remove('empty');
+          categoryItem.querySelector('.summary-item-value').textContent = a.name || 'Kategori';
+        }
+      } else {
+        categoryItem.classList.remove('filled');
+        categoryItem.classList.add('empty');
+        categoryItem.querySelector('.summary-item-value').textContent = 'Seçilmedi';
+      }
+
+      // Update service
+      const serviceItem = document.getElementById('summary-service');
+      if (appointmentData.service !== undefined) {
+        serviceItem.classList.add('filled');
+        serviceItem.classList.remove('empty');
+        if (appointmentData.service === null) {
+          serviceItem.querySelector('.summary-item-value').textContent = 'Hızlı Servis';
+        } else if (allServicesData.length > 0) {
+          const s = allServicesData.find(x => x.id === appointmentData.service);
+          if (s) {
+            const a = s.attributes || s;
+            serviceItem.querySelector('.summary-item-value').textContent = a.name || 'Servis';
+          }
+        } else if (preSelectedService) {
+          const a = preSelectedService.attributes || preSelectedService;
+          serviceItem.querySelector('.summary-item-value').textContent = a.name || 'Servis';
+        }
+      } else {
+        serviceItem.classList.remove('filled');
+        serviceItem.classList.add('empty');
+        serviceItem.querySelector('.summary-item-value').textContent = 'Seçilmedi';
+      }
+
+      // Update date
+      const dateItem = document.getElementById('summary-date');
+      if (appointmentData.availableDates.length > 0) {
+        dateItem.classList.add('filled');
+        dateItem.classList.remove('empty');
+        const first = appointmentData.availableDates[0];
+        const d = new Date(first.date);
+        const dateStr = d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+        dateItem.querySelector('.summary-item-value').textContent = `${dateStr} (${appointmentData.availableDates.length} tarih)`;
+      } else {
+        dateItem.classList.remove('filled');
+        dateItem.classList.add('empty');
+        dateItem.querySelector('.summary-item-value').textContent = 'Seçilmedi';
+      }
+
+      // Update guarantee
+      const guaranteeItem = document.getElementById('summary-guarantee');
+      if (appointmentData.isGuaranteed !== null) {
+        guaranteeItem.classList.add('filled');
+        guaranteeItem.classList.remove('empty');
+        guaranteeItem.querySelector('.summary-item-value').textContent = appointmentData.isGuaranteed ? 'TamirHanem Güvencesi' : 'Standart Randevu';
+      } else {
+        guaranteeItem.classList.remove('filled');
+        guaranteeItem.classList.add('empty');
+        guaranteeItem.querySelector('.summary-item-value').textContent = 'Seçilmedi';
+      }
+
+      // Update progress steps
+      updateProgressSteps();
+    }
+
+    function updateProgressSteps() {
+      const steps = [
+        { id: 'sp-step-1', complete: isSection1Complete() },
+        { id: 'sp-step-2', complete: isSection2Complete() },
+        { id: 'sp-step-3', complete: isSection3Complete() },
+        { id: 'sp-step-4', complete: isSection4Complete() },
+        { id: 'sp-step-5', complete: isSection5Complete() }
+      ];
+
+      let activeFound = false;
+      steps.forEach((step, idx) => {
+        const el = document.getElementById(step.id);
+        if (!el) return;
+
+        el.classList.remove('active', 'completed');
+
+        if (step.complete) {
+          el.classList.add('completed');
+          el.querySelector('.progress-dot').innerHTML = '<i class="ri-check-line"></i>';
+        } else if (!activeFound) {
+          el.classList.add('active');
+          el.querySelector('.progress-dot').textContent = idx + 1;
+          activeFound = true;
+        } else {
+          el.querySelector('.progress-dot').textContent = idx + 1;
+        }
+      });
+    }
+
+    async function loadVehicles() {
+      try { const r = await api.getVehicles(); vehicles = r.data || []; renderVehicles(); } catch (e) { console.error('Araçlar yüklenemedi:', e); }
+    }
+
+    function renderVehicles() {
+      const c = document.getElementById('vehicle-list');
+      if (vehicles.length === 0) { c.innerHTML = `<div class="add-vehicle-card" onclick="window.location.href='/pages/my-vehicles.html'"><i class="ri-add-circle-line"></i><span>Araç Ekle</span></div>`; return; }
+      c.innerHTML = vehicles.map(v => {
+        const a = v.attributes || v, sel = appointmentData.vehicle === v.id;
+        const plateText = a.plate ? `<span class="plate">${a.plate}</span>` : '';
+        return `<div class="vehicle-card ${sel ? 'selected' : ''}" onclick="selectVehicle(${v.id})">
+          <div class="vehicle-card-icon"><i class="ri-car-fill"></i></div>
+          <div class="vehicle-card-info">
+            <div class="vehicle-card-title">${a.brand || 'Marka'}</div>
+            <div class="vehicle-card-subtitle">${a.model || 'Model'} ${a.year || ''}${plateText}</div>
+          </div>
+        </div>`;
+      }).join('') + `<div class="add-vehicle-card" onclick="window.location.href='/pages/my-vehicles.html'"><i class="ri-add-circle-line"></i><span>Araç Ekle</span></div>`;
+    }
+
+    function selectVehicle(id) { appointmentData.vehicle = id; renderVehicles(); checkSection1(); updateSummary(); }
+
+    async function loadCategories() {
+      try {
+        if (preSelectedService) { categories = preSelectedService.attributes?.categories?.data || []; }
+        else { const r = await api.getCategories(); categories = r.data || []; }
+        renderCategories();
+      } catch (e) { console.error('Kategoriler yüklenemedi:', e); }
+    }
+
+    function renderCategories() {
+      const icons = { 'periyodik': 'ri-settings-3-line', 'motor': 'ri-dashboard-3-line', 'fren': 'ri-stop-circle-line', 'lastik': 'ri-circle-line', 'elektrik': 'ri-flashlight-line', 'klima': 'ri-temp-cold-line', 'kaporta': 'ri-car-line', 'boya': 'ri-paint-brush-line', 'default': 'ri-tools-line' };
+      const c = document.getElementById('category-list');
+      c.innerHTML = categories.map(cat => {
+        const a = cat.attributes || cat, nm = (a.name || '').toLowerCase(), ic = Object.keys(icons).find(k => nm.includes(k)) || 'default', sel = appointmentData.category === cat.id;
+        return `<div class="category-pill ${sel ? 'selected' : ''}" onclick="selectCategory(${cat.id})"><i class="${icons[ic]}"></i> ${a.name || 'Kategori'}</div>`;
+      }).join('');
+    }
+
+    function selectCategory(id) {
+      appointmentData.category = id; renderCategories();
+      checkSection1(); updateSummary();
+    }
+
+    // Not: Servisler artık Section 2'de loadServicesForSelection() ile yükleniyor
+
+    // ========== YENİ SERVİS SEÇİM BÖLÜMÜ FONKSİYONLARI ==========
+    let allServicesData = []; // Tüm servisleri sakla
+    let selectedServiceCard = undefined; // Seçili servis kartı (undefined = henüz seçim yapılmadı, null = hızlı servis)
+    let userLocation = null; // Kullanıcı konumu
+
+    // Section navigasyon fonksiyonları
+    function goToSection2() {
+      if (isSection1Complete()) {
+        completeSection(1);
+        // Eğer preSelectedService varsa Section 2'yi atla
+        if (preSelectedServiceId) {
+          appointmentData.service = parseInt(preSelectedServiceId);
+          completeSection(2);
+        } else if (isQuickServiceMode) {
+          // Hızlı Servis modu - servis seçimi null (tüm servislere açık)
+          appointmentData.service = null;
+          selectedServiceCard = null;
+          completeSection(2);
+        } else {
+          loadServicesForSelection();
+        }
+      }
+    }
+
+    function goToSection3() {
+      if (isSection2Complete()) {
+        completeSection(2);
+      }
+    }
+
+    function goToSection4() {
+      if (isSection3Complete()) {
+        completeSection(3);
+      }
+    }
+
+    // Servis kartlarını yükle
+    async function loadServicesForSelection() {
+      const grid = document.getElementById('service-cards-grid');
+      if (!grid) return;
+
+      // Loading göster
+      grid.innerHTML = `
+        <div class="service-card quick-service" onclick="selectServiceCard(null)">
+          <div class="service-card-icon"><i class="ri-flashlight-line"></i></div>
+          <div class="service-card-name">Hızlı Servis</div>
+          <div class="service-card-desc">Tüm servislere açık</div>
+        </div>
+        <div class="service-card loading">
+          <div class="service-card-icon"><i class="ri-loader-4-line"></i></div>
+          <div class="service-card-name">Yükleniyor...</div>
+        </div>
+      `;
+
+      try {
+        // Kullanıcı konumunu al
+        await getUserLocation();
+
+        // Seçili kategoriye sahip servisler + tüm kategorilere hizmet verenler (service_type=all)
+        const catId = appointmentData.category;
+        const [catServices, allTypeServices] = await Promise.all([
+          api.getServices({
+            'filters[categories][id][$in]': catId,
+            'populate': '*',
+            'pagination[pageSize]': 100
+          }),
+          api.getServices({
+            'filters[service_type][$eq]': 'all',
+            'populate': '*',
+            'pagination[pageSize]': 100
+          })
+        ]);
+
+        // Servisleri birleştir ve tekrarları kaldır
+        const servicesMap = new Map();
+        [...(catServices.data || []), ...(allTypeServices.data || [])].forEach(s => {
+          if (!servicesMap.has(s.id)) servicesMap.set(s.id, s);
+        });
+        allServicesData = Array.from(servicesMap.values());
+        console.log('📦 Servis kartları yüklendi:', allServicesData.length, 'adet');
+        if (allServicesData.length > 0) {
+          console.log('📷 Örnek servis data:', allServicesData[0]);
+        }
+
+        // Servislere mesafe hesapla
+        if (userLocation) {
+          allServicesData.forEach(s => {
+            const a = s.attributes || s;
+            if (a.latitude && a.longitude) {
+              s.distance = calculateDistance(userLocation.lat, userLocation.lng, parseFloat(a.latitude), parseFloat(a.longitude));
+            } else {
+              s.distance = 9999; // Konum yoksa en sona
+            }
+          });
+        }
+
+        // Servis seçimi bekle (hiçbir şey seçili değil)
+        selectedServiceCard = undefined;
+        document.getElementById('section2-next-btn').disabled = true;
+
+        renderServiceCards('all');
+        initServiceSearch();
+      } catch (e) {
+        console.error('Servisler yüklenemedi:', e);
+        grid.innerHTML = `
+          <div class="service-card quick-service" onclick="selectServiceCard(null)">
+            <div class="service-card-icon"><i class="ri-flashlight-line"></i></div>
+            <div class="service-card-name">Hızlı Servis</div>
+            <div class="service-card-desc">Tüm servislere açık</div>
+          </div>
+        `;
+        selectedServiceCard = undefined;
+        document.getElementById('section2-next-btn').disabled = true;
+      }
+    }
+
+    // Kullanıcı konumunu al
+    async function getUserLocation() {
+      return new Promise((resolve) => {
+        if (!navigator.geolocation) {
+          resolve(null);
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            resolve(userLocation);
+          },
+          () => resolve(null),
+          { timeout: 5000 }
+        );
+      });
+    }
+
+    // Mesafe hesapla (Haversine formülü)
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371; // km
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    // Servis kartlarını render et
+    function renderServiceCards(filter = 'all') {
+      const grid = document.getElementById('service-cards-grid');
+      if (!grid) return;
+
+      let sortedServices = [...allServicesData];
+
+      // Filtreleme/Sıralama
+      if (filter === 'rating') {
+        sortedServices.sort((a, b) => {
+          const ratingA = (a.attributes || a).rating || 0;
+          const ratingB = (b.attributes || b).rating || 0;
+          return ratingB - ratingA;
+        });
+      } else if (filter === 'distance') {
+        sortedServices.sort((a, b) => (a.distance || 9999) - (b.distance || 9999));
+      }
+
+      // Hızlı servis kartı (null = seçili, undefined = henüz seçilmedi)
+      const isQuickServiceSelected = selectedServiceCard === null && appointmentData.service === null;
+      let html = `
+        <div class="service-card quick-service ${isQuickServiceSelected ? 'selected' : ''}" onclick="selectServiceCard(null)">
+          <div class="service-card-icon"><i class="ri-flashlight-line"></i></div>
+          <div class="service-card-name">Hızlı Servis</div>
+          <div class="service-card-desc">Tüm servislere açık</div>
+        </div>
+      `;
+
+      // Diğer servis kartları
+      sortedServices.forEach(s => {
+        const a = s.attributes || s;
+        const isSelected = selectedServiceCard === s.id;
+        const rating = a.rating || 0;
+        const distance = s.distance ? (s.distance < 1 ? `${Math.round(s.distance * 1000)}m` : `${s.distance.toFixed(1)}km`) : '';
+        // ProfilePicture veya logo kullan
+        const imgUrl = Utils.getImageUrl(a.ProfilePicture) || Utils.getImageUrl(a.logo) || '/assets/placeholder-service.jpg';
+
+        html += `
+          <div class="service-card ${isSelected ? 'selected' : ''}" onclick="selectServiceCard(${s.id})">
+            <div class="service-card-img" style="background-image: url('${imgUrl}')"></div>
+            <div class="service-card-name">${a.name || 'Servis'}</div>
+            <div class="service-card-meta">
+              ${rating > 0 ? `<span class="service-card-rating"><i class="ri-star-fill"></i> ${rating.toFixed(1)}</span>` : ''}
+              ${distance ? `<span class="service-card-distance"><i class="ri-map-pin-line"></i> ${distance}</span>` : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      grid.innerHTML = html;
+    }
+
+    // Servis kartı seç
+    function selectServiceCard(serviceId) {
+      selectedServiceCard = serviceId;
+      appointmentData.service = serviceId;
+      renderServiceCards(document.querySelector('.service-filter-tab.active')?.dataset?.filter || 'all');
+      updateSummary();
+      // Otomatik Section 3'e geç
+      setTimeout(() => goToSection3(), 300);
+    }
+
+    // Filtreleme
+    function filterServices(filter) {
+      // Aktif tab'ı güncelle
+      document.querySelectorAll('.service-filter-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.service-filter-tab[data-filter="${filter}"]`)?.classList.add('active');
+      renderServiceCards(filter);
+    }
+
+    // Arama
+    function initServiceSearch() {
+      const input = document.getElementById('service-search');
+      if (!input) return;
+
+      input.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        const grid = document.getElementById('service-cards-grid');
+        if (!grid) return;
+
+        if (!query) {
+          renderServiceCards(document.querySelector('.service-filter-tab.active')?.dataset?.filter || 'all');
+          return;
+        }
+
+        // Filtrele
+        const filtered = allServicesData.filter(s => {
+          const a = s.attributes || s;
+          return (a.name || '').toLowerCase().includes(query) || (a.location || '').toLowerCase().includes(query);
+        });
+
+        // Render
+        const isQuickServiceSelected = selectedServiceCard === null && appointmentData.service === null;
+        let html = `
+          <div class="service-card quick-service ${isQuickServiceSelected ? 'selected' : ''}" onclick="selectServiceCard(null)">
+            <div class="service-card-icon"><i class="ri-flashlight-line"></i></div>
+            <div class="service-card-name">Hızlı Servis</div>
+            <div class="service-card-desc">Tüm servislere açık</div>
+          </div>
+        `;
+
+        filtered.forEach(s => {
+          const a = s.attributes || s;
+          const isSelected = selectedServiceCard === s.id;
+          const rating = a.rating || 0;
+          const distance = s.distance ? (s.distance < 1 ? `${Math.round(s.distance * 1000)}m` : `${s.distance.toFixed(1)}km`) : '';
+          const imgUrl = Utils.getImageUrl(a.ProfilePicture) || Utils.getImageUrl(a.logo) || '/assets/placeholder-service.jpg';
+
+          html += `
+            <div class="service-card ${isSelected ? 'selected' : ''}" onclick="selectServiceCard(${s.id})">
+              <div class="service-card-img" style="background-image: url('${imgUrl}')"></div>
+              <div class="service-card-name">${a.name || 'Servis'}</div>
+              <div class="service-card-meta">
+                ${rating > 0 ? `<span class="service-card-rating"><i class="ri-star-fill"></i> ${rating.toFixed(1)}</span>` : ''}
+                ${distance ? `<span class="service-card-distance"><i class="ri-map-pin-line"></i> ${distance}</span>` : ''}
+              </div>
+            </div>
+          `;
+        });
+
+        grid.innerHTML = html;
+      });
+    }
+    // ========== YENİ SERVİS SEÇİM BÖLÜMÜ SONU ==========
+
+    async function loadPreSelectedService() {
+      if (!preSelectedServiceId) return;
+      try {
+        Utils.showLoading(); const r = await api.getServiceById(preSelectedServiceId);
+        if (r.data) {
+          preSelectedService = r.data; appointmentData.service = r.data.id;
+          const a = r.data.attributes || r.data;
+          document.getElementById('preselected-banner').classList.add('show');
+          document.getElementById('preselected-name').textContent = a.name || 'Servis';
+          document.getElementById('preselected-location').textContent = a.location || a.city || 'Konum';
+          document.getElementById('preselected-img').src = Utils.getImageUrl(a.ProfilePicture) || '/assets/placeholder-service.jpg';
+          await loadCategories();
+        }
+      } catch (e) { console.error('Servis yüklenemedi:', e); } finally { Utils.hideLoading(); }
+    }
+
+    function initFaultDescription() {
+      const ta = document.getElementById('fault-description'), cnt = document.getElementById('char-count'), btn = document.getElementById('section3-next-btn');
+      ta.addEventListener('input', e => {
+        cnt.textContent = e.target.value.length;
+        appointmentData.faultDescription = e.target.value;
+        btn.disabled = e.target.value.trim().length < 15;
+      });
+      document.getElementById('appointment-notes').addEventListener('input', e => { appointmentData.notes = e.target.value; });
+    }
+
+    function pickMedia() {
+      const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*,video/*'; inp.multiple = true;
+      inp.onchange = e => {
+        Array.from(e.target.files).forEach(f => {
+          if (f.size > 50 * 1024 * 1024) { Utils.showToast('Dosya 50MB\'dan büyük olamaz', 'error'); return; }
+          const rd = new FileReader();
+          rd.onload = ev => { appointmentData.attachments.push({ uri: ev.target.result, type: f.type, name: f.name, size: f.size, file: f }); renderMediaPreview(); };
+          rd.readAsDataURL(f);
+        });
+      }; inp.click();
+    }
+
+    function renderMediaPreview() {
+      const c = document.getElementById('media-preview');
+      c.innerHTML = appointmentData.attachments.map((a, i) => `<div class="media-preview-item">${a.type.startsWith('image') ? `<img src="${a.uri}">` : `<div class="media-icon"><i class="ri-video-line"></i></div>`}<div class="media-remove" onclick="removeMedia(${i})"><i class="ri-close-line"></i></div></div>`).join('');
+    }
+
+    function removeMedia(i) { appointmentData.attachments.splice(i, 1); renderMediaPreview(); }
+
+    function toggleRecording() { if (isRecording) stopRecording(); else startRecording(); }
+
+    async function startRecording() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        isRecording = true; recordingDuration = 0;
+        document.getElementById('audio-btn').classList.add('recording');
+        document.getElementById('audio-btn-text').textContent = 'Kaydediliyor...';
+        recordingTimer = setInterval(() => { recordingDuration++; const m = Math.floor(recordingDuration / 60), s = recordingDuration % 60; document.getElementById('audio-btn-text').textContent = `${m}:${s.toString().padStart(2, '0')}`; }, 1000);
+        window.mediaRecorder = new MediaRecorder(stream); window.audioChunks = [];
+        window.mediaRecorder.ondataavailable = e => { window.audioChunks.push(e.data); };
+        window.mediaRecorder.onstop = () => { appointmentData.audio = { blob: new Blob(window.audioChunks, { type: 'audio/webm' }), duration: recordingDuration }; showAudioPreview(); };
+        window.mediaRecorder.start();
+      } catch (e) { Utils.showToast('Mikrofon erişimi gerekli', 'error'); }
+    }
+
+    function stopRecording() {
+      isRecording = false; clearInterval(recordingTimer);
+      document.getElementById('audio-btn').classList.remove('recording');
+      document.getElementById('audio-btn-text').textContent = 'Ses Kaydı';
+      if (window.mediaRecorder && window.mediaRecorder.state !== 'inactive') { window.mediaRecorder.stop(); window.mediaRecorder.stream.getTracks().forEach(t => t.stop()); }
+    }
+
+    function showAudioPreview() {
+      document.getElementById('audio-preview').style.display = 'flex';
+      const m = Math.floor(appointmentData.audio.duration / 60), s = appointmentData.audio.duration % 60;
+      document.getElementById('audio-duration').textContent = `${m}:${s.toString().padStart(2, '0')}`;
+    }
+
+    function deleteAudio() { appointmentData.audio = null; document.getElementById('audio-preview').style.display = 'none'; }
+
+    function renderCalendar() {
+      const months = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+      document.getElementById('calendar-month').textContent = `${months[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
+      const c = document.getElementById('calendar-days'), today = new Date(); today.setHours(0, 0, 0, 0);
+      const first = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+      const last = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+      let start = first.getDay() - 1; if (start < 0) start = 6;
+      let html = '';
+      const prev = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 0).getDate();
+
+      // Eklenen tarihlerin listesi (unique dates)
+      const addedDates = [...new Set(appointmentData.availableDates.map(d => d.date))];
+
+      for (let i = start - 1; i >= 0; i--) html += `<div class="calendar-day other-month disabled">${prev - i}</div>`;
+      for (let i = 1; i <= last.getDate(); i++) {
+        const d = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i);
+        const ds = formatDateStr(d), isToday = d.getTime() === today.getTime(), isPast = d < today;
+        const isSel = appointmentData.selectedDate === ds;
+        const hasDate = addedDates.includes(ds); // Bu tarih daha önce eklendi mi?
+
+        let cls = 'calendar-day';
+        if (isToday) cls += ' today';
+        if (isPast) cls += ' disabled';
+        if (hasDate && !isSel) cls += ' has-date'; // Eklenen tarihi işaretle (seçili değilse)
+        if (isSel) cls += ' selected';
+
+        html += `<div class="${cls}" onclick="selectDate('${ds}')">${i}</div>`;
+      }
+      const total = start + last.getDate(), rem = 42 - total;
+      for (let i = 1; i <= rem; i++) html += `<div class="calendar-day other-month disabled">${i}</div>`;
+      c.innerHTML = html;
+    }
+
+    function prevMonth() { currentMonth.setMonth(currentMonth.getMonth() - 1); renderCalendar(); }
+    function nextMonth() { currentMonth.setMonth(currentMonth.getMonth() + 1); renderCalendar(); }
+
+    function selectDate(ds) {
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      if (new Date(ds) < today) return;
+      appointmentData.selectedDate = ds; renderCalendar();
+      document.getElementById('time-slot-section').style.display = 'block';
+      document.querySelectorAll('.time-slot').forEach(t => t.classList.remove('selected'));
+    }
+
+    function selectTimeSlot(el) {
+      document.querySelectorAll('.time-slot').forEach(t => t.classList.remove('selected'));
+      el.classList.add('selected');
+      appointmentData.selectedTimeSlot = el.dataset.value;
+      addSelectedDate();
+      updateSummary();
+    }
+
+    // Tarih seçim mantığı:
+    // - Sadece ilk tarih seçiminde modal açılır
+    // - "Tarih Ekle" tıklanınca: modal kapanır, sonraki seçimlerde modal açılmaz
+    // - 3 tarih seçilince otomatik step geçer
+    // - "Devam Et" tıklanınca: direkt step geçer
+
+    let isFirstDateSelection = true; // Sadece ilk seçimde modal açılır
+
+    function addSelectedDate() {
+      if (!appointmentData.selectedDate || !appointmentData.selectedTimeSlot) return;
+      const ds = appointmentData.selectedDate, ts = appointmentData.selectedTimeSlot;
+
+      // Mevcut unique tarih sayısını kontrol et
+      const currentUniqueDates = [...new Set(appointmentData.availableDates.map(d => d.date))];
+
+      // Bu tarih zaten eklenmişse veya 3 farklı tarih dolmuşsa ekleme
+      const isDateAlreadyAdded = currentUniqueDates.includes(ds);
+      if (!isDateAlreadyAdded && currentUniqueDates.length >= 3) {
+        Utils.showToast('En fazla 3 farklı tarih seçebilirsiniz', 'warning');
+        return;
+      }
+
+      if (ts === 'FULL_DAY') {
+        ['09:00-12:00', '12:00-15:00', '15:00-18:00'].forEach(s => {
+          if (!appointmentData.availableDates.find(d => d.date === ds && d.timeSlot === s)) appointmentData.availableDates.push({ date: ds, timeSlot: s, isFullDay: true });
+        });
+      } else {
+        if (!appointmentData.availableDates.find(d => d.date === ds && d.timeSlot === ts)) appointmentData.availableDates.push({ date: ds, timeSlot: ts, isFullDay: false });
+      }
+      renderSelectedDates();
+      renderCalendar(); // Takvimi güncelle - eklenen tarihleri işaretle
+      updateSummary();
+
+      // Kaç farklı tarih seçildiğini hesapla (unique dates)
+      const uniqueDates = [...new Set(appointmentData.availableDates.map(d => d.date))];
+
+      // 3 tarih seçildiyse otomatik geç
+      if (uniqueDates.length >= 3) {
+        completeSection(4);
+      } else if (isFirstDateSelection && uniqueDates.length === 1) {
+        // Sadece ilk tarih seçiminde modal göster
+        document.getElementById('date-info-modal').classList.add('show');
+      }
+    }
+
+    // Tarih bilgilendirme modal fonksiyonları
+    function handleAddExtraDates() {
+      // Modal kapat, artık tekrar açılmayacak
+      document.getElementById('date-info-modal').classList.remove('show');
+      isFirstDateSelection = false; // Artık modal açılmayacak
+
+      // 3 tarih varsa otomatik step geç
+      const uniqueDates = [...new Set(appointmentData.availableDates.map(d => d.date))];
+      if (uniqueDates.length >= 3) {
+        completeSection(4);
+      }
+      // Kullanıcı takvimde kalır, daha fazla tarih ekleyebilir
+    }
+
+    function handleDateContinue() {
+      // Modal kapat ve direkt sonraki step'e geç
+      document.getElementById('date-info-modal').classList.remove('show');
+      if (isSection4Complete()) {
+        completeSection(4);
+      }
+    }
+
+    function renderSelectedDates() {
+      const c = document.getElementById('selected-dates'), l = document.getElementById('selected-dates-list');
+      if (appointmentData.availableDates.length === 0) { c.style.display = 'none'; return; }
+      c.style.display = 'block';
+      const grouped = {};
+      appointmentData.availableDates.forEach(d => { if (!grouped[d.date]) grouped[d.date] = []; grouped[d.date].push(d.timeSlot); });
+      l.innerHTML = Object.entries(grouped).map(([dt, slots]) => {
+        const dObj = new Date(dt), fmt = dObj.toLocaleDateString('tr-TR', { weekday: 'short', day: 'numeric', month: 'short' });
+        const txt = slots.length === 3 ? 'Tüm Gün' : slots.join(', ');
+        return `<div class="selected-date-item"><span class="selected-date-text">${fmt} - ${txt}</span><button class="selected-date-remove" onclick="removeSelectedDate('${dt}')"><i class="ri-close-line"></i></button></div>`;
+      }).join('');
+    }
+
+    function removeSelectedDate(dt) { appointmentData.availableDates = appointmentData.availableDates.filter(d => d.date !== dt); renderSelectedDates(); updateSubmitButton(); updateSummary(); }
+
+    let paymentContractAccepted = false; // Ödeme sözleşmesi kabul durumu
+
+    function selectGuarantee(el) {
+      document.querySelectorAll('.guarantee-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      appointmentData.isGuaranteed = el.dataset.value === 'guaranteed';
+
+      // Güvenceli seçilirse ödeme modalını göster
+      if (appointmentData.isGuaranteed) {
+        openPaymentModal();
+      } else {
+        updateSubmitButton();
+        updateSummary();
+      }
+    }
+
+    // Ödeme Modal Fonksiyonları
+    function openPaymentModal() {
+      paymentContractAccepted = false;
+      updatePaymentCheckbox();
+      document.getElementById('payment-modal').classList.add('show');
+    }
+
+    function closePaymentModal() {
+      document.getElementById('payment-modal').classList.remove('show');
+      // Güvence seçimini iptal et
+      appointmentData.isGuaranteed = null;
+      document.querySelectorAll('.guarantee-option').forEach(o => o.classList.remove('selected'));
+      updateSubmitButton();
+      updateSummary();
+    }
+
+    function togglePaymentContract() {
+      paymentContractAccepted = !paymentContractAccepted;
+      updatePaymentCheckbox();
+    }
+
+    function updatePaymentCheckbox() {
+      const checkbox = document.getElementById('payment-checkbox');
+      const confirmBtn = document.getElementById('payment-confirm-btn');
+      const icon = checkbox.querySelector('i');
+
+      if (paymentContractAccepted) {
+        checkbox.classList.add('checked');
+        icon.style.display = 'block';
+        confirmBtn.disabled = false;
+      } else {
+        checkbox.classList.remove('checked');
+        icon.style.display = 'none';
+        confirmBtn.disabled = true;
+      }
+    }
+
+    function confirmPayment() {
+      if (!paymentContractAccepted) return;
+
+      // Ödeme modalını kapat
+      document.getElementById('payment-modal').classList.remove('show');
+
+      // Güvenceyi onayla
+      appointmentData.isGuaranteed = true;
+      document.querySelector('.guarantee-option[data-value="guaranteed"]').classList.add('selected');
+      updateSubmitButton();
+      updateSummary();
+    }
+
+    function toggleGuaranteeInfo() { document.getElementById('guarantee-modal').classList.add('show'); }
+    function closeGuaranteeModal() { document.getElementById('guarantee-modal').classList.remove('show'); }
+    function showSuccessPopup(title, message) {
+      document.getElementById('success-title').textContent = title;
+      document.getElementById('success-message').textContent = message;
+      document.getElementById('success-popup').classList.add('show');
+    }
+    function goToAppointments() { window.location.href = '/pages/my-appointments.html'; }
+
+    // ===== VEHICLE VERIFICATION CHECK =====
+    async function checkVehicleVerification() {
+      if (!appointmentData.vehicle) return true;
+
+      try {
+        const token = Utils.storage.get('tamirhanem_token');
+        const response = await fetch(`${CONFIG.API_BASE_URL}/vehicles/${appointmentData.vehicle}?populate=*`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const vehicleAttrs = data.data?.attributes || data.data || {};
+
+          if (!vehicleAttrs.isVerified) {
+            // Vehicle not verified - show warning modal
+            document.getElementById('verification-modal').classList.add('show');
+            return false;
+          }
+        }
+      } catch (error) {
+        console.error('Vehicle verification check error:', error);
+        // Continue on error - not critical
+      }
+
+      return true;
+    }
+
+    function closeVerificationModal() {
+      document.getElementById('verification-modal').classList.remove('show');
+    }
+
+    function goToVehicleVerification() {
+      closeVerificationModal();
+      window.location.href = '/pages/my-vehicles.html';
+    }
+
+    async function createAppointment() {
+      if (!validateForm()) return;
+
+      // Check vehicle verification
+      const isVerified = await checkVehicleVerification();
+      if (!isVerified) return;
+
+      try {
+        showLoading();
+        const attIds = [];
+        for (const a of appointmentData.attachments) {
+          if (a.file) {
+            const fd = new FormData(); fd.append('files', a.file);
+            const r = await fetch(`${CONFIG.API_BASE_URL}/upload`, { method: 'POST', headers: { 'Authorization': `Bearer ${Utils.storage.get('tamirhanem_token')}` }, body: fd });
+            if (r.ok) { const d = await r.json(); attIds.push(d[0].id); }
+          }
+        }
+        let audioId = null;
+        if (appointmentData.audio) {
+          const fd = new FormData(); fd.append('files', appointmentData.audio.blob, `audio_${Date.now()}.webm`);
+          const r = await fetch(`${CONFIG.API_BASE_URL}/upload`, { method: 'POST', headers: { 'Authorization': `Bearer ${Utils.storage.get('tamirhanem_token')}` }, body: fd });
+          if (r.ok) { const d = await r.json(); audioId = d[0].id; }
+        }
+        const first = appointmentData.availableDates[0];
+        const prefDT = `${first.date}T${first.timeSlot.split('-')[0]}:00`;
+        // isQuickService: servis seçilmediyse true (havuza düşer)
+        const isQuickService = !appointmentData.service;
+        const data = { data: { user: parseInt(auth.getUser()?.id), vehicle: appointmentData.vehicle, ...(appointmentData.service && { service: appointmentData.service }), category: appointmentData.category, availableDates: appointmentData.availableDates, preferredDateTime: prefDT, faultDescription: appointmentData.faultDescription, randevunotu: appointmentData.notes, status: 'Beklemede', isOfferRequest: false, isQuickService: isQuickService, attachments: attIds, audio: audioId, is_guaranteed: appointmentData.isGuaranteed } };
+        const r = await fetch(`${CONFIG.API_BASE_URL}/appointments`, { method: 'POST', headers: { 'Authorization': `Bearer ${Utils.storage.get('tamirhanem_token')}`, 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        if (r.ok) { hideLoading(); showSuccessPopup('Randevunuz Oluşturuldu!', 'Randevu talebiniz başarıyla gönderildi. Servis en kısa sürede sizinle iletişime geçecektir.'); return; }
+        else { const e = await r.json(); throw new Error(e.error?.message || 'Hata'); }
+      } catch (e) { Utils.showToast(e.message || 'Bir hata oluştu', 'error'); } finally { hideLoading(); }
+    }
+
+    async function createOffer() {
+      if (!validateForm(true)) return;
+
+      // Check vehicle verification
+      const isVerified = await checkVehicleVerification();
+      if (!isVerified) return;
+
+      try {
+        showLoading();
+        const first = appointmentData.availableDates[0];
+        const prefDT = `${first.date}T${first.timeSlot.split('-')[0]}:00`;
+        // isQuickService: servis seçilmediyse true (havuza düşer)
+        const isQuickService = !appointmentData.service;
+        console.log('createOffer - appointmentData.service:', appointmentData.service);
+        console.log('createOffer - isQuickService:', isQuickService);
+        console.log('createOffer - selectedServiceCard:', selectedServiceCard);
+        const data = { data: { user: parseInt(auth.getUser()?.id), vehicle: appointmentData.vehicle, ...(appointmentData.service && { service: appointmentData.service }), category: appointmentData.category, availableDates: appointmentData.availableDates, preferredDateTime: prefDT, faultDescription: appointmentData.faultDescription, randevunotu: appointmentData.notes, isOfferRequest: true, isQuickService: isQuickService, status: 'Beklemede', offerStatus: 'Teklif Bekliyor' } };
+        console.log('createOffer - sending data:', JSON.stringify(data, null, 2));
+        const r = await fetch(`${CONFIG.API_BASE_URL}/appointments`, { method: 'POST', headers: { 'Authorization': `Bearer ${Utils.storage.get('tamirhanem_token')}`, 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        if (r.ok) { hideLoading(); showSuccessPopup('Teklif Talebiniz Gönderildi!', 'Teklif talebiniz servislerimize iletildi. En uygun teklifler için bildirim alacaksınız.'); return; }
+        else throw new Error('Teklif gönderilemedi');
+      } catch (e) { Utils.showToast(e.message || 'Bir hata oluştu', 'error'); } finally { hideLoading(); }
+    }
+
+    function validateForm(isOffer = false) {
+      if (!appointmentData.vehicle) { Utils.showToast('Lütfen araç seçin', 'warning'); return false; }
+      if (!appointmentData.category) { Utils.showToast('Lütfen kategori seçin', 'warning'); return false; }
+      if (!appointmentData.faultDescription.trim()) { Utils.showToast('Lütfen sorun açıklaması yazın', 'warning'); return false; }
+      if (appointmentData.availableDates.length === 0) { Utils.showToast('Lütfen tarih seçin', 'warning'); return false; }
+      if (!isOffer && appointmentData.isGuaranteed === null) { Utils.showToast('Lütfen randevu türü seçin', 'warning'); return false; }
+      return true;
+    }
+
+    function clearForm() { if (!confirm('Formu temizlemek istiyor musunuz?')) return; location.reload(); }
+    function formatDateStr(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+    function showLoading() { document.getElementById('loading-overlay').classList.add('show'); }
+    function hideLoading() { document.getElementById('loading-overlay').classList.remove('show'); }
+
+    function initLoyaltyBar() {
+      // Kullanıcının tamamlanmış randevu sayısı (şimdilik 0)
+      const completedAppointments = 0;
+      const segments = document.querySelectorAll('.segment');
+
+      segments.forEach((segment, index) => {
+        if (index < completedAppointments) {
+          segment.classList.add('filled');
+        } else if (index === completedAppointments) {
+          segment.classList.add('active-target');
+        }
+      });
+
+      // Araba pozisyonu
+      const car = document.getElementById('loyalty-car');
+      if (car) {
+        const progress = (completedAppointments / 5) * 100;
+        car.style.left = `${progress}%`;
+      }
+    }
+
+    // Header initialization functions
+    function formatTurkishLira(amount) {
+      const number = parseFloat(amount) || 0;
+      return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(number);
+    }
+
+    async function loadWalletSummary() {
+      const balanceElement = document.getElementById('navbar-wallet-balance');
+      if (!balanceElement) return;
+      try {
+        const response = await api.getWallet();
+        const wallet = response.data || response;
+        const balance = wallet?.balance || wallet?.attributes?.balance || 0;
+        balanceElement.textContent = formatTurkishLira(balance);
+      } catch (e) {
+        balanceElement.textContent = '₺0,00';
+      }
+    }
+
+    async function loadNotificationsDropdown() {
+      try {
+        const response = await api.getNotifications();
+        const notifications = response.data || [];
+        const unreadCount = notifications.filter(n => !(n.attributes || n).read).length;
+        const badge = document.getElementById('notifications-badge');
+        if (badge) {
+          if (unreadCount > 0) { badge.textContent = unreadCount; badge.style.display = 'flex'; }
+          else { badge.style.display = 'none'; }
+        }
+        const body = document.getElementById('notification-dropdown-body');
+        if (body) {
+          if (notifications.length === 0) {
+            body.innerHTML = '<div class="notification-empty"><i class="ri-notification-off-line" style="font-size: 2rem; opacity: 0.3; display: block; margin-bottom: 10px;"></i>Bildiriminiz yok</div>';
+          } else {
+            body.innerHTML = notifications.slice(0, 5).map(notif => {
+              const attrs = notif.attributes || notif;
+              const isUnread = !attrs.read;
+              let timeStr = 'Bilinmiyor';
+              try { if (attrs.createdAt) timeStr = Utils.formatRelativeTime ? Utils.formatRelativeTime(attrs.createdAt) : Utils.formatDate(new Date(attrs.createdAt), 'DD.MM.YYYY HH:mm'); } catch (e) { }
+              return `<div class="notification-item ${isUnread ? 'unread' : ''}" onclick="window.location.href='/pages/notifications.html'"><div class="notification-item-title">${attrs.title || 'Bildirim'}</div><div class="notification-item-message">${attrs.message || ''}</div><div class="notification-item-time">${timeStr}</div></div>`;
+            }).join('');
+          }
+        }
+      } catch (e) {
+        const body = document.getElementById('notification-dropdown-body');
+        if (body) body.innerHTML = '<div class="notification-empty"><i class="ri-notification-off-line" style="font-size: 2rem; opacity: 0.3; display: block; margin-bottom: 10px;"></i>Bildirimler yüklenemedi</div>';
+      }
+    }
+
+    function loadUserProfile() {
+      const user = auth.getUser();
+      if (user) {
+        const nameEl = document.getElementById('user-name');
+        const avatarEl = document.getElementById('user-avatar');
+        const userFullName = `${user.name || ''} ${user.surname || ''}`.trim() || user.username || 'Kullanıcı';
+        if (nameEl) nameEl.textContent = userFullName;
+        if (avatarEl) {
+          if (user.avatar || user.profilePicture || user.ProfilePicture) {
+            const profilePic = user.avatar || user.profilePicture || user.ProfilePicture;
+            const imageUrl = Utils.getImageUrl(profilePic);
+            avatarEl.innerHTML = `<img src="${imageUrl}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" onerror="this.onerror=null; this.parentElement.textContent='${(user.name || user.username || 'U').charAt(0).toUpperCase()}'; this.remove();">`;
+          } else {
+            avatarEl.textContent = (user.name || user.username || 'U').charAt(0).toUpperCase();
+          }
+        }
+      }
+    }
+
+    function loadFavouritesDropdown() {
+      const body = document.getElementById('favourite-dropdown-body');
+      if (!body) return;
+      const favourites = JSON.parse(localStorage.getItem('favouriteServices') || '[]');
+      if (favourites.length === 0) {
+        body.innerHTML = '<div class="favourite-empty"><i class="ri-heart-line" style="font-size: 2rem; opacity: 0.3; display: block; margin-bottom: 10px;"></i>Henüz favori eklemediniz</div>';
+      } else {
+        body.innerHTML = favourites.slice(0, 5).map(fav => {
+          return `<div class="favourite-item" onclick="window.location.href='/pages/service-detail.html?id=${fav.id}'">
+            <img src="${fav.image || 'https://via.placeholder.com/40'}" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/40'">
+            <div style="flex:1; min-width:0;">
+              <div style="font-weight: 600; font-size: 0.9rem; color: var(--neutral-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${fav.name}</div>
+              <div style="font-size: 0.8rem; color: var(--neutral-500); display: flex; align-items: center; gap: 4px;"><i class="ri-map-pin-line"></i> ${fav.location || 'Konum yok'}</div>
+            </div>
+            <div style="color: #f59e0b; font-size: 0.85rem; font-weight: 600;"><i class="ri-star-fill"></i> ${(fav.rating || 4.5).toFixed(1)}</div>
+          </div>`;
+        }).join('');
+      }
+    }
+
+    function initHeader() {
+      loadWalletSummary();
+      loadNotificationsDropdown();
+      loadFavouritesDropdown();
+      loadUserProfile();
+
+      // Notification dropdown toggle
+      const notificationBtn = document.getElementById('notifications-btn');
+      const notificationDropdown = document.getElementById('notification-dropdown');
+      const favouriteBtn = document.getElementById('favourites-btn');
+      const favouriteDropdown = document.getElementById('favourite-dropdown');
+
+      if (notificationBtn && notificationDropdown) {
+        notificationBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          notificationDropdown.classList.toggle('show');
+          if (favouriteDropdown) favouriteDropdown.classList.remove('show');
+        });
+      }
+
+      if (favouriteBtn && favouriteDropdown) {
+        favouriteBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          favouriteDropdown.classList.toggle('show');
+          if (notificationDropdown) notificationDropdown.classList.remove('show');
+        });
+      }
+
+      // Close dropdowns when clicking outside
+      document.addEventListener('click', (e) => {
+        const clickedNotifBtn = notificationBtn && (notificationBtn.contains(e.target) || e.target === notificationBtn);
+        const clickedFavBtn = favouriteBtn && (favouriteBtn.contains(e.target) || e.target === favouriteBtn);
+
+        if (notificationDropdown && !notificationDropdown.contains(e.target) && !clickedNotifBtn) {
+          notificationDropdown.classList.remove('show');
+        }
+        if (favouriteDropdown && !favouriteDropdown.contains(e.target) && !clickedFavBtn) {
+          favouriteDropdown.classList.remove('show');
+        }
+      });
+    }
+
+    async function init() {
+      auth.requireAuth();
+      initHeader();
+      await loadVehicles();
+      if (preSelectedServiceId) await loadPreSelectedService();
+      else if (isQuickServiceMode) {
+        // Hızlı Servis modu - banner göster
+        showQuickServiceBanner();
+        await loadCategories();
+      }
+      else await loadCategories();
+      initFaultDescription();
+      renderCalendar();
+      initLoyaltyBar();
+
+      // Handle quote mode - hide appointment button, show only quote button
+      if (params.mode === 'quote') {
+        const submitBtn = document.getElementById('submit-btn');
+        const quoteBtn = document.getElementById('quote-btn');
+        const section5 = document.getElementById('section-5');
+        const indicator5 = document.getElementById('indicator-5');
+
+        if (submitBtn) submitBtn.style.display = 'none';
+        if (quoteBtn) {
+          quoteBtn.classList.remove('secondary');
+          quoteBtn.classList.add('primary');
+          quoteBtn.style.flex = '1';
+        }
+        // Hide guarantee section for quotes
+        if (section5) section5.style.display = 'none';
+        if (indicator5) indicator5.style.display = 'none';
+      }
+
+      // Initialize summary sidebar
+      updateSummary();
+    }
+
+    function showQuickServiceBanner() {
+      const banner = document.getElementById('preselected-banner');
+      const badge = banner.querySelector('.preselected-badge');
+      const name = document.getElementById('preselected-name');
+      const location = document.getElementById('preselected-location');
+      const img = document.getElementById('preselected-img');
+
+      // Stil değişikliği - turuncu/sarı tema
+      banner.style.background = 'rgba(254, 243, 199, 0.8)';
+      banner.style.border = '1px solid rgba(251, 191, 36, 0.5)';
+      badge.style.background = '#d97706';
+      badge.innerHTML = '<i class="ri-flashlight-fill"></i> Hızlı Servis';
+
+      name.textContent = 'Hızlı Servis';
+      location.textContent = 'Tüm servislere açık randevu';
+      img.src = '/assets/icons/flash-icon.svg';
+      img.onerror = function() {
+        this.style.display = 'none';
+        this.parentElement.insertAdjacentHTML('afterbegin', '<div style="width:48px;height:48px;background:linear-gradient(135deg,#f59e0b,#d97706);border-radius:12px;display:flex;align-items:center;justify-content:center;"><i class="ri-flashlight-fill" style="font-size:24px;color:white;"></i></div>');
+      };
+
+      banner.classList.add('show');
+      appointmentData.service = null;
+      selectedServiceCard = null;
+    }
+
+    init();
+  </script>
+</body>
+
+</html>

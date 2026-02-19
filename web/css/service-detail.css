@@ -1,0 +1,621 @@
+/**
+ * TamirHanem Web - Service Detail Page Styles
+ * Modern servis detay sayfası tasarımı
+ */
+
+/* ============================================
+   SERVICE DETAIL HEADER
+   ============================================ */
+.service-detail-header {
+  background: white;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  margin-bottom: var(--spacing-xl);
+}
+
+.service-detail-gallery {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+}
+
+.service-gallery-main {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.service-gallery-thumbnails {
+  position: absolute;
+  bottom: var(--spacing-md);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(10px);
+}
+
+.service-gallery-thumb {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.service-gallery-thumb:hover,
+.service-gallery-thumb.active {
+  border-color: var(--color-primary);
+  transform: scale(1.1);
+}
+
+.service-detail-info {
+  padding: var(--spacing-2xl);
+}
+
+.service-detail-title {
+  font-size: var(--font-size-4xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.service-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.service-detail-rating {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.service-detail-rating-score {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.service-detail-rating-stars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.service-detail-location {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
+.service-detail-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+}
+
+.service-detail-description {
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-xl);
+}
+
+.service-detail-actions {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+/* ============================================
+   SERVICE DETAIL TABS
+   ============================================ */
+.service-tabs {
+  background: white;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.service-tabs-header {
+  display: flex;
+  gap: var(--spacing-lg);
+  border-bottom: 2px solid var(--color-bg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.service-tab-btn {
+  padding: var(--spacing-md) 0;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.service-tab-btn:hover {
+  color: var(--color-text-primary);
+}
+
+.service-tab-btn.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.service-tab-content {
+  display: none;
+}
+
+.service-tab-content.active {
+  display: block;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* ============================================
+   SERVICES LIST
+   ============================================ */
+.services-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.service-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+}
+
+.service-item-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.service-item-info {
+  flex: 1;
+}
+
+.service-item-name {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.service-item-price {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ============================================
+   REVIEWS
+   ============================================ */
+.reviews-summary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--spacing-2xl);
+  margin-bottom: var(--spacing-2xl);
+  padding-bottom: var(--spacing-2xl);
+  border-bottom: 1px solid var(--color-bg);
+}
+
+.reviews-summary-score {
+  text-align: center;
+}
+
+.reviews-summary-number {
+  font-size: var(--font-size-6xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1;
+  margin-bottom: var(--spacing-sm);
+}
+
+.reviews-summary-total {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.reviews-summary-bars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.review-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.review-bar-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  min-width: 60px;
+}
+
+.review-bar-fill {
+  flex: 1;
+  height: 8px;
+  background: var(--color-bg);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.review-bar-fill-inner {
+  height: 100%;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-full);
+  transition: width var(--transition-base);
+}
+
+.review-bar-count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  min-width: 40px;
+  text-align: right;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+.review-item {
+  padding: var(--spacing-lg);
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+}
+
+.review-item-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.review-item-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.review-item-info {
+  flex: 1;
+}
+
+.review-item-name {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.review-item-date {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.review-item-content {
+  margin-bottom: var(--spacing-md);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.review-item-images {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.review-item-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.review-item-image:hover {
+  transform: scale(1.05);
+}
+
+/* ============================================
+   MAP SECTION
+   ============================================ */
+.service-map-container {
+  background: white;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  margin-bottom: var(--spacing-xl);
+}
+
+.service-map {
+  width: 100%;
+  height: 400px;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+}
+
+.service-map-placeholder {
+  text-align: center;
+}
+
+.service-map-info {
+  padding: var(--spacing-xl);
+  border-top: 1px solid var(--color-bg);
+}
+
+.service-map-address {
+  display: flex;
+  align-items: start;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.service-map-address-icon {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+}
+
+.service-map-address-text {
+  flex: 1;
+}
+
+.service-map-address-title {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.service-map-address-value {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* ============================================
+   SIDEBAR
+   ============================================ */
+.service-sidebar {
+  position: sticky;
+  top: 166px;
+}
+
+.service-contact-card {
+  background: white;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
+}
+
+.service-contact-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--color-bg);
+}
+
+.service-contact-item:last-child {
+  border-bottom: none;
+}
+
+.service-contact-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: var(--color-primary);
+}
+
+.service-contact-info {
+  flex: 1;
+}
+
+.service-contact-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.service-contact-value {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.service-hours-card {
+  background: white;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-xl);
+}
+
+.service-hours-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.service-hours-item {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-sm) 0;
+}
+
+.service-hours-day {
+  color: var(--color-text-secondary);
+}
+
+.service-hours-time {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.service-hours-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  margin-top: var(--spacing-md);
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.service-hours-status.closed {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-error);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1023px) {
+  .service-detail-gallery {
+    height: 300px;
+  }
+
+  .reviews-summary {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .service-sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 767px) {
+  .service-detail-gallery {
+    height: 250px;
+  }
+
+  .service-gallery-thumbnails {
+    gap: 0.25rem;
+    padding: 0.25rem;
+  }
+
+  .service-gallery-thumb {
+    width: 48px;
+    height: 48px;
+  }
+
+  .service-detail-info {
+    padding: var(--spacing-lg);
+  }
+
+  .service-detail-title {
+    font-size: var(--font-size-3xl);
+  }
+
+  .service-detail-actions {
+    flex-direction: column;
+  }
+
+  .service-tabs {
+    padding: var(--spacing-lg);
+  }
+
+  .service-tabs-header {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .service-tabs-header::-webkit-scrollbar {
+    display: none;
+  }
+
+  .services-list {
+    grid-template-columns: 1fr;
+  }
+
+  .reviews-summary-number {
+    font-size: var(--font-size-5xl);
+  }
+
+  .service-map {
+    height: 300px;
+  }
+}
+
+/* ============================================
+   LAYOUT
+   ============================================ */
+.service-layout {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: var(--spacing-xl);
+  align-items: start;
+}
+
+@media (max-width: 1023px) {
+  .service-layout {
+    grid-template-columns: 1fr;
+  }
+}

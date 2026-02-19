@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ses Notları | TamirHanem</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <style>
+    .page-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--neutral-900);
+      margin-bottom: 30px;
+      position: relative;
+    }
+    .page-header h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: var(--neutral-900);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-header">
+    <button class="back-btn" onclick="window.history.back()">
+      <i class="ri-arrow-left-line"></i>
+    </button>
+    <h1><i class="ri-mic-line"></i> Ses Notları</h1>
+    <p>Sesli notlarınızı yönetin</p>
+  </div>
+
+  <div class="container" style="margin-bottom: 100px;">
+    <div class="empty-state" style="text-align: center; padding: 60px 20px; background: white; border-radius: 16px;">
+      <div style="font-size: 4rem; opacity: 0.2; margin-bottom: 20px;"><i class="ri-mic-line"></i></div>
+      <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 10px; color: var(--neutral-700);">Sayfa Hazırlanıyor</h2>
+      <p style="color: var(--neutral-500); margin-bottom: 20px;">Bu özellik yakında eklenecektir.</p>
+      <button onclick="window.history.back()" style="background: var(--primary); color: var(--neutral-900); border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+        <i class="ri-arrow-left-line"></i> Geri Dön
+      </button>
+    </div>
+  </div>
+
+  <div class="dashboard-tabs">
+    <div class="dashboard-tabs-container">
+      <a href="/dashboard.html#home" class="tab-link"><i class="ri-home-5-line"></i><span>Anasayfa</span></a>
+      <a href="/dashboard.html#appointments" class="tab-link"><i class="ri-calendar-event-line"></i><span>Randevular</span></a>
+      <a href="/dashboard.html#campaigns" class="tab-link"><i class="ri-coupon-2-line"></i><span>Fırsatlar</span></a>
+      <a href="/dashboard.html#assistant" class="tab-link"><i class="ri-robot-2-line"></i><span>Asistan</span></a>
+      <a href="/dashboard.html#profile" class="tab-link"><i class="ri-user-3-line"></i><span>Profil</span></a>
+    </div>
+  </div>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    if (!auth.requireAuth()) {
+      // Redirect handled
+    }
+  </script>
+</body>
+</html>

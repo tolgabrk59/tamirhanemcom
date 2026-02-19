@@ -1,0 +1,660 @@
+/* ========================================
+   ENHANCED APPOINTMENT COMPONENTS
+   Modern Stepper + Action Buttons + Animations
+   ======================================== */
+
+/* ========================================
+   STEPPER WRAPPER
+   ======================================== */
+.stepper-wrapper {
+  position: relative;
+  padding: 20px 8px 12px;
+  margin-bottom: 0;
+}
+
+.loyalty-stepper-container {
+  position: relative;
+  padding: 16px 0 8px;
+  margin-bottom: 0;
+}
+
+/* ========================================
+   PROGRESS SEGMENTS (Track) - Scoped to stepper-wrapper
+   ======================================== */
+.stepper-wrapper .progress-segments {
+  position: absolute;
+  top: 32px;
+  height: 6px;
+  display: flex;
+  gap: 0;
+  z-index: 1;
+  border-radius: 3px;
+  overflow: hidden;
+  background: #E5E7EB;
+}
+
+.stepper-wrapper .segment {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  background: #E5E7EB;
+}
+
+.stepper-wrapper .segment-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0;
+  background: var(--status-color, #22c55e);
+  transition: width 0.6s ease;
+}
+
+.stepper-wrapper .segment.filled {
+  background: var(--status-color, #22c55e);
+}
+
+.stepper-wrapper .segment.filled .segment-fill {
+  width: 100%;
+}
+
+.stepper-wrapper .segment.active-target {
+  background: linear-gradient(90deg, var(--status-color, #22c55e) 0%, #E5E7EB 100%);
+  animation: segmentPulse 2s infinite;
+}
+
+.stepper-wrapper .segment.cancelled-filled {
+  background: #ef4444;
+}
+
+.stepper-wrapper .segment.cancelled-active {
+  background: linear-gradient(90deg, #ef4444 0%, #E5E7EB 100%);
+}
+
+@keyframes segmentPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* ========================================
+   PROGRESS CAR - Scoped to stepper-wrapper
+   ======================================== */
+.stepper-wrapper .progress-car {
+  position: absolute;
+  top: 18px;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: carBounce 2s infinite;
+}
+
+.stepper-wrapper .progress-car img {
+  width: 36px;
+  height: auto;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.stepper-wrapper .progress-car.car-cancelled img {
+  filter: grayscale(100%) drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.stepper-wrapper .progress-car .location-pin {
+  position: absolute;
+  top: -18px;
+  font-size: 14px;
+  color: var(--status-color, #22c55e);
+  animation: pinBounce 1s infinite;
+}
+
+@keyframes carBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-3px); }
+}
+
+@keyframes pinBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* ========================================
+   LOYALTY STEPS - Scoped to stepper-wrapper
+   ======================================== */
+.stepper-wrapper .loyalty-steps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  z-index: 5;
+  padding-top: 30px;
+}
+
+.stepper-wrapper .loyalty-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
+  padding: 0 4px;
+}
+
+/* Step Circle */
+.stepper-wrapper .loyalty-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #E5E7EB;
+  color: #9CA3AF;
+  font-size: 1.1rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  border: 3px solid transparent;
+  flex-shrink: 0;
+}
+
+/* Completed State */
+.stepper-wrapper .loyalty-step.completed .loyalty-circle {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+/* Active State */
+.stepper-wrapper .loyalty-step.active .loyalty-circle {
+  background: linear-gradient(135deg, var(--status-color, #FFC507) 0%, var(--status-color, #FFD700) 100%);
+  color: #1A1A1A;
+  border-color: var(--status-color, #FFC507);
+  box-shadow: 0 0 0 4px rgba(255, 197, 7, 0.2);
+}
+
+.stepper-wrapper .loyalty-step.active.requires-action .loyalty-circle {
+  animation: pulseGlow 1.5s infinite;
+}
+
+.stepper-wrapper .loyalty-circle.pulse {
+  animation: pulseGlow 1.5s infinite;
+}
+
+/* Pending State */
+.stepper-wrapper .loyalty-step.pending .loyalty-circle {
+  background: #F3F4F6;
+  color: #9CA3AF;
+  opacity: 1; /* Tam opak - progress bar görünmesin */
+}
+
+/* Cancelled/Rejected State */
+.stepper-wrapper .loyalty-step.cancelled .loyalty-circle,
+.stepper-wrapper .loyalty-step.rejected .loyalty-circle {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Action Dot */
+.stepper-wrapper .action-dot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 14px;
+  height: 14px;
+  background: #ef4444;
+  border-radius: 50%;
+  border: 2px solid white;
+  animation: actionDotPulse 1s infinite;
+}
+
+@keyframes actionDotPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* Step Label */
+.stepper-wrapper .loyalty-label {
+  margin-top: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #6B7280;
+  line-height: 1.2;
+  max-width: 70px;
+  word-wrap: break-word;
+  transition: all 0.3s;
+}
+
+.stepper-wrapper .loyalty-step.completed .loyalty-label,
+.stepper-wrapper .loyalty-step.active .loyalty-label {
+  color: #1F2937;
+}
+
+.stepper-wrapper .loyalty-step.cancelled .loyalty-label,
+.stepper-wrapper .loyalty-step.rejected .loyalty-label {
+  color: #ef4444;
+}
+
+/* Step Subtitle */
+.stepper-wrapper .loyalty-subtitle {
+  margin-top: 4px;
+  font-size: 0.65rem;
+  color: #9CA3AF;
+  max-width: 80px;
+  line-height: 1.3;
+  word-wrap: break-word;
+}
+
+.stepper-wrapper .loyalty-subtitle.action-text {
+  color: var(--status-color, #FFC507);
+  font-weight: 600;
+  animation: textBlink 1.5s infinite;
+}
+
+@keyframes textBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Pulse Animation */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(255, 197, 7, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 197, 7, 0.4), 0 0 20px rgba(255, 197, 7, 0.3);
+    transform: scale(1.05);
+  }
+}
+
+/* ========================================
+   ACTION BUTTONS
+   ======================================== */
+.card-action-buttons {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px 16px;
+  background: linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 100%);
+  border-radius: 0 0 16px 16px;
+  margin-top: -4px;
+}
+
+.card-action-buttons .action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  white-space: nowrap;
+}
+
+.card-action-buttons .action-btn i {
+  font-size: 1.1rem;
+}
+
+/* Primary Button (Yellow) */
+.card-action-buttons .btn-primary {
+  background: linear-gradient(135deg, #FFC507 0%, #FFD700 100%);
+  color: #1A1A1A;
+  box-shadow: 0 4px 12px rgba(255, 197, 7, 0.3);
+}
+
+.card-action-buttons .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 197, 7, 0.4);
+}
+
+/* Success Button (Green) */
+.card-action-buttons .btn-success {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.card-action-buttons .btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+}
+
+/* Danger Button (Red) */
+.card-action-buttons .btn-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.card-action-buttons .btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+/* Secondary Button (Gray) */
+.card-action-buttons .btn-secondary {
+  background: #F3F4F6;
+  color: #6B7280;
+  border: 2px solid #E5E7EB;
+  box-shadow: none;
+}
+
+.card-action-buttons .btn-secondary:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Pulse Animation for Action Required */
+.card-action-buttons .pulse-animation {
+  animation: buttonPulse 2s infinite;
+}
+
+@keyframes buttonPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(255, 197, 7, 0.3);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(255, 197, 7, 0.5);
+  }
+}
+
+/* ========================================
+   MODAL STYLES
+   ======================================== */
+.step-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.step-modal.active {
+  display: flex;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.step-modal-content {
+  background: white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.step-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #FFC507 0%, #FFD700 100%);
+}
+
+.step-modal-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.step-modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.25rem;
+  color: white;
+  position: relative;
+  z-index: 1;
+}
+
+.step-modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.step-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+/* ========================================
+   TOAST MESSAGES
+   ======================================== */
+.toast-message {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  z-index: 10000;
+  color: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* ========================================
+   RESPONSIVE - Scoped to stepper-wrapper
+   ======================================== */
+@media (max-width: 768px) {
+  .stepper-wrapper .loyalty-circle {
+    width: 36px;
+    height: 36px;
+    font-size: 0.95rem;
+  }
+
+  .stepper-wrapper .loyalty-label {
+    font-size: 0.6rem;
+    max-width: 55px;
+  }
+
+  .stepper-wrapper .loyalty-subtitle {
+    font-size: 0.55rem;
+    max-width: 60px;
+  }
+
+  .card-action-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .card-action-buttons .action-btn {
+    padding: 14px;
+  }
+
+  .stepper-wrapper .progress-car img {
+    width: 30px;
+  }
+
+  .stepper-wrapper .progress-segments {
+    top: 28px;
+    height: 5px;
+  }
+
+  .stepper-wrapper .action-dot {
+    width: 12px;
+    height: 12px;
+    top: -3px;
+    right: -3px;
+  }
+}
+
+@media (max-width: 400px) {
+  .stepper-wrapper .loyalty-circle {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+  }
+
+  .stepper-wrapper .loyalty-label {
+    font-size: 0.55rem;
+    max-width: 48px;
+  }
+
+  .stepper-wrapper .loyalty-subtitle {
+    display: none;
+  }
+
+  .stepper-wrapper {
+    padding: 16px 4px 8px;
+  }
+}
+
+/* ========================================
+   OLD STYLES (Backward Compatibility)
+   ======================================== */
+
+/* Step Info Badge */
+.step-info-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 20px;
+  height: 20px;
+  background: #F59E0B;
+  border-radius: 50%;
+  border: 2px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  animation: bounce 1s infinite;
+}
+
+.step-info-badge i {
+  font-size: 10px;
+  color: white;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* Enhanced Stepper (Old) */
+.appointment-stepper-enhanced {
+  display: flex;
+  align-items: center;
+  padding: 24px 16px;
+  background: linear-gradient(135deg, #F9FAFB 0%, #FFFFFF 100%);
+  border-radius: 16px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: visible;
+}
+
+/* Customer Avatar Enhanced */
+.customer-avatar-enhanced {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFC507 0%, #FFD700 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  color: white;
+  font-weight: 700;
+  border: 4px solid white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.customer-avatar-enhanced img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* View Details Button */
+.view-details-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.view-details-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* Date Proposal Cards */
+.date-proposal-card {
+  background: white;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.date-proposal-card:hover {
+  border-color: #FFC507;
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(255, 197, 7, 0.2);
+}
+
+.date-proposal-card.selected {
+  border-color: #10B981;
+  background: #ECFDF5;
+}

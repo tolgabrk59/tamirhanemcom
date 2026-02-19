@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hızlı Fiyat Hesaplama | TamirHanem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/main.css">
+    <style>
+        :root {
+            --primary: #FFC507;
+            --primary-dark: #FFAA00;
+            --primary-light: #FFF9E5;
+            --text-dark: #5a5a5a;
+            --text-medium: #4A4A4A;
+            --text-light: #9CA3AF;
+            --bg-body: #F3F4F6;
+            --white: #FFFFFF;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --shadow-soft: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 20px 40px -10px rgba(255, 197, 7, 0.15);
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-body);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(255, 197, 7, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(255, 197, 7, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-dark);
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* --- PAGE HEADER --- */
+        .page-header {
+            background: linear-gradient(135deg, #FFC507 0%, #FFD700 100%);
+            padding: 40px 20px 60px;
+            text-align: center;
+            position: relative;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            box-shadow: 0 10px 30px rgba(255, 197, 7, 0.2);
+            margin-bottom: -30px;
+            z-index: 1;
+        }
+
+        .page-header h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #5a5a5a;
+        }
+
+        .page-header p {
+            opacity: 0.9;
+            font-weight: 500;
+            color: #5a5a5a;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.25rem;
+            color: #5a5a5a;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            background: #fff;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Main Layout */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px 100px;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 32px;
+            align-items: start;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Card Styles */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow-soft);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        /* Filters */
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-medium);
+            margin-bottom: 8px;
+            margin-left: 4px;
+        }
+
+        .custom-select-wrapper {
+            position: relative;
+        }
+
+        .custom-select {
+            width: 100%;
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            border: 2px solid transparent;
+            background: #F8F9FA;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M12 13.172l4.95-4.95 1.414 1.414L12 16 5.636 9.636 7.05 8.222z' fill='%239CA3AF'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+
+        .custom-select:hover {
+            background-color: #F0F0F0;
+        }
+
+        .custom-select:focus {
+            outline: none;
+            background-color: var(--white);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 197, 7, 0.1);
+        }
+
+        .custom-select:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .service-card {
+            background: var(--white);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.08);
+            border-color: var(--primary);
+        }
+
+        .service-card.selected {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        .service-card.selected::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary);
+        }
+
+        .checkbox-wrapper {
+            width: 24px;
+            height: 24px;
+            border-radius: 8px;
+            border: 2px solid #E5E7EB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            background: var(--white);
+        }
+
+        .service-card.selected .checkbox-wrapper {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--text-dark);
+        }
+
+        .checkbox-icon {
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s ease;
+        }
+
+        .service-card.selected .checkbox-icon {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .service-content {
+            flex: 1;
+        }
+
+        .service-name {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 4px;
+            color: var(--text-dark);
+        }
+
+        .service-desc {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        .service-price-tag {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            background: var(--bg-body);
+            padding: 8px 16px;
+            border-radius: 12px;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .service-card.selected .service-price-tag {
+            background: rgba(255, 197, 7, 0.2);
+            color: #B45309;
+        }
+
+        /* Summary Panel */
+        .summary-panel {
+            position: sticky;
+            top: 120px;
+        }
+
+        .summary-list {
+            margin: 24px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .summary-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .summary-list::-webkit-scrollbar-thumb {
+            background: #E5E7EB;
+            border-radius: 4px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #E5E7EB;
+            font-size: 0.95rem;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .total-section {
+            background: linear-gradient(135deg, #5a5a5a 0%, #5a5a5a 100%);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            color: var(--white);
+            margin-top: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .total-section::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05));
+            transform: skewX(-20deg);
+        }
+
+        .total-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 4px;
+        }
+
+        .total-amount {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .total-meta {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            opacity: 0.7;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Buttons */
+        .action-buttons {
+            display: grid;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
+        }
+
+        .btn-whatsapp:hover {
+            background: #1ebc57;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+        }
+
+        .btn-clear {
+            background: transparent;
+            color: var(--text-light);
+            border: 1px solid #E5E7EB;
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-clear:hover {
+            background: #F3F4F6;
+            color: var(--text-dark);
+            border-color: #D1D5DB;
+        }
+
+        /* States */
+        .state-container {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .state-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-panel {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                top: auto;
+                background: var(--white);
+                border-top: 1px solid #E5E7EB;
+                padding: 16px 24px;
+                z-index: 1000;
+                box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                border-radius: 20px 20px 0 0;
+            }
+
+            .summary-list,
+            .section-header,
+            .total-meta {
+                display: none;
+            }
+
+            .total-section {
+                margin: 0;
+                padding: 0;
+                background: none;
+                color: var(--text-dark);
+            }
+
+            .total-section::after {
+                display: none;
+            }
+
+            .total-amount {
+                font-size: 1.5rem;
+                color: var(--text-dark);
+            }
+
+            .action-buttons {
+                margin: 0;
+                display: flex;
+            }
+
+            .btn-clear {
+                display: none;
+            }
+
+            .btn-whatsapp {
+                padding: 12px 24px;
+                font-size: 0.9rem;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding-bottom: 100px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="page-header">
+        <button class="back-btn" onclick="window.history.back()">
+            <i class="ri-arrow-left-line"></i>
+        </button>
+        <h1>
+            <i class="ri-calculator-line"></i>
+            Hızlı Fiyat Hesapla
+        </h1>
+        <p>Aracınız için en uygun bakım ve onarım fiyatlarını anında öğrenin</p>
+    </div>
+
+    <div class="main-container">
+        <!-- Left Column: Filters & Services -->
+        <div class="content-column">
+            <!-- Filters Card -->
+            <div class="glass-card" style="margin-bottom: 32px;">
+                <div class="section-header">
+                    <div class="section-icon"><i class="ri-filter-3-line"></i></div>
+                    <h2 class="section-title">Araç Bilgileri</h2>
+                </div>
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label>Hizmet Kategorisi</label>
+                        <div class="custom-select-wrapper">
+                            <select id="category-filter" class="custom-select">
+                                <option value="">Seçiniz</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>Araç Markası</label>
+                        <div class="custom-select-wrapper">
+                            <select id="brand-filter" class="custom-select">
+                                <option value="">Tüm Markalar</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>Araç Modeli</label>
+                        <div class="custom-select-wrapper">
+                            <select id="model-filter" class="custom-select" disabled>
+                                <option value="">Tüm Modeller</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services List -->
+            <div id="services-container">
+                <!-- Loading State -->
+                <div id="loading-state" class="state-container">
+                    <div class="loading-spinner"></div>
+                    <h3>Veriler Yükleniyor</h3>
+                    <p>Lütfen bekleyiniz...</p>
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="state-container" style="display: none;">
+                    <div class="state-icon"><i class="ri-search-2-line"></i></div>
+                    <h3>Hizmet Bulunamadı</h3>
+                    <p>Seçilen kriterlere uygun fiyat bilgisi mevcut değil.</p>
+                </div>
+
+                <!-- Services Grid -->
+                <div id="services-section" style="display: none;">
+                    <h3 style="margin-bottom: 20px; font-size: 1.1rem; color: var(--text-medium);">Mevcut Hizmetler
+                    </h3>
+                    <div id="services-grid" class="services-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Summary -->
+        <div class="summary-column">
+            <div class="glass-card summary-panel">
+                <div class="section-header">
+                    <div class="section-icon"><i class="ri-bill-line"></i></div>
+                    <h2 class="section-title">Teklif Özeti</h2>
+                </div>
+
+                <div id="summary-content">
+                    <div id="summary-items" class="summary-list">
+                        <p style="text-align: center; color: var(--text-light); padding: 20px 0;">Henüz hizmet
+                            seçilmedi
+                        </p>
+                    </div>
+
+                    <div class="total-section">
+                        <div class="total-label">TOPLAM TUTAR</div>
+                        <div class="total-amount" id="total-price">0.00 ₺</div>
+                        <div class="total-meta">
+                            <i class="ri-time-line"></i> Tahmini Süre: <span id="total-duration">0 dk</span>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-whatsapp" id="whatsapp-btn" onclick="Calculator.sendWhatsApp()">
+                            <i class="ri-whatsapp-line"></i> WhatsApp ile Gönder
+                        </button>
+                        <button class="btn-clear" id="clear-btn" onclick="Calculator.clearSelection()">
+                            <i class="ri-refresh-line"></i> Temizle
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <script src="/js/config.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        if (!auth.requireAuth()) {
+            // Redirect handled
+        }
+
+        const Calculator = {
+            categories: [],
+            services: [],
+            selectedServices: new Set(),
+            currentFilters: {
+                category: '',
+                brand: '',
+                model: ''
+            },
+
+            async init() {
+                try {
+                    await this.loadCategories();
+                    await this.loadBrands();
+                    // Load all services by default on page load
+                    await this.loadServices();
+                    this.setupEventListeners();
+                } catch (error) {
+                    console.error('Init error:', error);
+                    Utils.showToast('Başlangıç verileri yüklenemedi', 'error');
+                }
+            },
+
+            setupEventListeners() {
+                document.getElementById('category-filter').addEventListener('change', (e) => {
+                    this.currentFilters.category = e.target.value;
+                    this.loadServices();
+                });
+
+                document.getElementById('brand-filter').addEventListener('change', (e) => {
+                    this.currentFilters.brand = e.target.value;
+                    this.loadModels(e.target.value);
+                    this.currentFilters.model = ''; // Reset model when brand changes
+                    this.loadServices();
+                });
+
+                document.getElementById('model-filter').addEventListener('change', (e) => {
+                    this.currentFilters.model = e.target.value;
+                    this.loadServices();
+                });
+            },
+
+            async loadCategories() {
+                try {
+                    const token = localStorage.getItem('tamirhanem_token');
+                    const response = await fetch(`${CONFIG.API_BASE_URL}/categories`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!response.ok) throw new Error('Kategoriler yüklenemedi');
+
+                    const data = await response.json();
+                    const categories = data.data || [];
+
+                    const select = document.getElementById('category-filter');
+                    select.innerHTML = '<option value="">Tüm Kategoriler</option>' +
+                        categories.map(cat => {
+                            const name = Utils.escapeHTML(cat.attributes?.name || '');
+                            return `<option value="${cat.id}">${name}</option>`;
+                        }).join('');
+                } catch (err) {
+                    console.error('Categories load error:', err);
+                }
+            },
+
+            async loadBrands() {
+                try {
+                    const token = localStorage.getItem('tamirhanem_token');
+                    const response = await fetch(`${CONFIG.API_BASE_URL}/arac-datasi/unique-brands`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!response.ok) throw new Error('Markalar yüklenemedi');
+
+                    const data = await response.json();
+                    const brands = data.data || [];
+
+                    const select = document.getElementById('brand-filter');
+                    select.innerHTML = '<option value="">Tüm Markalar</option>' +
+                        brands.map(brand => {
+                            const safeBrand = Utils.escapeHTML(brand);
+                            return `<option value="${safeBrand}">${safeBrand}</option>`;
+                        }).join('');
+                } catch (err) {
+                    console.error('Brands load error:', err);
+                }
+            },
+
+            async loadModels(brand) {
+                const modelSelect = document.getElementById('model-filter');
+
+                if (!brand) {
+                    modelSelect.innerHTML = '<option value="">Tüm Modeller</option>';
+                    modelSelect.disabled = true;
+                    return;
+                }
+
+                try {
+                    modelSelect.disabled = true;
+                    modelSelect.innerHTML = '<option value="">Yükleniyor...</option>';
+
+                    const token = localStorage.getItem('tamirhanem_token');
+                    const response = await fetch(`${CONFIG.API_BASE_URL}/arac-datasi/models/${encodeURIComponent(brand)}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!response.ok) throw new Error('Modeller yüklenemedi');
+
+                    const data = await response.json();
+                    const models = data.data || [];
+
+                    modelSelect.innerHTML = '<option value="">Tüm Modeller</option>' +
+                        models.map(model => {
+                            const safeModel = Utils.escapeHTML(model);
+                            return `<option value="${safeModel}">${safeModel}</option>`;
+                        }).join('');
+
+                    modelSelect.disabled = false;
+                } catch (err) {
+                    console.error('Models load error:', err);
+                    modelSelect.innerHTML = '<option value="">Model yüklenemedi</option>';
+                }
+            },
+
+            async loadServices() {
+                try {
+                    this.showLoading();
+
+                    const token = localStorage.getItem('tamirhanem_token');
+
+                    // If category is selected, load by category; otherwise load all
+                    let url;
+                    if (this.currentFilters.category) {
+                        url = `${CONFIG.API_BASE_URL}/service-pricings/by-category/${this.currentFilters.category}`;
+                    } else {
+                        url = `${CONFIG.API_BASE_URL}/service-pricings/my-pricing`;
+                    }
+
+                    const response = await fetch(url, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (!response.ok) {
+                        console.error('API Error:', response.status, response.statusText);
+                        throw new Error('Hizmetler yüklenemedi');
+                    }
+
+                    const result = await response.json();
+                    console.log('API Response:', result);
+
+                    // Normalize data structure
+                    let services = [];
+                    if (Array.isArray(result.data)) {
+                        // If data is already an array (from by-category endpoint)
+                        services = result.data;
+                    } else if (result.data && typeof result.data === 'object') {
+                        // If data is grouped by category (from my-pricing endpoint)
+                        // Flatten all category groups into a single array
+                        Object.values(result.data).forEach(categoryItems => {
+                            if (Array.isArray(categoryItems)) {
+                                services = services.concat(categoryItems);
+                            }
+                        });
+                    } else if (Array.isArray(result)) {
+                        // If result itself is an array
+                        services = result;
+                    } else {
+                        console.warn('Unexpected data structure:', result);
+                        services = [];
+                    }
+
+                    console.log('Parsed services:', services.length, 'items');
+
+                    // Apply brand/model filtering
+                    services = this.filterServicesByVehicle(services);
+
+                    this.services = services;
+                    this.renderServices();
+                } catch (err) {
+                    console.error('Services load error:', err);
+                    this.hideStates();
+                    this.showEmpty('Hizmetler yüklenirken hata oluştu. Lütfen sayfayı yenileyip tekrar deneyin.');
+                }
+            },
+
+            filterServicesByVehicle(services) {
+                const { brand, model } = this.currentFilters;
+
+                // Helper to check if a value represents "all brands/models"
+                const isGeneric = (value) => {
+                    return !value ||
+                        value === '' ||
+                        value === 'Tüm Markalar' ||
+                        value === 'Tüm Modeller' ||
+                        value === 'All Brands' ||
+                        value === 'All Models';
+                };
+
+                // If no brand and no model selected, show generic pricing
+                if (!brand && !model) {
+                    return services.filter(s =>
+                        isGeneric(s.vehicle_brand) && isGeneric(s.vehicle_model)
+                    );
+                }
+
+                // If both brand and model are selected
+                if (brand && model) {
+                    // First, try exact match
+                    const exactMatch = services.filter(s =>
+                        s.vehicle_brand?.toLowerCase() === brand.toLowerCase() &&
+                        s.vehicle_model?.toLowerCase() === model.toLowerCase()
+                    );
+                    if (exactMatch.length > 0) return exactMatch;
+
+                    // Second, try brand-specific (no model)
+                    const brandMatch = services.filter(s =>
+                        s.vehicle_brand?.toLowerCase() === brand.toLowerCase() &&
+                        isGeneric(s.vehicle_model)
+                    );
+                    if (brandMatch.length > 0) return brandMatch;
+
+                    // Finally, fall back to generic pricing
+                    return services.filter(s =>
+                        isGeneric(s.vehicle_brand) && isGeneric(s.vehicle_model)
+                    );
+                }
+
+                // If only brand is selected
+                if (brand) {
+                    // First, try brand-specific pricing
+                    const brandMatch = services.filter(s =>
+                        s.vehicle_brand?.toLowerCase() === brand.toLowerCase() &&
+                        isGeneric(s.vehicle_model)
+                    );
+                    if (brandMatch.length > 0) return brandMatch;
+
+                    // Fall back to generic pricing
+                    return services.filter(s =>
+                        isGeneric(s.vehicle_brand) && isGeneric(s.vehicle_model)
+                    );
+                }
+
+                return services;
+            },
+
+            renderServices() {
+                const grid = document.getElementById('services-grid');
+                const section = document.getElementById('services-section');
+
+                if (this.services.length === 0) {
+                    this.showEmpty('Bu filtreler için fiyat bilgisi bulunamadı');
+                    return;
+                }
+
+                this.hideStates();
+                section.style.display = 'block';
+
+                grid.innerHTML = this.services.map((service, index) => {
+                    const name = Utils.escapeHTML(service.name || '');
+                    const desc = Utils.escapeHTML(service.description || '');
+                    const price = parseFloat(service.price).toFixed(2);
+                    const isSelected = this.selectedServices.has(index);
+
+                    return `
+                        <div class="service-card ${isSelected ? 'selected' : ''}" onclick="Calculator.toggleService(${index})">
+                            <div class="checkbox-wrapper">
+                                <i class="ri-check-line checkbox-icon"></i>
+                            </div>
+                            <div class="service-content">
+                                <div class="service-name">${name}</div>
+                                ${desc ? `<div class="service-desc">${desc}</div>` : ''}
+                            </div>
+                            <div class="service-price-tag">${price} ₺</div>
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            toggleService(index) {
+                if (this.selectedServices.has(index)) {
+                    this.selectedServices.delete(index);
+                } else {
+                    this.selectedServices.add(index);
+                }
+                this.renderServices();
+                this.updateSummary();
+            },
+
+            updateSummary() {
+                const summaryItems = document.getElementById('summary-items');
+                const totalPriceEl = document.getElementById('total-price');
+                const totalDurationEl = document.getElementById('total-duration');
+
+                if (this.selectedServices.size === 0) {
+                    summaryItems.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px 0;">Henüz hizmet seçilmedi</p>';
+                    totalPriceEl.textContent = '0.00 ₺';
+                    totalDurationEl.textContent = '0 dk';
+                    return;
+                }
+
+                let totalPrice = 0;
+                let totalDuration = 0;
+                const items = [];
+
+                this.selectedServices.forEach(index => {
+                    const service = this.services[index];
+                    totalPrice += parseFloat(service.price);
+                    totalDuration += service.duration_minutes || 0;
+                    items.push(`
+                        <div class="summary-item">
+                            <span>${Utils.escapeHTML(service.name)}</span>
+                            <span>${parseFloat(service.price).toFixed(2)} ₺</span>
+                        </div>
+                    `);
+                });
+
+                summaryItems.innerHTML = items.join('');
+                totalPriceEl.textContent = `${totalPrice.toFixed(2)} ₺`;
+                totalDurationEl.textContent = `${totalDuration} dk`;
+            },
+
+            clearSelection() {
+                this.selectedServices.clear();
+                this.renderServices();
+                this.updateSummary();
+                Utils.showToast('Seçim temizlendi', 'info');
+            },
+
+            sendWhatsApp() {
+                if (this.selectedServices.size === 0) {
+                    Utils.showToast('Lütfen en az bir hizmet seçin', 'error');
+                    return;
+                }
+
+                let message = '*Fiyat Teklifi*\n\n';
+                let totalPrice = 0;
+
+                this.selectedServices.forEach(index => {
+                    const service = this.services[index];
+                    message += `• ${service.name}: ${parseFloat(service.price).toFixed(2)} ₺\n`;
+                    totalPrice += parseFloat(service.price);
+                });
+
+                message += `\n*Toplam: ${totalPrice.toFixed(2)} ₺*`;
+
+                const encodedMessage = encodeURIComponent(message);
+                window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+            },
+
+            showLoading() {
+                document.getElementById('loading-state').style.display = 'block';
+                document.getElementById('empty-state').style.display = 'none';
+                document.getElementById('services-section').style.display = 'none';
+            },
+
+            showEmpty(message) {
+                const emptyState = document.getElementById('empty-state');
+                emptyState.querySelector('p').textContent = message;
+                emptyState.style.display = 'block';
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('services-section').style.display = 'none';
+            },
+
+            hideStates() {
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('empty-state').style.display = 'none';
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            Calculator.init();
+        });
+    </script>
+</body>
+
+</html>

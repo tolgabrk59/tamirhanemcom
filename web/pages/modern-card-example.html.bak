@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modern Randevu Kartı - API Test</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/appointment-components.css">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+    :root {
+      --primary: #FFC507;
+      --primary-dark: #F59E0B;
+      --accent: #111827;
+      --success: #10B981;
+      --danger: #EF4444;
+      --surface: #FFFFFF;
+      --bg: #F8FAFC;
+      --text-main: #0F172A;
+      --text-sub: #64748B;
+      --border: #E2E8F0;
+      --radius-xl: 32px;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      padding: 40px 20px;
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* --- Premium Card --- */
+    .premium-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      padding: 32px;
+      margin: 24px 0;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .premium-card:hover {
+      box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.12);
+      transform: translateY(-4px);
+    }
+
+    /* --- MODERN STEPPER & CAR CSS --- */
+    .loyalty-stepper-container {
+      position: relative;
+      padding: 80px 20px 30px;
+      margin-bottom: 30px;
+    }
+
+    /* Segmented Rail - Circle'ların MERKEZİNDE */
+    .progress-segments {
+      position: absolute;
+      top: 110px;
+      /* Step circle merkezi (80px padding + 30px radius) */
+      left: 50px;
+      /* 10px padding + 40px half-step width */
+      right: 50px;
+      height: 16px;
+      transform: translateY(-50%);
+      display: flex;
+      gap: 42px;
+      z-index: 1;
+      padding: 0 10px;
+    }
+
+    .segment {
+      flex: 1;
+      background: #e2e8f0;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+      transform: skewX(-15deg);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+    }
+
+    .segment-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #fbc707 0%, #ff9f00 100%);
+      transition: width 0.6s ease;
+    }
+
+    .segment.filled .segment-fill {
+      width: 100%;
+    }
+
+    /* Active Segment Shimmer */
+    .segment.active-target {
+      background: #f8fafc;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .segment.active-target::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      background: linear-gradient(90deg, transparent, rgba(251, 199, 7, 0.4), transparent);
+      transform: translateX(-100%);
+      animation: shimmerTarget 1.5s infinite;
+    }
+
+    @keyframes shimmerTarget {
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    /* Car - KÜÇÜK + Progress ile aynı hizada */
+    .progress-car {
+      position: absolute;
+      top: 110px;
+      /* progress-segments ile aynı hizada */
+      transform: translate(-50%, -50%);
+      width: 50px;
+      /* Küçültüldü */
+      z-index: 20;
+      transition: left 1s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+
+    .progress-car img {
+      width: 100%;
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+    }
+
+
+    /* Adım Kapsayıcı */
+    .loyalty-steps {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      z-index: 2;
+      padding: 0 10px;
+    }
+
+    .loyalty-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 80px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    /* Daireler - Progress bar'ı ortalar */
+    .loyalty-circle {
+      width: 60px;
+      height: 60px;
+      background: white;
+      border: 5px solid #F1F5F9;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-sub);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      z-index: 3;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    /* Pending Adım (Gri, boş) */
+    .loyalty-step.pending .loyalty-circle {
+      background: white;
+      border-color: #E2E8F0;
+      color: #94A3B8;
+    }
+
+    /* Aktif Adım (Yanıp sönen sarı halka) */
+    .loyalty-step.active .loyalty-circle {
+      border-color: #FFC507;
+      color: #111827;
+      transform: scale(1.1);
+      background: #FFFBEB;
+      animation: pulse-orange 2s infinite;
+    }
+
+    @keyframes pulse-orange {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 197, 7, 0.7);
+      }
+
+      70% {
+        box-shadow: 0 0 0 10px rgba(255, 197, 7, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 197, 7, 0);
+      }
+    }
+
+    /* Tamamlanmış Adım (Yeşil, dolu) */
+    .loyalty-step.completed .loyalty-circle {
+      background: #10B981;
+      border-color: #10B981;
+      color: white;
+      transform: scale(1);
+    }
+
+    .loyalty-label {
+      margin-top: 14px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-sub);
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .loyalty-step.active .loyalty-label {
+      color: var(--text-main);
+      transform: translateY(2px);
+    }
+
+    /* Subtitle (Tarih/Saat - Mobil App) */
+    .loyalty-subtitle {
+      margin-top: 4px;
+      font-size: 0.65rem;
+      /* Daha küçük */
+      font-weight: 300;
+      /* İnce */
+      font-style: italic;
+      /* İtalik */
+      color: #94A3B8;
+      text-align: center;
+      white-space: pre-line;
+      line-height: 1.3;
+    }
+
+    .loyalty-step.completed .loyalty-subtitle {
+      color: #10B981;
+      font-weight: 400;
+      /* Okunabilirlik için biraz daha kalın */
+    }
+
+    /* --- İPTAL DURUMU (KIRMIZI) --- */
+    .loyalty-step.cancelled .loyalty-circle {
+      background: #EF4444;
+      border-color: #EF4444;
+      color: white;
+      transform: scale(1);
+    }
+
+    .loyalty-step.cancelled .loyalty-label {
+      color: #EF4444;
+    }
+
+    .loyalty-step.cancelled .loyalty-subtitle {
+      color: #EF4444;
+      font-weight: 600;
+    }
+
+    /* İptal Edilmiş Segment (Kırmızı Dolu) */
+    .segment.cancelled-filled .segment-fill {
+      background: linear-gradient(90deg, #EF4444 0%, #DC2626 100%);
+      width: 100%;
+    }
+
+    /* İptal Edilmiş Aktif Segment (Kırmızı Shimmer) */
+    .segment.cancelled-active {
+      background: #FEF2F2;
+    }
+
+    .segment.cancelled-active::after {
+      background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.4), transparent);
+      animation: shimmerTarget 1.5s infinite;
+    }
+
+    /* --- UÇAN ARABA (Progress Barın TAM ÜZERİNDE) --- */
+    .loyalty-car {
+      position: absolute;
+      top: 100px;
+      /* Progress bar ile aynı merkez */
+      transform: translateX(-50%) translateY(-50%);
+      /* Hem X hem Y ekseninde ortala */
+      z-index: 10;
+      width: 100px;
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+      transition: left 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+    }
+
+    .loyalty-car img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      animation: float-car 3s ease-in-out infinite;
+    }
+
+    @keyframes float-car {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-6px);
+      }
+    }
+
+    /* --- Service Header & Tabs (Orijinal Stiller) --- */
+    .service-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 32px;
+      padding: 20px;
+      background: #F8FAFC;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .service-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #FFC507 0%, #F59E0B 100%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      color: white;
+      box-shadow: 0 8px 16px -4px rgba(245, 158, 11, 0.3);
+    }
+
+    .segmented-tabs {
+      background: #F1F5F9;
+      padding: 6px;
+      border-radius: 16px;
+      display: flex;
+      gap: 4px;
+      margin-top: 24px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: transparent;
+      border-radius: 12px;
+      font-weight: 600;
+      color: var(--text-sub);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .tab-btn.active {
+      background: white;
+      color: var(--text-main);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .tab-content-area {
+      padding: 24px 0;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .loyalty-row {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 24px;
+      background: #F8FAFC;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .detail-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .detail-label {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .detail-value {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .action-btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 8px 20px -4px rgba(17, 24, 39, 0.3);
+    }
+
+    .btn-secondary {
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1 style="text-align: center; margin-bottom: 30px;">🚀 Modern Randevu Kartı</h1>
+    <div id="app-container">
+      <div class="loading">Yükleniyor...</div>
+    </div>
+  </div>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/appointment-components.js"></script>
+  <script>
+    async function loadCard() {
+      const container = document.getElementById('app-container');
+
+      const token = localStorage.getItem('tamirhanem_token');
+      if (!token) {
+        container.innerHTML = '<div class="loading">Lütfen giriş yapın! <a href="/login.html">Giriş Yap</a></div>';
+        return;
+      }
+
+      try {
+        const response = await api.getAppointments();
+        const appointments = Array.isArray(response) ? response : (response.data || []);
+
+        console.log('API Response:', response);
+
+        if (!appointments || appointments.length === 0) {
+          container.innerHTML = '<div class="loading">Randevu bulunamadı!</div>';
+          return;
+        }
+
+        const appt = appointments[0];
+        window.appointments = appointments;
+
+        const selectedServiceId = localStorage.getItem('selectedServiceId');
+        const isServiceOwner = !!selectedServiceId;
+
+        container.innerHTML = renderCard(appt, isServiceOwner);
+
+        setTimeout(() => {
+          initCard(appt);
+        }, 100);
+
+      } catch (err) {
+        console.error('API Error:', err);
+        container.innerHTML = `<div class="loading" style="color: red;">Hata: ${err.message}<br><br>Console'u kontrol et!</div>`;
+      }
+    }
+
+    function renderCard(appt, isServiceOwner) {
+      const a = appt.attributes || appt;
+      const service = a.service?.data?.attributes || a.service?.attributes || a.service || {};
+      const vehicle = a.vehicle?.data?.attributes || a.vehicle?.attributes || a.vehicle || {};
+      const cat = a.category?.data?.attributes || a.category?.attributes || a.category || {};
+      const appointmentId = appt.id || appt.attributes?.id || 0;
+
+      let headerTitle = service.name || 'Servis';
+      let headerSubtitle = 'Servis Sağlayıcı';
+      let avatarHtml = `<i class="${isServiceOwner ? 'ri-user-star-fill' : 'ri-store-2-fill'}"></i>`;
+
+      if (isServiceOwner) {
+        const u = appt.user || appt.attributes?.user?.data?.attributes || appt.attributes?.user || {};
+        // İsim Soyisim düzeltmesi (username yerine name surname)
+        const uName = u.name || u.username || 'Müşteri';
+        const uSurname = u.surname || '';
+        headerTitle = `${uName} ${uSurname}`.trim() || 'Müşteri';
+        headerSubtitle = 'Müşteri';
+
+        // Avatar Kontrolü
+        const avatarData = u.avatar?.data?.attributes || u.avatar?.attributes || u.avatar;
+        const avatarUrl = avatarData?.url;
+
+        if (avatarUrl) {
+          // Tam URL değilse base URL ekle (Strapi için)
+          // Sadece sondaki /api kısmını sil (regex ile)
+          const baseUrl = CONFIG.API_BASE_URL.replace(/\/api$/, '');
+          const fullAvatarUrl = avatarUrl.startsWith('http') ? avatarUrl : `${baseUrl}${avatarUrl}`;
+          avatarHtml = `<img src="${fullAvatarUrl}" alt="${headerTitle}" style="width:100%; height:100%; object-fit:cover; border-radius:inherit;">`;
+        }
+      }
+
+      return `
+        <div class="premium-card">
+          <!-- 1. ÜST BİLGİ (User/Service Info) - Stepper'ın üzerine taşındı -->
+          <div class="service-header">
+            <div class="service-icon" style="overflow:hidden;">
+              ${avatarHtml}
+            </div>
+            <div style="flex:1;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <!-- SOL KOLON: İsim ve Alt Bilgiler -->
+                <div>
+                  <h2 style="margin:0 0 4px 0; font-size:1.4rem; color:var(--text-main);">${headerTitle}</h2>
+                  <div style="color:var(--text-sub); font-size:0.9rem; font-weight:500; margin-bottom: 12px;">
+                    ${headerSubtitle}
+                  </div>
+                  
+                  <!-- Araç ve Plaka (Yan Yana) -->
+                  <div style="display:flex; align-items:center; gap:12px;">
+                    <!-- Araç -->
+                    <div style="display:flex; align-items:center; gap:6px; font-weight:600; color:var(--text-main);">
+                      <i class="ri-roadster-line" style="color:var(--text-sub);"></i>
+                      <span>${vehicle.brand || ''} ${vehicle.model || ''}</span>
+                    </div>
+
+                    <!-- Plaka (TR Stili) -->
+                    <div style="border:2px solid #111827; border-radius:6px; background:white; padding:2px 8px; display:flex; align-items:center; gap:6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                      <div style="background:#003399; color:white; font-size:0.6rem; font-weight:bold; padding:2px 4px; border-radius:2px;">TR</div>
+                      <div style="font-family:monospace; font-weight:800; font-size:0.95rem; color:#111827; letter-spacing:1px;">
+                        ${vehicle.plate || vehicle.plateNumber || '34ABC00'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- SAĞ KOLON: Hizmet Türü Badge -->
+                <div>
+                  <div style="background:var(--accent-soft); color:var(--accent-dark); padding:6px 12px; border-radius:20px; font-size:0.8rem; font-weight:700; display:flex; align-items:center; gap:6px; border:1px solid rgba(255, 197, 7, 0.3);">
+                    <i class="ri-tools-line"></i>
+                    <span>${cat.name || 'Hizmet'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. GÜVEN METRİKLERİ (Compact) -->
+          <div id="metrics-${appointmentId}" class="loyalty-row" style="margin-top:16px; display:none; padding:12px; background:white; border:none; box-shadow:none;"></div>
+
+          <!-- 3. STEPPER -->
+          <div id="stepper-${appointmentId}" class="loyalty-stepper-container"></div>
+
+          <div class="segmented-tabs">
+            <button class="tab-btn active" onclick="switchTab(${appointmentId}, 'general')" id="tab-general-btn-${appointmentId}">
+              <i class="ri-information-line"></i> Genel
+            </button>
+            <button class="tab-btn" onclick="switchTab(${appointmentId}, 'vehicle')" id="tab-vehicle-btn-${appointmentId}">
+              <i class="ri-car-line"></i> Araç
+            </button>
+            <button class="tab-btn" onclick="switchTab(${appointmentId}, 'notes')" id="tab-notes-btn-${appointmentId}">
+              <i class="ri-file-text-line"></i> Notlar
+            </button>
+          </div>
+
+          <div style="margin-top: 16px;">
+            <div id="tab-general-${appointmentId}" class="tab-content-area">
+              <div class="detail-card">
+                <div class="detail-label">HİZMET TÜRÜ</div>
+                <div class="detail-value" style="font-size:1.1rem;">${cat.name || 'Hizmet'}</div>
+                <hr style="margin:16px 0; border:0; border-top:1px dashed var(--border);">
+                <div class="detail-label">SORUN BİLDİRİMİ</div>
+                <div style="color:var(--text-main); line-height:1.5; font-size:1rem;">${a.faultDescription || 'Belirtilmedi'}</div>
+              </div>
+              <div id="date-options-${appointmentId}"></div>
+            </div>
+
+            <div id="tab-vehicle-${appointmentId}" class="tab-content-area" style="display: none;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="detail-card">
+                  <div class="detail-label">KM</div>
+                  <div class="detail-value">${vehicle.mileage || vehicle.currentKm || '-'}</div>
+                </div>
+                <div class="detail-card">
+                  <div class="detail-label">YIL</div>
+                  <div class="detail-value">${vehicle.year || '-'}</div>
+                </div>
+                <div class="detail-card">
+                  <div class="detail-label">YAKIT</div>
+                  <div class="detail-value">${vehicle.fuelType || vehicle.fuel || '-'}</div>
+                </div>
+                <div class="detail-card">
+                  <div class="detail-label">SON BAKIM</div>
+                  <div class="detail-value">${vehicle.last_maintenance_mileage || '-'}</div>
+                </div>
+              </div>
+            </div>
+
+            <div id="tab-notes-${appointmentId}" class="tab-content-area" style="display: none;">
+              <div class="detail-card">
+                <div class="detail-label">KULLANICI NOTU</div>
+                <p style="margin:0; color:var(--text-main); line-height:1.6;">${a.note || 'Not bulunmuyor'}</p>
+              </div>
+              <div id="attachments-${appointmentId}"></div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 12px; margin-top: 24px;">
+            <button class="action-btn btn-secondary" onclick="alert('İptal')">
+              <i class="ri-close-line"></i> İptal
+            </button>
+            <button class="action-btn btn-primary" onclick="alert('Düzenle')">
+              <i class="ri-calendar-event-line"></i> Tarih Değiştir
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function initCard(appt) {
+      const selectedServiceId = localStorage.getItem('selectedServiceId');
+      const isServiceOwner = !!selectedServiceId;
+      const appointmentId = appt.id || appt.attributes?.id || 0;
+
+      // 1. Yeni Stepper Mantığı
+      const stepperContainer = document.getElementById(`stepper-${appointmentId}`);
+      if (stepperContainer) {
+        stepperContainer.innerHTML = EnhancedAppointmentComponents.generateEnhancedStepper(appt, isServiceOwner);
+      }
+
+      // 2. Loyalty API (Servis sahibi ise)
+      const userId = appt.user?.id || appt.attributes?.user?.data?.id || appt.attributes?.user?.id;
+      if (isServiceOwner && userId) {
+        loadLoyaltyMetrics(userId, appointmentId);
+      }
+
+      // 3. Tarihler ve Ekler
+      loadDateOptions(appt, appointmentId);
+      loadAttachments(appt, appointmentId);
+    }
+
+    // --- ORİJİNAL FONKSİYONLAR (Aynen korundu) ---
+
+    function switchTab(id, tabName) {
+      document.getElementById(`tab-general-${id}`).style.display = 'none';
+      document.getElementById(`tab-vehicle-${id}`).style.display = 'none';
+      document.getElementById(`tab-notes-${id}`).style.display = 'none';
+
+      document.getElementById(`tab-general-btn-${id}`).classList.remove('active');
+      document.getElementById(`tab-vehicle-btn-${id}`).classList.remove('active');
+      document.getElementById(`tab-notes-btn-${id}`).classList.remove('active');
+
+      document.getElementById(`tab-${tabName}-${id}`).style.display = 'block';
+      document.getElementById(`tab-${tabName}-btn-${id}`).classList.add('active');
+    }
+
+    function loadDateOptions(appt, appointmentId) {
+      const container = document.getElementById(`date-options-${appointmentId}`);
+      const attrs = appt.attributes || appt;
+      const preferredDate = attrs.preferredDateTime;
+      const matchedDates = attrs.matchedDate || attrs.availableDates || [];
+      let html = '';
+
+      if (preferredDate) {
+        const date = new Date(preferredDate);
+        const dateStr = date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'short' });
+        const timeStr = date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+        html += `
+          <div style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border: 2px solid #FFC507; border-radius: 12px; padding: 14px; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <p style="margin: 0; color: #92400E; font-size: 0.75rem; font-weight: 600;">TERCİH EDİLEN</p>
+                <p style="margin: 4px 0 0 0; color: #1A1A1A; font-weight: 700; font-size: 1rem;">${dateStr}</p>
+                <p style="margin: 2px 0 0 0; color: #92400E; font-size: 0.875rem;"><i class="ri-time-line"></i> ${timeStr}</p>
+              </div>
+              <i class="ri-star-fill" style="font-size: 1.5rem; color: #FFC507;"></i>
+            </div>
+          </div>`;
+      }
+
+      matchedDates.forEach((slot, index) => {
+        const date = new Date(slot.date);
+        const dateStr = date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'short' });
+        html += `
+          <div style="background: #F9FAFB; border: 2px solid #E5E7EB; border-radius: 12px; padding: 14px; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <p style="margin: 0; color: #6B7280; font-size: 0.75rem; font-weight: 600;">SEÇENEK ${index + 1}</p>
+                <p style="margin: 4px 0 0 0; color: #1A1A1A; font-weight: 700; font-size: 1rem;">${dateStr}</p>
+                <p style="margin: 2px 0 0 0; color: #6B7280; font-size: 0.875rem;"><i class="ri-time-line"></i> ${slot.timeSlot || '-'}</p>
+              </div>
+              <i class="ri-calendar-check-line" style="font-size: 1.5rem; color: #10B981;"></i>
+            </div>
+          </div>`;
+      });
+
+      if (html) container.innerHTML = html;
+      else container.innerHTML = '<p style="color: #6B7280; font-size: 0.875rem;">Henüz tarih önerilmedi.</p>';
+    }
+
+    async function loadLoyaltyMetrics(userId, appointmentId) {
+      try {
+        const token = localStorage.getItem('tamirhanem_token');
+        const response = await fetch(`${CONFIG.API_BASE_URL}/users/${userId}/loyalty-status`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          const { data } = await response.json();
+          const container = document.getElementById(`metrics-${appointmentId}`);
+          const completed = data.completedAppointments || 0;
+          const total = data.metrics?.totalAppointments || 0;
+          const trustScore = data.trustScore || 0;
+          const rating = data.averageRating || 0;
+
+          container.style.display = 'grid';
+          container.style.gridTemplateColumns = 'repeat(3, 1fr)';
+          container.style.gap = '8px'; // Daha sıkı
+
+          // Compact Tasarım
+          container.innerHTML = `
+            <div style="background:#F8FAFC; padding:8px; border-radius:12px; display:flex; align-items:center; gap:10px; border:1px solid #E2E8F0;">
+              <div style="background:white; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.05);">
+                <i class="ri-calendar-check-fill" style="font-size: 1.1rem; color: #10B981;"></i>
+              </div>
+              <div style="line-height:1.1;">
+                <div style="font-size: 0.95rem; font-weight: 800; color: #0F172A;">${completed}/${total}</div>
+                <div style="font-size: 0.65rem; font-weight: 600; color: #64748B; text-transform: uppercase;">Katılım</div>
+              </div>
+            </div>
+
+            <div style="background:#F8FAFC; padding:8px; border-radius:12px; display:flex; align-items:center; gap:10px; border:1px solid #E2E8F0;">
+              <div style="background:white; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.05);">
+                <i class="ri-shield-check-fill" style="font-size: 1.1rem; color: #3B82F6;"></i>
+              </div>
+              <div style="line-height:1.1;">
+                <div style="font-size: 0.95rem; font-weight: 800; color: #0F172A;">%${trustScore}</div>
+                <div style="font-size: 0.65rem; font-weight: 600; color: #64748B; text-transform: uppercase;">Güven</div>
+              </div>
+            </div>
+
+            <div style="background:#F8FAFC; padding:8px; border-radius:12px; display:flex; align-items:center; gap:10px; border:1px solid #E2E8F0;">
+              <div style="background:white; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.05);">
+                <i class="ri-star-fill" style="font-size: 1.1rem; color: #F59E0B;"></i>
+              </div>
+              <div style="line-height:1.1;">
+                <div style="font-size: 0.95rem; font-weight: 800; color: #0F172A;">${rating.toFixed(1)}</div>
+                <div style="font-size: 0.65rem; font-weight: 600; color: #64748B; text-transform: uppercase;">Puan</div>
+              </div>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Loyalty load error:', error);
+      }
+    }
+
+    function loadAttachments(appt, appointmentId) {
+      const container = document.getElementById(`attachments-${appointmentId}`);
+      const attrs = appt.attributes || appt;
+      const attachments = attrs.attachments || [];
+
+      if (!attachments || attachments.length === 0) {
+        container.innerHTML = `
+          <div style="background: #F9FAFB; border-radius: 12px; padding: 16px; text-align: center;">
+            <i class="ri-folder-open-line" style="font-size: 2rem; color: #9CA3AF;"></i>
+            <p style="margin: 8px 0 0 0; color: #6B7280; font-size: 0.875rem;">Ek dosya bulunmuyor</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = `
+        <h5 style="margin: 0 0 12px 0; color: #1A1A1A; font-size: 0.938rem; font-weight: 700;">
+          <i class="ri-attachment-line"></i> Ekler
+        </h5>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+      `;
+      attachments.forEach((file) => {
+        const fileType = file.mime?.startsWith('image') ? 'image' :
+          file.mime?.startsWith('audio') ? 'audio' :
+            file.mime?.startsWith('video') ? 'video' : 'file';
+        const icon = fileType === 'image' ? 'image-line' :
+          fileType === 'audio' ? 'volume-up-line' :
+            fileType === 'video' ? 'video-line' : 'file-line';
+        html += `
+          <div style="background: #F9FAFB; border: 2px solid #E5E7EB; border-radius: 8px; padding: 12px; text-align: center;">
+            <i class="ri-${icon}" style="font-size: 1.5rem; color: #6B7280;"></i>
+            <p style="margin: 4px 0 0 0; color: #1A1A1A; font-size: 0.75rem; font-weight: 600;">${fileType.toUpperCase()}</p>
+          </div>`;
+      });
+      html += `</div>`;
+      container.innerHTML = html;
+    }
+
+    window.addEventListener('load', loadCard);
+  </script>
+</body>
+
+</html>

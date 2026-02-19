@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Oto Sanayi Servisleri - TamirHanem">
+  <title>Oto Sanayi | TamirHanem</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Global Dashboard CSS -->
+  <link rel="stylesheet" href="/css/global-dashboard.css">
+
+  <!-- Config (API URL) -->
+  <script src="/js/config.js"></script>
+
+  <style>
+    /* Page Specific Styles */
+    .page-header {
+      margin-bottom: 24px;
+    }
+
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--neutral-900);
+      margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+      font-size: 0.9rem;
+      color: var(--neutral-500);
+    }
+
+    /* Filter Section */
+    .filter-section {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .filter-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-title i {
+      color: var(--primary);
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .filter-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+    }
+
+    .filter-select {
+      padding: 12px 16px;
+      border: 2px solid #eee;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--neutral-800);
+      background: var(--white);
+      cursor: pointer;
+      transition: all 0.3s;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+
+    .filter-select:hover {
+      border-color: var(--primary);
+    }
+
+    .filter-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(251, 199, 7, 0.1);
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .filter-btn {
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-btn-primary {
+      background: var(--primary);
+      color: var(--custom-dark);
+      border: none;
+    }
+
+    .filter-btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(251, 199, 7, 0.3);
+    }
+
+    .filter-btn-secondary {
+      background: var(--white);
+      color: var(--neutral-700);
+      border: 2px solid #eee;
+    }
+
+    .filter-btn-secondary:hover {
+      border-color: var(--neutral-500);
+    }
+
+    /* Services Grid Overrides */
+    .services-section {
+      margin-bottom: 24px;
+    }
+
+    .services-count {
+      font-size: 0.85rem;
+      color: var(--neutral-500);
+      background: var(--neutral-100);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    #services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    /* Service Card */
+    .service-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      transition: all 0.3s var(--ease);
+      position: relative;
+    }
+
+    .service-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+
+    .premium-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: linear-gradient(135deg, #FFD700, #FFA500);
+      color: #333;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      z-index: 5;
+      box-shadow: 0 2px 8px rgba(255, 165, 0, 0.4);
+    }
+
+    .service-img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      cursor: pointer;
+    }
+
+    .service-content {
+      padding: 16px;
+    }
+
+    .service-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+
+    .service-title:hover {
+      color: var(--primary-dark);
+    }
+
+    .service-loc {
+      font-size: 0.8rem;
+      color: var(--neutral-500);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .service-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .rating-badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(251, 199, 7, 0.1);
+      color: var(--primary-dark);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .rating-badge i {
+      color: var(--primary);
+    }
+
+    .service-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-appointment,
+    .btn-quote {
+      flex: 1;
+      border: none;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-appointment {
+      background: var(--primary);
+      color: var(--custom-dark);
+    }
+
+    .btn-appointment:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-quote {
+      background: #FF8C00;
+      color: white;
+    }
+
+    .btn-quote:hover {
+      background: #e07b00;
+      transform: translateY(-2px);
+    }
+
+    /* Empty State & Spinner */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--neutral-500);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--neutral-100);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .filter-grid {
+        grid-template-columns: 1fr;
+      }
+      .filter-actions {
+        flex-direction: column;
+      }
+      .filter-btn {
+        width: 100%;
+        justify-content: center;
+      }
+      #services-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Footer - No white space below */
+    html {
+      height: 100%;
+    }
+    body {
+      min-height: 100%;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .dashboard-main {
+      flex: 1 0 auto;
+    }
+    .dashboard-footer {
+      flex-shrink: 0;
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+    }
+    /* Footer altında hiçbir boşluk olmaması için */
+    .dashboard-footer::after,
+    body::after,
+    html::after {
+      display: none !important;
+      content: none !important;
+    }
+    .footer-bottom {
+      margin-bottom: 0 !important;
+      padding-bottom: 28px !important;
+    }
+
+    /* Sidebar Appointment Widget CSS */
+    .sidebar-section #active-appointment-widget .appt-bar {
+      background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%);
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(255, 193, 7, 0.3);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-section #active-appointment-widget .appt-bar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.5) 50%, transparent 100%);
+      transform: skewX(-25deg);
+      animation: shimmer 3s infinite;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 200%; }
+    }
+
+    .sidebar-section #active-appointment-widget .appt-bar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+    }
+
+    .sidebar-section #active-appointment-widget .appt-bar-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      white-space: normal;
+      flex: 1;
+      display: flex;
+    }
+
+    .sidebar-section #active-appointment-widget .appt-badge-prefix {
+      font-size: 9px;
+      padding: 3px 6px;
+      margin-right: 0;
+      margin-bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border-radius: 4px;
+      align-self: flex-start;
+    }
+
+    .sidebar-section #active-appointment-widget .appt-bar-text {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      width: 100%;
+      white-space: normal;
+      display: flex;
+    }
+
+    .sidebar-section #active-appointment-widget .appt-badge-date {
+      font-size: 1rem;
+      padding: 0;
+      margin-right: 0;
+      width: 100%;
+      justify-content: flex-start;
+      background: transparent;
+      border: none;
+      color: #222222;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+    }
+
+    .sidebar-section #active-appointment-widget .appt-badge-service {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #222222;
+      opacity: 0.9;
+      line-height: 1.3;
+    }
+
+    .sidebar-section #active-appointment-widget .appt-bar-action {
+      position: static;
+      margin-top: 0;
+      margin-left: auto;
+      background: #FFFFFF;
+      color: #222222;
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-section #active-appointment-widget .appt-bar-action:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Sidebar kesilmemesi için - Dashboard'daki :has() çözümü */
+    .dashboard-main,
+    .dashboard-main > .container,
+    .dashboard-layout {
+      overflow: visible !important;
+    }
+
+    /* Dashboard Layout - Dashboard.html'den birebir kopyalandı */
+    .dashboard-layout {
+      display: flex;
+      gap: 24px;
+      margin-top: 0;
+      position: relative;
+      align-items: flex-start;
+    }
+
+    /* Sidebar - Dashboard.html'den birebir kopyalandı */
+    .dashboard-sidebar {
+      width: 320px;
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-right: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 24px;
+      padding-top: 24px;
+      padding-bottom: 24px;
+      position: sticky;
+      top: var(--nav-height) !important;
+      margin-top: -73px;
+      height: auto;
+      min-height: fit-content;
+      overflow-y: visible;
+      overflow-x: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border-radius: 16px;
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Ana içerik alanı - loyalty bar ile arasında boşluk */
+    .main-content-area {
+      padding-top: 24px;
+    }
+
+    /* Loyalty Bar - info tooltip görünmesi için */
+    .loyalty-bar-wrapper {
+      overflow: visible !important;
+      z-index: 1101 !important; /* navbar (1100) dan 1 fazla */
+    }
+
+    /* Scroll Effect: Smooth Progressive Shrink Widget */
+    .loyalty-sticky-widget {
+      --scroll-progress: 0;
+      --widget-height: calc(76px - (20px * var(--scroll-progress)));
+      --container-scale: calc(1 - (0.15 * var(--scroll-progress)));
+      --label-opacity: calc(1 - var(--scroll-progress));
+      --label-translateY: calc(-10px * var(--scroll-progress));
+
+      height: var(--widget-height);
+      overflow: visible !important;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .loyalty-sticky-widget .loyalty-container {
+      transform: scale(var(--container-scale)) translateY(calc(10px * var(--scroll-progress)));
+      transform-origin: top center;
+      transition: none;
+      overflow: visible !important;
+    }
+
+    .loyalty-sticky-widget .milestone-label {
+      opacity: var(--label-opacity);
+      transform: translateX(-50%) translateY(var(--label-translateY));
+      transition: none;
+    }
+
+    .loyalty-container {
+      overflow: visible !important;
+    }
+
+    .loyalty-progress-track {
+      overflow: visible !important;
+    }
+
+    /* Info Tooltip - Dashboard'dan birebir kopyalandı */
+    .info-btn-wrapper {
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      pointer-events: auto;
+    }
+
+    .info-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: #f1f5f9;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.3rem;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+      position: relative;
+    }
+
+    .info-btn:hover {
+      color: #fbc707;
+      background: white;
+      box-shadow: 0 4px 12px rgba(251, 199, 7, 0.3);
+    }
+
+    .info-tooltip {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 50%;
+      width: 320px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+      border: 1px solid #eee;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateX(-50%) translateY(-10px);
+      transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+      z-index: 201;
+      overflow: hidden;
+    }
+
+    .info-btn-wrapper:hover .info-tooltip {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .info-tooltip-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #eee;
+      background: #f8fafc;
+    }
+
+    .info-tooltip-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-tooltip-title i {
+      color: #fbc707;
+    }
+
+    .info-tooltip-body {
+      padding: 16px 20px;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .info-tooltip-body p {
+      font-size: 0.85rem;
+      color: #64748b;
+      line-height: 1.5;
+      margin: 0 0 10px 0;
+    }
+
+    .info-tooltip-body p:last-child {
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Global Header + Loyalty Bar will be injected here -->
+
+  <main class="dashboard-main">
+    <div class="container">
+      <div class="dashboard-layout" id="main-layout">
+        <!-- Global Sidebar will be injected here -->
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="main-content-area">
+          <!-- Page Header -->
+          <div class="page-header">
+            <h1 class="page-title">Oto Sanayi Servisleri</h1>
+            <p class="page-subtitle">Aracınız için en uygun servisi bulun</p>
+          </div>
+
+          <!-- Filter Section -->
+          <div class="filter-section">
+            <div class="filter-title">
+              <i class="ri-filter-3-line"></i>
+              Filtrele
+            </div>
+            <div class="filter-grid">
+              <div class="filter-group">
+                <label class="filter-label">Hizmet Türü</label>
+                <select class="filter-select" id="service-type-filter" onchange="applyFilters()">
+                  <option value="">Tüm Hizmetler</option>
+                  <!-- Kategoriler API'den yüklenecek -->
+                </select>
+              </div>
+              <div class="filter-group">
+                <label class="filter-label">Marka</label>
+                <select class="filter-select" id="brand-filter" onchange="applyFilters()">
+                  <option value="">Tüm Markalar</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label class="filter-label">Model</label>
+                <select class="filter-select" id="model-filter" disabled onchange="applyFilters()">
+                  <option value="">Önce marka seçin</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label class="filter-label">Yakıt Türü</label>
+                <select class="filter-select" id="fuel-filter" onchange="applyFilters()">
+                  <option value="">Tüm Yakıt Türleri</option>
+                  <option value="benzin">Benzin</option>
+                  <option value="dizel">Dizel</option>
+                  <option value="lpg">LPG</option>
+                  <option value="elektrik">Elektrik</option>
+                  <option value="hibrit">Hibrit</option>
+                </select>
+              </div>
+            </div>
+            <div class="filter-actions">
+              <button class="filter-btn filter-btn-secondary" onclick="clearFilters()">
+                <i class="ri-refresh-line"></i>
+                Temizle
+              </button>
+            </div>
+          </div>
+
+          <!-- Services Section -->
+          <div class="services-section">
+            <div class="section-header">
+              <h2 class="section-title">
+                <i class="ri-tools-fill"></i>
+                Oto Sanayi Servisleri
+              </h2>
+              <span class="services-count" id="services-count">Yükleniyor...</span>
+            </div>
+            <div id="services-grid">
+              <div class="service-card" style="height:200px; display:flex; justify-content:center; align-items:center;">
+                <div class="spinner"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Global Footer will be injected here -->
+
+  <!-- Global Components -->
+  <script src="/components/global-header.js"></script>
+  <script src="/components/global-sidebar.js"></script>
+  <script src="/components/global-footer.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/components/bottom-nav.js"></script>
+
+  <script>
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      // Inject global components
+      injectGlobalSidebar('#main-layout');
+      injectGlobalFooter();
+
+      // Load page data
+      loadCategories();
+      loadBrands();
+      loadServices();
+
+      // Load active appointment widget
+      loadActiveAppointment();
+    });
+
+    // API Base URL
+    const API_BASE_URL = window.CONFIG?.API_BASE_URL || 'https://api.tamirhanem.net/api';
+
+    // Load Categories from API
+    async function loadCategories() {
+      try {
+        const token = localStorage.getItem('tamirhanem_token');
+        const response = await fetch(`${API_BASE_URL}/categories?populate=*`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const categories = data.data || [];
+          const select = document.getElementById('service-type-filter');
+
+          select.innerHTML = '<option value="">Tüm Hizmetler</option>' +
+            categories.map(cat => {
+              const attrs = cat.attributes || cat;
+              const name = attrs.name || attrs.title || cat.name || 'Kategori';
+              const id = cat.id;
+              return `<option value="${id}">${name}</option>`;
+            }).join('');
+        }
+      } catch (error) {
+        console.error('Categories load error:', error);
+      }
+    }
+
+    // Load Brands from arac-datasi
+    async function loadBrands() {
+      try {
+        const token = localStorage.getItem('tamirhanem_token');
+        const response = await fetch(`${API_BASE_URL}/arac-datasi/unique-brands`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const brands = data.data || [];
+          const select = document.getElementById('brand-filter');
+          select.innerHTML = '<option value="">Tüm Markalar</option>' +
+            brands.map(brand => `<option value="${brand}">${brand}</option>`).join('');
+        }
+      } catch (error) {
+        console.error('Brands load error:', error);
+      }
+    }
+
+    // Load Models by Brand
+    document.getElementById('brand-filter').addEventListener('change', async function() {
+      const brand = this.value;
+      const modelSelect = document.getElementById('model-filter');
+
+      if (!brand) {
+        modelSelect.innerHTML = '<option value="">Önce marka seçin</option>';
+        modelSelect.disabled = true;
+        return;
+      }
+
+      try {
+        modelSelect.innerHTML = '<option value="">Yükleniyor...</option>';
+        modelSelect.disabled = true;
+
+        const token = localStorage.getItem('tamirhanem_token');
+        const response = await fetch(`${API_BASE_URL}/arac-datasi/models/${encodeURIComponent(brand)}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const models = data.data || [];
+          modelSelect.innerHTML = '<option value="">Tüm Modeller</option>' +
+            models.map(model => `<option value="${model}">${model}</option>`).join('');
+          modelSelect.disabled = false;
+        }
+      } catch (error) {
+        console.error('Models load error:', error);
+        modelSelect.innerHTML = '<option value="">Model yüklenemedi</option>';
+      }
+    });
+
+    // Load Services
+    async function loadServices(filters = {}) {
+      const grid = document.getElementById('services-grid');
+      const countEl = document.getElementById('services-count');
+
+      grid.innerHTML = '<div class="service-card" style="height:200px; display:flex; justify-content:center; align-items:center;"><div class="spinner"></div></div>';
+
+      try {
+        const token = localStorage.getItem('tamirhanem_token');
+        // Tüm servisleri çek (populate ile categories ve supportedVehicles dahil)
+        let url = `${API_BASE_URL}/services?populate=*&pagination[pageSize]=100`;
+
+        const response = await fetch(url, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          let allServices = data.data || [];
+
+          // Oto sanayi servisleri: service_type=industrial VEYA service_type=all (tüm kategorilere hizmet verenler)
+          let services = allServices.filter(service => {
+            const attrs = service.attributes || service;
+            const serviceType = attrs.service_type || attrs.serviceType;
+            return serviceType === 'industrial' || serviceType === 'all' || !serviceType;
+          });
+
+          // Kategori filtresi (client-side)
+          if (filters.serviceType) {
+            const categoryId = parseInt(filters.serviceType);
+            services = services.filter(service => {
+              const attrs = service.attributes || service;
+              // categories relation'ı kontrol et
+              const categories = attrs.categories?.data || attrs.categories || [];
+              return categories.some(cat => {
+                const catId = cat.id || (cat.attributes && cat.id);
+                return catId === categoryId;
+              });
+            });
+          }
+
+          // Araç markası filtresi (client-side)
+          if (filters.brand) {
+            services = services.filter(service => {
+              const attrs = service.attributes || service;
+              const supportedVehicles = attrs.supportedVehicles?.data || attrs.supportedVehicles || attrs.supported_vehicles || [];
+              // Marka kontrolü - supportedVehicles içinde brand field'ı ara
+              if (supportedVehicles.length === 0) return true; // Desteklenen araç belirtilmemişse tüm araçları destekler
+              return supportedVehicles.some(v => {
+                const vAttrs = v.attributes || v;
+                return (vAttrs.brand || vAttrs.marka || '').toLowerCase() === filters.brand.toLowerCase();
+              });
+            });
+          }
+
+          // Model filtresi (client-side)
+          if (filters.model) {
+            services = services.filter(service => {
+              const attrs = service.attributes || service;
+              const supportedVehicles = attrs.supportedVehicles?.data || attrs.supportedVehicles || attrs.supported_vehicles || [];
+              if (supportedVehicles.length === 0) return true;
+              return supportedVehicles.some(v => {
+                const vAttrs = v.attributes || v;
+                return (vAttrs.model || vAttrs.model_name || '').toLowerCase() === filters.model.toLowerCase();
+              });
+            });
+          }
+
+          // Yakıt türü filtresi (client-side)
+          if (filters.fuel) {
+            services = services.filter(service => {
+              const attrs = service.attributes || service;
+              const supportedVehicles = attrs.supportedVehicles?.data || attrs.supportedVehicles || attrs.supported_vehicles || [];
+              if (supportedVehicles.length === 0) return true;
+              return supportedVehicles.some(v => {
+                const vAttrs = v.attributes || v;
+                return (vAttrs.fuelType || vAttrs.fuel_type || vAttrs.yakit || '').toLowerCase() === filters.fuel.toLowerCase();
+              });
+            });
+          }
+
+          countEl.textContent = `${services.length} servis bulundu`;
+
+          if (services.length > 0) {
+            grid.innerHTML = services.map(service => {
+              const attrs = service.attributes || service;
+              const imgUrl = getServiceImageUrl(attrs.ProfilePicture);
+              const isPremium = attrs.isOfficialService || (attrs.rating >= 4.5) || (service.id % 3 === 0);
+              const premiumBadge = isPremium ? '<div class="premium-badge"><i class="ri-vip-crown-2-fill"></i> PREMIUM</div>' : '';
+
+              return `
+                <div class="service-card">
+                  ${premiumBadge}
+                  <img src="${imgUrl}" class="service-img" alt="${attrs.name}" onerror="this.src='https://placehold.co/600x400?text=No+Image'" onclick="window.location.href='/pages/service-detail.html?id=${service.id}'">
+                  <div class="service-content">
+                    <h3 class="service-title" onclick="window.location.href='/pages/service-detail.html?id=${service.id}'">${attrs.name}</h3>
+                    <div class="service-loc"><i class="ri-map-pin-line"></i> ${attrs.location || 'İstanbul'}</div>
+                    <div class="service-meta">
+                      <div class="rating-badge">
+                        <i class="ri-star-fill"></i> ${(attrs.rating || 4.5).toFixed(1)}
+                        <span style="font-weight:400; color:var(--neutral-700); margin-left:2px;">(${attrs.reviewCount || attrs.ratingCount || 0})</span>
+                      </div>
+                    </div>
+                    <div class="service-actions">
+                      <button class="btn-appointment" onclick="event.stopPropagation(); window.location.href='/pages/create-appointment.html?serviceId=${service.id}'">
+                        <i class="ri-calendar-line"></i> Randevu
+                      </button>
+                      <button class="btn-quote" onclick="event.stopPropagation(); window.location.href='/pages/create-appointment.html?serviceId=${service.id}&mode=quote'">
+                        <i class="ri-money-dollar-circle-line"></i> Teklif
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('');
+          } else {
+            grid.innerHTML = '<div class="empty-state"><i class="ri-tools-line"></i><p>Servis bulunamadı</p></div>';
+          }
+        }
+      } catch (error) {
+        console.error('Services load error:', error);
+        grid.innerHTML = '<div class="empty-state"><i class="ri-error-warning-line"></i><p>Servisler yüklenirken hata oluştu</p></div>';
+        countEl.textContent = '0 servis';
+      }
+    }
+
+    // Get Service Image URL helper (Dashboard'dan kopyalandı)
+    function getServiceImageUrl(image) {
+      if (!image) return 'https://placehold.co/600x400?text=No+Image';
+
+      // API base URL'den sadece /api kısmını kaldır
+      const baseUrl = API_BASE_URL.replace(/\/api$/, '');
+
+      // Handle Strapi v4 format: { data: { attributes: { url: '...' } } }
+      if (image.data) {
+        // If data is an array, get first item
+        if (Array.isArray(image.data) && image.data.length > 0) {
+          const url = image.data[0]?.attributes?.url;
+          if (url) {
+            return url.startsWith('http') ? url : `${baseUrl}${url}`;
+          }
+        }
+        // If data is an object
+        if (image.data.attributes?.url) {
+          const url = image.data.attributes.url;
+          return url.startsWith('http') ? url : `${baseUrl}${url}`;
+        }
+      }
+
+      // Direct URL in attributes
+      if (image.attributes && image.attributes.url) {
+        const url = image.attributes.url;
+        return url.startsWith('http') ? url : `${baseUrl}${url}`;
+      }
+
+      // Direct URL property
+      if (image.url) {
+        return image.url.startsWith('http') ? image.url : `${baseUrl}${image.url}`;
+      }
+
+      // If it's a string (direct URL)
+      if (typeof image === 'string') {
+        if (image.startsWith('http')) return image;
+        if (image.startsWith('/')) return `${baseUrl}${image}`;
+        return image;
+      }
+
+      return 'https://placehold.co/600x400?text=No+Image';
+    }
+
+    // Get Image URL helper (eski - geriye dönük uyumluluk)
+    function getImageUrl(image) {
+      return getServiceImageUrl(image);
+    }
+
+    // Apply Filters
+    function applyFilters() {
+      const filters = {
+        serviceType: document.getElementById('service-type-filter').value,
+        brand: document.getElementById('brand-filter').value,
+        model: document.getElementById('model-filter').value,
+        fuel: document.getElementById('fuel-filter').value
+      };
+      loadServices(filters);
+    }
+
+    // Clear Filters
+    function clearFilters() {
+      document.getElementById('service-type-filter').value = '';
+      document.getElementById('brand-filter').value = '';
+      document.getElementById('model-filter').value = '';
+      document.getElementById('model-filter').disabled = true;
+      document.getElementById('model-filter').innerHTML = '<option value="">Önce marka seçin</option>';
+      document.getElementById('fuel-filter').value = '';
+      loadServices();
+    }
+
+    // --- ACTIVE APPOINTMENT WIDGET ---
+    async function loadActiveAppointment() {
+      const widget = document.getElementById('active-appointment-widget');
+      const container = document.getElementById('active-appointment-card');
+
+      if (!widget || !container) return;
+
+      try {
+        if (typeof api === 'undefined') return;
+
+        const response = await api.getAppointments();
+        const appointments = Array.isArray(response) ? response : (response.data || []);
+
+        // Filter for active appointments (future & not cancelled)
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+
+        const activeAppointments = appointments.filter(app => {
+          const attr = app.attributes || app;
+          let appDateStr = null;
+
+          if (attr.date && typeof attr.date === 'object' && attr.date.date) appDateStr = attr.date.date;
+          else if (attr.date && typeof attr.date === 'string') appDateStr = attr.date;
+          else if (attr.matchedDate && attr.matchedDate[0]) {
+            appDateStr = typeof attr.matchedDate[0] === 'object' ? attr.matchedDate[0].date : attr.matchedDate[0];
+          }
+
+          if (!appDateStr) return false;
+
+          const appDate = new Date(appDateStr + 'T00:00:00');
+          const status = attr.status;
+          const activeStatuses = ['PENDING', 'CONFIRMED', 'APPROVED', 'IN_PROGRESS', 'Beklemede', 'Onaylandı', 'Onaylı', 'Serviste'];
+
+          return activeStatuses.includes(status) && appDate >= now;
+        });
+
+        // Sort by date
+        activeAppointments.sort((a, b) => {
+          return new Date(a.attributes?.createdAt || a.createdAt) - new Date(b.attributes?.createdAt || b.createdAt);
+        });
+
+        const nextAppointment = activeAppointments[0];
+
+        if (nextAppointment) {
+          renderActiveAppointment(nextAppointment, container);
+          widget.classList.remove('hidden');
+          widget.style.display = 'block';
+        } else {
+          widget.classList.add('hidden');
+        }
+      } catch (error) {
+        widget.classList.add('hidden');
+      }
+    }
+
+    function renderActiveAppointment(appointment, container) {
+      const attr = appointment.attributes || appointment;
+
+      // Check if user is service owner
+      const isServiceOwner = localStorage.getItem('isServiceOwner') === 'true';
+      const selectedServiceId = localStorage.getItem('selectedServiceId');
+
+      let displayName = '';
+
+      if (isServiceOwner && selectedServiceId) {
+        const user = appointment.user || attr.user?.data?.attributes || attr.user || {};
+        const userName = user.name || user.username || 'Müşteri';
+        const userSurname = user.surname || '';
+        displayName = `${userName} ${userSurname}`.trim();
+      } else {
+        displayName = attr.service?.data?.attributes?.name || attr.service?.name || attr.service || 'Genel Servis';
+      }
+
+      let dateStr = null;
+      if (attr.date && typeof attr.date === 'object' && attr.date.date) dateStr = attr.date.date;
+      else if (attr.date && typeof attr.date === 'string') dateStr = attr.date;
+      else if (attr.matchedDate && attr.matchedDate[0]) {
+        dateStr = typeof attr.matchedDate[0] === 'object' ? attr.matchedDate[0].date : attr.matchedDate[0];
+      }
+
+      const dateObj = new Date(dateStr);
+      const day = dateObj.getDate();
+      const monthShort = dateObj.toLocaleDateString('tr-TR', { month: 'short' }).toUpperCase();
+
+      let time = '--:--';
+      if (attr.time) time = attr.time.substring(0, 5);
+      else if (attr.date?.timeSlot) time = attr.date.timeSlot;
+      else if (attr.matchedDate?.[0]?.timeSlot) time = attr.matchedDate[0].timeSlot;
+
+      container.innerHTML = `
+        <div class="appt-bar" onclick="window.location.href='/pages/my-appointments.html?appointmentId=${appointment.id}'">
+            <div class="appt-bar-content">
+                <span class="appt-badge-prefix">Sıradaki Randevu:</span>
+                <span class="appt-bar-text">
+                  <span class="appt-badge-service" style="color: #5a5a5a;">${displayName}</span>
+                  <span class="appt-badge-date">
+                    <span style="margin-right: 8px; font-size: 1.4rem;">📅</span>
+                    <span style="color: #5a5a5a;">${day} ${monthShort} ${time}</span>
+                  </span>
+                </span>
+            </div>
+            <div class="appt-bar-action">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+
+</html>

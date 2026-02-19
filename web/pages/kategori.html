@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Servis Kategorisi - TamirHanem">
+  <title>Kategori | TamirHanem</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <link rel="stylesheet" href="/css/global-dashboard.css">
+  <script src="/js/config.js"></script>
+
+  <style>
+    .page-header { margin-bottom: 24px; }
+    .page-title { font-size: 1.5rem; font-weight: 800; color: var(--neutral-900); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+    .page-title i { color: var(--primary); }
+    .page-subtitle { font-size: 0.9rem; color: var(--neutral-500); }
+    .filter-section { background: var(--white); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 24px; box-shadow: var(--shadow-sm); border: 1px solid rgba(0, 0, 0, 0.05); }
+    .filter-title { font-size: 0.95rem; font-weight: 700; color: var(--neutral-900); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .filter-title i { color: var(--primary); }
+    .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .filter-group { display: flex; flex-direction: column; gap: 6px; }
+    .filter-label { font-size: 0.8rem; font-weight: 600; color: var(--neutral-700); }
+    .filter-select { padding: 12px 16px; border: 2px solid #eee; border-radius: var(--radius-md); font-family: inherit; font-size: 0.9rem; color: var(--neutral-800); background: var(--white); cursor: pointer; transition: all 0.3s; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; }
+    .filter-select:hover { border-color: var(--primary); }
+    .filter-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(251, 199, 7, 0.1); }
+    .filter-actions { display: flex; gap: 12px; margin-top: 16px; }
+    .filter-btn { padding: 12px 24px; border-radius: var(--radius-md); font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+    .filter-btn-primary { background: var(--primary); color: var(--custom-dark); border: none; }
+    .filter-btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(251, 199, 7, 0.3); }
+    .filter-btn-secondary { background: var(--white); color: var(--neutral-700); border: 2px solid #eee; }
+    .filter-btn-secondary:hover { border-color: var(--neutral-500); }
+    .services-section { margin-bottom: 24px; }
+    .services-count { font-size: 0.85rem; color: var(--neutral-500); background: var(--neutral-100); padding: 4px 12px; border-radius: 20px; }
+    #services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .service-card { background: var(--white); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); border: 1px solid rgba(0, 0, 0, 0.05); transition: all 0.3s var(--ease); position: relative; }
+    .service-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--primary); }
+    .premium-badge { position: absolute; top: 12px; left: 12px; background: linear-gradient(135deg, #FFD700, #FFA500); color: #333; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; gap: 4px; z-index: 5; box-shadow: 0 2px 8px rgba(255, 165, 0, 0.4); }
+    .service-img { width: 100%; height: 160px; object-fit: cover; cursor: pointer; }
+    .service-content { padding: 16px; }
+    .service-title { font-size: 1rem; font-weight: 700; color: var(--neutral-900); margin-bottom: 8px; cursor: pointer; }
+    .service-title:hover { color: var(--primary-dark); }
+    .service-loc { font-size: 0.8rem; color: var(--neutral-500); display: flex; align-items: center; gap: 4px; margin-bottom: 8px; }
+    .service-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .rating-badge { display: flex; align-items: center; gap: 4px; background: rgba(251, 199, 7, 0.1); color: var(--primary-dark); padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; }
+    .rating-badge i { color: var(--primary); }
+    .service-actions { display: flex; gap: 8px; }
+    .btn-appointment, .btn-quote { flex: 1; border: none; padding: 10px 12px; border-radius: var(--radius-sm); font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn-appointment { background: var(--primary); color: var(--custom-dark); }
+    .btn-appointment:hover { background: var(--primary-dark); transform: translateY(-2px); }
+    .btn-quote { background: #FF8C00; color: white; }
+    .btn-quote:hover { background: #e07b00; transform: translateY(-2px); }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--neutral-500); }
+    .empty-state i { font-size: 3rem; margin-bottom: 16px; opacity: 0.3; }
+    .spinner { width: 40px; height: 40px; border: 3px solid var(--neutral-100); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 768px) {
+      .filter-grid { grid-template-columns: 1fr; }
+      .filter-actions { flex-direction: column; }
+      .filter-btn { width: 100%; justify-content: center; }
+      #services-grid { grid-template-columns: 1fr; }
+    }
+    html { height: 100%; }
+    body { min-height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; }
+    .dashboard-main { flex: 1 0 auto; }
+    .dashboard-footer { flex-shrink: 0; margin-bottom: 0 !important; padding-bottom: 0 !important; }
+    .footer-bottom { margin-bottom: 0 !important; padding-bottom: 28px !important; }
+    .dashboard-main, .dashboard-main > .container, .dashboard-layout { overflow: visible !important; }
+    .dashboard-layout { display: flex; gap: 24px; margin-top: 0; position: relative; align-items: flex-start; }
+    .dashboard-sidebar { width: 320px; flex-shrink: 0; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-right: 1px solid rgba(255, 255, 255, 0.3); padding: 24px; position: sticky; top: var(--nav-height) !important; margin-top: -73px; height: auto; min-height: fit-content; overflow-y: visible; overflow-x: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); border-radius: 16px; z-index: 90; display: flex; flex-direction: column; }
+    .main-content-area { padding-top: 24px; }
+    .loyalty-bar-wrapper { overflow: visible !important; z-index: 1101 !important; }
+  </style>
+</head>
+
+<body>
+  <main class="dashboard-main">
+    <div class="container">
+      <div class="dashboard-layout" id="main-layout">
+        <div class="main-content-area">
+          <div class="page-header">
+            <h1 class="page-title" id="page-title"><i class="ri-tools-fill"></i> <span>Yükleniyor...</span></h1>
+            <p class="page-subtitle" id="page-subtitle">Servisler yükleniyor...</p>
+          </div>
+
+          <div class="filter-section">
+            <div class="filter-title"><i class="ri-filter-3-line"></i> Filtrele</div>
+            <div class="filter-grid">
+              <div class="filter-group">
+                <label class="filter-label">Marka</label>
+                <select class="filter-select" id="brand-filter" onchange="applyFilters()"><option value="">Tüm Markalar</option></select>
+              </div>
+              <div class="filter-group">
+                <label class="filter-label">Model</label>
+                <select class="filter-select" id="model-filter" disabled onchange="applyFilters()"><option value="">Önce marka seçin</option></select>
+              </div>
+              <div class="filter-group">
+                <label class="filter-label">Yakıt Türü</label>
+                <select class="filter-select" id="fuel-filter" onchange="applyFilters()">
+                  <option value="">Tüm Yakıt Türleri</option>
+                  <option value="benzin">Benzin</option>
+                  <option value="dizel">Dizel</option>
+                  <option value="lpg">LPG</option>
+                  <option value="elektrik">Elektrik</option>
+                  <option value="hibrit">Hibrit</option>
+                </select>
+              </div>
+            </div>
+            <div class="filter-actions">
+              <button class="filter-btn filter-btn-secondary" onclick="clearFilters()"><i class="ri-refresh-line"></i> Temizle</button>
+            </div>
+          </div>
+
+          <div class="services-section">
+            <div class="section-header">
+              <h2 class="section-title" id="section-title"><i class="ri-tools-fill"></i> Servisler</h2>
+              <span class="services-count" id="services-count">Yükleniyor...</span>
+            </div>
+            <div id="services-grid">
+              <div class="service-card" style="height:200px; display:flex; justify-content:center; align-items:center;"><div class="spinner"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/components/global-header.js"></script>
+  <script src="/components/global-sidebar.js"></script>
+  <script src="/components/global-footer.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/components/bottom-nav.js"></script>
+
+  <script>
+    const API_BASE_URL = window.CONFIG?.API_BASE_URL || 'https://api.tamirhanem.net/api';
+
+    // URL'den parametreleri al
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryId = urlParams.get('id') || urlParams.get('categoryId');
+    const categorySlug = urlParams.get('slug') || urlParams.get('category');
+    const serviceType = urlParams.get('type') || 'industrial'; // industrial, carwash, towing, rental
+
+    let currentCategory = null;
+
+    // Kategori ikon haritası
+    const categoryIcons = {
+      'motor': 'ri-settings-3-line',
+      'mekanik': 'ri-settings-3-line',
+      'elektrik': 'ri-flashlight-line',
+      'elektronik': 'ri-cpu-line',
+      'kaporta': 'ri-car-line',
+      'boya': 'ri-paint-brush-line',
+      'lastik': 'ri-circle-line',
+      'jant': 'ri-disc-line',
+      'egzoz': 'ri-wind-line',
+      'susturucu': 'ri-volume-mute-line',
+      'yıkama': 'ri-drop-line',
+      'temizlik': 'ri-brush-line',
+      'pasta': 'ri-contrast-line',
+      'cila': 'ri-sparkling-line',
+      'seramik': 'ri-shield-star-line',
+      'çekici': 'mdi mdi-tow-truck',
+      'default': 'ri-tools-fill'
+    };
+
+    document.addEventListener('DOMContentLoaded', async function() {
+      injectGlobalSidebar('#main-layout');
+      injectGlobalFooter();
+
+      // Kategori bilgisini yükle
+      await loadCategoryInfo();
+
+      loadBrands();
+      loadServices();
+    });
+
+    async function loadCategoryInfo() {
+      try {
+        const token = localStorage.getItem('tamirhanem_token');
+        let category = null;
+
+        if (categoryId) {
+          // ID ile kategori getir
+          const response = await fetch(`${API_BASE_URL}/categories/${categoryId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (response.ok) {
+            const data = await response.json();
+            category = data.data || data;
+          }
+        } else if (categorySlug) {
+          // Slug/isim ile kategori ara
+          const response = await fetch(`${API_BASE_URL}/categories?populate=*`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (response.ok) {
+            const data = await response.json();
+            const categories = data.data || [];
+
+            // Slug veya name içinde ara (case-insensitive)
+            const slugLower = categorySlug.toLowerCase();
+            category = categories.find(cat => {
+              const attrs = cat.attributes || cat;
+              const slug = (attrs.slug || '').toLowerCase();
+              const name = (attrs.name || attrs.title || '').toLowerCase();
+              return slug === slugLower || slug.includes(slugLower) || name.includes(slugLower);
+            });
+          }
+        }
+
+        if (category) {
+          currentCategory = category;
+          const attrs = category.attributes || category;
+          const name = attrs.name || attrs.title || 'Kategori';
+          const description = attrs.description || `${name} kategorisindeki servisler`;
+
+          // İkon belirle
+          let icon = categoryIcons.default;
+          const nameLower = name.toLowerCase();
+          for (const [key, value] of Object.entries(categoryIcons)) {
+            if (nameLower.includes(key)) {
+              icon = value;
+              break;
+            }
+          }
+
+          // Sayfa başlıklarını güncelle
+          document.title = `${name} | TamirHanem`;
+          document.getElementById('page-title').innerHTML = `<i class="${icon}"></i> <span>${name} Servisleri</span>`;
+          document.getElementById('page-subtitle').textContent = description;
+          document.getElementById('section-title').innerHTML = `<i class="${icon}"></i> ${name} Servisleri`;
+        } else {
+          // Kategori bulunamadı - genel başlık kullan
+          const typeNames = {
+            'industrial': 'Oto Sanayi',
+            'carwash': 'Oto Yıkama',
+            'towing': 'Çekici',
+            'rental': 'Araç Kiralama'
+          };
+          const typeName = typeNames[serviceType] || 'Servisler';
+          document.title = `${typeName} | TamirHanem`;
+          document.getElementById('page-title').innerHTML = `<i class="ri-tools-fill"></i> <span>${typeName}</span>`;
+          document.getElementById('page-subtitle').textContent = `${typeName} kategorisindeki tüm servisler`;
+          document.getElementById('section-title').innerHTML = `<i class="ri-tools-fill"></i> ${typeName}`;
+        }
+      } catch (error) {
+        console.error('Category load error:', error);
+      }
+    }
+
+    async function loadBrands() {
+      try {
+        const token = localStorage.getItem('tamirhanem_token');
+        const response = await fetch(`${API_BASE_URL}/arac-datasi/unique-brands`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (response.ok) {
+          const data = await response.json();
+          const brands = data.data || [];
+          document.getElementById('brand-filter').innerHTML = '<option value="">Tüm Markalar</option>' + brands.map(brand => `<option value="${brand}">${brand}</option>`).join('');
+        }
+      } catch (error) { console.error('Brands load error:', error); }
+    }
+
+    // Marka seçildiğinde modelleri yükle
+    document.getElementById('brand-filter').addEventListener('change', async function() {
+      const brand = this.value;
+      const modelSelect = document.getElementById('model-filter');
+      if (!brand) {
+        modelSelect.innerHTML = '<option value="">Önce marka seçin</option>';
+        modelSelect.disabled = true;
+        return;
+      }
+      try {
+        modelSelect.innerHTML = '<option value="">Yükleniyor...</option>';
+        modelSelect.disabled = true;
+        const token = localStorage.getItem('tamirhanem_token');
+        const response = await fetch(`${API_BASE_URL}/arac-datasi/models/${encodeURIComponent(brand)}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const models = data.data || [];
+          modelSelect.innerHTML = '<option value="">Tüm Modeller</option>' + models.map(model => `<option value="${model}">${model}</option>`).join('');
+          modelSelect.disabled = false;
+        }
+      } catch (error) {
+        modelSelect.innerHTML = '<option value="">Model yüklenemedi</option>';
+      }
+    });
+
+    async function loadServices(filters = {}) {
+      const grid = document.getElementById('services-grid');
+      const countEl = document.getElementById('services-count');
+      grid.innerHTML = '<div class="service-card" style="height:200px; display:flex; justify-content:center; align-items:center;"><div class="spinner"></div></div>';
+
+      try {
+        const token = localStorage.getItem('tamirhanem_token');
+        const response = await fetch(`${API_BASE_URL}/services?populate=*&pagination[pageSize]=100`, { headers: { 'Authorization': `Bearer ${token}` } });
+
+        if (response.ok) {
+          const data = await response.json();
+          let services = data.data || [];
+
+          // Servis tipi filtresi
+          const typeMap = {
+            'industrial': ['industrial', 'oto-sanayi', 'oto_sanayi', 'otosanayi', 'sanayi'],
+            'carwash': ['carwash', 'car-wash', 'car_wash', 'oto-yikama', 'oto_yikama', 'otoyikama', 'yikama'],
+            'towing': ['towing', 'cekici', 'çekici', 'yol-yardim', 'yol_yardim'],
+            'rental': ['rental', 'kiralama', 'arac-kiralama', 'arac_kiralama']
+          };
+          const acceptedTypes = typeMap[serviceType] || [serviceType];
+
+          services = services.filter(service => {
+            const attrs = service.attributes || service;
+            const svcType = (attrs.service_type || attrs.serviceType || attrs.type || '').toLowerCase();
+            if (!svcType || svcType === 'all') return true;
+            return acceptedTypes.some(t => svcType.includes(t) || t.includes(svcType));
+          });
+
+          // Kategori filtresi (ID bazlı)
+          // 3149 = "Tüm Kategoriler" - bu kategoriye sahip servisler her yerde gösterilir
+          const TUM_KATEGORILER_ID = 3149;
+
+          if (categoryId) {
+            const targetCatId = parseInt(categoryId);
+            services = services.filter(service => {
+              const attrs = service.attributes || service;
+              const categories = attrs.categories?.data || attrs.categories || [];
+
+              // Kategorisi yoksa gösterme (belirli kategori seçildiğinde)
+              if (!categories || categories.length === 0) return false;
+
+              // "Tüm Kategoriler" (3149) varsa her yerde göster
+              const hasTumKategoriler = categories.some(cat => {
+                const cid = cat.id || cat.attributes?.id || cat;
+                return cid == TUM_KATEGORILER_ID;
+              });
+              if (hasTumKategoriler) return true;
+
+              // Seçilen kategoriye ait mi kontrol et
+              return categories.some(cat => {
+                const cid = cat.id || cat.attributes?.id || cat;
+                return cid == targetCatId;
+              });
+            });
+          }
+
+          // Marka filtresi - SADECE seçilen markayı destekleyen servisler
+          // Backend'de supported_vehicles: ["AUDI", "BMW", ...] formatında
+          if (filters.brand) {
+            const selectedBrand = filters.brand.toUpperCase().trim();
+            console.log('[Filter] Filtering by brand:', selectedBrand);
+
+            services = services.filter(service => {
+              const attrs = service.attributes || service;
+              const serviceName = attrs.name || 'Unknown';
+
+              // Tüm araçlara hizmet veriyorsa göster
+              if (attrs.supports_all_vehicles === true) {
+                console.log('[Filter]', serviceName, '- supports_all_vehicles: true');
+                return true;
+              }
+
+              const supportedVehicles = attrs.supported_vehicles || [];
+              console.log('[Filter]', serviceName, '- supported_vehicles:', supportedVehicles);
+
+              // Desteklenen araç listesi boşsa GÖSTERMEMELİ (marka filtresi aktifken)
+              if (!supportedVehicles || supportedVehicles.length === 0) {
+                console.log('[Filter]', serviceName, '- empty supported_vehicles, hiding');
+                return false;
+              }
+
+              // Seçilen marka destekleniyor mu kontrol et
+              const hasMatch = supportedVehicles.some(brand => {
+                const brandUpper = (brand || '').toUpperCase().trim();
+                return brandUpper === selectedBrand || brandUpper.includes(selectedBrand) || selectedBrand.includes(brandUpper);
+              });
+              console.log('[Filter]', serviceName, '- match:', hasMatch);
+              return hasMatch;
+            });
+            console.log('[Filter] After brand filter:', services.length, 'services');
+          }
+
+          countEl.textContent = `${services.length} servis bulundu`;
+
+          if (services.length > 0) {
+            grid.innerHTML = services.map(service => {
+              const attrs = service.attributes || service;
+              const imgUrl = getServiceImageUrl(attrs.ProfilePicture);
+              const isPremium = attrs.isOfficialService || (attrs.rating >= 4.5);
+              return `
+                <div class="service-card">
+                  ${isPremium ? '<div class="premium-badge"><i class="ri-vip-crown-2-fill"></i> PREMIUM</div>' : ''}
+                  <img src="${imgUrl}" class="service-img" alt="${attrs.name}" onerror="this.src='https://placehold.co/600x400?text=No+Image'" onclick="window.location.href='/pages/service-detail.html?id=${service.id}'">
+                  <div class="service-content">
+                    <h3 class="service-title" onclick="window.location.href='/pages/service-detail.html?id=${service.id}'">${attrs.name}</h3>
+                    <div class="service-loc"><i class="ri-map-pin-line"></i> ${attrs.location || 'İstanbul'}</div>
+                    <div class="service-meta">
+                      <div class="rating-badge"><i class="ri-star-fill"></i> ${(attrs.rating || 4.5).toFixed(1)} <span style="font-weight:400; color:var(--neutral-700); margin-left:2px;">(${attrs.reviewCount || 0})</span></div>
+                    </div>
+                    <div class="service-actions">
+                      <button class="btn-appointment" onclick="event.stopPropagation(); window.location.href='/pages/create-appointment.html?serviceId=${service.id}'"><i class="ri-calendar-line"></i> Randevu</button>
+                      <button class="btn-quote" onclick="event.stopPropagation(); window.location.href='/pages/create-appointment.html?serviceId=${service.id}&mode=quote'"><i class="ri-money-dollar-circle-line"></i> Teklif</button>
+                    </div>
+                  </div>
+                </div>`;
+            }).join('');
+          } else {
+            grid.innerHTML = '<div class="empty-state"><i class="ri-tools-line"></i><p>Bu kategoride servis bulunamadı</p></div>';
+          }
+        }
+      } catch (error) {
+        console.error('Services load error:', error);
+        grid.innerHTML = '<div class="empty-state"><i class="ri-error-warning-line"></i><p>Servisler yüklenirken hata oluştu</p></div>';
+        countEl.textContent = '0 servis';
+      }
+    }
+
+    function getServiceImageUrl(image) {
+      if (!image) return 'https://placehold.co/600x400?text=No+Image';
+      const baseUrl = API_BASE_URL.replace(/\/api$/, '');
+      if (image.data?.attributes?.url) return image.data.attributes.url.startsWith('http') ? image.data.attributes.url : `${baseUrl}${image.data.attributes.url}`;
+      if (image.url) return image.url.startsWith('http') ? image.url : `${baseUrl}${image.url}`;
+      return 'https://placehold.co/600x400?text=No+Image';
+    }
+
+    function applyFilters() {
+      const filters = {
+        brand: document.getElementById('brand-filter').value,
+        model: document.getElementById('model-filter').value,
+        fuel: document.getElementById('fuel-filter').value
+      };
+      console.log('[Filter] Applying filters:', filters);
+      loadServices(filters);
+    }
+
+    function clearFilters() {
+      document.getElementById('brand-filter').value = '';
+      document.getElementById('model-filter').value = '';
+      document.getElementById('model-filter').disabled = true;
+      document.getElementById('model-filter').innerHTML = '<option value="">Önce marka seçin</option>';
+      document.getElementById('fuel-filter').value = '';
+      loadServices();
+    }
+  </script>
+</body>
+</html>

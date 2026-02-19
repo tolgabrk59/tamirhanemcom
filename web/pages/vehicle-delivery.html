@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Araç Teslim | TamirHanem</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+
+  <style>
+    /* --- DESIGN SYSTEM --- */
+    :root {
+      --primary: #fbc707;
+      --primary-dark: #e0b000;
+      --primary-light: rgba(251, 199, 7, 0.15);
+
+      --custom-dark: #5a5a5a;
+      --custom-darker: #2d2d2d;
+
+      --neutral-900: #1a1a1a;
+      --neutral-800: #2d2d2d;
+      --neutral-700: #454545;
+      --neutral-500: #888888;
+      --neutral-100: #f4f6f8;
+      --white: #ffffff;
+
+      --success: #166534;
+      --success-bg: #dcfce7;
+      --warning: #854d0e;
+      --warning-bg: #fef9c3;
+      --error: #991b1b;
+      --error-bg: #fee2e2;
+
+      --radius-xl: 24px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+      --ease: cubic-bezier(0.25, 0.8, 0.25, 1);
+      --nav-height: 70px;
+      --bottom-nav-height: 80px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--neutral-100);
+      color: var(--neutral-800);
+      line-height: 1.5;
+      padding-bottom: calc(var(--bottom-nav-height) + 20px);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      color: var(--neutral-900);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    /* --- HEADER --- */
+    .dashboard-navbar {
+      background: var(--primary);
+      height: var(--nav-height);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(251, 199, 7, 0.25);
+      display: flex;
+      align-items: center;
+    }
+
+    .dashboard-navbar-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .dashboard-logo {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--neutral-900);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .dashboard-logo img {
+      height: 40px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .dashboard-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .action-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--neutral-900);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .action-btn:hover {
+      background: var(--white);
+      transform: translateY(-2px);
+    }
+
+    .user-profile-mini {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      padding: 4px;
+      padding-right: 12px;
+      border-radius: 50px;
+      transition: 0.3s;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      background: var(--neutral-900);
+      color: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    /* --- MAIN CONTENT --- */
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .dashboard-main {
+      padding-top: 20px;
+      animation: fadeIn 0.5s var(--ease);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Breadcrumb */
+    .breadcrumb-modern {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--white);
+      padding: 10px 20px;
+      border-radius: 50px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 25px;
+      border: 1px solid #eee;
+    }
+
+    .bc-item {
+      font-size: 0.85rem;
+      color: var(--neutral-500);
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .bc-item:hover {
+      color: var(--primary-dark);
+    }
+
+    .bc-separator {
+      color: var(--neutral-500);
+      font-size: 0.8rem;
+    }
+
+    .bc-item.active {
+      color: var(--neutral-900);
+      font-weight: 700;
+      background: var(--neutral-100);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      opacity: 0.2;
+      margin-bottom: 20px;
+      color: var(--neutral-900);
+    }
+
+    .empty-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--neutral-900);
+    }
+
+    .empty-text {
+      color: var(--neutral-500);
+      margin-bottom: 20px;
+    }
+
+    /* Bottom Nav */
+    .dashboard-tabs {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: var(--bottom-nav-height);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      z-index: 1000;
+      padding-bottom: 10px;
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.03);
+    }
+
+    .dashboard-tabs-container {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .tab-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--neutral-500);
+      font-size: 0.75rem;
+      font-weight: 600;
+      gap: 4px;
+      width: 60px;
+      transition: all 0.3s;
+      position: relative;
+      text-decoration: none;
+    }
+
+    .tab-link i {
+      font-size: 1.5rem;
+      transition: all 0.3s;
+    }
+
+    .tab-link.active {
+      color: var(--neutral-900);
+    }
+
+    .tab-link.active i {
+      color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .tab-link.active::after {
+      content: '';
+      position: absolute;
+      top: -10px;
+      width: 40px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 0 0 4px 4px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="dashboard-navbar">
+    <div class="container dashboard-navbar-container">
+      <a href="/dashboard.html" class="dashboard-logo">
+        <img src="/images/logo.png" alt="TamirHanem">
+      </a>
+      <div class="dashboard-actions">
+        <button class="action-btn" id="notifications-btn"><i class="ri-notification-3-line"></i></button>
+        <div class="user-profile-mini" onclick="window.location.href='/dashboard.html#profile'">
+          <div class="user-avatar" id="user-avatar">S</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="dashboard-main">
+    <div class="container">
+
+      <div class="breadcrumb-modern">
+        <a href="/dashboard.html" class="bc-item"><i class="ri-home-5-line"></i> Anasayfa</a>
+        <i class="ri-arrow-right-s-line bc-separator"></i>
+        <a href="/pages/service-panel.html" class="bc-item">Servis Paneli</a>
+        <i class="ri-arrow-right-s-line bc-separator"></i>
+        <span class="bc-item active">Araç Teslim</span>
+      </div>
+
+      <div class="empty-state">
+        <div class="empty-icon"><i class="ri-car-line"></i></div>
+        <h2 class="empty-title">Araç Teslim</h2>
+        <p class="empty-text">Bu özellik yakında eklenecektir.</p>
+        <button onclick="window.history.back()"
+          style="background: var(--primary); color: var(--neutral-900); border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+          <i class="ri-arrow-left-line"></i> Geri Dön
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <div class="dashboard-tabs">
+    <div class="dashboard-tabs-container">
+      <a href="/dashboard.html#home" class="tab-link"><i class="ri-home-5-line"></i><span>Anasayfa</span></a>
+      <a href="/dashboard.html#appointments" class="tab-link"><i
+          class="ri-calendar-event-line"></i><span>Randevular</span></a>
+      <a href="/dashboard.html#campaigns" class="tab-link"><i class="ri-coupon-2-line"></i><span>Fırsatlar</span></a>
+      <a href="/dashboard.html#assistant" class="tab-link"><i class="ri-robot-2-line"></i><span>Asistan</span></a>
+      <a href="/dashboard.html#profile" class="tab-link"><i class="ri-user-3-line"></i><span>Profil</span></a>
+    </div>
+  </div>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    if (!auth.requireAuth()) { }
+  </script>
+</body>
+
+</html>

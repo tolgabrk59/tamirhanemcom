@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sayfa Bulunamadı - TamirHanem">
+  <title>404 - Sayfa Bulunamadı | TamirHanem</title>
+
+  <link rel="icon" type="image/png" href="/assets/icons/favicon.png">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/error.css">
+</head>
+<body class="error-page">
+
+  <div class="error-container">
+    <div class="error-content">
+      <!-- Error Icon/Illustration -->
+      <div class="error-illustration">
+        <div class="error-icon">🚗</div>
+        <div class="error-code">404</div>
+      </div>
+
+      <!-- Error Message -->
+      <h1 class="error-title">Yol Kaybettik!</h1>
+      <p class="error-description">
+        Aradığınız sayfa bulunamadı. Sayfa silinmiş, taşınmış veya hiç var olmamış olabilir.
+      </p>
+
+      <!-- Actions -->
+      <div class="error-actions">
+        <button class="btn btn-primary btn-lg" onclick="window.location.href='/dashboard.html'">
+          🏠 Ana Sayfaya Dön
+        </button>
+        <button class="btn btn-outline btn-lg" onclick="window.history.back()">
+          ← Geri Dön
+        </button>
+      </div>
+
+      <!-- Helpful Links -->
+      <div class="error-links">
+        <h3 class="error-links-title">Yararlı Bağlantılar:</h3>
+        <div class="error-links-grid">
+          <a href="/dashboard.html" class="error-link">
+            <span class="error-link-icon">🏠</span>
+            Ana Sayfa
+          </a>
+          <a href="/pages/services.html" class="error-link">
+            <span class="error-link-icon">🔧</span>
+            Servisler
+          </a>
+          <a href="/pages/my-appointments.html" class="error-link">
+            <span class="error-link-icon">📅</span>
+            Randevularım
+          </a>
+          <a href="/pages/help.html" class="error-link">
+            <span class="error-link-icon">❓</span>
+            Yardım
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="error-footer">
+      <p>Sorun devam ederse <a href="mailto:destek@tamirhanem.net">destek@tamirhanem.net</a> adresinden bize ulaşabilirsiniz.</p>
+    </div>
+  </div>
+
+  <script>
+    // Log 404 for analytics
+    console.log('404 Error:', window.location.href);
+
+    // Auto-redirect countdown (optional)
+    let countdown = 10;
+    const countdownEl = document.createElement('p');
+    countdownEl.className = 'error-countdown';
+    countdownEl.textContent = `${countdown} saniye sonra ana sayfaya yönlendirileceksiniz...`;
+
+    // Uncomment below lines to enable auto-redirect
+    // document.querySelector('.error-actions').appendChild(countdownEl);
+    // const interval = setInterval(() => {
+    //   countdown--;
+    //   if (countdown <= 0) {
+    //     clearInterval(interval);
+    //     window.location.href = '/dashboard.html';
+    //   } else {
+    //     countdownEl.textContent = `${countdown} saniye sonra ana sayfaya yönlendirileceksiniz...`;
+    //   }
+    // }, 1000);
+  </script>
+</body>
+</html>

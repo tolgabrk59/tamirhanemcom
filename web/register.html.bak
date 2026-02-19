@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kayıt Ol - TamirHanem">
+  <title>Kayıt Ol | TamirHanem</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="/favicon/site.webmanifest">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      position: relative;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    html {
+      min-height: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+    }
+
+    /* Animated Background */
+    body::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(251, 199, 7, 0.03) 0%, transparent 50%);
+      animation: pulse 15s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(10%, 10%) scale(1.1); }
+    }
+
+    /* Floating Shapes with Icons */
+    .floating-shape {
+      position: absolute;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(251, 199, 7, 0.08), rgba(251, 199, 7, 0.02));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    .floating-shape i {
+      font-size: 4rem;
+      color: rgba(251, 199, 7, 0.15);
+    }
+
+    .shape-1 {
+      width: 280px;
+      height: 280px;
+      top: 3%;
+      left: 2%;
+      animation-delay: 0s;
+    }
+
+    .shape-1 i { font-size: 4.5rem; }
+
+    .shape-2 {
+      width: 200px;
+      height: 200px;
+      bottom: 8%;
+      right: 3%;
+      animation-delay: -5s;
+    }
+
+    .shape-2 i { font-size: 3.5rem; }
+
+    .shape-3 {
+      width: 150px;
+      height: 150px;
+      top: 50%;
+      left: 5%;
+      animation-delay: -10s;
+    }
+
+    .shape-3 i { font-size: 3rem; }
+
+    .shape-4 {
+      width: 140px;
+      height: 140px;
+      top: 10%;
+      right: 5%;
+      animation-delay: -3s;
+    }
+
+    .shape-4 i { font-size: 2.8rem; }
+
+    .shape-5 {
+      width: 100px;
+      height: 100px;
+      bottom: 30%;
+      left: 15%;
+      animation-delay: -8s;
+    }
+
+    .shape-5 i { font-size: 2rem; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      33% { transform: translateY(-20px) rotate(5deg); }
+      66% { transform: translateY(20px) rotate(-5deg); }
+    }
+
+    /* Register Container */
+    .register-container {
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+      z-index: 10;
+      transform: translateY(-15px);
+    }
+
+    /* Logo */
+    .logo-section {
+      text-align: center;
+      margin-bottom: 15px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .logo-section img {
+      height: clamp(150px, 20vh, 180px);
+      width: auto;
+      filter: drop-shadow(0 4px 20px rgba(251, 199, 7, 0.3));
+      transform: translate(20px, 20px);
+    }
+
+    /* Register Card */
+    .register-card {
+      background: rgba(90, 90, 90, 0.15);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 24px;
+      border: 1px solid rgba(90, 90, 90, 0.3);
+      padding: 30px 35px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+      position: relative;
+      margin-top: -15px;
+    }
+
+    /* Header */
+    .register-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .register-header h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .register-header p {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.9rem;
+    }
+
+    /* Form */
+    .form-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.8rem;
+      margin-bottom: 6px;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 1rem;
+      transition: color 0.3s;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 12px 12px 42px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      color: #ffffff;
+      font-family: inherit;
+      transition: all 0.3s;
+    }
+
+    .form-input::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #fbc707;
+      background: rgba(251, 199, 7, 0.05);
+      box-shadow: 0 0 0 3px rgba(251, 199, 7, 0.1);
+    }
+
+    .form-input:focus + i {
+      color: #fbc707;
+    }
+
+    .input-error {
+      border-color: #ef4444 !important;
+      background: rgba(239, 68, 68, 0.05) !important;
+    }
+
+    .error-message {
+      color: #ef4444;
+      font-size: 0.75rem;
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* Password Toggle */
+    .password-toggle {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      font-size: 1rem;
+      transition: color 0.3s;
+    }
+
+    .password-toggle:hover {
+      color: #fbc707;
+    }
+
+    /* Checkbox */
+    .checkbox-wrapper {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .checkbox-wrapper input {
+      width: 16px;
+      height: 16px;
+      accent-color: #fbc707;
+      cursor: pointer;
+      margin-top: 2px;
+    }
+
+    .checkbox-wrapper label {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.8rem;
+      cursor: pointer;
+      line-height: 1.4;
+    }
+
+    .checkbox-wrapper a {
+      color: #fbc707;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .checkbox-wrapper a:hover {
+      text-decoration: underline;
+    }
+
+    /* Submit Button */
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #fbc707 0%, #e5b306 100%);
+      border: none;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1a1a2e;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s;
+      box-shadow: 0 8px 24px rgba(251, 199, 7, 0.25);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(251, 199, 7, 0.35);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Footer */
+    .register-footer {
+      text-align: center;
+      margin-top: 15px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.9rem;
+    }
+
+    .register-footer a {
+      color: #fbc707;
+      font-weight: 700;
+      text-decoration: none;
+      margin-left: 4px;
+    }
+
+    .register-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Features */
+    .features {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.75rem;
+    }
+
+    .feature-item i {
+      color: #fbc707;
+      font-size: 0.9rem;
+    }
+
+    /* Loading */
+    #global-loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(26, 26, 46, 0.95);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s;
+    }
+
+    #global-loading.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-top-color: #fbc707;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ==================== SUCCESS MODAL ==================== */
+    .result-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(90, 90, 90, 0.92);
+      backdrop-filter: blur(10px);
+      z-index: 10001;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.4s ease;
+    }
+
+    .result-modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .result-modal-content {
+      text-align: center;
+      padding: 40px;
+      animation: modalBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    @keyframes modalBounce {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.05); }
+      70% { transform: scale(0.95); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .success-car {
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 24px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .success-car .car-circle {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(251, 199, 7, 0.15), rgba(251, 199, 7, 0.05));
+      border: 3px solid #fbc707;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse-circle 2s ease-in-out infinite;
+      box-shadow: 0 0 40px rgba(251, 199, 7, 0.3);
+    }
+
+    @keyframes pulse-circle {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(251, 199, 7, 0.3); }
+      50% { transform: scale(1.05); box-shadow: 0 0 60px rgba(251, 199, 7, 0.5); }
+    }
+
+    .success-car .car-icon {
+      font-size: 4rem;
+      color: #fbc707;
+      animation: car-drive 1s ease-out;
+    }
+
+    @keyframes car-drive {
+      0% { transform: translateX(-50px); opacity: 0; }
+      50% { transform: translateX(10px); }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+
+    .success-car .check-badge {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #4ade80, #22c55e);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+      animation: badge-pop 0.5s ease-out 0.5s both;
+      box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
+    }
+
+    @keyframes badge-pop {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .result-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: #fbc707;
+    }
+
+    .result-message {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1rem;
+      margin-bottom: 24px;
+    }
+
+    .result-redirect {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .result-redirect i {
+      animation: spin 1s linear infinite;
+    }
+
+    /* Falling Tamirhane Icons Animation */
+    .falling-icon {
+      position: absolute;
+      font-size: 24px;
+      color: #5a5a5a;
+      animation: icon-fall 3.5s ease-out forwards;
+      text-shadow: 0 2px 10px rgba(90, 90, 90, 0.5);
+    }
+
+    @keyframes icon-fall {
+      0% {
+        transform: translateY(0) rotate(0deg) scale(1);
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(500px) rotate(720deg) scale(0.5);
+        opacity: 0;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .register-card {
+        padding: 25px 20px;
+      }
+
+      .register-header h1 {
+        font-size: 1.4rem;
+      }
+
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .features {
+        gap: 12px;
+      }
+
+      .feature-item {
+        font-size: 0.7rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Floating Shapes -->
+  <div class="floating-shape shape-1"><i class="ri-user-add-fill"></i></div>
+  <div class="floating-shape shape-2"><i class="ri-roadster-fill"></i></div>
+  <div class="floating-shape shape-3"><i class="ri-tools-fill"></i></div>
+  <div class="floating-shape shape-4"><i class="ri-steering-2-fill"></i></div>
+  <div class="floating-shape shape-5"><i class="ri-settings-3-fill"></i></div>
+
+  <div class="register-container">
+    <!-- Logo -->
+    <div class="logo-section">
+      <a href="/">
+        <img src="/images/logov2.png" alt="TamirHanem">
+      </a>
+    </div>
+
+    <!-- Register Card -->
+    <div class="register-card">
+      <div class="register-header">
+        <h1>Hesap Oluşturun</h1>
+        <p>Hemen başlayın, aracınız için en iyi hizmeti alın</p>
+      </div>
+
+      <form id="register-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Ad</label>
+            <div class="input-wrapper">
+              <input type="text" id="name" class="form-input" placeholder="Adınız" required autocomplete="given-name">
+              <i class="ri-user-line"></i>
+            </div>
+            <span class="error-message" id="name-error"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Soyad</label>
+            <div class="input-wrapper">
+              <input type="text" id="surname" class="form-input" placeholder="Soyadınız" required autocomplete="family-name">
+              <i class="ri-user-line"></i>
+            </div>
+            <span class="error-message" id="surname-error"></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <div class="input-wrapper">
+            <input type="email" id="email" class="form-input" placeholder="ornek@email.com" required autocomplete="email">
+            <i class="ri-mail-line"></i>
+          </div>
+          <span class="error-message" id="email-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Telefon</label>
+          <div class="input-wrapper">
+            <input type="tel" id="phone" class="form-input" placeholder="5XXXXXXXXX" maxlength="10" required autocomplete="tel">
+            <i class="ri-phone-line"></i>
+          </div>
+          <span class="error-message" id="phone-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Kullanıcı Adı</label>
+          <div class="input-wrapper">
+            <input type="text" id="username" class="form-input" placeholder="kullaniciadi" required autocomplete="username">
+            <i class="ri-at-line"></i>
+          </div>
+          <span class="error-message" id="username-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Şifre</label>
+          <div class="input-wrapper">
+            <input type="password" id="password" class="form-input" placeholder="En az 6 karakter" required autocomplete="new-password">
+            <i class="ri-lock-password-line"></i>
+            <button type="button" class="password-toggle" id="password-toggle">
+              <i class="ri-eye-line"></i>
+            </button>
+          </div>
+          <span class="error-message" id="password-error"></span>
+        </div>
+
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="terms" name="terms">
+          <label for="terms">
+            <a href="#">Kullanım Koşullarını</a> ve <a href="#">Gizlilik Politikasını</a> kabul ediyorum
+          </label>
+        </div>
+
+        <button type="submit" class="btn-submit" id="register-btn">
+          Kayıt Ol <i class="ri-arrow-right-line"></i>
+        </button>
+      </form>
+
+      <div class="register-footer">
+        Zaten hesabınız var mı?<a href="/login.html">Giriş Yapın</a>
+      </div>
+    </div>
+
+    <!-- Features -->
+    <div class="features">
+      <div class="feature-item">
+        <i class="ri-shield-check-line"></i>
+        <span>Güvenli Kayıt</span>
+      </div>
+      <div class="feature-item">
+        <i class="ri-gift-line"></i>
+        <span>Ücretsiz Üyelik</span>
+      </div>
+      <div class="feature-item">
+        <i class="ri-customer-service-2-line"></i>
+        <span>7/24 Destek</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="global-loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="result-modal" id="success-modal">
+    <div class="result-modal-content">
+      <div class="success-car">
+        <div class="car-circle">
+          <i class="ri-user-add-fill car-icon"></i>
+        </div>
+        <div class="check-badge">
+          <i class="ri-check-line"></i>
+        </div>
+      </div>
+      <h2 class="result-title">Kayıt Başarılı!</h2>
+      <p class="result-message">Hesabınız oluşturuldu, hoş geldiniz!</p>
+      <div class="result-redirect">
+        <i class="ri-steering-2-line"></i>
+        <span>Panele yönlendiriliyorsunuz...</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/store.js"></script>
+
+  <script>
+    // Redirect if already authenticated
+    if (auth.isAuthenticated()) window.location.href = '/dashboard.html';
+
+    // Success Modal Functions
+    function showSuccessModal() {
+      const modal = document.getElementById('success-modal');
+      modal.classList.add('active');
+      createFallingIcons();
+    }
+
+    function createFallingIcons() {
+      const icons = [
+        'ri-tools-fill',
+        'ri-settings-3-fill',
+        'ri-hammer-fill',
+        'ri-car-fill',
+        'ri-roadster-fill',
+        'ri-steering-2-fill',
+        'ri-car-washing-fill',
+        'ri-gas-station-fill',
+        'ri-key-2-fill',
+        'ri-timer-flash-fill'
+      ];
+      const colors = ['#fbc707', '#eeb902', '#fcd34d', '#5a5a5a', '#6a6a6a'];
+      const modal = document.getElementById('success-modal');
+
+      for (let i = 0; i < 30; i++) {
+        const icon = document.createElement('i');
+        icon.className = `falling-icon ${icons[Math.floor(Math.random() * icons.length)]}`;
+        icon.style.left = Math.random() * 100 + '%';
+        icon.style.top = '-30px';
+        icon.style.color = colors[Math.floor(Math.random() * colors.length)];
+        icon.style.animationDelay = Math.random() * 2 + 's';
+        icon.style.animationDuration = (Math.random() * 2 + 2.5) + 's';
+        icon.style.fontSize = (Math.random() * 16 + 18) + 'px';
+        modal.appendChild(icon);
+
+        setTimeout(() => icon.remove(), 5000);
+      }
+    }
+
+    // Password Toggle
+    const passwordToggle = document.getElementById('password-toggle');
+    const passwordInput = document.getElementById('password');
+    const passwordIcon = passwordToggle.querySelector('i');
+
+    passwordToggle.addEventListener('click', () => {
+      const type = passwordInput.type === 'password' ? 'text' : 'password';
+      passwordInput.type = type;
+      passwordIcon.className = type === 'password' ? 'ri-eye-line' : 'ri-eye-off-line';
+    });
+
+    // Phone Input Format
+    document.getElementById('phone').addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/\D/g, '').substring(0, 10);
+    });
+
+    // Form Submit
+    const registerForm = document.getElementById('register-form');
+    const registerBtn = document.getElementById('register-btn');
+
+    const inputs = {
+      name: document.getElementById('name'),
+      surname: document.getElementById('surname'),
+      email: document.getElementById('email'),
+      phone: document.getElementById('phone'),
+      username: document.getElementById('username'),
+      password: document.getElementById('password'),
+      terms: document.getElementById('terms')
+    };
+
+    const errors = {
+      name: document.getElementById('name-error'),
+      surname: document.getElementById('surname-error'),
+      email: document.getElementById('email-error'),
+      phone: document.getElementById('phone-error'),
+      username: document.getElementById('username-error'),
+      password: document.getElementById('password-error')
+    };
+
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Reset errors
+      Object.values(errors).forEach(el => el.textContent = '');
+      Object.values(inputs).forEach(el => el.classList && el.classList.remove('input-error'));
+
+      let hasError = false;
+      const values = {
+        name: inputs.name.value.trim(),
+        surname: inputs.surname.value.trim(),
+        email: inputs.email.value.trim(),
+        phone: inputs.phone.value.trim(),
+        username: inputs.username.value.trim(),
+        password: inputs.password.value
+      };
+
+      if (values.name.length < 2) { errors.name.textContent = 'En az 2 karakter'; inputs.name.classList.add('input-error'); hasError = true; }
+      if (values.surname.length < 2) { errors.surname.textContent = 'En az 2 karakter'; inputs.surname.classList.add('input-error'); hasError = true; }
+      if (!Utils.validateEmail(values.email)) { errors.email.textContent = 'Geçersiz email'; inputs.email.classList.add('input-error'); hasError = true; }
+      if (!Utils.validatePhone(values.phone)) { errors.phone.textContent = 'Geçersiz telefon (5XXXXXXXXX)'; inputs.phone.classList.add('input-error'); hasError = true; }
+      if (values.username.length < 3) { errors.username.textContent = 'En az 3 karakter'; inputs.username.classList.add('input-error'); hasError = true; }
+      if (values.password.length < 6) { errors.password.textContent = 'En az 6 karakter'; inputs.password.classList.add('input-error'); hasError = true; }
+      if (!inputs.terms.checked) { Utils.showToast('Koşulları kabul etmelisiniz', 'warning'); hasError = true; }
+
+      if (hasError) return;
+
+      registerBtn.disabled = true;
+      registerBtn.innerHTML = '<i class="ri-loader-4-line" style="animation:spin 1s infinite"></i> Kayıt yapılıyor...';
+      Utils.showLoading();
+
+      try {
+        const result = await auth.register({ ...values, userType: 'customer' });
+
+        if (result.success) {
+          Utils.hideLoading();
+          showSuccessModal();
+          setTimeout(() => { window.location.href = '/dashboard.html'; }, 2500);
+        } else {
+          Utils.hideLoading();
+          Utils.showToast(result.error || 'Kayıt başarısız', 'error');
+          if (result.error && result.error.includes('email')) {
+            errors.email.textContent = 'Email kullanımda';
+            inputs.email.classList.add('input-error');
+          }
+          registerBtn.disabled = false;
+          registerBtn.innerHTML = 'Kayıt Ol <i class="ri-arrow-right-line"></i>';
+        }
+      } catch (error) {
+        Utils.hideLoading();
+        Utils.showToast('Bir hata oluştu. Lütfen tekrar deneyin.', 'error');
+        registerBtn.disabled = false;
+        registerBtn.innerHTML = 'Kayıt Ol <i class="ri-arrow-right-line"></i>';
+      }
+    });
+  </script>
+</body>
+
+</html>
