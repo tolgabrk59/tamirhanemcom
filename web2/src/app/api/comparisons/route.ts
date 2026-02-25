@@ -8,10 +8,9 @@ const STRAPI_BASE = STRAPI_URL.replace(/\/api$/, '')
 const ADMIN_EMAIL = process.env.STRAPI_ADMIN_EMAIL
 const ADMIN_PASSWORD = process.env.STRAPI_ADMIN_PASSWORD
 
-function getStrapiHeaders(contentType = false): Record<string, string> {
+function getStrapiHeaders(): Record<string, string> {
   const headers: Record<string, string> = {}
   if (STRAPI_TOKEN) headers['Authorization'] = `Bearer ${STRAPI_TOKEN}`
-  if (contentType) headers['Content-Type'] = 'application/json'
   return headers
 }
 
@@ -51,40 +50,42 @@ interface ComparisonEntry {
   createdAt: string
 }
 
-// ─── GET: Kıyaslama Listesi ─────────────────────
-export async function GET() {
-  // Yöntem 1: Public REST API
+// ─── Tüm kayıtları al (REST veya Admin API) ─────
+async function fetchAllComparisons(): Promise<ComparisonEntry[]> {
+  // Yöntem 1: REST API (token ile)
   try {
     const res = await fetch(
-      `${STRAPI_URL}/vehicle-comparisons?sort=createdAt:desc&pagination[pageSize]=100`,
+      `${STRAPI_URL}/vehicle-comparisons?sort=createdAt:desc&pagination[pageSize]=100&fields[0]=brand1&fields[1]=model1&fields[2]=year1&fields[3]=brand2&fields[4]=model2&fields[5]=year2&fields[6]=createdAt`,
       { cache: 'no-store', headers: getStrapiHeaders() }
     )
 
     if (res.ok) {
       const json = await res.json()
-      const entries = (json.data || []).map((e: Record<string, unknown>) => {
-        const attrs = (e.attributes || e) as Record<string, unknown>
-        return {
-          id: e.id,
-          brand1: attrs.brand1,
-          model1: attrs.model1,
-          year1: attrs.year1,
-          brand2: attrs.brand2,
-          model2: attrs.model2,
-          year2: attrs.year2,
-          createdAt: attrs.createdAt,
-        }
-      })
-      return NextResponse.json({ data: entries })
+      const raw = json.data || []
+      if (Array.isArray(raw) && raw.length >= 0) {
+        return raw.map((e: Record<string, unknown>) => {
+          const attrs = (e.attributes || e) as Record<string, unknown>
+          return {
+            id: Number(e.id),
+            brand1: String(attrs.brand1 || ''),
+            model1: String(attrs.model1 || ''),
+            year1: Number(attrs.year1 || 0),
+            brand2: String(attrs.brand2 || ''),
+            model2: String(attrs.model2 || ''),
+            year2: Number(attrs.year2 || 0),
+            createdAt: String(attrs.createdAt || ''),
+          }
+        })
+      }
     }
   } catch {
-    // REST API henüz aktif değil, admin API dene
+    // REST API başarısız
   }
 
   // Yöntem 2: Admin Content-Manager API
   try {
     const token = await getAdminToken()
-    if (!token) return NextResponse.json({ data: [] })
+    if (!token) return []
 
     const res = await fetch(
       `${STRAPI_BASE}/content-manager/collection-types/api::vehicle-comparison.vehicle-comparison?sort=createdAt:desc&pageSize=100`,
@@ -100,26 +101,50 @@ export async function GET() {
     if (res.ok) {
       const json = await res.json()
       const results = json.results || json.data || []
-      const entries: ComparisonEntry[] = results.map((e: Record<string, unknown>) => ({
-        id: e.id,
-        brand1: e.brand1,
-        model1: e.model1,
-        year1: e.year1,
-        brand2: e.brand2,
-        model2: e.model2,
-        year2: e.year2,
-        createdAt: e.createdAt,
+      return results.map((e: Record<string, unknown>) => ({
+        id: Number(e.id),
+        brand1: String(e.brand1 || ''),
+        model1: String(e.model1 || ''),
+        year1: Number(e.year1 || 0),
+        brand2: String(e.brand2 || ''),
+        model2: String(e.model2 || ''),
+        year2: Number(e.year2 || 0),
+        createdAt: String(e.createdAt || ''),
       }))
-      return NextResponse.json({ data: entries })
     }
   } catch {
     // Admin API de başarısız
   }
 
-  return NextResponse.json({ data: [] })
+  return []
+}
+
+// ─── Duplikasyon kontrolü (in-memory) ────────────
+function findDuplicate(
+  entries: ComparisonEntry[],
+  b1: string, m1: string, y1: number,
+  b2: string, m2: string, y2: number,
+): ComparisonEntry | null {
+  return entries.find((e) => {
+    const matchForward =
+      e.brand1 === b1 && e.model1 === m1 && e.year1 === y1 &&
+      e.brand2 === b2 && e.model2 === m2 && e.year2 === y2
+    const matchReverse =
+      e.brand1 === b2 && e.model1 === m2 && e.year1 === y2 &&
+      e.brand2 === b1 && e.model2 === m1 && e.year2 === y1
+    return matchForward || matchReverse
+  }) ?? null
+}
+
+// ─── GET: Kıyaslama Listesi ─────────────────────
+export async function GET() {
+  const entries = await fetchAllComparisons()
+  return NextResponse.json({ data: entries })
 }
 
 // ─── POST: Kıyaslama Kaydet ─────────────────────
+// NOT: Strapi REST API bu koleksiyon için create yerine find döndürüyor (permission
+//      sorunu), yazma işlemleri sadece Admin Content-Manager API ile yapılıyor.
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -129,125 +154,61 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Eksik parametreler' }, { status: 400 })
     }
 
-    const payload = {
-      brand1: String(brand1).toUpperCase(),
-      model1: String(model1).toUpperCase(),
-      year1: Number(year1),
-      brand2: String(brand2).toUpperCase(),
-      model2: String(model2).toUpperCase(),
-      year2: Number(year2),
+    const b1 = String(brand1).toUpperCase()
+    const m1 = String(model1).toUpperCase()
+    const y1 = Number(year1)
+    const b2 = String(brand2).toUpperCase()
+    const m2 = String(model2).toUpperCase()
+    const y2 = Number(year2)
+
+    // Duplikasyon kontrolü: tüm kayıtları çek, JS'te karşılaştır
+    const existing = await fetchAllComparisons()
+    const dup = findDuplicate(existing, b1, m1, y1, b2, m2, y2)
+    if (dup) {
+      return NextResponse.json({ data: dup, duplicate: true })
     }
 
-    // Duplikasyon kontrolü: aynı çift zaten var mı?
-    const existingCheck = await checkDuplicate(payload)
-    if (existingCheck) {
-      return NextResponse.json({ data: existingCheck, duplicate: true })
+    // Admin Content-Manager API ile kaydet
+    const token = await getAdminToken()
+    if (!token) {
+      console.warn('[Comparisons] Admin token alınamadı')
+      return NextResponse.json({ data: null, warning: 'Kayıt yapılamadı' })
     }
 
-    // Yöntem 1: Public REST API
-    try {
-      const res = await fetch(`${STRAPI_URL}/vehicle-comparisons`, {
+    const res = await fetch(
+      `${STRAPI_BASE}/content-manager/collection-types/api::vehicle-comparison.vehicle-comparison`,
+      {
         method: 'POST',
-        headers: getStrapiHeaders(true),
-        body: JSON.stringify({ data: payload }),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ brand1: b1, model1: m1, year1: y1, brand2: b2, model2: m2, year2: y2 }),
+      }
+    )
+
+    if (res.ok) {
+      const json = await res.json()
+      console.log('[Comparisons] ✓ Kaydedildi, id:', json.id)
+      return NextResponse.json({
+        data: {
+          id: json.id,
+          brand1: json.brand1,
+          model1: json.model1,
+          year1: json.year1,
+          brand2: json.brand2,
+          model2: json.model2,
+          year2: json.year2,
+          createdAt: json.createdAt,
+        },
       })
-
-      if (res.ok) {
-        const json = await res.json()
-        console.log('[Comparisons] ✓ REST API ile kaydedildi')
-        return NextResponse.json({ data: json.data })
-      }
-    } catch {
-      // REST API başarısız, admin API dene
     }
 
-    // Yöntem 2: Admin Content-Manager API
-    try {
-      const token = await getAdminToken()
-      if (!token) throw new Error('Admin token alınamadı')
-
-      const res = await fetch(
-        `${STRAPI_BASE}/content-manager/collection-types/api::vehicle-comparison.vehicle-comparison`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        }
-      )
-
-      if (res.ok) {
-        const json = await res.json()
-        console.log('[Comparisons] ✓ Admin API ile kaydedildi')
-        return NextResponse.json({ data: json })
-      }
-
-      const errText = await res.text()
-      console.warn('[Comparisons] Admin API hatası:', res.status, errText.substring(0, 200))
-    } catch (err) {
-      console.warn('[Comparisons] Kayıt hatası:', err instanceof Error ? err.message : err)
-    }
-
-    // Her iki yöntem de başarısız — yine de 200 dön (kayıt opsiyonel)
-    console.warn('[Comparisons] ✗ Kayıt yapılamadı, Strapi restart gerekebilir')
+    const errText = await res.text()
+    console.warn('[Comparisons] Admin API hatası:', res.status, errText.substring(0, 200))
     return NextResponse.json({ data: null, warning: 'Kayıt yapılamadı' })
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Bilinmeyen hata'
     return NextResponse.json({ error: msg }, { status: 500 })
   }
-}
-
-// ─── Duplikasyon Kontrolü ────────────────────────
-async function checkDuplicate(payload: {
-  brand1: string; model1: string; year1: number
-  brand2: string; model2: string; year2: number
-}): Promise<ComparisonEntry | null> {
-  // Public REST API ile kontrol et
-  try {
-    const filters = [
-      `filters[$or][0][brand1][$eq]=${encodeURIComponent(payload.brand1)}`,
-      `filters[$or][0][model1][$eq]=${encodeURIComponent(payload.model1)}`,
-      `filters[$or][0][year1][$eq]=${payload.year1}`,
-      `filters[$or][0][brand2][$eq]=${encodeURIComponent(payload.brand2)}`,
-      `filters[$or][0][model2][$eq]=${encodeURIComponent(payload.model2)}`,
-      `filters[$or][0][year2][$eq]=${payload.year2}`,
-      // Ters sıra da olabilir
-      `filters[$or][1][brand1][$eq]=${encodeURIComponent(payload.brand2)}`,
-      `filters[$or][1][model1][$eq]=${encodeURIComponent(payload.model2)}`,
-      `filters[$or][1][year1][$eq]=${payload.year2}`,
-      `filters[$or][1][brand2][$eq]=${encodeURIComponent(payload.brand1)}`,
-      `filters[$or][1][model2][$eq]=${encodeURIComponent(payload.model1)}`,
-      `filters[$or][1][year2][$eq]=${payload.year1}`,
-    ].join('&')
-
-    const res = await fetch(`${STRAPI_URL}/vehicle-comparisons?${filters}`, {
-      cache: 'no-store',
-      headers: getStrapiHeaders(),
-    })
-
-    if (res.ok) {
-      const json = await res.json()
-      const entries = json.data || []
-      if (entries.length > 0) {
-        const e = entries[0]
-        const attrs = (e.attributes || e) as Record<string, unknown>
-        return {
-          id: Number(e.id),
-          brand1: String(attrs.brand1),
-          model1: String(attrs.model1),
-          year1: Number(attrs.year1),
-          brand2: String(attrs.brand2),
-          model2: String(attrs.model2),
-          year2: Number(attrs.year2),
-          createdAt: String(attrs.createdAt),
-        }
-      }
-    }
-  } catch {
-    // Duplikasyon kontrolü başarısız — kayda devam et
-  }
-
-  return null
 }
