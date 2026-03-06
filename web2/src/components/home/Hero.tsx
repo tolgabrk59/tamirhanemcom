@@ -2,33 +2,32 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
-import { Search, MapPin, Droplets, Factory, ShieldCheck, CarFront, Recycle, Clock, Wrench, Tag, Loader2 } from 'lucide-react'
+import { Search, ChevronDown, MapPin, Droplets, Factory, ShieldCheck, CarFront, Recycle, Clock, Wrench, Tag, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
-import { cityList, getDistrictsByCity } from '@/data/turkey-locations'
 
 const quickCategories = [
   {
     label: 'Oto Yıkama', icon: Droplets, active: true,
-    gradient: 'radial-gradient(ellipse 150% 150% at 50% 50%, rgba(59,130,246,0.15) 0%, rgba(59,130,246,0.08) 40%, rgba(59,130,246,0.03) 70%, transparent 100%)',
+    gradient: 'radial-gradient(ellipse at 50% 60%, rgba(59,130,246,0.35) 0%, rgba(147,197,253,0.18) 35%, rgba(255,255,255,0.08) 60%, transparent 80%)',
   },
   {
     label: 'Oto Sanayi', icon: Factory, active: false,
-    gradient: 'radial-gradient(ellipse 150% 150% at 50% 50%, rgba(234,179,8,0.15) 0%, rgba(234,179,8,0.08) 40%, rgba(234,179,8,0.03) 70%, transparent 100%)',
+    gradient: 'radial-gradient(ellipse at 50% 60%, rgba(234,179,8,0.35) 0%, rgba(202,138,4,0.18) 35%, rgba(0,0,0,0.12) 60%, transparent 80%)',
   },
   {
     label: 'Oto Sigorta', icon: ShieldCheck, active: false,
-    gradient: 'radial-gradient(ellipse 150% 150% at 50% 50%, rgba(239,68,68,0.15) 0%, rgba(239,68,68,0.08) 40%, rgba(239,68,68,0.03) 70%, transparent 100%)',
+    gradient: 'radial-gradient(ellipse at 50% 60%, rgba(239,68,68,0.35) 0%, rgba(185,28,28,0.18) 35%, rgba(0,0,0,0.12) 60%, transparent 80%)',
   },
   {
     label: 'Oto Kiralama', icon: CarFront, active: false,
-    gradient: 'radial-gradient(ellipse 150% 150% at 50% 50%, rgba(34,197,94,0.15) 0%, rgba(34,197,94,0.08) 40%, rgba(34,197,94,0.03) 70%, transparent 100%)',
+    gradient: 'radial-gradient(ellipse at 50% 60%, rgba(34,197,94,0.35) 0%, rgba(22,163,74,0.18) 35%, rgba(0,0,0,0.12) 60%, transparent 80%)',
   },
   {
     label: '2. El Parça', icon: Recycle, active: false,
-    gradient: 'radial-gradient(ellipse 150% 150% at 50% 50%, rgba(168,85,247,0.15) 0%, rgba(168,85,247,0.08) 40%, rgba(168,85,247,0.03) 70%, transparent 100%)',
+    gradient: 'radial-gradient(ellipse at 50% 60%, rgba(168,85,247,0.35) 0%, rgba(126,34,206,0.18) 35%, rgba(0,0,0,0.12) 60%, transparent 80%)',
   },
 ]
 
@@ -36,18 +35,18 @@ const staggerContainer = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.06,
-      delayChildren: 0,
+      staggerChildren: 0.12,
+      delayChildren: 0.3,
     },
   },
 }
 
 const fadeUpItem = {
-  hidden: { opacity: 0, y: 15 },
+  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] as const },
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const },
   },
 }
 
@@ -83,12 +82,8 @@ function normalizeTurkish(str: string): string {
 
 export default function Hero() {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
-  const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
   const [locationQuery, setLocationQuery] = useState('')
-  const [locationSuggestions, setLocationSuggestions] = useState<{ label: string; type: 'city' | 'district'; city?: string }[]>([])
-  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false)
-  const [activeLocationIndex, setActiveLocationIndex] = useState(-1)
   const [suggestions, setSuggestions] = useState<Suggestions>({ services: [], categories: [] })
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [suggestionsLoading, setSuggestionsLoading] = useState(false)
@@ -98,7 +93,6 @@ export default function Hero() {
   const router = useRouter()
   const containerRef = useRef<HTMLDivElement>(null)
   const searchWrapperRef = useRef<HTMLDivElement>(null)
-  const locationWrapperRef = useRef<HTMLDivElement>(null)
   const debounceRef = useRef<NodeJS.Timeout | null>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
@@ -108,23 +102,6 @@ export default function Hero() {
   })
   const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
   const heroScale = useTransform(scrollYProgress, [0, 0.8], [1, 0.96])
-
-  const rotatingPhrases = [
-    'Dijital Servisi',
-    'Ekonomik Çözümü',
-    'Güvenilir Ortağı',
-    'Akıllı Rehberi',
-    'Uzman Servisi',
-    'Pratik Çözümü',
-    'Tek Adresi',
-  ]
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentPhraseIndex((prev) => (prev + 1) % rotatingPhrases.length)
-    }, 7000)
-    return () => clearInterval(interval)
-  }, [rotatingPhrases.length])
 
   // Kategorileri bir kere yükle
   useEffect(() => {
@@ -142,16 +119,12 @@ export default function Hero() {
       .catch(() => {})
   }, [])
 
-  // Dışarı tıklama ile dropdown'ları kapat
+  // Dışarı tıklama ile dropdown'ı kapat
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (searchWrapperRef.current && !searchWrapperRef.current.contains(e.target as Node)) {
         setShowSuggestions(false)
         setActiveIndex(-1)
-      }
-      if (locationWrapperRef.current && !locationWrapperRef.current.contains(e.target as Node)) {
-        setShowLocationSuggestions(false)
-        setActiveLocationIndex(-1)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -159,64 +132,6 @@ export default function Hero() {
   }, [])
 
   const totalSuggestions = suggestions.services.length + suggestions.categories.length
-
-  const handleLocationChange = (value: string) => {
-    setLocationQuery(value)
-    setActiveLocationIndex(-1)
-    if (value.trim().length < 1) {
-      setLocationSuggestions([])
-      setShowLocationSuggestions(false)
-      return
-    }
-    const normalize = (s: string) =>
-      s.toLowerCase().replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ş/g, 's').replace(/ç/g, 'c').replace(/ğ/g, 'g')
-    const q = normalize(value.trim())
-    const results: { label: string; type: 'city' | 'district'; city?: string }[] = []
-    // Şehirler
-    for (const city of cityList) {
-      if (normalize(city).includes(q)) {
-        results.push({ label: city, type: 'city' })
-      }
-      if (results.length >= 8) break
-    }
-    // İlçeler
-    if (results.length < 8) {
-      for (const city of cityList) {
-        for (const district of getDistrictsByCity(city)) {
-          if (normalize(district).includes(q)) {
-            results.push({ label: `${district}, ${city}`, type: 'district', city })
-          }
-          if (results.length >= 8) break
-        }
-        if (results.length >= 8) break
-      }
-    }
-    setLocationSuggestions(results)
-    setShowLocationSuggestions(results.length > 0)
-  }
-
-  const handleSelectLocation = (item: { label: string; type: 'city' | 'district'; city?: string }) => {
-    setLocationQuery(item.label)
-    setShowLocationSuggestions(false)
-    setActiveLocationIndex(-1)
-  }
-
-  const handleLocationKeyDown = (e: React.KeyboardEvent) => {
-    if (!showLocationSuggestions || locationSuggestions.length === 0) return
-    if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      setActiveLocationIndex((prev) => (prev < locationSuggestions.length - 1 ? prev + 1 : 0))
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      setActiveLocationIndex((prev) => (prev > 0 ? prev - 1 : locationSuggestions.length - 1))
-    } else if (e.key === 'Enter' && activeLocationIndex >= 0) {
-      e.preventDefault()
-      handleSelectLocation(locationSuggestions[activeLocationIndex])
-    } else if (e.key === 'Escape') {
-      setShowLocationSuggestions(false)
-      setActiveLocationIndex(-1)
-    }
-  }
 
   const fetchSuggestions = useCallback(async (query: string) => {
     if (query.length < 2) {
@@ -335,7 +250,7 @@ export default function Hero() {
       <div className="absolute inset-0 hero-glow-overlay" aria-hidden="true" />
       <div className="absolute inset-0 hero-mesh-overlay" aria-hidden="true" />
 
-      {/* Category hover ambient atmosphere overlay */}
+      {/* Category hover gradient overlay */}
       <AnimatePresence>
         {hoveredCategory && (
           <motion.div
@@ -343,7 +258,7 @@ export default function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
             className="absolute inset-0 z-[1] pointer-events-none"
             style={{
               background: quickCategories.find((c) => c.label === hoveredCategory)?.gradient,
@@ -399,67 +314,19 @@ export default function Hero() {
           <motion.div variants={fadeUpItem}>
             <Badge variant="gold" className="mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse-glow" />
-              Türkiye&apos;nin Yeni Nesil Servis Platformu
+              Türkiye&apos;nin #1 Oto Servis Platformu
             </Badge>
           </motion.div>
 
           {/* Headline */}
           <motion.h1
             variants={fadeUpItem}
-            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight mb-6"
+            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight mb-6 text-balance"
           >
-            <span>Aracınızın</span>
+            Aracının{' '}
+            <span className="text-gold">Bakımı</span>
             <br />
-            <span className="text-gold inline-flex items-baseline font-accent">
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={currentPhraseIndex}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  variants={{
-                    hidden: {},
-                    visible: {
-                      transition: { staggerChildren: 0.045, delayChildren: 0.1 },
-                    },
-                    exit: {
-                      opacity: 0,
-                      transition: { duration: 0.25 },
-                    },
-                  }}
-                  className="inline-flex"
-                >
-                  {rotatingPhrases[currentPhraseIndex].split('').map((char, i) => (
-                    <motion.span
-                      key={`${currentPhraseIndex}-${i}`}
-                      variants={{
-                        hidden: { opacity: 0, y: 8, scaleY: 0.6 },
-                        visible: {
-                          opacity: 1,
-                          y: 0,
-                          scaleY: 1,
-                          transition: { duration: 0.15, ease: 'easeOut' },
-                        },
-                      }}
-                      className={char === ' ' ? 'inline-block w-[0.25em]' : 'inline-block'}
-                    >
-                      {char === ' ' ? '\u00A0' : char}
-                    </motion.span>
-                  ))}
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: [0, 1, 0] }}
-                    transition={{
-                      delay: rotatingPhrases[currentPhraseIndex].length * 0.045 + 0.2,
-                      duration: 0.8,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                    }}
-                    className="inline-block w-[3px] h-[0.75em] bg-brand-500 ml-1 self-center rounded-full"
-                  />
-                </motion.span>
-              </AnimatePresence>
-            </span>
+            Senin Elinde
           </motion.h1>
 
           {/* Subtitle */}
@@ -467,8 +334,8 @@ export default function Hero() {
             variants={fadeUpItem}
             className="text-th-fg text-lg md:text-xl max-w-2xl mb-10 text-balance"
           >
-            Servis bul, fiyat karşılaştır, arıza tespit et, bakım takibi yap.
-            Tüm araç ihtiyaçlarınız için <strong className="font-bold text-brand-500">TamirHanem.</strong>
+            En yakın, en güvenilir servisleri bul. Aracının bakım ve onarım
+            ihtiyaçları için tek adres.
           </motion.p>
 
           {/* Search Bar */}
@@ -499,19 +366,14 @@ export default function Hero() {
                     className="w-full bg-transparent border-none outline-none text-th-fg placeholder:text-th-fg-muted py-3 text-base"
                   />
                 </div>
-                <div ref={locationWrapperRef} className="flex items-center gap-3 px-4 sm:border-l sm:border-th-border/[0.06]">
+                <div className="flex items-center gap-3 px-4 sm:border-l sm:border-th-border/[0.06]">
                   <MapPin className="w-5 h-5 text-th-fg-sub shrink-0" />
                   <input
                     type="text"
-                    placeholder="Şehir veya ilçe"
+                    placeholder="Konum"
                     value={locationQuery}
-                    onChange={(e) => handleLocationChange(e.target.value)}
-                    onFocus={() => {
-                      if (locationSuggestions.length > 0) setShowLocationSuggestions(true)
-                    }}
-                    onKeyDown={handleLocationKeyDown}
-                    autoComplete="off"
-                    className="w-full bg-transparent border-none outline-none text-th-fg placeholder:text-th-fg-muted py-3 text-base sm:max-w-[160px]"
+                    onChange={(e) => setLocationQuery(e.target.value)}
+                    className="w-full bg-transparent border-none outline-none text-th-fg placeholder:text-th-fg-muted py-3 text-base sm:max-w-[140px]"
                   />
                 </div>
                 <Button
@@ -619,41 +481,6 @@ export default function Hero() {
                   </motion.div>
                 )}
               </AnimatePresence>
-
-              {/* Konum Autocomplete Dropdown */}
-              <AnimatePresence>
-                {showLocationSuggestions && locationSuggestions.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.2, ease: 'easeOut' }}
-                    className="absolute right-0 top-full mt-2 z-50 w-[280px] bg-th-bg/95 backdrop-blur-xl rounded-xl overflow-hidden border border-th-border/[0.1] shadow-xl"
-                  >
-                    {locationSuggestions.map((item, idx) => (
-                      <button
-                        key={`${item.label}-${idx}`}
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => handleSelectLocation(item)}
-                        onMouseEnter={() => setActiveLocationIndex(idx)}
-                        className={cn(
-                          'w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors duration-100',
-                          activeLocationIndex === idx
-                            ? 'bg-brand-500/[0.1] text-brand-400'
-                            : 'text-th-fg hover:bg-th-overlay/[0.06]'
-                        )}
-                      >
-                        <MapPin className={cn('w-4 h-4 shrink-0', item.type === 'city' ? 'text-brand-500' : 'text-th-fg-sub')} />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium truncate">{item.label}</p>
-                          <p className="text-[10px] text-th-fg-muted">{item.type === 'city' ? 'İl' : 'İlçe'}</p>
-                        </div>
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
           </motion.form>
 
@@ -671,6 +498,7 @@ export default function Hero() {
                   onClick={() => cat.active && handleCategoryClick(cat.label)}
                   onMouseEnter={() => setHoveredCategory(cat.label)}
                   onMouseLeave={() => setHoveredCategory(null)}
+                  disabled={!cat.active}
                   className={cn(
                     'inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all duration-300',
                     cat.active
@@ -746,6 +574,26 @@ export default function Hero() {
           </motion.div>
         </motion.div>
       </motion.div>
+
+      {/* Scroll to AI Section */}
+      <motion.button
+        type="button"
+        onClick={() => document.getElementById('ai-asistan')?.scrollIntoView({ behavior: 'smooth' })}
+        className="absolute bottom-8 lg:bottom-24 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5 group cursor-pointer"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2 }}
+      >
+        <span className="text-brand-500/80 text-xs font-medium text-center max-w-[220px] leading-relaxed group-hover:text-brand-400 transition-colors">
+          Yapay zeka desteğiyle sizi doğru servise yönlendirelim
+        </span>
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <ChevronDown className="w-5 h-5 text-brand-500/60 group-hover:text-brand-500 transition-colors" />
+        </motion.div>
+      </motion.button>
 
       {/* Bottom gradient fade */}
       <div
