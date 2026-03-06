@@ -1,518 +1,418 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { vehicleYears } from '@/data/vehicles';
 import { turkeyLocations, cityList } from '@/data/turkey-locations';
 
-// Yakıt tipleri
 const fuelTypes = ['Benzin', 'Dizel', 'LPG', 'Hibrit', 'Elektrik', 'Benzin + LPG'];
+// 30 dakikalik saat araliklari
+const timeSlots = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00'];
 
-// Interface tanımları
-interface Category {
-    id: number;
-    name: string;
-}
+interface Category { id: number; name: string; }
+interface Brand { brand: string; }
+interface Model { model: string; }
+interface Service { id: number; name: string; location: string; phone?: string; rating?: number; }
 
-interface Brand {
-    brand: string;
-}
-
-interface Model {
-    model: string;
-}
+type Step = 'form' | 'otp';
 
 export default function RandevuAlPage() {
+    const [step, setStep] = useState<Step>('form');
     const [city, setCity] = useState('');
     const [district, setDistrict] = useState('');
+    const [vehicleType, setVehicleType] = useState<'otomobil' | 'motorsiklet'>('otomobil');
     const [brand, setBrand] = useState('');
     const [model, setModel] = useState('');
     const [year, setYear] = useState('');
     const [fuelType, setFuelType] = useState('');
     const [category, setCategory] = useState('');
-    
-    // New fields for appointment request
     const [phone, setPhone] = useState('');
     const [name, setName] = useState('');
     const [notes, setNotes] = useState('');
+    const [plate, setPlate] = useState('');
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [otpCode, setOtpCode] = useState('');
+    const [otpCountdown, setOtpCountdown] = useState(0);
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
     const [submitMessage, setSubmitMessage] = useState('');
-
-    // Data states
     const [categories, setCategories] = useState<Category[]>([]);
     const [brands, setBrands] = useState<Brand[]>([]);
     const [models, setModels] = useState<Model[]>([]);
-
-    // Loading states
     const [loading, setLoading] = useState(false);
     const [categoriesLoading, setCategoriesLoading] = useState(true);
     const [brandsLoading, setBrandsLoading] = useState(true);
     const [modelsLoading, setModelsLoading] = useState(false);
+    const [services, setServices] = useState<Service[]>([]);
+    const [selectedService, setSelectedService] = useState('');
+    const [servicesLoading, setServicesLoading] = useState(false);
+    const [appointmentDate, setAppointmentDate] = useState('');
+    const [appointmentTime, setAppointmentTime] = useState('');
 
-    // Kategorileri MySQL'den çek
     useEffect(() => {
-        fetch('/api/categories')
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    setCategories(data.data);
-                }
-                setCategoriesLoading(false);
-            })
-            .catch(err => {
-                console.error('Kategori yukleme hatasi:', err);
-                setCategoriesLoading(false);
-            });
+        if (otpCountdown > 0) {
+            const timer = setTimeout(() => setOtpCountdown(otpCountdown - 1), 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [otpCountdown]);
+
+    useEffect(() => {
+        fetch('/api/categories').then(res => res.json()).then(data => {
+            if (data.success) { setCategories(data.data); const defCat = data.data.find((c: Category) => c.name.includes('Temizlik') && c.name.includes('Detayland')); if (defCat) setCategory(defCat.name); }
+            setCategoriesLoading(false);
+        }).catch(() => setCategoriesLoading(false));
     }, []);
 
-    // Markaları MySQL'den çek
     useEffect(() => {
-        fetch('/api/brands?vehicleType=otomobil')
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    setBrands(data.data);
-                }
-                setBrandsLoading(false);
-            })
-            .catch(err => {
-                console.error('Marka yukleme hatasi:', err);
-                setBrandsLoading(false);
-            });
-    }, []);
+        setBrandsLoading(true);
+        setBrand('');
+        setModel('');
+        setModels([]);
+        fetch('/api/brands?vehicleType=' + vehicleType).then(res => res.json()).then(data => {
+            if (data.success) setBrands(data.data);
+        }).finally(() => setBrandsLoading(false));
+    }, [vehicleType]);
 
-    // Modelleri markaya göre MySQL'den çek
     useEffect(() => {
         if (brand) {
             setModelsLoading(true);
-            setModel(''); // Reset model when brand changes
-            fetch(`/api/models?brand=${encodeURIComponent(brand)}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        setModels(data.data);
-                    }
-                    setModelsLoading(false);
-                })
-                .catch(err => {
-                    console.error('Model yukleme hatasi:', err);
-                    setModelsLoading(false);
-                });
+            setModel('');
+            fetch('/api/models?brand=' + encodeURIComponent(brand) + '&vehicleType=' + vehicleType)
+                .then(res => res.json()).then(data => {
+                    if (data.success) setModels(data.data);
+                    else setModels([]);
+                }).catch(() => setModels([]))
+                .finally(() => setModelsLoading(false));
         } else {
             setModels([]);
+            setModel('');
         }
-    }, [brand]);
+    }, [brand, vehicleType]);
+
+    useEffect(() => {
+        if (category && city) {
+            setServicesLoading(true);
+            setSelectedService('');
+            const params = new URLSearchParams();
+            params.set('category', category);
+            params.set('city', city);
+            if (district) params.set('district', district);
+            if (brand) params.set('brand', brand);
+            if (model) params.set('model', model);
+            fetch('/api/services/search?' + params.toString())
+                .then(res => res.json()).then(data => {
+                    if (data.success) setServices(data.data);
+                    else setServices([]);
+                }).catch(() => setServices([]))
+                .finally(() => setServicesLoading(false));
+        } else {
+            setServices([]);
+            setSelectedService('');
+        }
+    }, [category, city, district, brand, model]);
 
     const districts = city ? turkeyLocations[city] || [] : [];
+    const isFormValid = phone && city && brand && model && category;
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSendOTP = async () => {
         setLoading(true);
         setSubmitStatus('idle');
-        setSubmitMessage('');
-        
         try {
-            const response = await fetch('/api/randevu-talebi', {
+            const cleanPhone = phone.replace(/[\s-]/g, '');
+            const response = await fetch('/api/otp/send', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    phone,
-                    name: name || undefined,
-                    city,
-                    district,
-                    brand,
-                    model,
-                    year,
-                    fuel_type: fuelType,
-                    category,
-                    notes: notes || undefined
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: cleanPhone })
             });
-            
             const result = await response.json();
-            
             if (result.success) {
+                setOtpCountdown(60);
+                setStep('otp');
                 setSubmitStatus('success');
-                setSubmitMessage(result.message || 'Randevu talebiniz alındı!');
-                // Reset form
-                setPhone('');
-                setName('');
-                setCity('');
-                setDistrict('');
-                setBrand('');
-                setModel('');
-                setYear('');
-                setFuelType('');
-                setCategory('');
-                setNotes('');
+                setSubmitMessage(result.message);
             } else {
                 setSubmitStatus('error');
-                setSubmitMessage(result.error || 'Bir hata oluştu. Lütfen tekrar deneyin.');
+                setSubmitMessage(result.error);
             }
-        } catch (error) {
-            console.error('Submit error:', error);
+        } catch {
             setSubmitStatus('error');
-            setSubmitMessage('Baglanti hatasi. Lutfen tekrar deneyin.');
+            setSubmitMessage('SMS gönderilemedi. Lütfen tekrar deneyin.');
         } finally {
             setLoading(false);
         }
     };
 
-    const isFormValid = phone && city && brand && model && category;
+    const handleVerifyOTP = async () => {
+        setLoading(true);
+        setSubmitStatus('idle');
+        try {
+            const cleanPhone = phone.replace(/[\s-]/g, '');
+            // Strapi ile OTP dogrula ve kullanici olustur
+            const response = await fetch('/api/otp/verify-and-register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: cleanPhone, code: otpCode, name: name || undefined })
+            });
+            const result = await response.json();
+            if (result.success) {
+                // Kullanici kaydedildi, simdi randevu olustur
+                await submitAppointment(true, result.user?.username, result.jwt, result.user?.id);
+            } else {
+                setSubmitStatus('error');
+                const remaining = result.remainingAttempts !== undefined ? ' (' + result.remainingAttempts + ' deneme kaldı)' : '';
+                setSubmitMessage(result.error + remaining);
+            }
+        } catch {
+            setSubmitStatus('error');
+            setSubmitMessage('Doğrulama başarısız.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+
+    const submitAppointment = async (isRegistered: boolean, autoUsername?: string, jwt?: string, userId?: number) => {
+        try {
+            const response = await fetch('/api/randevu-talebi', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    phone,
+                    name: name || undefined,
+                    city,
+                    district: district || undefined,
+                    brand,
+                    model,
+                    year: year || undefined,
+                    fuelType: fuelType || undefined,
+                    category,
+                    notes: notes || undefined,
+                    service_id: selectedService || undefined,
+                    appointment_date: appointmentDate || undefined,
+                    appointment_time: appointmentTime || undefined,
+                    jwt: jwt || undefined,
+                    userId: userId || undefined
+                })
+            });
+            const result = await response.json();
+            if (result.success) {
+                // Her randevuda Telegram bildirimi gönder
+                fetch('/api/notifications/whatsapp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name,
+                        phone,
+                        city,
+                        district,
+                        brand,
+                        model,
+                        year,
+                        category,
+                        notes,
+                        service: services.find(s => String(s.id) === selectedService)?.name,
+                        isRegistered,
+                        username: autoUsername || username || undefined,
+                        email: isRegistered ? email : undefined,
+                        plate: isRegistered ? plate : undefined,
+                        appointmentDate,
+                        appointmentTime
+                    })
+                }).catch(() => {});
+                setSubmitStatus('success');
+                const msg = 'Randevu talebiniz alındı! Hesap bilgileriniz SMS ile gönderildi. En kısa sürede sizinle iletişime geçeceğiz.';
+                setSubmitMessage(msg);
+                resetForm();
+            } else {
+                setSubmitStatus('error');
+                setSubmitMessage(result.error || 'Bir hata oluştu.');
+            }
+        } catch {
+            setSubmitStatus('error');
+            setSubmitMessage('Bağlantı hatası. Lütfen tekrar deneyin.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const resetForm = () => {
+        setStep('form'); setPhone(''); setName(''); setCity(''); setDistrict('');
+        setBrand(''); setModel(''); setYear(''); setFuelType(''); setCategory('');
+        setNotes(''); setPlate(''); setUsername(''); setEmail(''); setPassword('');
+        setConfirmPassword(''); setOtpCode('');
+    };
+
+    const renderOTPStep = () => (
+        <div className="space-y-4">
+            <div className="text-center mb-6">
+                <h2 className="text-2xl font-bold text-white mb-2">SMS Doğrulama</h2>
+                <p className="text-primary-100">{phone} numarasına gönderilen 6 haneli kodu giriniz</p>
+            </div>
+            <input type="text" inputMode="numeric" maxLength={6} value={otpCode}
+                onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                placeholder="000000" className="w-full px-4 py-4 border-0 rounded-xl bg-white/90 text-secondary-900 text-center text-2xl tracking-widest font-mono focus:ring-2 focus:ring-white" />
+            {otpCountdown > 0 && <p className="text-primary-100 text-center text-sm">Yeni kod göndermek için {otpCountdown} saniye bekleyin</p>}
+            {submitStatus !== 'idle' && <div className={"p-4 rounded-xl " + (submitStatus === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')}>{submitMessage}</div>}
+            <button type="button" onClick={handleVerifyOTP} disabled={otpCode.length !== 6 || loading}
+                className="w-full bg-secondary-900 text-white py-4 rounded-xl font-semibold text-lg hover:bg-secondary-800 transition-colors disabled:bg-secondary-400 disabled:cursor-not-allowed">
+                {loading ? 'Doğrulanıyor...' : 'Doğrula'}
+            </button>
+            <div className="flex gap-2">
+                <button type="button" onClick={() => setStep('form')} className="flex-1 bg-white/20 text-white py-3 rounded-xl font-medium hover:bg-white/30 transition-colors">Geri Dön</button>
+                <button type="button" onClick={handleSendOTP} disabled={otpCountdown > 0 || loading}
+                    className="flex-1 bg-white/20 text-white py-3 rounded-xl font-medium hover:bg-white/30 transition-colors disabled:opacity-50">Tekrar Gönder</button>
+            </div>
+        </div>
+    );
+
+
+    const renderFormStep = () => (
+        <form onSubmit={(e) => { e.preventDefault(); handleSendOTP(); }} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+                <select value={city} onChange={(e) => { setCity(e.target.value); setDistrict(''); }}
+                    className="w-full px-3 py-2 border-0 rounded-lg text-sm bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white">
+                    <option value="">Şehir</option>
+                    {cityList.map((c) => (<option key={c} value={c}>{c}</option>))}
+                </select>
+                <select value={district} onChange={(e) => setDistrict(e.target.value)} disabled={!city}
+                    className="w-full px-3 py-2 border-0 rounded-lg text-sm bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white disabled:bg-white/50">
+                    <option value="">İlçe</option>
+                    {districts.map((d) => (<option key={d} value={d}>{d}</option>))}
+                </select>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+                <input type="date" value={appointmentDate} onChange={(e) => setAppointmentDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    max={new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
+                    className="w-full px-3 py-2 border-0 rounded-lg text-sm bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white" />
+                <select value={appointmentTime} onChange={(e) => setAppointmentTime(e.target.value)}
+                    className="w-full px-3 py-2 border-0 rounded-lg text-sm bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white">
+                    <option value="">Saat Seçiniz</option>
+                    {timeSlots.map((t) => (<option key={t} value={t}>{t}</option>))}
+                </select>
+            </div>
+            <select value={vehicleType} onChange={(e) => setVehicleType(e.target.value as 'otomobil' | 'motorsiklet')}
+                className="w-full px-3 py-2 border-0 rounded-lg text-sm bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white">
+                <option value="otomobil">Otomobil</option>
+                <option value="motorsiklet">Motorsiklet</option>
+            </select>
+            <div className="grid grid-cols-2 gap-4">
+                <select value={brand} onChange={(e) => setBrand(e.target.value)}
+                    className="w-full px-3 py-2 border-0 rounded-lg text-sm bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white">
+                    <option value="">Marka</option>
+                    {brandsLoading ? (<option disabled>Yükleniyor...</option>) : brands.map((b) => (<option key={b.brand} value={b.brand}>{b.brand}</option>))}
+                </select>
+                <select value={model} onChange={(e) => setModel(e.target.value)} disabled={!brand}
+                    className="w-full px-3 py-2 border-0 rounded-lg text-sm bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white disabled:bg-white/50">
+                    <option value="">Model</option>
+                    {modelsLoading ? (<option disabled>Yükleniyor...</option>) : models.map((m) => (<option key={m.model} value={m.model}>{m.model}</option>))}
+                </select>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+                <select value={year} onChange={(e) => setYear(e.target.value)}
+                    className="w-full px-3 py-2 border-0 rounded-lg text-sm bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white">
+                    <option value="">Model Yılı</option>
+                    {vehicleYears.map((y) => (<option key={y} value={y}>{y}</option>))}
+                </select>
+                <select value={fuelType} onChange={(e) => setFuelType(e.target.value)}
+                    className="w-full px-3 py-2 border-0 rounded-lg text-sm bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white">
+                    <option value="">Yakıt Tipi</option>
+                    {fuelTypes.map((f) => (<option key={f} value={f}>{f}</option>))}
+                </select>
+            </div>
+            <select value={category} onChange={(e) => setCategory(e.target.value)}
+                className="w-full px-3 py-2 border-0 rounded-lg text-sm bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white">
+                <option value="">Hizmet Kategorisi</option>
+                {categoriesLoading ? (<option disabled>Yükleniyor...</option>) : categories.map((cat) => (<option key={cat.id} value={cat.name}>{cat.name}</option>))}
+            </select>
+            {services.length > 0 && (
+                <select value={selectedService} onChange={(e) => setSelectedService(e.target.value)}
+                    className="w-full px-3 py-2 border-0 rounded-lg text-sm bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white">
+                    <option value="">Servis Seçiniz</option>
+                    {servicesLoading ? (<option disabled>Yükleniyor...</option>) : services.map((srv) => (
+                        <option key={srv.id} value={srv.id}>{srv.name} - {srv.location}{srv.rating ? ' (' + srv.rating.toFixed(1) + ')' : ''}</option>
+                    ))}
+                </select>
+            )}
+            <input type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
+                placeholder="Telefon Numarası * (5XX XXX XX XX)" required
+                className="w-full px-3 py-2 border-0 rounded-lg text-sm bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white placeholder-secondary-500" />
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ad Soyad (Opsiyonel)"
+                className="w-full px-3 py-2 border-0 rounded-lg text-sm bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white placeholder-secondary-500" />
+            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Ek notlar (Opsiyonel)" rows={2}
+                className="w-full px-3 py-2 border-0 rounded-lg text-sm bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white placeholder-secondary-500 resize-none" />
+            {submitStatus !== 'idle' && <div className={"p-4 rounded-xl " + (submitStatus === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')}>{submitMessage}</div>}
+            <button type="submit" disabled={!isFormValid || loading}
+                className="w-full bg-secondary-900 text-white py-4 rounded-xl font-semibold text-lg hover:bg-secondary-800 transition-colors disabled:bg-secondary-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2">
+                {loading ? 'SMS Gönderiliyor...' : 'Randevu Talebi Gönder'}
+            </button>
+        </form>
+    );
 
     return (
         <div className="min-h-screen">
-            {/* Hero Section - Full Screen with Form */}
             <section className="min-h-[calc(100vh-64px)] bg-white relative overflow-hidden flex items-center">
-                {/* Background Image */}
-                <div
-                    className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-5"
-                    style={{ backgroundImage: 'url(/hero-bg.png)' }}
-                />
-
+                <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-5" style={{ backgroundImage: 'url(/hero-bg.png)' }} />
                 <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
-                        {/* Sol - Başlık ve Bilgi */}
                         <div className="text-center lg:text-left">
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-secondary-900 mb-6 leading-tight">
-                                Servis Randevusu
-                                <br />
-                                <span className="text-primary-600">Hemen Al</span>
+                                Servis Randevusu<br /><span className="text-primary-600">Hemen Al</span>
                             </h1>
                             <p className="text-xl text-secondary-600 mb-8 max-w-xl">
-                                Aracınız için en uygun servisi bulun ve hemen randevu alın.
-                                Şeffaf fiyatlandırma, kaliteli hizmet garantisi.
+                                Aracınız için en uygun servisi bulun ve hemen randevu alın. Şeffaf fiyatlandırma, kaliteli hizmet garantisi.
                             </p>
-
-                            {/* Trust Badges */}
                             <div className="flex flex-wrap justify-center lg:justify-start gap-6 mb-8">
-                                <div className="flex items-center gap-2 text-secondary-700">
-                                    <svg className="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                    </svg>
-                                    <span>Şeffaf Fiyatlandırma</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-secondary-700">
-                                    <svg className="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                    </svg>
-                                    <span>Onaylı Servisler</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-secondary-700">
-                                    <svg className="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                    </svg>
-                                    <span>Garanti Güvencesi</span>
-                                </div>
+                                <div className="flex items-center gap-2 text-secondary-700"><span className="text-primary-600">✓</span><span>Şeffaf Fiyatlandırma</span></div>
+                                <div className="flex items-center gap-2 text-secondary-700"><span className="text-primary-600">✓</span><span>Onaylı Servisler</span></div>
+                                <div className="flex items-center gap-2 text-secondary-700"><span className="text-primary-600">✓</span><span>Garanti Güvencesi</span></div>
                             </div>
-
-                            {/* Stats */}
                             <div className="grid grid-cols-3 gap-4 max-w-md mx-auto lg:mx-0">
-                                <div className="text-center lg:text-left">
-                                    <p className="text-2xl md:text-3xl font-bold text-primary-600">500+</p>
-                                    <p className="text-secondary-500 text-sm">Servis</p>
-                                </div>
-                                <div className="text-center lg:text-left">
-                                    <p className="text-2xl md:text-3xl font-bold text-primary-600">50K+</p>
-                                    <p className="text-secondary-500 text-sm">Müşteri</p>
-                                </div>
-                                <div className="text-center lg:text-left">
-                                    <p className="text-2xl md:text-3xl font-bold text-primary-600">4.8</p>
-                                    <p className="text-secondary-500 text-sm">Puan</p>
-                                </div>
+                                <div className="text-center lg:text-left"><p className="text-2xl md:text-3xl font-bold text-primary-600">500+</p><p className="text-secondary-500 text-sm">Servis</p></div>
+                                <div className="text-center lg:text-left"><p className="text-2xl md:text-3xl font-bold text-primary-600">50K+</p><p className="text-secondary-500 text-sm">Müşteri</p></div>
+                                <div className="text-center lg:text-left"><p className="text-2xl md:text-3xl font-bold text-primary-600">4.8</p><p className="text-secondary-500 text-sm">Puan</p></div>
                             </div>
                         </div>
-
-                        {/* Sağ - Form */}
                         <div className="bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 rounded-3xl shadow-2xl p-8 md:p-10">
                             <div className="text-center mb-6">
                                 <h2 className="text-2xl font-bold text-white mb-2">
-                                    Araç Bilgilerinizi Girin
+                                    {step === 'form' && 'Araç Bilgilerinizi Girin'}
+                                    {step === 'otp' && 'SMS Doğrulama'}
+                                    
                                 </h2>
                                 <p className="text-primary-100">
-                                    Size en yakın servisleri bulalım
+                                    {step === 'form' && 'Size en yakın servisleri bulalım'}
+                                    {step === 'otp' && 'Telefonunuza gelen kodu girin'}
+                                    
                                 </p>
                             </div>
-
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                {/* Konum Seçimi */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <select
-                                        value={city}
-                                        onChange={(e) => {
-                                            setCity(e.target.value);
-                                            setDistrict('');
-                                        }}
-                                        aria-label="Şehir seçin"
-                                        className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white"
-                                    >
-                                        <option value="">Şehir</option>
-                                        {cityList.map((c) => (
-                                            <option key={c} value={c}>{c}</option>
-                                        ))}
-                                    </select>
-
-                                    <select
-                                        value={district}
-                                        onChange={(e) => setDistrict(e.target.value)}
-                                        disabled={!city}
-                                        aria-label="İlçe seçin"
-                                        aria-disabled={!city}
-                                        className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white disabled:bg-white/50"
-                                    >
-                                        <option value="">İlçe</option>
-                                        {districts.map((d) => (
-                                            <option key={d} value={d}>{d}</option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                {/* Marka & Model */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <select
-                                        value={brand}
-                                        onChange={(e) => setBrand(e.target.value)}
-                                        aria-label="Araç markası seçin"
-                                        className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white"
-                                    >
-                                        <option value="">Marka</option>
-                                        {brandsLoading ? (
-                                            <option disabled>Yükleniyor...</option>
-                                        ) : (
-                                            brands.map((b) => (
-                                                <option key={b.brand} value={b.brand}>{b.brand}</option>
-                                            ))
-                                        )}
-                                    </select>
-
-                                    <select
-                                        value={model}
-                                        onChange={(e) => setModel(e.target.value)}
-                                        disabled={!brand}
-                                        aria-label="Araç modeli seçin"
-                                        aria-disabled={!brand}
-                                        className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white disabled:bg-white/50"
-                                    >
-                                        <option value="">Model</option>
-                                        {modelsLoading ? (
-                                            <option disabled>Yükleniyor...</option>
-                                        ) : (
-                                            models.map((m) => (
-                                                <option key={m.model} value={m.model}>{m.model}</option>
-                                            ))
-                                        )}
-                                    </select>
-                                </div>
-
-                                {/* Yıl & Yakıt */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <select
-                                        value={year}
-                                        onChange={(e) => setYear(e.target.value)}
-                                        aria-label="Model yılı seçin"
-                                        className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white"
-                                    >
-                                        <option value="">Model Yılı</option>
-                                        {vehicleYears.map((y) => (
-                                            <option key={y} value={y}>{y}</option>
-                                        ))}
-                                    </select>
-
-                                    <select
-                                        value={fuelType}
-                                        onChange={(e) => setFuelType(e.target.value)}
-                                        aria-label="Yakıt tipi seçin"
-                                        className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white"
-                                    >
-                                        <option value="">Yakıt Tipi</option>
-                                        {fuelTypes.map((f) => (
-                                            <option key={f} value={f}>{f}</option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                {/* Kategori */}
-                                <select
-                                    value={category}
-                                    onChange={(e) => setCategory(e.target.value)}
-                                    aria-label="Hizmet kategorisi seçin"
-                                    className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white"
-                                >
-                                    <option value="">Hizmet Kategorisi</option>
-                                    {categoriesLoading ? (
-                                        <option disabled>Yükleniyor...</option>
-                                    ) : (
-                                        categories.map((cat) => (
-                                            <option key={cat.id} value={cat.name}>
-                                                {cat.name}
-                                            </option>
-                                        ))
-                                    )}
-                                </select>
-
-                                {/* Telefon (Zorunlu) */}
-                                <input
-                                    type="tel"
-                                    inputMode="tel"
-                                    autoComplete="tel"
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value)}
-                                    placeholder="Telefon Numarası *"
-                                    aria-label="Telefon numarası (zorunlu)"
-                                    aria-required="true"
-                                    required
-                                    className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white placeholder-secondary-500"
-                                />
-
-                                {/* Ad Soyad (Opsiyonel) */}
-                                <input
-                                    type="text"
-                                    autoComplete="name"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    placeholder="Ad Soyad (Opsiyonel)"
-                                    aria-label="Ad soyad (opsiyonel)"
-                                    className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white placeholder-secondary-500"
-                                />
-
-                                {/* Notlar (Opsiyonel) */}
-                                <textarea
-                                    value={notes}
-                                    onChange={(e) => setNotes(e.target.value)}
-                                    placeholder="Ek notlar veya açıklamalar (Opsiyonel)"
-                                    aria-label="Ek notlar (opsiyonel)"
-                                    rows={2}
-                                    className="w-full px-4 py-3 border-0 rounded-xl bg-white/90 text-secondary-900 focus:ring-2 focus:ring-white placeholder-secondary-500 resize-none"
-                                />
-
-                                {/* Status Message */}
-                                {submitStatus !== 'idle' && (
-                                    <div
-                                        role="alert"
-                                        aria-live="assertive"
-                                        className={`p-4 rounded-xl ${
-                                            submitStatus === 'success'
-                                                ? 'bg-green-100 text-green-800 border border-green-300'
-                                                : 'bg-red-100 text-red-800 border border-red-300'
-                                        }`}
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            {submitStatus === 'success' ? (
-                                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                                </svg>
-                                            ) : (
-                                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                                </svg>
-                                            )}
-                                            <span className="font-medium">{submitMessage}</span>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Submit Button */}
-                                <button
-                                    type="submit"
-                                    disabled={!isFormValid || loading}
-                                    className="w-full bg-secondary-900 text-white py-4 rounded-xl font-semibold text-lg hover:bg-secondary-800 transition-colors disabled:bg-secondary-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
-                                >
-                                    {loading ? (
-                                        <>
-                                            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                            </svg>
-                                            <span>Gönderiliyor...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                                            </svg>
-                                            <span>Randevu Talebi Gönder</span>
-                                        </>
-                                    )}
-                                </button>
-                            </form>
+                            {step === 'form' && renderFormStep()}
+                            {step === 'otp' && renderOTPStep()}
+                            
                         </div>
                     </div>
                 </div>
             </section>
-
-            {/* Benefits Section */}
             <section className="py-16 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-2xl font-bold text-secondary-900 text-center mb-12">
-                        Neden TamirHanem?
-                    </h2>
+                    <h2 className="text-2xl font-bold text-secondary-900 text-center mb-12">Neden TamirHanem?</h2>
                     <div className="grid md:grid-cols-3 gap-8">
-                        <div className="text-center p-6">
-                            <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-semibold text-secondary-900 mb-2">
-                                Şeffaf Fiyatlandırma
-                            </h3>
-                            <p className="text-secondary-600">
-                                Tüm fiyatları önceden görün, sürpriz masraflarla karşılaşmayın.
-                            </p>
-                        </div>
-
-                        <div className="text-center p-6">
-                            <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-semibold text-secondary-900 mb-2">
-                                Onaylı Servisler
-                            </h3>
-                            <p className="text-secondary-600">
-                                Tüm servislerimiz kontrol edilmiş ve onaylanmıştır.
-                            </p>
-                        </div>
-
-                        <div className="text-center p-6">
-                            <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-semibold text-secondary-900 mb-2">
-                                Hızlı Randevu
-                            </h3>
-                            <p className="text-secondary-600">
-                                Dakikalar içinde randevu alın, zaman kaybetmeyin.
-                            </p>
-                        </div>
+                        <div className="text-center p-6"><div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4"><span className="text-3xl">💰</span></div><h3 className="text-lg font-semibold text-secondary-900 mb-2">Şeffaf Fiyatlandırma</h3><p className="text-secondary-600">Tüm fiyatları önceden görün.</p></div>
+                        <div className="text-center p-6"><div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4"><span className="text-3xl">🛡️</span></div><h3 className="text-lg font-semibold text-secondary-900 mb-2">Onaylı Servisler</h3><p className="text-secondary-600">Tüm servislerimiz onaylı.</p></div>
+                        <div className="text-center p-6"><div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4"><span className="text-3xl">⏱️</span></div><h3 className="text-lg font-semibold text-secondary-900 mb-2">Hızlı Randevu</h3><p className="text-secondary-600">Dakikalar içinde randevu alın.</p></div>
                     </div>
                 </div>
             </section>
-
-            {/* CTA Section */}
             <section className="py-16 bg-secondary-900 text-white">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 className="text-3xl font-bold mb-4">
-                        Hemen Başlayın
-                    </h2>
-                    <p className="text-secondary-300 text-lg mb-8">
-                        Aracınız için en uygun servisi bulun ve randevunuzu alın.
-                    </p>
-                    <Link
-                        href="#"
-                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                        className="inline-flex items-center gap-2 bg-primary-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-primary-700 transition-colors"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                        </svg>
-                        Yukarıdan Başla
-                    </Link>
+                    <h2 className="text-3xl font-bold mb-4">Hemen Başlayın</h2>
+                    <p className="text-secondary-300 text-lg mb-8">Aracınız için en uygun servisi bulun.</p>
+                    <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                        className="inline-flex items-center gap-2 bg-primary-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-primary-700 transition-colors">
+                        ↑ Yukarıdan Başla
+                    </button>
                 </div>
             </section>
         </div>

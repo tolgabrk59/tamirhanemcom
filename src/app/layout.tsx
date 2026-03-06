@@ -102,7 +102,7 @@ export const metadata: Metadata = {
     images: ['/og-image.jpg'],
   },
   verification: {
-    google: 'google-site-verification-code',
+    google: process.env.GOOGLE_SITE_VERIFICATION || '',
   },
   alternates: {
     canonical: 'https://tamirhanem.com',

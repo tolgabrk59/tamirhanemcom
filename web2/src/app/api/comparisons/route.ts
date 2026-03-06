@@ -18,6 +18,12 @@ function getStrapiHeaders(): Record<string, string> {
 let cachedAdminToken: string | null = null
 let tokenExpiresAt = 0
 
+interface AdminLoginResponse {
+  data?: {
+    token?: string
+  }
+}
+
 async function getAdminToken(): Promise<string | null> {
   if (cachedAdminToken && Date.now() < tokenExpiresAt) return cachedAdminToken
   if (!ADMIN_EMAIL || !ADMIN_PASSWORD) return null
@@ -29,7 +35,7 @@ async function getAdminToken(): Promise<string | null> {
       body: JSON.stringify({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD }),
     })
     if (!res.ok) return null
-    const json = await res.json()
+    const json: AdminLoginResponse = await res.json()
     cachedAdminToken = json.data?.token || null
     tokenExpiresAt = Date.now() + 25 * 60 * 1000
     return cachedAdminToken
@@ -38,7 +44,7 @@ async function getAdminToken(): Promise<string | null> {
   }
 }
 
-// ─── Strapi Comparison Interface ─────────────────
+// ─── Strapi Comparison Interfaces ────────────────
 interface ComparisonEntry {
   id: number
   brand1: string
@@ -48,6 +54,37 @@ interface ComparisonEntry {
   model2: string
   year2: number
   createdAt: string
+}
+
+interface StrapiComparisonAttributes {
+  brand1?: string
+  model1?: string
+  year1?: number
+  brand2?: string
+  model2?: string
+  year2?: number
+  createdAt?: string
+}
+
+interface StrapiComparisonEntry {
+  id: number
+  attributes?: StrapiComparisonAttributes
+  brand1?: string
+  model1?: string
+  year1?: number
+  brand2?: string
+  model2?: string
+  year2?: number
+  createdAt?: string
+}
+
+interface StrapiComparisonListResponse {
+  data?: StrapiComparisonEntry[]
+}
+
+interface StrapiAdminComparisonListResponse {
+  results?: StrapiComparisonEntry[]
+  data?: StrapiComparisonEntry[]
 }
 
 // ─── Tüm kayıtları al (REST veya Admin API) ─────
@@ -60,11 +97,11 @@ async function fetchAllComparisons(): Promise<ComparisonEntry[]> {
     )
 
     if (res.ok) {
-      const json = await res.json()
-      const raw = json.data || []
+      const json: StrapiComparisonListResponse = await res.json()
+      const raw: StrapiComparisonEntry[] = json.data || []
       if (Array.isArray(raw) && raw.length >= 0) {
-        return raw.map((e: Record<string, unknown>) => {
-          const attrs = (e.attributes || e) as Record<string, unknown>
+        return raw.map((e: StrapiComparisonEntry) => {
+          const attrs: StrapiComparisonAttributes = e.attributes || e
           return {
             id: Number(e.id),
             brand1: String(attrs.brand1 || ''),
@@ -99,9 +136,9 @@ async function fetchAllComparisons(): Promise<ComparisonEntry[]> {
     )
 
     if (res.ok) {
-      const json = await res.json()
-      const results = json.results || json.data || []
-      return results.map((e: Record<string, unknown>) => ({
+      const json: StrapiAdminComparisonListResponse = await res.json()
+      const results: StrapiComparisonEntry[] = json.results || json.data || []
+      return results.map((e: StrapiComparisonEntry) => ({
         id: Number(e.id),
         brand1: String(e.brand1 || ''),
         model1: String(e.model1 || ''),
@@ -188,7 +225,7 @@ export async function POST(request: NextRequest) {
     )
 
     if (res.ok) {
-      const json = await res.json()
+      const json: StrapiComparisonEntry = await res.json()
       console.log('[Comparisons] ✓ Kaydedildi, id:', json.id)
       return NextResponse.json({
         data: {
@@ -207,7 +244,7 @@ export async function POST(request: NextRequest) {
     const errText = await res.text()
     console.warn('[Comparisons] Admin API hatası:', res.status, errText.substring(0, 200))
     return NextResponse.json({ data: null, warning: 'Kayıt yapılamadı' })
-  } catch (error) {
+  } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : 'Bilinmeyen hata'
     return NextResponse.json({ error: msg }, { status: 500 })
   }

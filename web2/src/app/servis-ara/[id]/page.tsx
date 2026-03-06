@@ -917,7 +917,7 @@ export default function ServiceDetailPage() {
 
           <div className="mt-4 text-center text-xs text-th-fg-muted">
             Hesabınız yok mu?{' '}
-            <a href="/kayit" className="text-brand-400 hover:text-brand-300 font-medium">Kayıt Ol</a>
+            <button type="button" onClick={() => window.dispatchEvent(new CustomEvent('open-login-modal', { detail: { tab: 'register' } }))} className="text-brand-400 hover:text-brand-300 font-medium">Kayıt Ol</button>
           </div>
         </div>
       </div>

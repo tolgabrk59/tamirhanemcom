@@ -3,6 +3,7 @@ import OpenAI from "openai";
 import { NextResponse } from "next/server";
 import { createLogger } from '@/lib/logger';
 import type { TireResearchData } from '@/types/external-apis';
+import { checkRouteRateLimit, getClientIdentifier } from '@/lib/route-rate-limit';
 
 const logger = createLogger('API_TIRE_RESEARCH');
 
@@ -22,6 +23,10 @@ const openaiKey = process.env.OPENAI_API_KEY;
 // Grok API (Codefast - limitsiz)
 const grokKey = process.env.GROK_API_KEY;
 const grokBaseUrl = "https://api12.codefast.app/v1";
+
+// Rate limit: 30 requests per hour per IP
+const AI_RATE_LIMIT = 30;
+const AI_RATE_WINDOW = 60 * 60 * 1000; // 1 hour
 
 // OpenAI ile generate
 async function generateWithOpenAI(prompt: string): Promise<string> {
@@ -128,6 +133,25 @@ async function generateWithRetry(prompt: string, modelName: string) {
 }
 
 export async function POST(req: Request) {
+  // Rate limiting check
+  const identifier = getClientIdentifier(req.headers as Headers, 'ai-tire-research');
+  const rateLimit = await checkRouteRateLimit(identifier, AI_RATE_LIMIT, AI_RATE_WINDOW);
+  
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { 
+        error: 'Cok fazla istek gonderdiniz. Lutfen 1 saat sonra tekrar deneyin.',
+        retryAfter: rateLimit.retryAfter 
+      },
+      { 
+        status: 429,
+        headers: {
+          'Retry-After': String(rateLimit.retryAfter || 3600),
+        }
+      }
+    );
+  }
+
   try {
     const { brand, model, package: pkg, year } = await req.json();
 

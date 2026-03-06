@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Strapi Permission Auto-Setup</title>
+    <script>
+        // Bu kodu browser console'da çalıştırın
+        const AUTO_SETUP = {
+            email: 'hakanisler112@gmail.com',
+            password: 'Rapso112a.',
+            apiUrl: 'https://api.tamirhanem.net',
+
+            async login() {
+                const response = await fetch(`${this.apiUrl}/admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: this.email,
+                        password: this.password
+                    })
+                });
+                const data = await response.json();
+                return data.data.token;
+            },
+
+            async setPermissions() {
+                const token = await this.login();
+
+                // Public rolünü al
+                const roleRes = await fetch(`${this.apiUrl}/users-permissions/roles/1`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const roleData = await roleRes.json();
+
+                // Mevcut permission'ları koruyarak tire-research ekle
+                const permissions = roleData.data.permissions || {};
+                permissions['api::tire-research'] = {
+                    controllers: {
+                        'tire-research': {
+                            find: { enabled: true },
+                            findOne: { enabled: true },
+                            create: { enabled: true },
+                            update: { enabled: true },
+                            delete: { enabled: true }
+                        }
+                    }
+                };
+
+                // Rolü güncelle
+                const updateRes = await fetch(`${this.apiUrl}/users-permissions/roles/1`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ permissions })
+                });
+
+                const result = await updateRes.json();
+                console.log('✅ Permission ayarı tamamlandı!', result);
+                return result;
+            }
+        };
+
+        // Otomatik çalıştır
+        AUTO_SETUP.setPermissions();
+    </script>
+</head>
+<body>
+    <h1>Strapi Permission Auto-Setup</h1>
+    <p>Browser console'da <code>AUTO_SETUP.setPermissions()</code> komutunu çalıştırın.</p>
+</body>
+</html>

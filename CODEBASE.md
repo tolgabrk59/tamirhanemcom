@@ -1,0 +1,3756 @@
+# CODEBASE.md
+
+> **Auto-generated project context file.** Refreshed on every session start.
+>
+> **Purpose:** Provides Claude AI with project structure, OS info, and coding standards automatically.
+
+---
+
+# 📁 Project Context
+
+**Project:** `tamirhanem-next`
+**Framework:** `nextjs`
+**Type:** `node`
+**Path:** `/home/dietpi/tamirhanem-next`
+**Detected:** 2026-01-26 13:39:33
+
+---
+
+## 🖥️ Operating System
+
+| Property | Value |
+|----------|-------|
+| **OS** | Debian |
+| **Shell** | bash / zsh |
+
+---
+
+## ⚡ Terminal Commands (Current OS)
+
+#### 🐧 Linux Terminal Commands
+
+##### Shell (bash/zsh)
+```bash
+ls                    # List files
+cd <path>             # Change directory
+pwd                   # Current directory
+mkdir <dir>            # Create directory
+rm <file>             # Remove file
+rm -rf <dir>          # Remove directory
+cat <file>            # View file
+echo $PATH            # Show environment variables
+```
+
+##### Common Tasks
+- **File manager**: `xdg-open .` or `nautilus .`
+- **Text editor**: `nano <file>`, `vim <file>`, or `code <file>`
+- **Process monitor**: `htop` or `top`
+- **Network info**: `ip addr` or `ifconfig`
+- **Disk usage**: `df -h` (disk free), `du -sh <dir>` (directory size)
+
+##### Package Managers
+```bash
+# Debian/Ubuntu (apt)
+sudo apt install <package>      # Install
+sudo apt update                 # Update lists
+sudo apt upgrade                # Upgrade packages
+apt search <package>            # Search
+
+# Fedora/RHEL (dnf/yum)
+sudo dnf install <package>      # Install
+sudo dnf update                 # Update
+sudo dnf upgrade                # Upgrade
+
+# Arch (pacman)
+sudo pacman -S <package>        # Install
+sudo pacman -Syu                # Update & upgrade
+```
+
+---
+
+
+## 🎯 Project Environment
+
+| Property | Value |
+|----------|-------|
+| **Project Type** | NODE |
+| **Framework** | NEXTJS |
+| **Platform** | WEB |
+
+---
+
+## 📋 Quick Project Commands
+
+#### Package Management
+```bash
+npm install              # Install dependencies
+npm install <package>    # Add package
+```
+
+#### Development
+```bash
+npm run dev              # Start dev server
+npm run build            # Build for production
+```
+#### Next.js
+```bash
+npx next dev             # Development
+npx next build           # Production build
+```
+
+
+---
+
+## 📂 Project Structure
+
+```
+ARASTIRMA-KAYNAKLAR.md
+CLAUDE.md
+CODEBASE.md
+INCELEME_RAPORU.md
+LOGO1.png
+OZET-RAPOR.txt
+README-ARASTIRMA.md
+arac_dataveris_export.sql
+aracresimleri/
+  ALFA_ROMEO/
+    147.webp
+    159.jpg
+    4C.jpg
+    BRERA.jpg
+    GIULIA.jpg
+    GIULIETTA.jpg
+    GT.jpg
+    JUNIOR.jpg
+    MITO.jpg
+    STELVIO.jpg
+    STEVIO.jpg
+    TONALE.jpg
+    default.jpg
+  ALPINE/
+    A.webp
+    A110.jpg
+    A290.jpg
+    default.jpg
+  ASTON_MARTIN/
+    CG.jpg
+    DB11.jpg
+    DB12.jpg
+    DB9.jpg
+    DBS.jpg
+    DBX.jpg
+    RAPIDE.jpg
+    V12.jpg
+    V8.jpg
+    VANQUISH.jpg
+    VANTAGE.jpg
+    VIRAGE.jpg
+    default.jpg
+  AUDI/
+    A1.jpg
+    A2.jpg
+    A3.jpg
+    A4.jpg
+    A5.jpg
+    A5SPORTBACK.png
+    A6.jpg
+    A7.png
+    A8.jpg
+    A8L.jpg
+    E-TRON.jpg
+    Q2.jpg
+    Q3.jpg
+    Q4.jpg
+    Q5.jpg
+    Q5SPORTBACK.jpg
+    Q6.jpg
+    Q7.jpg
+    Q8.jpg
+    R8.jpg
+    RS.jpg
+    RS3.jpg
+    RS4.jpg
+    RS5.jpg
+    RS6.jpg
+    RS7.jpg
+    S.jpg
+    S3.jpg
+    S4.jpg
+    S5.jpg
+    S6.png
+    S7.jpg
+    S8.jpg
+    SQ5.jpg
+    SQ7.jpg
+    SQ8.jpg
+    TT.jpg
+    TTR.jpg
+    TTRS.jpg
+    TTS.jpg
+    default.jpg
+  BENTLEY/
+    BENTAYGA.jpg
+    CONTINENTAL.jpg
+    FLYING.jpg
+    MULSANNE.jpg
+    default.jpg
+  BMW/
+    116d.jpg
+    116i.jpg
+    118d.jpg
+    118i.jpg
+    118iA.jpg
+    120.jpg
+    120d.jpg
+    120i.jpg
+    123d.jpg
+    128Ti.jpg
+    130i.jpg
+    1M.jpg
+    216d.jpg
+    218d.jpg
+    218i.jpg
+    220.jpg
+    220d.jpg
+    220i.jpg
+    228i.jpg
+    230e.jpg
+    230i.jpg
+    316.jpg
+    316d.jpg
+    316i.jpg
+    318.jpg
+    318d.jpg
+    318i.jpg
+    320.jpg
+    320d.jpg
+    320i.jpg
+    325i.jpg
+    328i.jpg
+    330.jpg
+    330d.jpg
+    330e.jpg
+    330i.jpg
+    335d.jpg
+    335i.jpg
+    335xi.jpg
+    340i.jpg
+    418d.jpg
+    418i.jpg
+    420d.jpg
+    420i.jpg
+    428i.jpg
+    430d.jpg
+    430i.jpg
+    435d.jpg
+    435i.jpg
+    440i.jpg
+    520.jpg
+    520Li.jpg
+    520d.jpg
+    520i.jpg
+    523i.jpg
+    525.jpg
+    525IA.jpg
+    525d.jpg
+    528i.jpg
+    530.jpg
+    530d.jpg
+    530e.jpg
+    530i.jpg
+    535d.jpg
+    535i.jpg
+    540d.jpg
+    540i.jpg
+    540�.jpg
+    550e.jpg
+    550i.jpg
+    620d.jpg
+    630.jpg
+    630i.jpg
+    635.jpg
+    640d.jpg
+    640i.jpg
+    650.jpg
+    650i.jpg
+    725Ld.jpg
+    725d.jpg
+    730.jpg
+    730IA.jpg
+    730Ld.jpg
+    730Li.jpg
+    730d.jpg
+    730i.jpg
+    740.png
+    740E.png
+    740IA.jpg
+    740LE.png
+    740Ld.jpg
+    740Li.png
+    740d.jpg
+    745Le.jpg
+    745d.jpg
+    750.jpg
+    750IA.jpg
+    750Ld.jpg
+    750Li.jpg
+    750d.jpg
+    750i.jpg
+    760.png
+    760iA.png
+    840d.jpg
+    840i.png
+    ALPINA.jpg
+    ALPINE.jpg
+    M.jpg
+    M135i.jpg
+    M2.jpg
+    M235i.jpg
+    M240i.jpg
+    M3.jpg
+    M340d.png
+    M340i.jpg
+    M4.jpg
+    M440i.jpg
+    M5.jpg
+    M550d.jpg
+    M550i.webp
+    M6.jpg
+    M760Li.jpg
+    M760e.jpg
+    M8.jpg
+    M850i.png
+    X1.png
+    X2.jpg
+    X3.jpg
+    X4.jpg
+    X5.jpg
+    X6.jpg
+    X7.jpg
+    XM.jpg
+    Z4.png
+    default.jpg
+    i3.jpg
+    i3s.jpg
+    i4.jpg
+    i5.jpg
+    i7.jpg
+    i8.jpg
+    iX.jpg
+    iX1.jpg
+    iX2.jpg
+    iX3.jpg
+  BUICK/
+    ENCLAVE.jpg
+    ENCORE.jpg
+    default.jpg
+  BYD/
+    ATTO.webp
+    BYD.jpg
+    DOLPHIN.png
+    HAN.jpg
+    SEAL.png
+    SEALION.jpg
+    TANG.jpg
+    default.jpg
+  CADILLAC/
+    CADILLAC.jpg
+    CT6.jpg
+    CTS.jpg
+    DTS.jpg
+    ESCALADE.jpg
+    SRX.jpg
+    XT5.jpg
+    default.jpg
+  CHERY/
+    ALIA.jpg
+    CHANCE.jpg
+    KIMO.jpg
+    NICHE.jpg
+    OMODA.jpg
+    TAXIM.jpg
+    TIGGO.jpg
+    TIGGO3.webp
+    TIGGO5.webp
+    default.jpg
+  CHEVROLET/
+    AVALANCHE.jpg
+    AVEO.jpg
+    CAMARO.webp
+    CAPTIVA.jpg
+    CORVETTE.jpg
+    CRUZE.jpg
+    EPICA.jpg
+    EQUINOX.jpg
+    EVANDA.jpg
+    EXPRESS.jpg
+    IMPALA.jpg
+    LACETTI.jpg
+    MENLO.jpg
+    ORLANDO.jpg
+    REZZO.jpg
+    SILVERADO.jpg
+    SPARK.jpg
+    SUBURBAN.jpg
+    TAHOE.jpg
+    TRAILBLAZER.webp
+    TRAX.png
+    default.jpg
+  CHRYSLER/
+    300.jpg
+    300C.jpg
+    CROSSFIRE.jpg
+    GRAND.jpg
+    GRANDCHEROKEE.jpg
+    JEEP.jpg
+    JEEPGRANDCHEROKEE.jpg
+    JEEPGRANDCHEROKEELIMITED.jpg
+    JEEPGRANDCHEROKEENIGTHEAGLE.jpg
+    JEEPGRANDCHEROKEEOVERLAND.jpg
+    JEEPRENEGADE.jpg
+    PACIFICA.jpg
+    PT.jpg
+    SEBRING.jpg
+    WRANGLER.jpg
+    default.jpg
+  CITROEN/
+    BERLINGO.jpg
+    C-ELLYSE.jpg
+    C-ELYSEE.jpg
+    C1.jpg
+    C2.jpg
+    C3.webp
+    C3AIRCROSS.jpg
+    C3AIRCROSSEXCLUSIVE.jpg
+    C3AIRCROSSSHINE.jpg
+    C4.jpg
+    C5.jpg
+    C5AIRCROSS.jpg
+    C5AIRCROSSFEELADVENTURE.jpg
+    C5AIRCROSSSELECTIONBUSINESS.jpg
+    C5AIRCROSSSHINEBOLD.jpg
+    C6.jpg
+    C8.jpg
+    DS3.jpg
+    DS4.jpg
+    DS5.jpg
+    E-C3.webp
+    E-C4.jpg
+    GRAND.jpg
+    JUMPER.jpg
+    JUMPY.jpg
+    NEMO.jpg
+    SPACETOURER.jpg
+    default.jpg
+  CUPRA/
+    ATECA.jpg
+    BORN.jpg
+    FORMENTOR.jpg
+    LEON.jpg
+    TERRAMAR.jpg
+    default.jpg
+  DACIA/
+    DOKKER.jpg
+    DUSTER.jpg
+    JOGGER.jpg
+    LODGY.jpg
+    LOGAN.webp
+    SANDERO.webp
+    SPRING.jpg
+    default.jpg
+  DAIHATSU/
+    CUORE.jpg
+    MATERIA.jpg
+    SIRION.png
+    TERIOS.jpg
+    default.jpg
+  DODGE-USA/
+  DODGEUSA/
+    CALIBER.jpg
+    CHALLANGER.jpg
+    CHALLENGER.jpg
+    CHARGER.jpg
+    DURANGO.jpg
+    GRAND.jpg
+    JOURNEY.jpg
+    RAM.jpg
+    VIPER.jpg
+  DS/
+    DS.jpg
+    DS3.jpg
+    DS7.jpg
+    DS7CROSSBACK.jpg
+    DS9.jpg
+    default.jpg
+  FERRARI/
+    12CILINDRI.jpg
+    296.jpg
+    458.jpg
+    488.jpg
+    599.jpg
+    612.jpg
+    812.jpg
+    CALIFORNIA.jpg
+    F.jpg
+    F12.webp
+    F8.jpg
+    FF.jpg
+    GTC4LUSSO.jpg
+    PORTOFINO.jpg
+    PUROSANGUE.jpg
+    ROMA.jpg
+    SF.jpg
+    SF90.jpg
+    default.jpg
+  FIAT/
+    124.jpg
+    500.jpg
+    500C.jpg
+    500E.jpg
+    500L.jpg
+    500X.jpg
+    600.jpg
+    600E.webp
+    ABART.jpg
+    ABARTH.jpg
+    ALBEA.webp
+    BRAVO.jpg
+    DOBLO.jpg
+    DUCATO.jpg
+    E-DOBLO.jpg
+    E-SCUDO.jpg
+    EGEA.jpg
+    FIORINO.jpg
+    G..jpg
+    GRANDE.jpg
+    LINEA.png
+    MY.jpg
+    PALIO.jpg
+    PANDA.jpg
+    PRATICO.jpg
+    PRATICOPLUS.jpg
+    PUNTO.png
+    SCUDO.jpg
+    ULYSSE.jpg
+    default.jpg
+  FORD/
+    B-MAX.jpg
+    BRONCO.jpg
+    C-MAX.jpg
+    C.jpg
+    CAPRI.jpg
+    CEKICI.jpg
+    E-JOURNEY.jpg
+    E-TOURNEO.jpg
+    E-TRANSIT.jpg
+    ECOSPORT.jpg
+    EDGE.jpg
+    ESCAPE.jpg
+    EXPEDITION.jpg
+    EXPLORER.jpg
+    F.png
+    F150.png
+    F350.png
+    F450.jpg
+    FIESTA.jpg
+    FLEX.jpg
+    FOCUS.jpg
+    FUSION.jpg
+    GALAXY.jpg
+    GRAND.jpg
+    GT.jpg
+    KA.jpg
+    KAMYON.jpg
+    KUGA.jpg
+    LINCOLN.png
+    MONDEO.jpg
+    MUSTANG.jpg
+    MY.jpg
+    PUMA.jpg
+    RANGER.jpg
+    S-MAX.jpg
+    T..jpg
+    T.CONNECT.jpg
+    T.CUSTOMKOMBI.jpg
+    T.CUSTOMKOMBIVAN.png
+    TOURNEO.jpg
+    TOURNEOCONNECT.jpg
+    TOURNEOCONNECTKOMBI.jpg
+    TOURNEOCONNECTKOMBIACTIVE.jpg
+    TOURNEOCONNECTKOMBITITANIUMMCAKISA.jpg
+    TOURNEOCOURIER.jpg
+    TOURNEOCOURIERJOURNEY.jpg
+    TOURNEOCOURIERJOURNEY1.5TDCI100.jpg
+    TOURNEOCOURIERKOMBI.jpg
+    TOURNEOCOURIERKOMBI1.5TDCI100.jpg
+    TOURNEOCUSTOM.png
+    TOURNEOCUSTOM320LECOBLUE.jpg
+    TOURNEOCUSTOM320LECOBLUE170TITANIUMPLUS.jpg
+    TR..jpg
+    TR.350L.png
+    TR.CIFT.jpg
+    TR.CIFTKABINKAMYONETECOBLUE.jpg
+    TR.MCA1.jpg
+    TR.MCAI.jpg
+    TR.TEKKABINKAMYONET.jpg
+    TRA.MCA.jpg
+    TRA.MCAI.jpg
+    TRAN..jpg
+    TRAN.ICA3.jpg
+    TRAN.MCA.jpg
+    TRAN.MCAI.jpg
+    TRANS..jpg
+    TRANS.MCA.jpg
+    TRANS.MCAI.jpg
+    TRANSIT.jpg
+    TRANSIT350.jpg
+    TRANSIT350E.png
+    TRANSITCIFTKABINKAMYONET.jpg
+    TRANSITCONNECTVANTRENDMCA.jpg
+    TRANSITCOURIERCOMBI.jpg
+    TRANSITCOURIERKOMBIVAN1.5TDCI.png
+    TRANSITCUSTOM.jpg
+    TRANSITCUSTOMKOMBI.jpg
+    TRANSITCUSTOMKOMBIVAN.jpg
+    TRANSITCUSTOMKOMBIVAN320L.jpg
+    TRANSITCUSTOMKOMBIVANECOBLUE170.jpg
+    TRANSITCUSTOMVAN.jpg
+    TRANSITK.NET.jpg
+    TRANSITKAMYONET.jpg
+    TRANSITKAMYONET350LECOBLUEUPGRADE170TREND10AT.jpg
+    TRANSITKAMYONETCIFTK.470ELD170TRENDKASALIE6.1.jpg
+    TRANSITMINIBUS.jpg
+    TRANSITMINIBUS410L.jpg
+    TRANSITMINIBUS460ED16+1UPGRADE.jpg
+    TRANSITVAN.png
+    TRANSITVAN350LF.jpg
+    TRANSITVAN350MF.jpg
+    default.jpg
+  GEELY/
+    CK.jpg
+    EMGRAND.webp
+    FC.jpg
+    MK.jpg
+    default.jpg
+  GMC/
+    ACADIA.jpg
+    CANYON.jpg
+    HUMMER.jpg
+    SAVANA.jpg
+    SIERRA.jpg
+    TERRAIN.jpg
+    YUKON.jpg
+    default.jpg
+  HONDA/
+    ACCORD.jpg
+    ACURA.jpg
+    CITY.jpg
+    CIVIC.png
+    CR-V.jpg
+    CR-Z.jpg
+    ELYSION.webp
+    HONDA.png
+    HR-V.jpg
+    JAZZ.jpg
+    LEGEND.jpg
+    NSX.jpg
+    ODYSSEY.webp
+    PILOT.jpg
+    S2000.jpg
+    TYPE-R.jpg
+    ZR-V.jpg
+    default.jpg
+  HUMMER/
+    H3.jpg
+    default.jpg
+  HYUNDAI/
+    ACCENT.jpg
+    ATOS.jpg
+    BAYON.jpg
+    COUPE.jpg
+    CRETA.jpg
+    ELANTRA.jpg
+    EQUUS.jpg
+    GENESIS.jpg
+    GETZ.jpg
+    GRANDEUR.jpg
+    H-1.jpg
+    H-100.jpg
+    H100.jpg
+    H350.jpg
+    HD.png
+    HD75.png
+    INSTER.jpg
+    IONIQ.jpg
+    KONA.jpg
+    MATRIX.jpg
+    SANTA.jpg
+    SONATA.jpg
+    STARIA.png
+    TUCSON.png
+    default.jpg
+    i10.jpg
+    i20.jpg
+    i30.jpg
+    i40.jpg
+    ix20.jpg
+    ix35.jpg
+    ix55.jpg
+  IKCO/
+    DENA.jpg
+    SAMAND.jpg
+    SOREN.jpg
+    default.jpg
+  INFINITI/
+    EX.jpg
+    FX.jpg
+    G.jpg
+    G37.jpg
+    GS.jpg
+    M.jpg
+    M30d.jpg
+    Q30.jpg
+    Q50.jpg
+    Q60.jpg
+    QX70.jpg
+    QX80.jpg
+    default.jpg
+  JAECOO/
+    JAECOO.webp
+    default.jpg
+  JAGUAR/
+    E-PACE.jpg
+    F-PACE.jpg
+    F-TYPE.webp
+    F.jpg
+    I-PACE.jpg
+    S-TYPE.jpg
+    X-TYPE.jpg
+    XE.jpg
+    XF.jpg
+    XJ.jpg
+    XJ6.jpg
+    XK8.jpg
+    XKR.jpg
+    default.jpg
+  KIA/
+    BONGO.webp
+    CADENZA.jpg
+    CARENS.jpg
+    CARNIVAL.jpg
+    CEED.jpg
+    CERATO.jpg
+    EV3.jpg
+    EV6.jpg
+    EV9.jpg
+    MAGENTIS.jpg
+    NIRO.jpg
+    OPIRUS.jpg
+    OPTIMA.webp
+    PICANTO.jpg
+    PREGIO.jpg
+    PRO.jpg
+    RIO.jpg
+    SELTOS.png
+    SORENTO.jpg
+    SOUL.jpg
+    SPORTAGE.jpg
+    STINGER.webp
+    STONIC.jpg
+    VENGA.jpg
+    XCEED.jpg
+    default.jpg
+  LADA/
+    4x4.webp
+    KALINA.jpg
+    LADA.jpg
+    NIVA.webp
+    PRIORA.jpg
+    VEGA.jpg
+    VESTA.jpg
+    default.jpg
+  LAMBORGHINI/
+    AVENTADOR.jpg
+    GALLARDO.jpg
+    HURACAN.jpg
+    REVUELTO.jpg
+    URUS.jpg
+    default.jpg
+  LANCIA/
+    DELTA.jpg
+    THEMA.png
+    VOYAGER.jpg
+    YPSILON.jpg
+    default.jpg
+  LAND_ROVER/
+    DEFENDER.jpg
+    DISCOVERY.jpg
+    FREELANDER.jpg
+    default.jpg
+  LEXUS/
+    CT.jpg
+    CT200H.jpg
+    ES.webp
+    GS.webp
+    GS200t.jpg
+    GS300H.jpg
+    GSF.jpg
+    IS.png
+    IS200t.jpg
+    LBX.jpg
+    LC.webp
+    LEXUS.jpg
+    LM.jpg
+    LS.jpg
+    LS600hL.jpg
+    LX.jpg
+    LX570.jpg
+    NX.jpg
+    NX200t.jpg
+    RC.jpg
+    RC200t.png
+    RCF.jpg
+    RX.jpg
+    RX200t.png
+    RX450h.jpg
+    RZ.png
+    UX.jpg
+    default.jpg
+  LINCOLN/
+    AVIATOR.jpg
+    MKS.jpg
+    MKT.jpg
+    NAUTILUS.jpg
+    NAVIGATOR.jpg
+    TOWN.jpg
+    default.jpg
+  LOTUS/
+    ELETRE.jpg
+    ELISE.jpg
+    EMIRA.jpg
+    EVORA.jpg
+    EXIGE.jpg
+    default.jpg
+  MASERATI/
+    COUPE.jpg
+    GHIBLI.jpg
+    GRAN.jpg
+    GRANCABRIO.jpg
+    GRECALE.jpg
+    LEVANTE.jpg
+    MC20.jpg
+    QUATTROPORTE.webp
+    QUATTROPRTE.webp
+    default.jpg
+  MAYBACH/
+    62.jpg
+    default.jpg
+  MAZDA/
+    2.jpg
+    3.jpg
+    5.jpg
+    6.jpg
+    BT-50.jpg
+    CX-3.jpg
+    CX-5.jpg
+    CX-9.jpg
+    MX-5.jpg
+    MX5.jpg
+    RX-8.jpg
+    RX8.jpg
+    default.jpg
+  MCLAREN/
+    620R.jpg
+    720S.jpg
+    GT.jpg
+    default.jpg
+  MERCEDES/
+    A.jpg
+    A180.jpg
+    A200.jpg
+    ACTROS.jpg
+    AMG.jpg
+    B.jpg
+    C.png
+    C180.jpg
+    C180K.jpg
+    C220.jpg
+    C250.jpg
+    C63.jpg
+    CEKICI.jpg
+    CITAN.jpg
+    CL.jpg
+    CLA.png
+    CLC.jpg
+    CLE.jpg
+    CLK.jpg
+    E-SPRINTER.jpg
+    E.jpg
+    E220.jpg
+    EQA.jpg
+    EQB.jpg
+    EQC.jpg
+    EQE.jpg
+    EQS.jpg
+    EQV.jpg
+    G.jpg
+    G400.jpg
+    G500.png
+    G63.jpg
+    G65.jpg
+    GL.jpg
+    GLA.jpg
+    GLB.jpg
+    GLC.jpg
+    GLE.jpg
+    GLK.jpg
+    GLS.jpg
+    KAMYON.jpg
+    MAYBACH.jpg
+    MCLAREN.jpg
+    MERCEDES-AMG.jpg
+    MERCEDES-MAYBACH.jpg
+    MERCEDES.jpg
+    MERCEDESAMG.jpg
+    MIXTO.jpg
+    ML.jpg
+    ML63.jpg
+    OTOBUS.jpg
+    R.jpg
+    S.webp
+    S320.jpg
+    S350.jpg
+    S400d.jpg
+    S65.jpg
+    SL.jpg
+    SLC.jpg
+    SLK.jpg
+    SLS.jpg
+    SPINTER.jpg
+    SPRINTER.jpg
+    SPRINTERKAMYONETORTA.jpg
+    SPRINTERPANELVANEKSTRAUZUN5.0T.jpg
+    SPRINTERPANELVANEKSTRAUZUN5.5T.jpg
+    SPRINTERPANELVANORTA.jpg
+    SPRINTERSASIK.NETUZUN.jpg
+    SPRINTERSASIKAMYONUZUN.jpg
+    V.jpg
+    V300D.jpg
+    VANEO.jpg
+    VARIO.jpg
+    VIANO.jpg
+    VITO.jpg
+    X.jpg
+    default.jpg
+    eSPRINTER.jpg
+  MERCURY/
+    MARINER.jpg
+    MILAN.jpg
+    MOUNTAINER.jpg
+    SABLE.png
+    default.jpg
+  MG/
+    CYBERSTER.jpg
+    EHS.jpg
+    HS.jpg
+    MARVEL.jpg
+    MG3.jpg
+    MG4.webp
+    MG7.jpg
+    ZS.jpg
+    default.jpg
+  MINI/
+    COOPER.jpg
+    MIINI.jpg
+    MINI.jpg
+    MINICOOOPERCOUNTRYMAN.jpg
+    MINICOOPERCOUNTRYMANALL4.jpg
+    default.jpg
+  MITSUBISHI/
+    ASX.webp
+    ATTRAGE.jpg
+    CANTER.jpg
+    COLT.jpg
+    ECLIPSE.jpg
+    FUSO.jpg
+    GRANDIS.jpg
+    I-MIEV.jpg
+    L.jpg
+    L200.jpg
+    L200KAMYONET.jpg
+    L300.jpg
+    LANCER.jpg
+    OUTLANDER.jpg
+    PAJERO.jpg
+    SPACESTAR.jpg
+    default.jpg
+  NISSAN/
+    350.jpg
+    400Z.jpg
+    ALTIMA.jpg
+    ARMADA.jpg
+    GT-R.jpg
+    INFINITI.jpg
+    JUKE.jpg
+    LEAF.jpg
+    MC.jpg
+    MICRA.webp
+    MURANO.png
+    NAVARA.jpg
+    NOTE.jpg
+    NP.jpg
+    NP300.jpg
+    PATHFINDER.jpg
+    PATROL.jpg
+    PICK.webp
+    PRIMASTAR.jpg
+    PRIMERA.jpg
+    PULSAR.jpg
+    QASHQAI.jpg
+    ROGUE.jpg
+    SENTRA.jpg
+    TOWNSTAR.webp
+    X-TRAIL.jpg
+    default.jpg
+  OPEL/
+    ADAM.jpg
+    AMPERA.jpg
+    ANTARA.jpg
+    ASTRA-E.jpg
+    ASTRA.jpg
+    CASCADA.jpg
+    COMBO.jpg
+    CORSA-E.jpg
+    CORSA.jpg
+    CROSSLAND.webp
+    CROSSLANDX.webp
+    FRONTERA-E.jpg
+    FRONTERA.jpg
+    GRANDLAND.jpg
+    INSIGNIA.jpg
+    INSIGNIASPORTTOURER.jpg
+    MERIVA.jpg
+    MOKKA-E.jpg
+    MOKKA.jpg
+    MOVANO.png
+    SIGNUM.jpg
+    TIGRA.png
+    VECTRA.jpg
+    VIVARO.jpg
+    ZAFIRA-E.jpg
+    ZAFIRA.jpg
+    default.jpg
+  PEUGEOT/
+    107.jpg
+    2008.jpg
+    206+.jpg
+    206.jpg
+    207.jpg
+    208.jpg
+    3008.jpg
+    3008ACTIVELIFE.jpg
+    301.png
+    307.jpg
+    308.jpg
+    4007.jpg
+    407.jpg
+    408.jpg
+    5008.jpg
+    508.jpg
+    607.jpg
+    BIPPER.jpg
+    BOXER.jpg
+    BOXERMINIBUSOKUL.jpg
+    BOXERMINIBUSPERSONEL.jpg
+    BOXERVAN.png
+    BOXERVANDYNAMICPLUS.jpg
+    E-208.jpg
+    E-3008.jpg
+    E-308.jpg
+    E-5008.jpg
+    EXPERT.jpg
+    EXPERTTRAVELLERMINIBUS.jpg
+    EXPERTTRAVELLERMINIBUS9+1.jpg
+    PARTNER.jpg
+    RCZ.jpg
+    RIFTER.jpg
+    TRAVELLER.jpg
+    default.jpg
+    e-2008.jpg
+  PORSCHE/
+    718.jpg
+    911.jpg
+    911CARRERA.webp
+    BOXSTER.jpg
+    CARRERA.jpg
+    CAYENNE.jpg
+    CAYMAN.jpg
+    MACAN.jpg
+    PANAMERA.jpg
+    PANEMERA.jpg
+    SPYDER.jpg
+    TAYCAN.jpg
+    default.jpg
+  PROTON/
+    GEN.jpg
+    GEN2.png
+    PERDANA.jpg
+    SAGA.jpg
+    SAVVY.jpg
+    SAVY.jpg
+    WAJA.jpg
+    WIRA.jpg
+    default.jpg
+  RANGE_ROVER/
+    2.0.png
+    3.0.png
+    3.6.jpg
+    4.2.jpg
+    4.4.jpg
+    5.0.jpg
+    EVOQUE.jpg
+    SPORT.jpg
+    VELAR.jpg
+    default.jpg
+  RENAULT/
+    ALPINE.jpg
+    AUSTRAL.jpg
+    CAPTUR.jpg
+    CEKICI.jpg
+    CLIO.jpg
+    DUSTER.jpg
+    ESPACE.jpg
+    EXPRESS.jpg
+    FLUENCE.webp
+    GRAND.jpg
+    KADJAR.jpg
+    KAMYON.png
+    KANGOO.jpg
+    KANGOOEXPRESSFRIGOMAXI.jpg
+    KOLEOS.jpg
+    LAGUNA.jpg
+    LATITUDE.jpg
+    LATITUTE.jpg
+    MASCOTT.jpg
+    MASTER.jpg
+    MEGANE.jpg
+    MODUS.jpg
+    R5.jpg
+    RAFALE.jpg
+    SCENIC.jpg
+    SYMBOL.jpg
+    TALIANT.jpg
+    TALISMAN.jpg
+    TRAFIC.jpg
+    TRAFICPANELVAN.jpg
+    TRAFICPANELVANGRANDCONFORT.jpg
+    TWINGO.jpg
+    VEL.jpg
+    ZOE.jpg
+    default.jpg
+  ROLLS-ROYCE/
+    CULLINAN.jpg
+    DAWN.jpg
+    GHOST.jpg
+    PHANTOM.jpg
+    SPECTRE.jpg
+    WRAITH.webp
+    default.jpg
+  SAAB/
+    9-3.jpg
+    9-5.png
+    default.jpg
+  SEAT/
+    ALHAMBRA.jpg
+    ALHAMRA.jpg
+    ALTEA.jpg
+    ARONA.png
+    ATECA.jpg
+    CORDOBA.webp
+    EXEO.jpg
+    IBIZA.png
+    LEON.png
+    TARRACO.jpg
+    TOLEDO.jpg
+    default.jpg
+  SKODA/
+    CITIGO.jpg
+    ELROQ.jpg
+    ENYAQ.jpg
+    FABIA.jpg
+    KAMIQ.webp
+    KAROQ.jpg
+    KODIAQ.jpg
+    OCTAVIA.jpg
+    RAPID.webp
+    ROOMSTER.jpg
+    SCALA.jpg
+    SUPERB.jpg
+    YETI.jpg
+    default.jpg
+  SKYWELL/
+    ET5.jpg
+    default.jpg
+  SMART/
+    FORTWO.webp
+    SMART.jpg
+    default.jpg
+  SSANGYONG/
+    ACTYON.jpg
+    KORANDO.jpg
+    KYRON.jpg
+    MUSSO.jpg
+    RODIUS.jpg
+    TIVOLI.png
+    TORRES.jpg
+    XLV.png
+    default.jpg
+  SUBARU/
+    BRZ.jpg
+    CROSSTREK.jpg
+    FORESTER.jpg
+    IMPREZA.jpg
+    LEGACY.jpg
+    LEVORG.jpg
+    OUTBACK.jpg
+    SOLTERRA.jpg
+    TRIBECA.jpg
+    XV.jpg
+    default.jpg
+  SUZUKI/
+    ACROSS.jpg
+    ALTO.jpg
+    BALENO.webp
+    CELERIO.jpg
+    GRAND.png
+    IGNIS.jpg
+    JIMNY.webp
+    KIZASHI.jpg
+    S-CROSS.png
+    SWIFT.jpg
+    SX4.jpg
+    VITARA.jpg
+    XL-7.jpg
+    default.jpg
+  SWM/
+    G01.webp
+    G01F.jpg
+    G03F.webp
+    G05.webp
+    X30L.jpg
+    default.jpg
+  TATA/
+    INDIGO.jpg
+    ISOTO.webp
+    KAMYONET.jpg
+    MANZA.jpg
+    MARINA.png
+    TELCOLINE.jpg
+    VISTA.jpg
+    XENON.jpg
+    default.jpg
+  TESLA/
+    MODEL.jpg
+    ROADSTER.jpg
+    default.jpg
+  TOGG/
+    T10F.jpg
+    T10X.jpg
+    default.jpg
+  TOYOTA/
+    4RUNNER.jpg
+    AURIS.jpg
+    AVENSIS.jpg
+    C-HR.jpg
+    CAMRY.jpg
+    COROLLA.jpg
+    FORTUNER.jpg
+    GRANVIA.png
+    GT86.jpg
+    HIACE.jpg
+    HIGHLANDER.jpg
+    HIGHLINDER.jpg
+    HILUX.jpg
+    LAND.png
+    LEXUS.jpg
+    PRIUS.jpg
+    PROACE.jpg
+    RAV.jpg
+    RAV4.webp
+    SEQUOIA.png
+    SIENNA.png
+    SUPRA.webp
+    URBAN.jpg
+    VERSO.jpg
+    YARIS.jpg
+    default.jpg
+  VOLKSWAGEN/
+    AMAROK.png
+    ARTEON.png
+    BEETLE.jpg
+    CADDY.jpg
+    CALIFORNIA.jpg
+    CARAVELLE.jpg
+    CC.webp
+    CRAFT.V.2.5.webp
+    CRAFTER.jpg
+    CRAFTERPANELVAN.jpg
+    CROSS.jpg
+    E-UP.jpg
+    EOS.jpg
+    GOLF.webp
+    GRAND.jpg
+    ID-4.jpg
+    ID..jpg
+    ID.3.jpg
+    ID.4.jpg
+    ID.6.jpg
+    ID.7.jpg
+    ID4.jpg
+    JETTA.jpg
+    MULTIVAN.jpg
+    PASSAT.jpg
+    PHAETON.jpg
+    POLO.jpg
+    SCIROCCO.jpg
+    SHARAN.jpg
+    T-CROSS.jpg
+    T-ROC.jpg
+    T.PORTER.jpg
+    TAIGO.jpg
+    TAOS.jpg
+    TAYRON.jpg
+    TERAMONT.jpg
+    THE.jpg
+    TIGUAN.jpg
+    TIGUANALLSPACE.jpg
+    TOUAREG.jpg
+    TOURAEG.jpg
+    TOURAN.jpg
+    TPORTER.jpg
+    TRANSPORTER.jpg
+    TRANSPORTERCAMLIVAN.jpg
+    UP.jpg
+    default.jpg
+  VOLVO/
+    C30.jpg
+    C40.jpg
+    C70.jpg
+    EC40.jpg
+    EX30.jpg
+    EX40.jpg
+    S40.jpg
+    S60.jpg
+    S80.jpg
+    S90.jpg
+    V40.jpg
+    V50.jpg
+    V60.jpg
+    V70.jpg
+    V90.jpg
+    XC.jpg
+    XC40.jpg
+    XC60.jpg
+    XC70.jpg
+    XC90.jpg
+    default.jpg
+  brands.txt
+  download_all_models.py
+  download_brands.py
+  download_ddg.py
+  download_ddg2.py
+  download_images.py
+  download_log.txt
+  download_models_log.txt
+  download_pexels.py
+  download_pixabay.py
+  download_serper.py
+  download_test.py
+  models.txt
+  retry_failed.py
+  series.txt
+  serper_log.txt
+  serper_progress.txt
+cloudflared-config.yml
+cloudflared-tamirhanem.service
+cookies (4).json
+data/
+  aracveri.csv
+  fix_recalls_checkpoint.json
+  nhtsa_recalls_turkish.json
+  nhtsa_recalls_turkish_checkpoint.json
+  recalls.json
+  recalls_backup.json
+  tire_sizes_checkpoint.json
+debug_ai.log
+ev-charging-api/
+  README.md
+  package-lock.json
+  package.json
+  prisma/
+    schema.prisma
+  scripts/
+    fetch_ocm_only.ts
+    import_and_enrich.ts
+  src/
+    db/
+      client.ts
+    google/
+      enrich_google.ts
+      index.ts
+    ocm/
+      fetch_ocm.ts
+      index.ts
+      normalizer.ts
+      types.ts
+    pipeline/
+      import_and_enrich.ts
+      index.ts
+    server/
+      index.ts
+      routes.ts
+    utils/
+      env.ts
+      index.ts
+      logger.ts
+  tsconfig.json
+kronik-sorunlar-enhanced-cards.png
+kronik-sorunlar-final.png
+kronik-sorunlar-fixed.png
+kronik-sorunlar-new.png
+kronik-sorunlar-repairpal-style.png
+kronik-sorunlar-updated-colors.png
+kronik-sorunlar-with-slider.png
+kronik-sorunlar-with-year.png
+middleware.ts
+motor-expansion-plan.md
+next-env.d.ts
+next.config.js
+package-lock.json
+package.json
+postcss.config.js
+public/
+  apple-touch-icon.png
+  aracresimleri/
+    ALFA_ROMEO/
+      147.webp
+      159.jpg
+      4C.jpg
+      BRERA.jpg
+      GIULIA.jpg
+      GIULIETTA.jpg
+      GT.jpg
+      JUNIOR.jpg
+      MITO.jpg
+      STELVIO.jpg
+      STEVIO.jpg
+      TONALE.jpg
+      default.jpg
+    ALPINE/
+      A.webp
+      A110.jpg
+      A290.jpg
+      default.jpg
+    ASTON_MARTIN/
+      CG.jpg
+      DB11.jpg
+      DB12.jpg
+      DB9.jpg
+      DBS.jpg
+      DBX.jpg
+      RAPIDE.jpg
+      V12.jpg
+      V8.jpg
+      VANQUISH.jpg
+      VANTAGE.jpg
+      VIRAGE.jpg
+      default.jpg
+    AUDI/
+      A1.jpg
+      A2.jpg
+      A3.jpg
+      A4.jpg
+      A5.jpg
+      A5SPORTBACK.png
+      A6.jpg
+      A7.png
+      A8.jpg
+      A8L.jpg
+      E-TRON.jpg
+      Q2.jpg
+      Q3.jpg
+      Q4.jpg
+      Q5.jpg
+      Q5SPORTBACK.jpg
+      Q6.jpg
+      Q7.jpg
+      Q8.jpg
+      R8.jpg
+      RS.jpg
+      RS3.jpg
+      RS4.jpg
+      RS5.jpg
+      RS6.jpg
+      RS7.jpg
+      S.jpg
+      S3.jpg
+      S4.jpg
+      S5.jpg
+      S6.png
+      S7.jpg
+      S8.jpg
+      SQ5.jpg
+      SQ7.jpg
+      SQ8.jpg
+      TT.jpg
+      TTR.jpg
+      TTRS.jpg
+      TTS.jpg
+      default.jpg
+    BENTLEY/
+      BENTAYGA.jpg
+      CONTINENTAL.jpg
+      FLYING.jpg
+      MULSANNE.jpg
+      default.jpg
+    BMW/
+      116d.jpg
+      116i.jpg
+      118d.jpg
+      118i.jpg
+      118iA.jpg
+      120.jpg
+      120d.jpg
+      120i.jpg
+      123d.jpg
+      128Ti.jpg
+      130i.jpg
+      1M.jpg
+      216d.jpg
+      218d.jpg
+      218i.jpg
+      220.jpg
+      220d.jpg
+      220i.jpg
+      228i.jpg
+      230e.jpg
+      230i.jpg
+      316.jpg
+      316d.jpg
+      316i.jpg
+      318.jpg
+      318d.jpg
+      318i.jpg
+      320.jpg
+      320d.jpg
+      320i.jpg
+      325i.jpg
+      328i.jpg
+      330.jpg
+      330d.jpg
+      330e.jpg
+      330i.jpg
+      335d.jpg
+      335i.jpg
+      335xi.jpg
+      340i.jpg
+      418d.jpg
+      418i.jpg
+      420d.jpg
+      420i.jpg
+      428i.jpg
+      430d.jpg
+      430i.jpg
+      435d.jpg
+      435i.jpg
+      440i.jpg
+      520.jpg
+      520Li.jpg
+      520d.jpg
+      520i.jpg
+      523i.jpg
+      525.jpg
+      525IA.jpg
+      525d.jpg
+      528i.jpg
+      530.jpg
+      530d.jpg
+      530e.jpg
+      530i.jpg
+      535d.jpg
+      535i.jpg
+      540d.jpg
+      540i.jpg
+      540�.jpg
+      550e.jpg
+      550i.jpg
+      620d.jpg
+      630.jpg
+      630i.jpg
+      635.jpg
+      640d.jpg
+      640i.jpg
+      650.jpg
+      650i.jpg
+      725Ld.jpg
+      725d.jpg
+      730.jpg
+      730IA.jpg
+      730Ld.jpg
+      730Li.jpg
+      730d.jpg
+      730i.jpg
+      740.png
+      740E.png
+      740IA.jpg
+      740LE.png
+      740Ld.jpg
+      740Li.png
+      740d.jpg
+      745Le.jpg
+      745d.jpg
+      750.jpg
+      750IA.jpg
+      750Ld.jpg
+      750Li.jpg
+      750d.jpg
+      750i.jpg
+      760.png
+      760iA.png
+      840d.jpg
+      840i.png
+      ALPINA.jpg
+      ALPINE.jpg
+      M.jpg
+      M135i.jpg
+      M2.jpg
+      M235i.jpg
+      M240i.jpg
+      M3.jpg
+      M340d.png
+      M340i.jpg
+      M4.jpg
+      M440i.jpg
+      M5.jpg
+      M550d.jpg
+      M550i.webp
+      M6.jpg
+      M760Li.jpg
+      M760e.jpg
+      M8.jpg
+      M850i.png
+      X1.png
+      X2.jpg
+      X3.jpg
+      X4.jpg
+      X5.jpg
+      X6.jpg
+      X7.jpg
+      XM.jpg
+      Z4.png
+      default.jpg
+      i3.jpg
+      i3s.jpg
+      i4.jpg
+      i5.jpg
+      i7.jpg
+      i8.jpg
+      iX.jpg
+      iX1.jpg
+      iX2.jpg
+      iX3.jpg
+    BUICK/
+      ENCLAVE.jpg
+      ENCORE.jpg
+      default.jpg
+    BYD/
+      ATTO.webp
+      BYD.jpg
+      DOLPHIN.png
+      HAN.jpg
+      SEAL.png
+      SEALION.jpg
+      TANG.jpg
+      default.jpg
+    CADILLAC/
+      CADILLAC.jpg
+      CT6.jpg
+      CTS.jpg
+      DTS.jpg
+      ESCALADE.jpg
+      SRX.jpg
+      XT5.jpg
+      default.jpg
+    CHERY/
+      ALIA.jpg
+      CHANCE.jpg
+      KIMO.jpg
+      NICHE.jpg
+      OMODA.jpg
+      TAXIM.jpg
+      TIGGO.jpg
+      TIGGO3.webp
+      TIGGO5.webp
+      default.jpg
+    CHEVROLET/
+      AVALANCHE.jpg
+      AVEO.jpg
+      CAMARO.webp
+      CAPTIVA.jpg
+      CORVETTE.jpg
+      CRUZE.jpg
+      EPICA.jpg
+      EQUINOX.jpg
+      EVANDA.jpg
+      EXPRESS.jpg
+      IMPALA.jpg
+      LACETTI.jpg
+      MENLO.jpg
+      ORLANDO.jpg
+      REZZO.jpg
+      SILVERADO.jpg
+      SPARK.jpg
+      SUBURBAN.jpg
+      TAHOE.jpg
+      TRAILBLAZER.webp
+      TRAX.png
+      default.jpg
+    CHRYSLER/
+      300.jpg
+      300C.jpg
+      CROSSFIRE.jpg
+      GRAND.jpg
+      GRANDCHEROKEE.jpg
+      JEEP.jpg
+      JEEPGRANDCHEROKEE.jpg
+      JEEPGRANDCHEROKEELIMITED.jpg
+      JEEPGRANDCHEROKEENIGTHEAGLE.jpg
+      JEEPGRANDCHEROKEEOVERLAND.jpg
+      JEEPRENEGADE.jpg
+      PACIFICA.jpg
+      PT.jpg
+      SEBRING.jpg
+      WRANGLER.jpg
+      default.jpg
+    CITROEN/
+      BERLINGO.jpg
+      C-ELLYSE.jpg
+      C-ELYSEE.jpg
+      C1.jpg
+      C2.jpg
+      C3.webp
+      C3AIRCROSS.jpg
+      C3AIRCROSSEXCLUSIVE.jpg
+      C3AIRCROSSSHINE.jpg
+      C4.jpg
+      C5.jpg
+      C5AIRCROSS.jpg
+      C5AIRCROSSFEELADVENTURE.jpg
+      C5AIRCROSSSELECTIONBUSINESS.jpg
+      C5AIRCROSSSHINEBOLD.jpg
+      C6.jpg
+      C8.jpg
+      DS3.jpg
+      DS4.jpg
+      DS5.jpg
+      E-C3.webp
+      E-C4.jpg
+      GRAND.jpg
+      JUMPER.jpg
+      JUMPY.jpg
+      NEMO.jpg
+      SPACETOURER.jpg
+      default.jpg
+    CUPRA/
+      ATECA.jpg
+      BORN.jpg
+      FORMENTOR.jpg
+      LEON.jpg
+      TERRAMAR.jpg
+      default.jpg
+    DACIA/
+      DOKKER.jpg
+      DUSTER.jpg
+      JOGGER.jpg
+      LODGY.jpg
+      LOGAN.webp
+      SANDERO.webp
+      SPRING.jpg
+      default.jpg
+    DAIHATSU/
+      CUORE.jpg
+      MATERIA.jpg
+      SIRION.png
+      TERIOS.jpg
+      default.jpg
+    DODGE-USA/
+    DODGEUSA/
+      CALIBER.jpg
+      CHALLANGER.jpg
+      CHALLENGER.jpg
+      CHARGER.jpg
+      DURANGO.jpg
+      GRAND.jpg
+      JOURNEY.jpg
+      RAM.jpg
+      VIPER.jpg
+    DS/
+      DS.jpg
+      DS3.jpg
+      DS7.jpg
+      DS7CROSSBACK.jpg
+      DS9.jpg
+      default.jpg
+    FERRARI/
+      12CILINDRI.jpg
+      296.jpg
+      458.jpg
+      488.jpg
+      599.jpg
+      612.jpg
+      812.jpg
+      CALIFORNIA.jpg
+      F.jpg
+      F12.webp
+      F8.jpg
+      FF.jpg
+      GTC4LUSSO.jpg
+      PORTOFINO.jpg
+      PUROSANGUE.jpg
+      ROMA.jpg
+      SF.jpg
+      SF90.jpg
+      default.jpg
+    FIAT/
+      124.jpg
+      500.jpg
+      500C.jpg
+      500E.jpg
+      500L.jpg
+      500X.jpg
+      600.jpg
+      600E.webp
+      ABART.jpg
+      ABARTH.jpg
+      ALBEA.webp
+      BRAVO.jpg
+      DOBLO.jpg
+      DUCATO.jpg
+      E-DOBLO.jpg
+      E-SCUDO.jpg
+      EGEA.jpg
+      FIORINO.jpg
+      G..jpg
+      GRANDE.jpg
+      LINEA.png
+      MY.jpg
+      PALIO.jpg
+      PANDA.jpg
+      PRATICO.jpg
+      PRATICOPLUS.jpg
+      PUNTO.png
+      SCUDO.jpg
+      ULYSSE.jpg
+      default.jpg
+    FORD/
+      B-MAX.jpg
+      BRONCO.jpg
+      C-MAX.jpg
+      C.jpg
+      CAPRI.jpg
+      CEKICI.jpg
+      E-JOURNEY.jpg
+      E-TOURNEO.jpg
+      E-TRANSIT.jpg
+      ECOSPORT.jpg
+      EDGE.jpg
+      ESCAPE.jpg
+      EXPEDITION.jpg
+      EXPLORER.jpg
+      F.png
+      F150.png
+      F350.png
+      F450.jpg
+      FIESTA.jpg
+      FLEX.jpg
+      FOCUS.jpg
+      FUSION.jpg
+      GALAXY.jpg
+      GRAND.jpg
+      GT.jpg
+      KA.jpg
+      KAMYON.jpg
+      KUGA.jpg
+      LINCOLN.png
+      MONDEO.jpg
+      MUSTANG.jpg
+      MY.jpg
+      PUMA.jpg
+      RANGER.jpg
+      S-MAX.jpg
+      T..jpg
+      T.CONNECT.jpg
+      T.CUSTOMKOMBI.jpg
+      T.CUSTOMKOMBIVAN.png
+      TOURNEO.jpg
+      TOURNEOCONNECT.jpg
+      TOURNEOCONNECTKOMBI.jpg
+      TOURNEOCONNECTKOMBIACTIVE.jpg
+      TOURNEOCONNECTKOMBITITANIUMMCAKISA.jpg
+      TOURNEOCOURIER.jpg
+      TOURNEOCOURIERJOURNEY.jpg
+      TOURNEOCOURIERJOURNEY1.5TDCI100.jpg
+      TOURNEOCOURIERKOMBI.jpg
+      TOURNEOCOURIERKOMBI1.5TDCI100.jpg
+      TOURNEOCUSTOM.png
+      TOURNEOCUSTOM320LECOBLUE.jpg
+      TOURNEOCUSTOM320LECOBLUE170TITANIUMPLUS.jpg
+      TR..jpg
+      TR.350L.png
+      TR.CIFT.jpg
+      TR.CIFTKABINKAMYONETECOBLUE.jpg
+      TR.MCA1.jpg
+      TR.MCAI.jpg
+      TR.TEKKABINKAMYONET.jpg
+      TRA.MCA.jpg
+      TRA.MCAI.jpg
+      TRAN..jpg
+      TRAN.ICA3.jpg
+      TRAN.MCA.jpg
+      TRAN.MCAI.jpg
+      TRANS..jpg
+      TRANS.MCA.jpg
+      TRANS.MCAI.jpg
+      TRANSIT.jpg
+      TRANSIT350.jpg
+      TRANSIT350E.png
+      TRANSITCIFTKABINKAMYONET.jpg
+      TRANSITCONNECTVANTRENDMCA.jpg
+      TRANSITCOURIERCOMBI.jpg
+      TRANSITCOURIERKOMBIVAN1.5TDCI.png
+      TRANSITCUSTOM.jpg
+      TRANSITCUSTOMKOMBI.jpg
+      TRANSITCUSTOMKOMBIVAN.jpg
+      TRANSITCUSTOMKOMBIVAN320L.jpg
+      TRANSITCUSTOMKOMBIVANECOBLUE170.jpg
+      TRANSITCUSTOMVAN.jpg
+      TRANSITK.NET.jpg
+      TRANSITKAMYONET.jpg
+      TRANSITKAMYONET350LECOBLUEUPGRADE170TREND10AT.jpg
+      TRANSITKAMYONETCIFTK.470ELD170TRENDKASALIE6.1.jpg
+      TRANSITMINIBUS.jpg
+      TRANSITMINIBUS410L.jpg
+      TRANSITMINIBUS460ED16+1UPGRADE.jpg
+      TRANSITVAN.png
+      TRANSITVAN350LF.jpg
+      TRANSITVAN350MF.jpg
+      default.jpg
+    GEELY/
+      CK.jpg
+      EMGRAND.webp
+      FC.jpg
+      MK.jpg
+      default.jpg
+    GMC/
+      ACADIA.jpg
+      CANYON.jpg
+      HUMMER.jpg
+      SAVANA.jpg
+      SIERRA.jpg
+      TERRAIN.jpg
+      YUKON.jpg
+      default.jpg
+    HONDA/
+      ACCORD.jpg
+      ACURA.jpg
+      CITY.jpg
+      CIVIC.png
+      CR-V.jpg
+      CR-Z.jpg
+      ELYSION.webp
+      HONDA.png
+      HR-V.jpg
+      JAZZ.jpg
+      LEGEND.jpg
+      NSX.jpg
+      ODYSSEY.webp
+      PILOT.jpg
+      S2000.jpg
+      TYPE-R.jpg
+      ZR-V.jpg
+      default.jpg
+    HUMMER/
+      H3.jpg
+      default.jpg
+    HYUNDAI/
+      ACCENT.jpg
+      ATOS.jpg
+      BAYON.jpg
+      COUPE.jpg
+      CRETA.jpg
+      ELANTRA.jpg
+      EQUUS.jpg
+      GENESIS.jpg
+      GETZ.jpg
+      GRANDEUR.jpg
+      H-1.jpg
+      H-100.jpg
+      H100.jpg
+      H350.jpg
+      HD.png
+      HD75.png
+      INSTER.jpg
+      IONIQ.jpg
+      KONA.jpg
+      MATRIX.jpg
+      SANTA.jpg
+      SONATA.jpg
+      STARIA.png
+      TUCSON.png
+      default.jpg
+      i10.jpg
+      i20.jpg
+      i30.jpg
+      i40.jpg
+      ix20.jpg
+      ix35.jpg
+      ix55.jpg
+    IKCO/
+      DENA.jpg
+      SAMAND.jpg
+      SOREN.jpg
+      default.jpg
+    INFINITI/
+      EX.jpg
+      FX.jpg
+      G.jpg
+      G37.jpg
+      GS.jpg
+      M.jpg
+      M30d.jpg
+      Q30.jpg
+      Q50.jpg
+      Q60.jpg
+      QX70.jpg
+      QX80.jpg
+      default.jpg
+    JAECOO/
+      JAECOO.webp
+      default.jpg
+    JAGUAR/
+      E-PACE.jpg
+      F-PACE.jpg
+      F-TYPE.webp
+      F.jpg
+      I-PACE.jpg
+      S-TYPE.jpg
+      X-TYPE.jpg
+      XE.jpg
+      XF.jpg
+      XJ.jpg
+      XJ6.jpg
+      XK8.jpg
+      XKR.jpg
+      default.jpg
+    KIA/
+      BONGO.webp
+      CADENZA.jpg
+      CARENS.jpg
+      CARNIVAL.jpg
+      CEED.jpg
+      CERATO.jpg
+      EV3.jpg
+      EV6.jpg
+      EV9.jpg
+      MAGENTIS.jpg
+      NIRO.jpg
+      OPIRUS.jpg
+      OPTIMA.webp
+      PICANTO.jpg
+      PREGIO.jpg
+      PRO.jpg
+      RIO.jpg
+      SELTOS.png
+      SORENTO.jpg
+      SOUL.jpg
+      SPORTAGE.jpg
+      STINGER.webp
+      STONIC.jpg
+      VENGA.jpg
+      XCEED.jpg
+      default.jpg
+    LADA/
+      4x4.webp
+      KALINA.jpg
+      LADA.jpg
+      NIVA.webp
+      PRIORA.jpg
+      VEGA.jpg
+      VESTA.jpg
+      default.jpg
+    LAMBORGHINI/
+      AVENTADOR.jpg
+      GALLARDO.jpg
+      HURACAN.jpg
+      REVUELTO.jpg
+      URUS.jpg
+      default.jpg
+    LANCIA/
+      DELTA.jpg
+      THEMA.png
+      VOYAGER.jpg
+      YPSILON.jpg
+      default.jpg
+    LAND_ROVER/
+      DEFENDER.jpg
+      DISCOVERY.jpg
+      FREELANDER.jpg
+      default.jpg
+    LEXUS/
+      CT.jpg
+      CT200H.jpg
+      ES.webp
+      GS.webp
+      GS200t.jpg
+      GS300H.jpg
+      GSF.jpg
+      IS.png
+      IS200t.jpg
+      LBX.jpg
+      LC.webp
+      LEXUS.jpg
+      LM.jpg
+      LS.jpg
+      LS600hL.jpg
+      LX.jpg
+      LX570.jpg
+      NX.jpg
+      NX200t.jpg
+      RC.jpg
+      RC200t.png
+      RCF.jpg
+      RX.jpg
+      RX200t.png
+      RX450h.jpg
+      RZ.png
+      UX.jpg
+      default.jpg
+    LINCOLN/
+      AVIATOR.jpg
+      MKS.jpg
+      MKT.jpg
+      NAUTILUS.jpg
+      NAVIGATOR.jpg
+      TOWN.jpg
+      default.jpg
+    LOTUS/
+      ELETRE.jpg
+      ELISE.jpg
+      EMIRA.jpg
+      EVORA.jpg
+      EXIGE.jpg
+      default.jpg
+    MASERATI/
+      COUPE.jpg
+      GHIBLI.jpg
+      GRAN.jpg
+      GRANCABRIO.jpg
+      GRECALE.jpg
+      LEVANTE.jpg
+      MC20.jpg
+      QUATTROPORTE.webp
+      QUATTROPRTE.webp
+      default.jpg
+    MAYBACH/
+      62.jpg
+      default.jpg
+    MAZDA/
+      2.jpg
+      3.jpg
+      5.jpg
+      6.jpg
+      BT-50.jpg
+      CX-3.jpg
+      CX-5.jpg
+      CX-9.jpg
+      MX-5.jpg
+      MX5.jpg
+      RX-8.jpg
+      RX8.jpg
+      default.jpg
+    MCLAREN/
+      620R.jpg
+      720S.jpg
+      GT.jpg
+      default.jpg
+    MERCEDES/
+      A.jpg
+      A180.jpg
+      A200.jpg
+      ACTROS.jpg
+      AMG.jpg
+      B.jpg
+      C.png
+      C180.jpg
+      C180K.jpg
+      C220.jpg
+      C250.jpg
+      C63.jpg
+      CEKICI.jpg
+      CITAN.jpg
+      CL.jpg
+      CLA.png
+      CLC.jpg
+      CLE.jpg
+      CLK.jpg
+      E-SPRINTER.jpg
+      E.jpg
+      E220.jpg
+      EQA.jpg
+      EQB.jpg
+      EQC.jpg
+      EQE.jpg
+      EQS.jpg
+      EQV.jpg
+      G.jpg
+      G400.jpg
+      G500.png
+      G63.jpg
+      G65.jpg
+      GL.jpg
+      GLA.jpg
+      GLB.jpg
+      GLC.jpg
+      GLE.jpg
+      GLK.jpg
+      GLS.jpg
+      KAMYON.jpg
+      MAYBACH.jpg
+      MCLAREN.jpg
+      MERCEDES-AMG.jpg
+      MERCEDES-MAYBACH.jpg
+      MERCEDES.jpg
+      MERCEDESAMG.jpg
+      MIXTO.jpg
+      ML.jpg
+      ML63.jpg
+      OTOBUS.jpg
+      R.jpg
+      S.webp
+      S320.jpg
+      S350.jpg
+      S400d.jpg
+      S65.jpg
+      SL.jpg
+      SLC.jpg
+      SLK.jpg
+      SLS.jpg
+      SPINTER.jpg
+      SPRINTER.jpg
+      SPRINTERKAMYONETORTA.jpg
+      SPRINTERPANELVANEKSTRAUZUN5.0T.jpg
+      SPRINTERPANELVANEKSTRAUZUN5.5T.jpg
+      SPRINTERPANELVANORTA.jpg
+      SPRINTERSASIK.NETUZUN.jpg
+      SPRINTERSASIKAMYONUZUN.jpg
+      V.jpg
+      V300D.jpg
+      VANEO.jpg
+      VARIO.jpg
+      VIANO.jpg
+      VITO.jpg
+      X.jpg
+      default.jpg
+      eSPRINTER.jpg
+    MERCURY/
+      MARINER.jpg
+      MILAN.jpg
+      MOUNTAINER.jpg
+      SABLE.png
+      default.jpg
+    MG/
+      CYBERSTER.jpg
+      EHS.jpg
+      HS.jpg
+      MARVEL.jpg
+      MG3.jpg
+      MG4.webp
+      MG7.jpg
+      ZS.jpg
+      default.jpg
+    MINI/
+      COOPER.jpg
+      MIINI.jpg
+      MINI.jpg
+      MINICOOOPERCOUNTRYMAN.jpg
+      MINICOOPERCOUNTRYMANALL4.jpg
+      default.jpg
+    MITSUBISHI/
+      ASX.webp
+      ATTRAGE.jpg
+      CANTER.jpg
+      COLT.jpg
+      ECLIPSE.jpg
+      FUSO.jpg
+      GRANDIS.jpg
+      I-MIEV.jpg
+      L.jpg
+      L200.jpg
+      L200KAMYONET.jpg
+      L300.jpg
+      LANCER.jpg
+      OUTLANDER.jpg
+      PAJERO.jpg
+      SPACESTAR.jpg
+      default.jpg
+    NISSAN/
+      350.jpg
+      400Z.jpg
+      ALTIMA.jpg
+      ARMADA.jpg
+      GT-R.jpg
+      INFINITI.jpg
+      JUKE.jpg
+      LEAF.jpg
+      MC.jpg
+      MICRA.webp
+      MURANO.png
+      NAVARA.jpg
+      NOTE.jpg
+      NP.jpg
+      NP300.jpg
+      PATHFINDER.jpg
+      PATROL.jpg
+      PICK.webp
+      PRIMASTAR.jpg
+      PRIMERA.jpg
+      PULSAR.jpg
+      QASHQAI.jpg
+      ROGUE.jpg
+      SENTRA.jpg
+      TOWNSTAR.webp
+      X-TRAIL.jpg
+      default.jpg
+    OPEL/
+      ADAM.jpg
+      AMPERA.jpg
+      ANTARA.jpg
+      ASTRA-E.jpg
+      ASTRA.jpg
+      CASCADA.jpg
+      COMBO.jpg
+      CORSA-E.jpg
+      CORSA.jpg
+      CROSSLAND.webp
+      CROSSLANDX.webp
+      FRONTERA-E.jpg
+      FRONTERA.jpg
+      GRANDLAND.jpg
+      INSIGNIA.jpg
+      INSIGNIASPORTTOURER.jpg
+      MERIVA.jpg
+      MOKKA-E.jpg
+      MOKKA.jpg
+      MOVANO.png
+      SIGNUM.jpg
+      TIGRA.png
+      VECTRA.jpg
+      VIVARO.jpg
+      ZAFIRA-E.jpg
+      ZAFIRA.jpg
+      default.jpg
+    PEUGEOT/
+      107.jpg
+      2008.jpg
+      206+.jpg
+      206.jpg
+      207.jpg
+      208.jpg
+      3008.jpg
+      3008ACTIVELIFE.jpg
+      301.png
+      307.jpg
+      308.jpg
+      4007.jpg
+      407.jpg
+      408.jpg
+      5008.jpg
+      508.jpg
+      607.jpg
+      BIPPER.jpg
+      BOXER.jpg
+      BOXERMINIBUSOKUL.jpg
+      BOXERMINIBUSPERSONEL.jpg
+      BOXERVAN.png
+      BOXERVANDYNAMICPLUS.jpg
+      E-208.jpg
+      E-3008.jpg
+      E-308.jpg
+      E-5008.jpg
+      EXPERT.jpg
+      EXPERTTRAVELLERMINIBUS.jpg
+      EXPERTTRAVELLERMINIBUS9+1.jpg
+      PARTNER.jpg
+      RCZ.jpg
+      RIFTER.jpg
+      TRAVELLER.jpg
+      default.jpg
+      e-2008.jpg
+    PORSCHE/
+      718.jpg
+      911.jpg
+      911CARRERA.webp
+      BOXSTER.jpg
+      CARRERA.jpg
+      CAYENNE.jpg
+      CAYMAN.jpg
+      MACAN.jpg
+      PANAMERA.jpg
+      PANEMERA.jpg
+      SPYDER.jpg
+      TAYCAN.jpg
+      default.jpg
+    PROTON/
+      GEN.jpg
+      GEN2.png
+      PERDANA.jpg
+      SAGA.jpg
+      SAVVY.jpg
+      SAVY.jpg
+      WAJA.jpg
+      WIRA.jpg
+      default.jpg
+    RANGE_ROVER/
+      2.0.png
+      3.0.png
+      3.6.jpg
+      4.2.jpg
+      4.4.jpg
+      5.0.jpg
+      EVOQUE.jpg
+      SPORT.jpg
+      VELAR.jpg
+      default.jpg
+    RENAULT/
+      ALPINE.jpg
+      AUSTRAL.jpg
+      CAPTUR.jpg
+      CEKICI.jpg
+      CLIO.jpg
+      DUSTER.jpg
+      ESPACE.jpg
+      EXPRESS.jpg
+      FLUENCE.webp
+      GRAND.jpg
+      KADJAR.jpg
+      KAMYON.png
+      KANGOO.jpg
+      KANGOOEXPRESSFRIGOMAXI.jpg
+      KOLEOS.jpg
+      LAGUNA.jpg
+      LATITUDE.jpg
+      LATITUTE.jpg
+      MASCOTT.jpg
+      MASTER.jpg
+      MEGANE.jpg
+      MODUS.jpg
+      R5.jpg
+      RAFALE.jpg
+      SCENIC.jpg
+      SYMBOL.jpg
+      TALIANT.jpg
+      TALISMAN.jpg
+      TRAFIC.jpg
+      TRAFICPANELVAN.jpg
+      TRAFICPANELVANGRANDCONFORT.jpg
+      TWINGO.jpg
+      VEL.jpg
+      ZOE.jpg
+      default.jpg
+    ROLLS-ROYCE/
+      CULLINAN.jpg
+      DAWN.jpg
+      GHOST.jpg
+      PHANTOM.jpg
+      SPECTRE.jpg
+      WRAITH.webp
+      default.jpg
+    SAAB/
+      9-3.jpg
+      9-5.png
+      default.jpg
+    SEAT/
+      ALHAMBRA.jpg
+      ALHAMRA.jpg
+      ALTEA.jpg
+      ARONA.png
+      ATECA.jpg
+      CORDOBA.webp
+      EXEO.jpg
+      IBIZA.png
+      LEON.png
+      TARRACO.jpg
+      TOLEDO.jpg
+      default.jpg
+    SKODA/
+      CITIGO.jpg
+      ELROQ.jpg
+      ENYAQ.jpg
+      FABIA.jpg
+      KAMIQ.webp
+      KAROQ.jpg
+      KODIAQ.jpg
+      OCTAVIA.jpg
+      RAPID.webp
+      ROOMSTER.jpg
+      SCALA.jpg
+      SUPERB.jpg
+      YETI.jpg
+      default.jpg
+    SKYWELL/
+      ET5.jpg
+      default.jpg
+    SMART/
+      FORTWO.webp
+      SMART.jpg
+      default.jpg
+    SSANGYONG/
+      ACTYON.jpg
+      KORANDO.jpg
+      KYRON.jpg
+      MUSSO.jpg
+      RODIUS.jpg
+      TIVOLI.png
+      TORRES.jpg
+      XLV.png
+      default.jpg
+    SUBARU/
+      BRZ.jpg
+      CROSSTREK.jpg
+      FORESTER.jpg
+      IMPREZA.jpg
+      LEGACY.jpg
+      LEVORG.jpg
+      OUTBACK.jpg
+      SOLTERRA.jpg
+      TRIBECA.jpg
+      XV.jpg
+      default.jpg
+    SUZUKI/
+      ACROSS.jpg
+      ALTO.jpg
+      BALENO.webp
+      CELERIO.jpg
+      GRAND.png
+      IGNIS.jpg
+      JIMNY.webp
+      KIZASHI.jpg
+      S-CROSS.png
+      SWIFT.jpg
+      SX4.jpg
+      VITARA.jpg
+      XL-7.jpg
+      default.jpg
+    SWM/
+      G01.webp
+      G01F.jpg
+      G03F.webp
+      G05.webp
+      X30L.jpg
+      default.jpg
+    TATA/
+      INDIGO.jpg
+      ISOTO.webp
+      KAMYONET.jpg
+      MANZA.jpg
+      MARINA.png
+      TELCOLINE.jpg
+      VISTA.jpg
+      XENON.jpg
+      default.jpg
+    TESLA/
+      MODEL.jpg
+      ROADSTER.jpg
+      default.jpg
+    TOGG/
+      T10F.jpg
+      T10X.jpg
+      default.jpg
+    TOYOTA/
+      4RUNNER.jpg
+      AURIS.jpg
+      AVENSIS.jpg
+      C-HR.jpg
+      CAMRY.jpg
+      COROLLA.jpg
+      FORTUNER.jpg
+      GRANVIA.png
+      GT86.jpg
+      HIACE.jpg
+      HIGHLANDER.jpg
+      HIGHLINDER.jpg
+      HILUX.jpg
+      LAND.png
+      LEXUS.jpg
+      PRIUS.jpg
+      PROACE.jpg
+      RAV.jpg
+      RAV4.webp
+      SEQUOIA.png
+      SIENNA.png
+      SUPRA.webp
+      URBAN.jpg
+      VERSO.jpg
+      YARIS.jpg
+      default.jpg
+    VOLKSWAGEN/
+      AMAROK.png
+      ARTEON.png
+      BEETLE.jpg
+      CADDY.jpg
+      CALIFORNIA.jpg
+      CARAVELLE.jpg
+      CC.webp
+      CRAFT.V.2.5.webp
+      CRAFTER.jpg
+      CRAFTERPANELVAN.jpg
+      CROSS.jpg
+      E-UP.jpg
+      EOS.jpg
+      GOLF.webp
+      GRAND.jpg
+      ID-4.jpg
+      ID..jpg
+      ID.3.jpg
+      ID.4.jpg
+      ID.6.jpg
+      ID.7.jpg
+      ID4.jpg
+      JETTA.jpg
+      MULTIVAN.jpg
+      PASSAT.jpg
+      PHAETON.jpg
+      POLO.jpg
+      SCIROCCO.jpg
+      SHARAN.jpg
+      T-CROSS.jpg
+      T-ROC.jpg
+      T.PORTER.jpg
+      TAIGO.jpg
+      TAOS.jpg
+      TAYRON.jpg
+      TERAMONT.jpg
+      THE.jpg
+      TIGUAN.jpg
+      TIGUANALLSPACE.jpg
+      TOUAREG.jpg
+      TOURAEG.jpg
+      TOURAN.jpg
+      TPORTER.jpg
+      TRANSPORTER.jpg
+      TRANSPORTERCAMLIVAN.jpg
+      UP.jpg
+      default.jpg
+    VOLVO/
+      C30.jpg
+      C40.jpg
+      C70.jpg
+      EC40.jpg
+      EX30.jpg
+      EX40.jpg
+      S40.jpg
+      S60.jpg
+      S80.jpg
+      S90.jpg
+      V40.jpg
+      V50.jpg
+      V60.jpg
+      V70.jpg
+      V90.jpg
+      XC.jpg
+      XC40.jpg
+      XC60.jpg
+      XC70.jpg
+      XC90.jpg
+      default.jpg
+    brands.txt
+    download_all_models.py
+    download_brands.py
+    download_ddg.py
+    download_ddg2.py
+    download_images.py
+    download_log.txt
+    download_models_log.txt
+    download_pexels.py
+    download_pixabay.py
+    download_serper.py
+    download_test.py
+    models.txt
+    retry_failed.py
+    series.txt
+    serper_log.txt
+    serper_progress.txt
+  assets/
+    brands/
+      alfa-romeo.svg
+      audi.svg
+      bmw.svg
+      chery.png
+      chevrolet.svg
+      citroen.svg
+      dacia.svg
+      fiat.svg
+      ford.svg
+      honda.svg
+      hyundai.svg
+      jeep.svg
+      kia.svg
+      land-rover.png
+      lexus.svg
+      mazda.svg
+      mercedes-benz.svg
+      nissan.svg
+      opel.svg
+      peugeot.svg
+      renault.svg
+      seat.svg
+      skoda.svg
+      subaru.svg
+      suzuki.svg
+      togg.svg
+      toyota.svg
+      volkswagen.svg
+      volvo.svg
+  brands/
+    bmw.svg
+    fiat.svg
+    ford.svg
+    honda.svg
+    mercedes.svg
+    renault.svg
+    toyota.svg
+    volkswagen.svg
+  cars/
+    dacia-duster.jpg
+    fiat-egea.jpg
+    ford-focus.jpg
+    honda-civic.jpg
+    hyundai-i20.jpg
+    kia-sportage.jpg
+    opel-corsa.jpg
+    peugeot-208.jpg
+    renault-clio.jpg
+    renault-megane.jpg
+    seat-leon.jpg
+    skoda-octavia.jpg
+    toyota-corolla.jpg
+    vw-golf.jpg
+    vw-polo.jpg
+  favicon.ico
+  favicon.png
+  hero-bg.png
+  hero-slide-1.png
+  hero-slide-2.png
+  hero-slide-3.png
+  hero_service_background.png
+  icons/
+  images/
+    car-analysis-hero.png
+    car-hero-audi.png
+    chronic-problems-hero.png
+    comparison-hero.jpg
+    components/
+      abs-kontrol-modulu.png
+      aks.png
+      amortisor.png
+      buji.png
+      egzoz-manifoldu.png
+      fren-balata.png
+      fren-diski.png
+      hava-filtresi.png
+      radyator.png
+      su-pompasi.png
+      termostat.png
+      triger-kayisi.png
+      yag-filtresi.png
+    hero-mechanic-final.png
+    hero-mechanic.png
+    hero-portrait.png
+    hero-red-background.png
+    hero-v3.png
+    hero-v4.png
+    lights/
+      abs.png
+      brake.png
+      coolant.png
+      temp.png
+      throttle.png
+      traction.png
+    service-finder-header.png
+    symptoms/
+      ac.png
+      check-engine.png
+      heater.png
+      hero.png
+      key.png
+      oil-leak.png
+      overheating.png
+      rough-idle.png
+      wont-start.png
+    systems/
+      brake.png
+      cooling.png
+      electric.png
+      engine.png
+      exhaust.png
+      fuel.png
+      suspension.png
+      transmission.png
+  manifest.json
+  models/
+    car-optimized.glb
+    car-original.glb
+    car.glb
+    car1.glb
+  ref/
+    index.html
+  ref.html
+  sounds/
+    cam.mp3
+    egzoz.mp3
+    elektrik.mp3
+    fren.mp3
+    icmekan.mp3
+    karoser.mp3
+    klima.mp3
+    lastik.mp3
+    motor.mp3
+    suspansiyon.mp3
+randevu_db_backup.sql
+repairpal-hero.png
+repairpal-problems.png
+repairpal-puppeteer.png
+reports/
+  KAPSAMLI-SITE-ANALIZ-RAPORU.md
+scripts/
+  clean-brands.js
+  dev-clean-start.sh
+  fetch-all-packages.js
+  fetch-brands.js
+  fetch-clean-brands.js
+  fetch-clean-packages.js
+  fetch-packages.js
+  fetch-popular-models.js
+  filter-by-count.js
+  filter-old-models.js
+  fix-permissions.sh
+  migrate-all-obd-to-strapi.js
+  migrate-chronic-to-strapi.js
+  migrate-obd-to-strapi.js
+  migrate-vehicles-to-strapi.js
+  python/
+    add-motor-components.py
+    fix_nhtsa_recalls.py
+    generate_component_images.py
+    generate_tire_sizes.py
+    import_recalls_to_strapi.py
+    translate_all_complaints.py
+    translate_free.py
+    translate_full.py
+    translate_hybrid.py
+    translate_recalls.py
+    translate_tdk_compliant.py
+    translate_titles_gemini.py
+  sync-packages.js
+  test-arabam-filters.js
+  test-arabam-packages.js
+  test-sahibinden-list.js
+  test-sahibinden.js
+  test-scrape.js
+  test-specific.js
+  translate-complaints.js
+  update-brands.js
+  update-packages.js
+  validate-models.js
+sentry.client.config.ts
+sentry.edge.config.ts
+sentry.server.config.ts
+site.png
+sitemobil.jpeg
+src/
+  app/
+    [city]/
+      [service]/
+        page.tsx
+      page.tsx
+    admin/
+      dashboard/
+        page.tsx
+      page.tsx
+    ai/
+      ariza-tespit/
+        page.tsx
+      sohbet/
+        page.tsx
+    api/
+      2-el-parca/
+        [id]/
+          route.ts
+        route.ts
+        teklif/
+          route.ts
+      admin/
+        auth/
+          route.ts
+        randevu-talepleri/
+          route.ts
+        waitlist/
+          route.ts
+      ai/
+        gateway-test/
+          route.ts
+        issue-analyzer/
+          route.ts
+        research/
+          route.ts
+        tire-research/
+          route.ts
+        validate-vehicle/
+          route.ts
+      arac-degeri/
+        route.ts
+      brands/
+        route.ts
+      car-image/
+        route.ts
+      categories/
+        route.ts
+      chat/
+        route.ts
+      cron/
+        sync-car-models/
+          route.ts
+        sync-motorcycle-models/
+          route.ts
+        sync-vehicles/
+          route.ts
+      ev-chargers/
+        route.ts
+      events/
+        route.ts
+      geri-cagirmalar/
+        markalar/
+          route.ts
+        modeller/
+          route.ts
+        route.ts
+        yillar/
+          route.ts
+      health/
+        route.ts
+      kronik-sorunlar/
+        route.ts
+      models/
+        route.ts
+      obd/
+        popular/
+          route.ts
+        search/
+          route.ts
+      otp/
+        send/
+          route.ts
+        verify/
+          route.ts
+      packages/
+        route.ts
+      park-mesaj/
+        check-plaka/
+          route.ts
+        send/
+          route.ts
+      plaka-kayit/
+        route.ts
+      randevu-talebi/
+        route.ts
+      recalls/
+      services/
+        search/
+          route.ts
+          route.ts.bak
+      stats/
+        route.ts
+      vehicles/
+        route.ts
+      waitlist/
+        route.ts
+    api-docs/
+      page.tsx
+    arac/
+      2-el-parca/
+        CikmaParcaListClient.tsx
+        [id]/
+          page.tsx
+        ilan-ver/
+          page.tsx
+        page.tsx
+      analiz/
+        CLAUDE.md
+        page.tsx
+      ansiklopedi/
+        [system]/
+          page.tsx
+        page.tsx
+      ariza-lambalari/
+        page.tsx
+      bakim-tavsiyeleri/
+        page.tsx
+      genel-bakis/
+        page.tsx
+      lastik-secimi/
+        page.tsx
+      park-mesaj/
+        page.tsx
+      plaka-kayit/
+        page.tsx
+      videolar/
+        page.tsx
+      workshop-kilavuzlari/
+        page.tsx
+      yedek-parca/
+        egzoz/
+          page.tsx
+        elektrik/
+          page.tsx
+        fren/
+          page.tsx
+        motor/
+          page.tsx
+        page.tsx
+        sanziman/
+          page.tsx
+        sogutma/
+          page.tsx
+        suspansiyon/
+          page.tsx
+        yakit/
+          page.tsx
+    arac-degeri/
+      layout.tsx
+      page.tsx
+    ariza-bul/
+      page.tsx
+    ariza-rehberi/
+      check-engine-lambasi/
+        page.tsx
+      page.tsx
+    bakim-takvimi/
+      page.tsx
+    belirtiler/
+      page.tsx
+    blog/
+      page.tsx
+    cerez-politikasi/
+      page.tsx
+    error.tsx
+    fiyat-hesapla/
+      page.tsx
+    geri-cagrima/
+      page.tsx
+    gizlilik/
+      page.tsx
+    global-error.tsx
+    globals.css
+    guvenilirlik/
+      page.tsx
+    hakkimizda/
+      page.tsx
+    hata-bildir/
+      page.tsx
+    iletisim/
+      page.tsx
+    incelemeler/
+      [id]/
+        page.tsx
+      page.tsx
+    karsilastirma/
+      [slug]/
+        page.tsx
+      olustur/
+        page.tsx
+      page.tsx
+      sonuc/
+        CLAUDE.md
+        page.tsx
+    kronik-sorunlar/
+      page.tsx
+    kvkk/
+      page.tsx
+    lastikler/
+      page.tsx
+    layout.tsx
+    not-found.tsx
+    obd/
+      [code]/
+        page.tsx
+      arac-gecmisi/
+        page.tsx
+      canli-veri/
+        [pid]/
+          page.tsx
+        page.tsx
+      karsilastir/
+        page.tsx
+      maliyet-hesapla/
+        page.tsx
+      page.tsx
+      semptom-ara/
+        page.tsx
+      teshis/
+        page.tsx
+      {[code]}/
+    obd-cihaz/
+      page.tsx
+    odeme-sureci/
+      page.tsx
+    page.tsx
+    randevu-al/
+      page.tsx
+    rehber/
+      [slug]/
+        page.tsx
+      page.tsx
+    robots.ts
+    sarj-istasyonlari/
+      page.tsx
+    sartlar/
+      page.tsx
+    servisler/
+      page.tsx
+      sonuclar/
+        page.tsx
+        page.tsx.backup
+    sitemap.ts
+    sss/
+      page.tsx
+    yardim/
+      page.tsx
+  components/
+    AiIssueAnalyzer.tsx
+    AnnouncementBar.tsx
+    BusinessDashboard.tsx
+    Car3DViewer.tsx
+    CarBrandLogosWrapper.tsx
+    CategoryCard.tsx
+    ChatWidget.tsx
+    CikmaParcaCard.tsx
+    CikmaParcaCardSkeleton.tsx
+    CikmaParcaFilters.tsx
+    CikmaParcaTeklifForm.tsx
+    CostEstimator.tsx
+    FAQ.tsx
+    FeatureCard.tsx
+    FixedSearchBar.tsx
+    Footer.tsx
+    Header.tsx
+    HeroImage.tsx
+    HeroSearchBox.tsx
+    HeroSection.tsx
+    HeroSection3D.tsx
+    HeroSectionMobile.tsx
+    HomeStats.tsx
+    InteractiveCar3D.tsx
+    InteractiveCarExplorer.tsx
+    ObdDetail.tsx
+    ObdInfoSection.tsx
+    ObdListItem.tsx
+    PageHero.tsx
+    ParkMesajForm.tsx
+    PartIcon.tsx
+    PlakaKayitForm.tsx
+    ProblemsByModel.tsx
+    ResultsMap.tsx
+    Reviews.tsx
+    RotatingText.tsx
+    ScrollCarCategories.tsx
+    SearchBox.tsx
+    ServiceCard.tsx
+    ServiceCardSkeleton.tsx
+    ServiceDetailPanel.tsx
+    ServiceSearchModal.tsx
+    ServiceTimeline.tsx
+    Sidebar.tsx
+    SmartAppBanner.tsx
+    ToastProvider.tsx
+    WaitlistModal.tsx
+    consent/
+      ConsentManager.tsx
+      CookieConsentBanner.tsx
+      index.ts
+    content/
+      DecisionFlowchart.tsx
+      PrintButton.tsx
+      index.ts
+    hero/
+      CarBrandLogos.tsx
+      CarModel.tsx
+      CustomCursor.tsx
+      HeroServiceIcon.tsx
+      LoadingScreen.tsx
+      ParticleField.tsx
+      ServiceCategoriesMarquee.tsx
+      TireModel.tsx
+      data.ts
+      hooks.ts
+      types.ts
+    index.ts
+    live-data/
+      NormalRangeIndicator.tsx
+      PIDSearchList.tsx
+      SensorGauge.tsx
+      index.ts
+    obd/
+      BrandVariationTabs.tsx
+      CodeComparison.tsx
+      CodeHistory.tsx
+      CodeHistoryTracker.tsx
+      CostEstimator.tsx
+      DiagnosticDecisionTree.tsx
+      DiagnosticFlow.tsx
+      ObdCauseRanking.tsx
+      ObdSymptomList.tsx
+      RelatedCodesSection.tsx
+      RepairEstimate.tsx
+      SymptomSearch.tsx
+      VehicleCodeHistory.tsx
+      index.ts
+    obd-device/
+      BluetoothConnector.tsx
+      LiveDataDashboard.tsx
+      ManualCodeSearch.tsx
+      WifiConnector.tsx
+      index.ts
+    seo/
+      BreadcrumbSchema.tsx
+      FAQSchema.tsx
+      LocalBusinessSchema.tsx
+      ServiceSchema.tsx
+      index.ts
+    service-search/
+      FilterButtons.tsx
+      MapMarkers.tsx
+      ServiceCard.tsx
+      ServiceMap.tsx
+      ServiceSearchModal.tsx
+      data.ts
+      hooks.ts
+      index.ts
+      types.ts
+    ui/
+      Button.tsx
+      Card.tsx
+      Icon.tsx
+      Icons.tsx
+      index.ts
+  data/
+    arabam-brands.ts
+    arabam-packages.ts
+    categories.ts
+    cities.ts
+    city-coordinates.ts
+    city-cost-multipliers.ts
+    common-problems.ts
+    comparisons.ts
+    diagnostic-flows.ts
+    educational-guides.ts
+    encyclopedia-data.ts
+    encyclopedia-data.ts.at-61
+    encyclopedia-data.ts.before-expansion
+    encyclopedia-data.ts.before-motor
+    faq.ts
+    features.ts
+    live-data-pids.ts
+    obd-codes.ts
+    reliability-data.ts
+    reviews.ts
+    services.ts
+    symptom-obd-mapping.ts
+    symptoms.ts
+    tire-sizes.json
+    tire-sizes.ts
+    turkey-locations.ts
+    vehicle-obd-history.ts
+    vehicle-prices.ts
+    vehicles.ts
+  hooks/
+    __tests__/
+      useServiceFilters.test.tsx
+    index.ts
+    useIsMobile.ts
+    useServerEvents.ts
+    useServiceFilters.ts
+  lib/
+    __tests__/
+      api-response.test.ts
+      cache.test.ts
+      rate-limiter.test.ts
+      service-utils.test.ts
+      validation.test.ts
+    admin-auth.ts
+    ai-gateway.ts
+    api-cache-middleware.ts
+    api-response.ts
+    cache.ts
+    code-history.ts
+    consent.ts
+    db-local.ts
+    db.ts
+    env.ts
+    firebase.ts
+    logger.ts
+    netgsm.ts
+    obd-bluetooth.ts
+    openapi-spec.ts
+    otp.ts
+    rate-limiter.ts
+    service-utils.ts
+    sse.ts
+    supermemory.ts
+    validation.ts
+    vehicle-valuation.ts
+  test/
+    setup.ts
+  types/
+    external-apis.ts
+    index.ts
+    web-bluetooth.d.ts
+tailwind.config.js
+tamir-hanem-kompetitif-analiz.md
+tamir-hanem-ozet-sunus.md
+tamir-hanem-uygulamasi.md
+tamirhanem-next.service
+tamirhanem.db
+tamirhanem.service
+test-netgsm.js
+test-search.png
+tire_generation.log
+tsconfig.json
+tsconfig.tsbuildinfo
+upload_1767558680757.jpeg
+vercel.json
+vitest.config.ts
+web/
+  404.html
+  500.html
+  README.md
+  assets/
+    articles/
+      ac_system.png
+      brake_system.png
+      electrical_system.png
+      engine_noise.png
+      periodic_maintenance.png
+      tire_suspension.png
+  components/
+    global-footer.js
+    global-header.js
+    global-sidebar.js
+  css/
+    appointment-components.css
+    appointment-wizard.css
+    appointments.css
+    assistant.css
+    auth.css
+    campaign-detail.css
+    components.css
+    dashboard.css
+    error.css
+    global-dashboard.css
+    landing.css
+    main.css
+    notifications.css
+    profile-pages.css
+    service-detail.css
+    settings.css
+  dashboard.html
+  favicon/
+    android-chrome-192x192.png
+    android-chrome-512x512.png
+    apple-touch-icon.png
+    favicon-16x16.png
+    favicon-32x32.png
+    favicon.ico
+    site.webmanifest
+  images/
+    favicon.png
+    goalcar.png
+    goalwash.png
+    logo.png
+    logov2.png
+    mockup.png
+  index.html
+  index2.html
+  js/
+    api.js
+    appointment-components.js
+    auth.js
+    components/
+      bottom-nav.js
+      footer.js
+    config.js
+    dashboard.js
+    map-helper.js
+    navbar.js
+    store.js
+    utils.js
+  login.html
+  pages/
+    assistant.html
+    campaign-detail.html
+    campaign-services.html
+    campaigns.html
+    cekici-acil.html
+    cekici-sehir-ici.html
+    create-appointment.html
+    customer-debts.html
+    daily-report.html
+    edit-profile.html
+    edit-service-profile.html
+    edit-service.html
+    favorite-services.html
+    financial-reports.html
+    forgot-password.html
+    general-pool.html
+    help-center.html
+    help-support.html
+    inventory-tracking.html
+    kategori.html
+    modern-card-example.html
+    modern-card-example.html.bak
+    my-appointments.html
+    my-campaigns.html
+    my-questions.html
+    my-reviews.html
+    my-vehicles.html
+    notifications.html
+    oto-sanayi.html
+    oto-yikama.html
+    part-tracking.html
+    past-offers.html
+    payment-methods.html
+    price-calculator.html
+    publish-campaign.html
+    quick-price-calculator.html
+    reset-password.html
+    scale-test.html
+    service-appointments.html
+    service-chat.html
+    service-detail.html
+    service-panel.html
+    service-pricing-management.html
+    service-rating.html
+    service-statistics.html
+    services.html
+    settings.html
+    store-statistics.html
+    technician-management.html
+    vehicle-delivery.html
+    verify-email.html
+    voice-notes.html
+    wallet.html
+    weekly-services.html
+  register.html
+```
+
+
+# Clean Code - Pragmatic AI Coding Standards
+
+> **CRITICAL SKILL** - This skill overrides all verbose tendencies. When writing code, be **concise, direct, and solution-focused**.
+
+---
+
+## Golden Rules
+
+### 1. No Verbose Explanations
+**WRONG:**
+```javascript
+// Check if user is authenticated before allowing access to protected route
+// This is a security measure to prevent unauthorized access
+if (user.isAuthenticated) {
+  // User is authenticated, grant access
+  return renderProtectedPage();
+} else {
+  // User is not authenticated, redirect to login
+  return redirect('/login');
+}
+```
+
+**RIGHT:**
+```javascript
+if (!user.isAuthenticated) return redirect('/login');
+return renderProtectedPage();
+```
+
+### 2. No Self-Explanatory Comments
+Code should be self-documenting. If you need a comment, rename the variable.
+
+**WRONG:**
+```javascript
+// Get all users from database
+const users = db.get('users');
+
+// Filter out inactive users
+const active = users.filter(u => u.active);
+```
+
+**RIGHT:**
+```javascript
+const activeUsers = db.get('users').filter(u => u.active);
+```
+
+### 3. Direct Solutions Only
+**WRONG:**
+```javascript
+// First, let's create a helper function to handle the case where
+// we need to check if a value exists in the array...
+function hasValue(arr, val) {
+  return arr.includes(val);
+}
+
+// Now we can use it
+if (hasValue(users, id)) {
+  // ...
+}
+```
+
+**RIGHT:**
+```javascript
+if (users.includes(id)) { /* ... */ }
+```
+
+---
+
+## When to Write Code
+
+### Write Code When:
+1. **User asks for a feature** → Write the feature, not a planning document
+2. **User reports a bug** → Fix it, don't explain the debugging process
+3. **User asks "how does X work"** → Brief explanation, then move on
+
+### Don't Write Code When:
+1. User only asks "what do you think?"
+2. User is exploring ideas (use brainstorming mode)
+3. No clear requirement exists (ask, don't assume)
+
+---
+
+## Anti-Patterns to Avoid
+
+| Anti-Pattern | Example | Fix |
+|--------------|---------|-----|
+| **Over-commenting** | Comment every line | Delete obvious comments |
+| **Over-abstracting** | Helper for one-line operation | Inline the code |
+| **Over-engineering** | Factory for 2 objects | Direct instantiation |
+| **Defensive coding** | Check for impossible null | Remove dead code |
+| **Tutorial-style** | "First we import..." | Just write the code |
+| **Yoda conditions** | `if (null === x)` | `if (x === null)` |
+| **Early returns** | Deep nesting | Guard clauses |
+
+---
+
+## Code Style Guidelines
+
+### JavaScript/TypeScript
+```typescript
+// Prefer concise patterns
+const result = data?.map(x => x.value).filter(Boolean) ?? [];
+
+// Guard clauses
+if (!user) return unauthorized();
+
+// Direct returns
+return isValid ? success() : error();
+
+// No unnecessary intermediates
+return items.filter(x => x.active).map(x => x.id);
+```
+
+### Python
+```python
+# Concise, pythonic
+active_users = [u for u in users if u.is_active]
+
+# Guard clauses
+if not request.user.is_authenticated:
+    return HttpResponseForbidden()
+
+# Direct returns
+return JsonResponse({"data": result})
+```
+
+### React/Next.js
+```tsx
+// Direct, no prop drilling abstractions
+export default function UserProfile({ user }: { user: User }) {
+  if (!user) return <LoginPrompt />;
+  return <ProfileData user={user} />;
+}
+
+// No separate container components
+// No unnecessary HOCs
+// Use hooks directly
+```
+
+---
+
+## What NOT to Do
+
+### Never Add These Comments:
+- ❌ "This function returns..."
+- ❌ "We need to import..."
+- ❌ "Now let's create..."
+- ❌ "This is a React component..."
+- ❌ "Here we are handling..."
+- ❌ "Note that..."
+- ❌ "TODO: add error handling" (add it or don't mention it)
+
+### Never Add These Files:
+- ❌ `utils.ts` with one function
+- ❌ `constants.ts` with 3 values
+- ❌ `types.ts` for one interface
+- ❌ Separate `container/` and `components/` without reason
+
+---
+
+## Practical Examples
+
+### Example 1: API Handler
+**Verbose (BAD):**
+```typescript
+// Import the express framework for handling HTTP requests
+import express from 'express';
+
+// Create a new router instance
+const router = express.Router();
+
+/**
+ * GET /api/users
+ * Returns a list of all users in the database
+ */
+router.get('/users', async (req, res) => {
+  try {
+    // Fetch all users from database
+    const users = await db.users.findMany();
+
+    // Return the users as JSON
+    res.json({ users });
+  } catch (error) {
+    // If there's an error, log it and return 500
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+```
+
+**Concise (GOOD):**
+```typescript
+import express from 'express';
+
+const router = express.Router();
+
+router.get('/users', async (req, res) => {
+  const users = await db.users.findMany();
+  res.json({ users });
+});
+```
+
+### Example 2: React Component
+**Verbose (BAD):**
+```tsx
+// This is a functional component that displays a user card
+// It takes a user object as a prop and renders the user's information
+interface UserCardProps {
+  user: User;
+}
+
+export const UserCard: React.FC<UserCardProps> = ({ user }) => {
+  // If there's no user, show a loading state
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
+  // Render the user card with name and email
+  return (
+    <div className="user-card">
+      <h2>{user.name}</h2>
+      <p>{user.email}</p>
+    </div>
+  );
+};
+```
+
+**Concise (GOOD):**
+```tsx
+export function UserCard({ user }: { user: User }) {
+  if (!user) return <div>Loading...</div>;
+
+  return (
+    <div className="user-card">
+      <h2>{user.name}</h2>
+      <p>{user.email}</p>
+    </div>
+  );
+}
+```
+
+---
+
+## Quick Checklist Before Writing
+
+Ask yourself:
+1. **Is this code necessary?** → If no, don't write it
+2. **Can this be simpler?** → Simplify it
+3. **Am I explaining obvious things?** → Delete the explanation
+4. **Is there a shorter way?** → Use it
+5. **Am I creating files for no reason?** → Put code inline
+
+---
+
+## Response Format
+
+When asked to write code, respond like this:
+
+```
+[Direct code block]
+
+[Brief explanation if needed, max 2 sentences]
+```
+
+**NOT like this:**
+```
+[Step-by-step tutorial]
+[Multiple code blocks with explanations]
+[File-by-file breakdown]
+```
+
+---
+
+## Summary
+
+| Do | Don't |
+|----|-------|
+| Write code directly | Write tutorials |
+| Use concise syntax | Use verbose patterns |
+| Let code self-document | Add obvious comments |
+| Fix bugs immediately | Explain the fix first |
+| Return early | Deep nesting |
+| Inline small things | Create unnecessary files |
+| Use language idioms | Force patterns |
+
+---
+
+**Remember: The user wants working code, not a programming lesson.**
+
+---
+
+*This file is auto-generated by Maestro session hooks. Do not edit manually.*

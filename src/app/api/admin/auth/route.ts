@@ -1,11 +1,36 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { generateToken, validateToken, hasAdminConfig } from '@/lib/admin-auth';
+import { checkRouteRateLimit, getClientIdentifier } from '@/lib/route-rate-limit';
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
+// Rate limit: 5 attempts per 15 minutes per IP (brute force protection)
+const AUTH_RATE_LIMIT = 5;
+const AUTH_RATE_WINDOW = 15 * 60 * 1000; // 15 minutes
+
 export async function POST(request: Request) {
     try {
+        // Rate limiting check for login attempts
+        const identifier = getClientIdentifier(request.headers as Headers, 'admin-auth');
+        const rateLimit = await checkRouteRateLimit(identifier, AUTH_RATE_LIMIT, AUTH_RATE_WINDOW);
+        
+        if (!rateLimit.allowed) {
+            return NextResponse.json(
+                { 
+                    success: false, 
+                    error: 'Çok fazla giriş denemesi. Lütfen 15 dakika sonra tekrar deneyin.',
+                    retryAfter: rateLimit.retryAfter 
+                },
+                { 
+                    status: 429,
+                    headers: {
+                        'Retry-After': String(rateLimit.retryAfter || 900),
+                    }
+                }
+            );
+        }
+
         if (!hasAdminConfig()) {
             return NextResponse.json(
                 { success: false, error: 'Sunucu yapılandırması eksik' },
@@ -36,7 +61,11 @@ export async function POST(request: Request) {
         }
         
         return NextResponse.json(
-            { success: false, error: 'Geçersiz şifre' },
+            { 
+                success: false, 
+                error: 'Geçersiz şifre',
+                attemptsRemaining: rateLimit.remaining - 1 
+            },
             { status: 401 }
         );
     } catch (error) {

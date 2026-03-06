@@ -1,63 +1,87 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { checkRouteRateLimit, getClientIdentifier } from '@/lib/route-rate-limit';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Rate limit: 30 requests per hour per IP
+const AI_RATE_LIMIT = 30;
+const AI_RATE_WINDOW = 60 * 60 * 1000; // 1 hour
+
 export async function POST(request: NextRequest) {
+  // Rate limiting check
+  const identifier = getClientIdentifier(request.headers, 'ai-issue-analyzer');
+  const rateLimit = await checkRouteRateLimit(identifier, AI_RATE_LIMIT, AI_RATE_WINDOW);
+  
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { 
+        error: 'Cok fazla istek gonderdiniz. Lutfen 1 saat sonra tekrar deneyin.',
+        retryAfter: rateLimit.retryAfter 
+      },
+      { 
+        status: 429,
+        headers: {
+          'Retry-After': String(rateLimit.retryAfter || 3600),
+        }
+      }
+    );
+  }
+
   try {
     const { issue } = await request.json();
 
     if (!issue || typeof issue !== 'string' || issue.trim().length < 5) {
       return NextResponse.json(
-        { error: 'Lütfen sorununuzu daha detaylı açıklayın.' },
+        { error: 'Lutfen sorununuzu daha detayli aciklayin.' },
         { status: 400 }
       );
     }
 
-    const systemPrompt = `Sen tamirhanem.com platformunun yapay zeka asistanısın.
+    const systemPrompt = `Sen tamirhanem.com platformunun yapay zeka asistanisin.
 
-ÖNEMLİ KURAL - KESİNLİKLE UYULMASI GEREKEN:
-Sen SADECE ve SADECE araç (otomobil, motosiklet, kamyon vb.) ile ilgili konularda yardımcı olabilirsin:
-- Arıza ve sorunlar
-- Teknik özellikler (lastik ebatı, motor, yakıt tüketimi vb.)
-- Bakım bilgileri
-- Yedek parça bilgileri
-- Araç karşılaştırma
+ONEMLI KURAL - KESINLIKLE UYULMASI GEREKEN:
+Sen SADECE ve SADECE arac (otomobil, motosiklet, kamyon vb.) ile ilgili konularda yardimci olabilirsin:
+- Ariza ve sorunlar
+- Teknik ozellikler (lastik ebatlari, motor, yakit tuketimi vb.)
+- Bakim bilgileri
+- Yedek parca bilgileri
+- Arac karsilastirma
 
-Araç dışındaki HİÇBİR konuda (sağlık, hukuk, finans, genel sohbet, kişisel sorular, yazılım vb.) ASLA cevap verme.
+Arac disindaki HICBIR konuda (saglik, hukuk, finans, genel sohbet, kisisel sorular, yazilim vb.) ASLA cevap verme.
 
-Eğer kullanıcının sorusu araç/otomotiv ile ilgili DEĞİLSE, şu JSON'u döndür:
+Eger kullanicinin sorusu arac/otomotiv ile ilgili DEGILSE, su JSON'u dondur:
 {
     "type": "off_topic",
-    "message": "Tamirhanem AI altyapısı sadece araçlar ile ilgili bilgilendirme amacı ile eğitilmiştir. Bu sorunuza cevap verememekteyim."
+    "message": "Tamirhanem AI altyapisi sadece araclar ile ilgili bilgilendirme amaci ile egitilmistir. Bu sorunuza cevap verememekteyim."
 }
 
-Eğer soru ARIZA/SORUN ile ilgiliyse (motor arızası, ses geliyor, titriyor, çalışmıyor vb.), şu JSON formatında cevap ver:
+Eger soru ARIZA/SORUN ile ilgiliyse (motor arizasi, ses geliyor, titriyor, calismiyor vb.), su JSON formatinda cevap ver:
 {
     "type": "issue",
-    "category": "En uygun kategori (Periyodik Bakım / Motor Mekanik / Kaporta Boya / Oto Elektrik & Elektronik / Lastik & Jant / Fren Sistemi / Şanzıman / Egzoz & Emisyon / Klima Servisi / Oto Kuaför & Detaylı Temizlik / Oto Ekspertiz)",
-    "urgency": "Düşük / Orta / Yüksek",
+    "category": "En uygun kategori (Periyodik Bakim / Motor Mekanik / Kaporta Boya / Oto Elektrik & Elektronik / Lastik & Jant / Fren Sistemi / Sanziman / Egzoz & Emisyon / Klima Servisi / Oto Kuafor & Detayli Temizlik / Oto Ekspertiz)",
+    "urgency": "Dusuk / Orta / Yuksek",
     "urgency_color": "green / yellow / red",
-    "analysis": "Sorunun olası teknik nedenleri ve kullanıcıya kısa tavsiye (maks 2 cümle)."
+    "analysis": "Sorunun olasi teknik nedenleri ve kullaniciya kisa tavsiye (maks 2 cumle)."
 }
 
-Eğer soru BİLGİ SORGUSU ise (lastik ebatı, motor özellikleri, yakıt tüketimi, teknik detay vb.), şu JSON formatında cevap ver:
+Eger soru BILGI SORGUSU ise (lastik ebatlari, motor ozellikleri, yakit tuketimi, teknik detay vb.), su JSON formatinda cevap ver:
 {
     "type": "info",
-    "title": "Kısa başlık (örn: Renault Clio 4 Lastik Ebatları)",
-    "answer": "Detaylı ve faydalı cevap (2-4 cümle). Bilgiyi net ve anlaşılır şekilde ver.",
-    "related_category": "İlgili servis kategorisi varsa (örn: Lastik & Jant), yoksa null"
+    "title": "Kisa baslik (orn: Renault Clio 4 Lastik Ebatlari)",
+    "answer": "Detayli ve faydali cevap (2-4 cumle). Bilgiyi net ve anlasilir sekilde ver.",
+    "related_category": "Ilgili servis kategorisi varsa (orn: Lastik & Jant), yoksa null"
 }
 
-Sadece saf JSON döndür. Markdown bloğu kullanma.`;
+Sadece saf JSON dondur. Markdown blogu kullanma.`;
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: `Kullanıcı Mesajı: "${issue}"` }
+        { role: 'user', content: `Kullanici Mesaji: "${issue}"` }
       ],
       temperature: 0.3,
       max_tokens: 500,
@@ -69,10 +93,10 @@ Sadece saf JSON döndür. Markdown bloğu kullanma.`;
     const jsonString = text.replace(/```json|```/g, '').trim();
     const data = JSON.parse(jsonString);
 
-    // Araç dışı soru kontrolü
+    // Arac disi soru kontrolu
     if (data.type === 'off_topic') {
       return NextResponse.json(
-        { error: data.message || 'Tamirhanem AI altyapısı sadece araçlar ile ilgili bilgilendirme amacı ile eğitilmiştir. Bu sorunuza cevap verememekteyim.' },
+        { error: data.message || 'Tamirhanem AI altyapisi sadece araclar ile ilgili bilgilendirme amaci ile egitilmistir. Bu sorunuza cevap verememekteyim.' },
         { status: 400 }
       );
     }
@@ -87,10 +111,10 @@ Sadece saf JSON döndür. Markdown bloğu kullanma.`;
       });
     }
 
-    // Arıza/sorun yanıtı (varsayılan)
+    // Ariza/sorun yaniti (varsayilan)
     // Validate response structure
     if (!data.category || !data.urgency || !data.urgency_color || !data.analysis) {
-      throw new Error('Geçersiz yanıt formatı');
+      throw new Error('Gecersiz yanit formati');
     }
 
     return NextResponse.json({
@@ -105,13 +129,13 @@ Sadece saf JSON döndür. Markdown bloğu kullanma.`;
 
     if (error instanceof SyntaxError) {
       return NextResponse.json(
-        { error: 'AI yanıtı işlenemedi, lütfen tekrar deneyin.' },
+        { error: 'AI yaniti islenemedi, lutfen tekrar deneyin.' },
         { status: 500 }
       );
     }
 
     return NextResponse.json(
-      { error: 'Analiz yapılamadı, lütfen tekrar deneyin.' },
+      { error: 'Analiz yapilamadi, lutfen tekrar deneyin.' },
       { status: 500 }
     );
   }

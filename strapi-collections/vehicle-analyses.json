@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "vehicle_analyses",
+  "info": {
+    "singularName": "vehicle-analysis",
+    "pluralName": "vehicle-analyses",
+    "displayName": "Vehicle Analysis",
+    "description": "Araç teknik analiz verileri (LLM tarafından üretilen veriler)"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "brand": {
+      "type": "string",
+      "required": true,
+      "maxLength": 100
+    },
+    "model": {
+      "type": "string",
+      "required": true,
+      "maxLength": 100
+    },
+    "year": {
+      "type": "integer",
+      "required": true,
+      "min": 1900,
+      "max": 2100
+    },
+    "data": {
+      "type": "json",
+      "required": true
+    }
+  }
+}

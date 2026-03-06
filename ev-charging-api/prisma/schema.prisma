@@ -1,0 +1,195 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Verified source enum
+enum VerifiedSource {
+  OCM
+  OCM_GOOGLE
+  GOOGLE
+  USER
+  OPERATOR
+  VERIFIED
+}
+
+// Station status
+enum StationStatus {
+  OPERATIONAL
+  NON_OPERATIONAL
+  PLANNED
+  UNDER_CONSTRUCTION
+  TEMPORARILY_UNAVAILABLE
+  UNKNOWN
+}
+
+// Connector types
+enum ConnectorType {
+  TYPE1
+  TYPE2
+  CCS1
+  CCS2
+  CHADEMO
+  TESLA_SUPERCHARGER
+  TESLA_DESTINATION
+  GB_T
+  NACS
+  SCHUKO
+  OTHER
+}
+
+// Charging level
+enum ChargingLevel {
+  LEVEL1      // AC slow (< 3.7 kW)
+  LEVEL2      // AC normal (3.7-22 kW)
+  LEVEL3_DC   // DC fast (50-150 kW)
+  LEVEL4_DC   // DC ultra-fast (150+ kW)
+}
+
+// Raw OCM data - full dump
+model StationsRaw {
+  id              String   @id @default(uuid())
+  ocmId           Int      @unique @map("ocm_id")
+  rawData         Json     @map("raw_data")
+  fetchedAt       DateTime @default(now()) @map("fetched_at")
+  processedAt     DateTime? @map("processed_at")
+
+  @@map("stations_raw")
+}
+
+// Google enrichment data - only fields OCM lacks
+model StationsEnriched {
+  id              String   @id @default(uuid())
+  stationId       String   @unique @map("station_id")
+  googlePlaceId   String?  @map("google_place_id")
+
+  // Enriched fields only
+  openingHours    Json?    @map("opening_hours")
+  priceLevel      Int?     @map("price_level")
+  phoneNumber     String?  @map("phone_number")
+  website         String?
+  photos          Json?
+
+  // Existence confirmation
+  existsOnGoogle  Boolean  @default(false) @map("exists_on_google")
+  lastCheckedAt   DateTime @default(now()) @map("last_checked_at")
+
+  station         Stations @relation(fields: [stationId], references: [id], onDelete: Cascade)
+
+  @@map("stations_enriched")
+}
+
+// User/operator verifications - placeholder for later
+model StationsVerified {
+  id              String   @id @default(uuid())
+  stationId       String   @map("station_id")
+  userId          String?  @map("user_id")
+  operatorId      String?  @map("operator_id")
+
+  // Verification data
+  isOperational   Boolean? @map("is_operational")
+  hasParking      Boolean? @map("has_parking")
+  is24Hours       Boolean? @map("is_24_hours")
+  notes           String?
+  photos          Json?
+
+  verifiedAt      DateTime @default(now()) @map("verified_at")
+
+  station         Stations @relation(fields: [stationId], references: [id], onDelete: Cascade)
+
+  @@map("stations_verified")
+}
+
+// Final merged stations table - primary data
+model Stations {
+  id              String         @id @default(uuid())
+  ocmId           Int?           @unique @map("ocm_id")
+  googlePlaceId   String?        @map("google_place_id")
+
+  // Basic info
+  name            String
+  operatorName    String?        @map("operator_name")
+  operatorId      String?        @map("operator_id")
+
+  // Location
+  address         String
+  city            String?
+  district        String?
+  postalCode      String?        @map("postal_code")
+  country         String         @default("TR")
+  latitude        Float
+  longitude       Float
+
+  // Station details
+  status          StationStatus  @default(UNKNOWN)
+  totalConnectors Int            @default(0) @map("total_connectors")
+  maxPowerKw      Float?         @map("max_power_kw")
+  chargingLevel   ChargingLevel? @map("charging_level")
+
+  // Connectors (JSON array)
+  connectors      Json           @default("[]")
+
+  // Amenities
+  hasParking      Boolean?       @map("has_parking")
+  parkingFee      Boolean?       @map("parking_fee")
+  is24Hours       Boolean?       @map("is_24_hours")
+  isPublic        Boolean        @default(true) @map("is_public")
+
+  // Contact
+  phoneNumber     String?        @map("phone_number")
+  website         String?
+
+  // Pricing
+  usageCost       String?        @map("usage_cost")
+  pricePerKwh     Float?         @map("price_per_kwh")
+
+  // Hours
+  openingHours    Json?          @map("opening_hours")
+
+  // Media
+  photos          Json?
+  thumbnail       String?
+
+  // Rating
+  rating          Float?
+  reviewCount     Int            @default(0) @map("review_count")
+
+  // Source tracking
+  verifiedSource  VerifiedSource @default(OCM) @map("verified_source")
+
+  // Timestamps
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+  lastSyncedAt    DateTime?      @map("last_synced_at")
+
+  // Relations
+  enrichment      StationsEnriched?
+  verifications   StationsVerified[]
+
+  @@index([latitude, longitude])
+  @@index([city])
+  @@index([status])
+  @@index([verifiedSource])
+  @@map("stations")
+}
+
+// Sync log for tracking pipeline runs
+model SyncLog {
+  id              String   @id @default(uuid())
+  source          String   // OCM, GOOGLE
+  startedAt       DateTime @default(now()) @map("started_at")
+  completedAt     DateTime? @map("completed_at")
+
+  recordsFetched  Int      @default(0) @map("records_fetched")
+  recordsCreated  Int      @default(0) @map("records_created")
+  recordsUpdated  Int      @default(0) @map("records_updated")
+  recordsFailed   Int      @default(0) @map("records_failed")
+
+  errorLog        Json?    @map("error_log")
+
+  @@map("sync_log")
+}

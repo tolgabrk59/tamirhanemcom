@@ -77,7 +77,7 @@ export default function FixedSearchBar() {
     };
   }, [lastScrollY]);
 
-  // Markaları araç türüne göre MySQL'den çek
+  // Markaları araç türüne göre çek
   useEffect(() => {
     if (vehicleType) {
       setBrandsLoading(true);
@@ -90,10 +90,11 @@ export default function FixedSearchBar() {
           if (data.success) {
             setBrands(data.data);
           }
-          setBrandsLoading(false);
         })
         .catch(err => {
           console.error('[FixedSearchBar] Brand loading error:', err);
+        })
+        .finally(() => {
           setBrandsLoading(false);
         });
     } else {
@@ -102,7 +103,7 @@ export default function FixedSearchBar() {
     }
   }, [vehicleType]);
 
-  // Kategorileri MySQL'den çek
+  // Kategorileri çek
   useEffect(() => {
     fetch('/api/categories')
       .then(res => res.json())
@@ -110,15 +111,16 @@ export default function FixedSearchBar() {
         if (data.success) {
           setCategories(data.data);
         }
-        setCategoriesLoading(false);
       })
       .catch(err => {
         console.error('[FixedSearchBar] Category loading error:', err);
+      })
+      .finally(() => {
         setCategoriesLoading(false);
       });
   }, []);
 
-  // Modelleri markaya göre MySQL'den çek
+  // Modelleri markaya göre çek
   useEffect(() => {
     if (brand && vehicleType) {
       setModelsLoading(true);
@@ -129,10 +131,11 @@ export default function FixedSearchBar() {
           if (data.success) {
             setModels(data.data);
           }
-          setModelsLoading(false);
         })
         .catch(err => {
           console.error('[FixedSearchBar] Model loading error:', err);
+        })
+        .finally(() => {
           setModelsLoading(false);
         });
     } else {
@@ -251,32 +254,24 @@ export default function FixedSearchBar() {
               <select
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
-                disabled={!vehicleType}
+                disabled={!vehicleType || brandsLoading}
                 className={`${selectClass} disabled:opacity-50`}
               >
-                <option value="">Marka Seçin</option>
-                {brandsLoading ? (
-                  <option disabled>Yükleniyor...</option>
-                ) : (
-                  brands.map((b) => (
-                    <option key={b.brand} value={b.brand}>{b.brand}</option>
-                  ))
-                )}
+                <option value="">{brandsLoading ? 'Yükleniyor...' : 'Marka Seçin'}</option>
+                {brands.map((b) => (
+                  <option key={b.brand} value={b.brand}>{b.brand}</option>
+                ))}
               </select>
               <select
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
-                disabled={!brand}
+                disabled={!brand || modelsLoading}
                 className={`${selectClass} disabled:opacity-50`}
               >
-                <option value="">Model Seçin</option>
-                {modelsLoading ? (
-                  <option disabled>Yükleniyor...</option>
-                ) : (
-                  models.map((m) => (
-                    <option key={m.model} value={m.model}>{m.model}</option>
-                  ))
-                )}
+                <option value="">{modelsLoading ? 'Yükleniyor...' : 'Model Seçin'}</option>
+                {models.map((m) => (
+                  <option key={m.model} value={m.model}>{m.model}</option>
+                ))}
               </select>
             </div>
 
@@ -336,10 +331,10 @@ export default function FixedSearchBar() {
               <select
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
-                disabled={!vehicleType}
+                disabled={!vehicleType || brandsLoading}
                 className="w-full px-2 py-3 bg-primary-500 border border-primary-400 rounded-lg text-[#454545] text-sm focus:ring-2 focus:ring-primary-500 disabled:opacity-50 min-h-[44px]"
               >
-                <option value="">Marka</option>
+                <option value="">{brandsLoading ? '...' : 'Marka'}</option>
                 {brands.map((b) => (
                   <option key={b.brand} value={b.brand}>{b.brand}</option>
                 ))}

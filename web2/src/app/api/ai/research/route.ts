@@ -1,5 +1,3 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
-import OpenAI from 'openai'
 import { NextResponse } from 'next/server'
 import { getRedis } from '@/lib/cache/redis'
 import { scrapeArabamPrices, formatTL } from '@/lib/pricing/arabam-scraper'
@@ -19,19 +17,126 @@ function getStrapiHeaders(contentType = false): Record<string, string> {
 const REDIS_ANALYSIS_PREFIX = 'analyses'
 const REDIS_ANALYSIS_TTL = 60 * 60 * 24 * 30 // 30 gün
 
-const geminiKeys = [
-  'http://localhost:3010|sk-j3FPkmoVA5BylBKhYQsp95kIeL5l2D6DDKhMSGIgtGEoY4Yo',
-].filter(Boolean) as string[]
+const ZAI_URL = 'https://api.z.ai/api/anthropic/v1/messages'
+const ZAI_KEY = process.env.ZAI_API_KEY || '042213d5518349509f67b0dcabb054d2.CrALf2SAl4jKXBgw'
 
-const openaiKey = process.env.OPENAI_API_KEY
-const grokKey = process.env.GROK_API_KEY
-const grokBaseUrl = 'https://api12.codefast.app/v1'
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type VehicleAnalysisData = Record<string, any>
+interface VehicleAnalysisData {
+  specs?: {
+    engine?: string
+    horsepower?: string
+    torque?: string
+    transmission?: string
+    drivetrain?: string
+    fuel_economy?: string
+  }
+  performance?: {
+    acceleration_0_100?: string
+    top_speed?: string
+    braking_100_0?: string
+    trunk_volume?: string
+    fuel_tank?: string
+    curb_weight?: string
+  }
+  safety?: {
+    euro_ncap_stars?: number
+    adult_occupant?: string
+    child_occupant?: string
+    pedestrian?: string
+    safety_assist?: string
+    test_year?: number
+  }
+  tires?: {
+    standard?: string
+    alternative?: string[]
+    pressure?: string
+  }
+  fluids?: {
+    coolant_type?: string
+    coolant_capacity?: string
+    brake_fluid?: string
+    transmission_oil?: string
+    transmission_capacity?: string
+    battery_type?: string
+    battery_spec?: string
+  }
+  chronic_problems?: Array<{
+    problem?: string
+    description?: string
+    severity?: string
+    significance_score?: number
+  }>
+  common_obd_codes?: Array<{
+    code?: string
+    description?: string
+    severity?: string
+    common_cause?: string
+  }>
+  maintenance?: {
+    oil_type?: string
+    oil_capacity?: string
+    intervals?: Array<{ km?: string; action?: string }>
+  }
+  annual_maintenance_cost?: {
+    total?: string
+    breakdown?: Array<{ item?: string; cost?: string; frequency?: string }>
+  }
+  fuel_cost?: {
+    fuel_type?: string
+    average_consumption?: number
+    current_fuel_price?: number
+  }
+  depreciation?: {
+    current_value?: string
+    yearly?: Array<{ year?: number; value?: string; loss_pct?: number }>
+  }
+  competitors?: Array<{
+    name?: string
+    price_range?: string
+    advantage?: string
+    disadvantage?: string
+  }>
+  pros?: string[]
+  cons?: string[]
+  summary?: string
+  estimated_prices?: {
+    market_min?: string
+    market_max?: string
+    average?: string
+  }
+  image_url?: string
+  estimated_prices_source?: string
+  estimated_prices_raw?: {
+    avgPrice?: number
+    minPrice?: number
+    maxPrice?: number
+    medianPrice?: number
+    count?: number
+    arabamUrl?: string
+  }
+}
 
 // ─── Strapi Cache (ÖNCELİK 1) ─────────────────────
 const STRAPI_STALE_MS = 30 * 24 * 60 * 60 * 1000 // 30 gün
+
+interface StrapiVehicleAnalysisEntry {
+  id: number
+  attributes?: StrapiVehicleAnalysisAttributes
+  brand?: string
+  model?: string
+  year?: number
+  data?: VehicleAnalysisData
+  updatedAt?: string
+  createdAt?: string
+}
+
+interface StrapiVehicleAnalysisAttributes {
+  brand?: string
+  model?: string
+  year?: number
+  data?: VehicleAnalysisData
+  updatedAt?: string
+  createdAt?: string
+}
 
 interface StrapiAnalysisResult {
   data: VehicleAnalysisData
@@ -49,12 +154,12 @@ async function getAnalysisFromStrapi(brand: string, model: string, year: number)
 
     if (!res.ok) return null
 
-    const result = await res.json()
-    const entries = result.data || []
+    const result: { data?: StrapiVehicleAnalysisEntry[] } = await res.json()
+    const entries: StrapiVehicleAnalysisEntry[] = result.data || []
 
     // JS tarafında eşleştirme (Strapi filtreleri bazen çalışmaz)
-    const entry = entries.find((e: Record<string, unknown>) => {
-      const attrs = (e.attributes || e) as Record<string, unknown>
+    const entry = entries.find((e: StrapiVehicleAnalysisEntry) => {
+      const attrs: StrapiVehicleAnalysisAttributes = e.attributes || e
       return (
         String(attrs.brand).toUpperCase() === brand.toUpperCase() &&
         String(attrs.model).toUpperCase() === model.toUpperCase() &&
@@ -64,9 +169,8 @@ async function getAnalysisFromStrapi(brand: string, model: string, year: number)
 
     if (!entry) return null
 
-    const entryObj = entry as Record<string, unknown>
-    const attrs = (entryObj.attributes || entryObj) as Record<string, unknown>
-    const id = Number(entryObj.id)
+    const attrs: StrapiVehicleAnalysisAttributes = entry.attributes || entry
+    const id = Number(entry.id)
     const updatedAt = String(attrs.updatedAt || attrs.createdAt || '')
 
     return {
@@ -163,104 +267,31 @@ async function saveAnalysisToRedis(brand: string, model: string, year: number, d
   }
 }
 
-// ─── AI Providers (ÖNCELİK 3 - Fallback) ─────────────
-async function generateWithGrok(prompt: string): Promise<string> {
-  if (!grokKey) throw new Error('Grok API key not configured')
-  const grok = new OpenAI({ apiKey: grokKey, baseURL: grokBaseUrl })
-  const completion = await grok.chat.completions.create({
-    model: 'grok-4-fast',
-    messages: [
-      { role: 'system', content: 'Sen uzman bir otomobil teknisyenisin. Türkçe yanıt ver. Sadece geçerli JSON döndür, markdown kullanma.' },
-      { role: 'user', content: prompt },
-    ],
-    temperature: 0.7,
-    max_tokens: 8000,
-  })
-  return completion.choices[0]?.message?.content || ''
-}
-
-async function generateWithOpenAI(prompt: string): Promise<string> {
-  if (!openaiKey) throw new Error('OpenAI API key not configured')
-  const openai = new OpenAI({ apiKey: openaiKey })
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    messages: [
-      { role: 'system', content: 'Sen uzman bir otomobil teknisyenisin. Türkçe yanıt ver. Sadece geçerli JSON döndür, markdown kullanma.' },
-      { role: 'user', content: prompt },
-    ],
-    temperature: 0.7,
-    max_tokens: 8000,
-  })
-  return completion.choices[0]?.message?.content || ''
-}
-
-async function generateWithGemini(prompt: string): Promise<string> {
-  let lastError: unknown
-
-  for (const key of geminiKeys) {
-    try {
-      // Özel endpoint formatı kontrolü (URL|API_KEY)
-      if (key.includes('|')) {
-        const [baseUrl, apiKey] = key.split('|')
-        const res = await fetch(`${baseUrl.trim()}/v1/chat/completions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey.trim()}`,
-          },
-          body: JSON.stringify({
-            model: 'gemini-2.5-flash',
-            messages: [
-              { role: 'system', content: 'Sen uzman bir otomobil teknisyenisin. Türkçe yanıt ver. Sadece geçerli JSON döndür, markdown kullanma.' },
-              { role: 'user', content: prompt },
-            ],
-            temperature: 0.7,
-            max_tokens: 8000,
-          }),
-        })
-
-        if (!res.ok) {
-          const errText = await res.text()
-          throw new Error(`HTTP ${res.status}: ${errText}`)
-        }
-
-        const data = await res.json()
-        const text = data.choices?.[0]?.message?.content || ''
-        if (text) return text
-      } else {
-        // Standart Google Generative AI kullanımı
-        const genAI = new GoogleGenerativeAI(key)
-        const modelAI = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
-        const result = await modelAI.generateContent(prompt)
-        return result.response.text()
-      }
-    } catch (error) {
-      lastError = error
-    }
-  }
-
-  throw lastError || new Error('Gemini başarısız oldu')
-}
-
+// ─── AI Provider (ZAI) ────────────────────────────────
 async function generateWithRetry(prompt: string): Promise<string> {
-  // Önce Gemini
-  try {
-    return await generateWithGemini(prompt)
-  } catch (e) {
-    console.warn('[AI] Gemini başarısız, fallback deneniyor...')
+  const res = await fetch(ZAI_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': ZAI_KEY,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'glm-5',
+      max_tokens: 8000,
+      system: 'Sen uzman bir otomobil teknisyenisin ve veri analistisin. Türkçe yanıt ver. Sadece geçerli JSON döndür, markdown kullanma.',
+      messages: [{ role: 'user', content: prompt }],
+    }),
+    signal: AbortSignal.timeout(30000),
+  })
+  if (!res.ok) {
+    const err = await res.text()
+    throw new Error(`ZAI API hatası: ${res.status} - ${err}`)
   }
-
-  // Sonra Grok
-  if (grokKey) {
-    try { return await generateWithGrok(prompt) } catch (e) { console.warn('[AI] Grok başarısız') }
-  }
-
-  // En son OpenAI
-  if (openaiKey) {
-    try { return await generateWithOpenAI(prompt) } catch (e) { console.warn('[AI] OpenAI başarısız') }
-  }
-
-  throw new Error('Tüm AI servisleri başarısız oldu')
+  const data = await res.json()
+  const text = data.content?.[0]?.text?.trim()
+  if (!text) throw new Error('ZAI boş yanıt döndü')
+  return text
 }
 
 // ─── Helpers ─────────────────────────────────────

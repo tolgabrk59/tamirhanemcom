@@ -1,0 +1,19 @@
+{
+  "activeTemplate": "ali.workflow.js",
+  "lastUpdated": "2026-02-25T07:28:22.673Z",
+  "completedSteps": {
+    "0": {
+      "sessionId": "95ea7b01-862c-4bb6-aaa0-8b6d33a3292a",
+      "monitoringId": 1
+    }
+  },
+  "notCompletedSteps": [
+    0
+  ],
+  "resumeFromLastStep": true,
+  "autonomousMode": "never",
+  "selectedTrack": "quick",
+  "selectedConditions": [
+    "modify-workflow"
+  ]
+}

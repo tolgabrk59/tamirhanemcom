@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-interface ThUser { id: number; username: string; jwt: string }
+interface ThUser { id: number; username: string; jwt: string; name?: string; email?: string; phone?: string; firstName?: string; lastName?: string }
 
 interface LoginModalProps {
   isOpen: boolean
@@ -86,7 +86,16 @@ export default function LoginModal({
       if (data.success) {
         if (remember) localStorage.setItem('th_remember_user', identifier)
         else localStorage.removeItem('th_remember_user')
-        const userObj: ThUser = { id: data.user.id, username: data.user.username, jwt: data.jwt }
+        const userObj: ThUser = {
+          id: data.user.id,
+          username: data.user.username,
+          jwt: data.jwt,
+          name: data.user.name,
+          email: data.user.email,
+          phone: data.user.phone,
+          firstName: data.user.firstName,
+          lastName: data.user.lastName,
+        }
         localStorage.setItem('th_user', JSON.stringify(userObj))
         onLogin(userObj)
         onClose()

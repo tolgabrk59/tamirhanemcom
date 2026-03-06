@@ -2,6 +2,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import SearchBox from '@/components/SearchBox';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+
 export default function ArizaRehberiPage() {
     // RepairPal benzeri yaygın belirtiler
     const commonSymptoms = [
@@ -143,7 +148,7 @@ export default function ArizaRehberiPage() {
                                         </div>
                                     </div>
                                 </Link>
-                                <Link href="/ariza-rehberi/arac-calismıyor" className="group">
+                                <Link href="/ariza-bul" className="group">
                                     <div className="relative rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all">
                                         <div className="aspect-[16/9] relative">
                                             <Image
@@ -176,7 +181,7 @@ export default function ArizaRehberiPage() {
                                 {commonSymptoms.map((symptom, idx) => (
                                     <Link
                                         key={idx}
-                                        href={`/ariza-rehberi/${symptom.slug}`}
+                                        href='/ariza-bul'
                                         className="group bg-white border border-secondary-200 rounded-lg overflow-hidden hover:shadow-lg transition-all"
                                     >
                                         <div className="aspect-[4/3] bg-secondary-100 relative overflow-hidden">
@@ -216,7 +221,7 @@ export default function ArizaRehberiPage() {
                                 ].map((item, idx) => (
                                     <Link
                                         key={idx}
-                                        href={`/ariza-rehberi/${item.toLowerCase().replace(/\s+/g, '-')}`}
+                                        href='/ariza-bul'
                                         className="text-secondary-700 hover:text-violet-600 transition-colors py-2 border-b border-secondary-100"
                                     >
                                         {item}
@@ -236,7 +241,7 @@ export default function ArizaRehberiPage() {
                                 {warningLights.map((light, idx) => (
                                     <Link
                                         key={idx}
-                                        href={`/ariza-rehberi/${light.slug}`}
+                                        href='/ariza-bul'
                                         className="group bg-white border border-secondary-200 rounded-lg overflow-hidden hover:shadow-lg transition-all"
                                     >
                                         <div className="aspect-[4/3] bg-[#1a1a1a] relative overflow-hidden">

@@ -114,6 +114,7 @@ module.exports = {
         '128': '32rem',
       },
       animation: {
+        'bounce-slow': 'bounce 2s ease-in-out infinite',
         'float': 'float 3s ease-in-out infinite',
         'fadeInUp': 'fadeInUp 0.6s ease forwards',
         'scaleIn': 'scaleIn 0.3s ease forwards',

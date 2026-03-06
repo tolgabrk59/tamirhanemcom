@@ -56,29 +56,56 @@
       "Bash(curl -fsSL https://get.opencode.dev)",
       "Bash(go install:*)",
       "Bash(opencode --version:*)",
-      "Bash(opencode /connect)"
+      "Bash(opencode /connect)",
+      "Bash(npx tsc:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm outdated:*)",
+      "Bash(npm audit:*)",
+      "Bash(nc:*)",
+      "Bash(for:*)",
+      "Bash(do)",
+      "Bash(done)",
+      "Bash(source:*)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(do ss -tlnp)",
+      "Bash(break)",
+      "Bash(redis-cli:*)"
     ]
   },
   "hooks": {
     "SessionStart": [
       {
-        "type": "command",
-        "command": "bash .claude/scripts/session-init.sh",
-        "timeout": 10000
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/scripts/session-init.sh",
+            "timeout": 10000
+          }
+        ]
       }
     ],
     "PreToolUse": [
       {
-        "type": "command",
-        "command": "python3 .claude/scripts/session_hooks.py pre_tool",
-        "timeout": 5000
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/session_hooks.py pre_tool",
+            "timeout": 5000
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
-        "type": "command",
-        "command": "python3 .claude/scripts/session_hooks.py post_tool",
-        "timeout": 5000
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/session_hooks.py post_tool",
+            "timeout": 5000
+          }
+        ]
       }
     ]
   }

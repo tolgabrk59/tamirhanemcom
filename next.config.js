@@ -2,6 +2,8 @@ const { withSentryConfig } = require('@sentry/nextjs');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Security: Hide X-Powered-By header
+  poweredByHeader: false,
   experimental: {
     missingSuspenseWithCSRBailout: false,
     // Enable optimizePackageImports for better tree-shaking
@@ -33,6 +35,11 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'api.tamirhanem.net',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'api.tamirhanem.com',
         pathname: '/**',
       },
       {
@@ -85,7 +92,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com https://vercel.live data:",
               "img-src 'self' data: https: blob:",
-              "connect-src 'self' blob: https://api.tamirhanem.net https://generativelanguage.googleapis.com https://www.google-analytics.com https://vitals.vercel-insights.com https://raw.githack.com https://*.sentry.io wss:",
+              "connect-src 'self' blob: https://api.tamirhanem.net https://api.tamirhanem.com https://generativelanguage.googleapis.com https://www.google-analytics.com https://vitals.vercel-insights.com https://raw.githack.com https://*.sentry.io https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://*.carto.com wss:",
               "worker-src 'self' blob:",
               "frame-src 'self' https://www.google.com https://vercel.live https://mcp.tamirhanem.net",
               "object-src 'none'",
@@ -132,6 +139,24 @@ const nextConfig = {
         destination: '/obd/:code',
         permanent: true,
       },
+      // Ariza rehberi Türkçe karakterli URL'ler
+      { source: '/ariza-rehberi/egzoz-muayenesi-başarısız', destination: '/ariza-bul', permanent: false },
+      { source: '/ariza-rehberi/araçtan-sıvı-sızıntısı', destination: '/ariza-bul', permanent: false },
+      { source: '/ariza-rehberi/buğu-açıcı-çalışmıyor', destination: '/ariza-bul', permanent: false },
+      { source: '/ariza-rehberi/frenlerim-ses-çıkarıyor', destination: '/ariza-bul', permanent: false },
+      { source: '/ariza-rehberi/cam-suyu-çalışmıyor', destination: '/ariza-bul', permanent: false },
+      { source: '/ariza-rehberi/fren-yaparken-araç-titriyor', destination: '/ariza-bul', permanent: false },
+      { source: '/ariza-rehberi/akü-değişimi-sonrası-elektrik-sorunları', destination: '/ariza-bul', permanent: false },
+      { source: '/ariza-rehberi/yeni-akü-sonrası-motor-duruyor', destination: '/ariza-bul', permanent: false },
+      { source: '/ariza-rehberi/egzozdan-duman-çıkıyor', destination: '/ariza-bul', permanent: false },
+      { source: '/ariza-rehberi/vakum-kaçağı-belirtileri', destination: '/ariza-bul', permanent: false },
+      { source: '/ariza-rehberi/araç-titriyor', destination: '/ariza-bul', permanent: false },
+      { source: '/ariza-rehberi/araçtan-garip-ses-geliyor', destination: '/ariza-bul', permanent: false },
+      { source: '/ariza-rehberi/kalorifer-calismıyor', destination: '/ariza-bul', permanent: false },
+      { source: '/ariza-rehberi/klima-calismıyor', destination: '/ariza-bul', permanent: false },
+      { source: '/ariza-rehberi/arac-yag-sizdiriyor', destination: '/ariza-bul', permanent: false },
+      { source: '/ariza-rehberi/motor-asiri-isiniyor', destination: '/ariza-bul', permanent: false },
+      { source: '/ariza-rehberi/rolanti-duzensiz', destination: '/ariza-bul', permanent: false },
     ];
   },
   async rewrites() {
@@ -139,6 +164,11 @@ const nextConfig = {
       {
         source: '/ref/:code',
         destination: '/ref/index.html',
+      },
+      // Arıza rehberi Türkçe karakterli URL'leri /ariza-bul'a yönlendir
+      {
+        source: '/ariza-rehberi/:slug((?!check-engine-lambasi).*)',
+        destination: '/ariza-bul',
       },
     ];
   },

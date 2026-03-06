@@ -3,7 +3,28 @@ import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('API_SERVICES_SEARCH');
 
+
+
 export const dynamic = 'force-dynamic';
+// Türkçe karakter normalizasyonu
+function normalizeTurkish(str: string): string {
+    if (!str) return '';
+    return str
+        .replace(/İ/gi, 'i')
+        .replace(/I/gi, 'i')
+        .replace(/Ş/gi, 's')
+        .replace(/ş/gi, 's')
+        .replace(/Ğ/gi, 'g')
+        .replace(/ğ/gi, 'g')
+        .replace(/Ü/gi, 'u')
+        .replace(/ü/gi, 'u')
+        .replace(/Ö/gi, 'o')
+        .replace(/ö/gi, 'o')
+        .replace(/Ç/gi, 'c')
+        .replace(/ç/gi, 'c')
+        .replace(/ı/gi, 'i')
+        .toLowerCase();
+}
 
 const STRAPI_API = 'https://api.tamirhanem.com/api';
 
@@ -61,7 +82,7 @@ export async function GET(request: Request) {
         const url = `${STRAPI_API}/services?populate[0]=ProfilePicture&populate[1]=categories&populate[2]=supported_vehicles&populate[3]=working_hours.monday&populate[4]=working_hours.tuesday&populate[5]=working_hours.wednesday&populate[6]=working_hours.thursday&populate[7]=working_hours.friday&populate[8]=working_hours.saturday&populate[9]=working_hours.sunday&pagination[pageSize]=100&sort=rating:desc`;
         
         const response = await fetch(url, {
-            next: { revalidate: 300 } // 5 dakika cache
+            cache: 'no-store' // Cache devre dışı - yeni servisler anında görünsün
         });
         
         if (!response.ok) {
@@ -78,12 +99,12 @@ export async function GET(request: Request) {
             // 1. Lokasyon filtresi
             if (city && attr.location !== city) {
                 // Case-insensitive contains kontrolü
-                if (!attr.location?.toLowerCase().includes(city.toLowerCase())) {
+                if (!normalizeTurkish(attr.location).includes(normalizeTurkish(city))) {
                     return false;
                 }
             }
             
-            if (district && !attr.location?.toLowerCase().includes(district.toLowerCase())) {
+            if (district && !normalizeTurkish(attr.location).includes(normalizeTurkish(district))) {
                 return false;
             }
             
@@ -92,7 +113,7 @@ export async function GET(request: Request) {
                 const cats = attr.categories?.data || attr.categories || [];
                 const hasCat = cats.some((c: any) => 
                     String(c.id || c.data?.id) === String(category) ||
-                    (c.attributes?.name || c.name || '').toLowerCase().includes(category.toLowerCase())
+                    normalizeTurkish(c.attributes?.name || c.name || '').includes(normalizeTurkish(category))
                 );
                 if (!hasCat) return false;
             }
@@ -104,10 +125,10 @@ export async function GET(request: Request) {
                     // Marka kontrolü bypass
                 } else {
                     const supportedData = attr.supported_vehicles || attr.supportedVehicles;
-                    const strData = JSON.stringify(supportedData || "").toLowerCase();
+                    const strData = JSON.stringify(supportedData || "");
                     
-                    if (!strData.includes(brand.toLowerCase())) return false;
-                    if (model && !strData.includes(model.toLowerCase())) return false;
+                    if (!strData.includes(brand)) return false;
+                    if (model && !strData.includes(model)) return false;
                 }
             }
             
@@ -117,12 +138,12 @@ export async function GET(request: Request) {
         // Strapi formatından frontend formatına çevir
         const formattedServices = services.map((service: any) => {
             const attrs = service.attributes || service;
-            
+
             // Kategori isimlerini çek
             const categoryNames = (attrs.categories?.data || attrs.categories || [])
                 .map((c: any) => c.attributes?.name || c.name || '')
                 .filter(Boolean);
-            
+
             return {
                 id: service.id,
                 name: attrs.name || '',

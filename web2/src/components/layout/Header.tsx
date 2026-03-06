@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
 import { useTheme } from '@/components/providers/ThemeProvider'
 import LoginModal from '@/components/shared/LoginModal'
 
-interface ThUser { id: number; username: string; jwt: string }
+interface ThUser { id: number; username: string; jwt: string; name?: string; email?: string; phone?: string; firstName?: string; lastName?: string }
 
 // ─── Tipler ──────────────────────────────────────
 interface MegaMenuItem {
@@ -119,6 +119,17 @@ export default function Header() {
   const handleModalLogin = (user: ThUser) => {
     setThUser(user)
   }
+
+  // Global event listener — Sidebar ve diğer bileşenler tetikleyebilir
+  useEffect(() => {
+    const onOpen = (e: Event) => {
+      const tab = (e as CustomEvent<{ tab?: 'login' | 'register' }>).detail?.tab
+      setLoginModalTab(tab === 'register' ? 'register' : 'login')
+      setLoginModalOpen(true)
+    }
+    window.addEventListener('open-login-modal', onOpen)
+    return () => window.removeEventListener('open-login-modal', onOpen)
+  }, [])
 
   useEffect(() => {
     try {
@@ -407,15 +418,22 @@ export default function Header() {
                       type="button"
                       onClick={() => setProfileOpen(prev => !prev)}
                       className={cn(
-                        'flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-300',
+                        'flex items-center gap-2.5 pl-1 pr-3 py-1 rounded-full transition-all duration-300',
                         'border border-th-border/10 hover:border-brand-500/30',
-                        'bg-th-overlay/[0.04] hover:bg-th-overlay/[0.08]',
-                        profileOpen ? 'text-brand-500 border-brand-500/30' : 'text-th-fg-sub hover:text-brand-500'
+                        'bg-th-overlay/[0.04] hover:bg-th-overlay/[0.10]',
+                        profileOpen ? 'border-brand-500/30 bg-brand-500/[0.06]' : ''
                       )}
                     >
-                      <UserCircle className="w-4 h-4" />
-                      <span className="max-w-[80px] truncate">{thUser.username}</span>
-                      <ChevronDown className={cn('w-3 h-3 transition-transform duration-200', profileOpen && 'rotate-180')} />
+                      {/* Avatar daire */}
+                      <div className="w-9 h-9 rounded-full bg-gold/10 border-2 border-gold/30 flex items-center justify-center text-gold font-bold text-sm flex-shrink-0">
+                        {(thUser.name || thUser.username).charAt(0).toUpperCase()}
+                      </div>
+                      {/* İsim + Rol */}
+                      <div className="flex flex-col items-start leading-tight">
+                        <span className="text-sm font-bold text-th-fg max-w-[100px] truncate">{thUser.name || thUser.username}</span>
+                        <span className="text-[11px] text-th-fg-muted">Müşteri</span>
+                      </div>
+                      <ChevronDown className={cn('w-3 h-3 text-th-fg-sub transition-transform duration-200', profileOpen && 'rotate-180')} />
                     </button>
 
                     <AnimatePresence>

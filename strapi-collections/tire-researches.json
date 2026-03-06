@@ -1,0 +1,42 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tire_researches",
+  "info": {
+    "singularName": "tire-research",
+    "pluralName": "tire-researches",
+    "displayName": "Tire Research",
+    "description": "Lastik araştırma verileri (LLM tarafından üretilen veriler)"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "brand": {
+      "type": "string",
+      "required": true,
+      "maxLength": 100
+    },
+    "model": {
+      "type": "string",
+      "required": true,
+      "maxLength": 100
+    },
+    "year": {
+      "type": "integer",
+      "required": true,
+      "min": 1900,
+      "max": 2100
+    },
+    "season": {
+      "type": "enumeration",
+      "enum": ["summer", "winter", "all_season"],
+      "required": true,
+      "default": "summer"
+    },
+    "data": {
+      "type": "json",
+      "required": true
+    }
+  }
+}

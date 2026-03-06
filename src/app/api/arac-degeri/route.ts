@@ -2,11 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { createLogger } from '@/lib/logger';
+import { checkRouteRateLimit, getClientIdentifier } from '@/lib/route-rate-limit';
 import type { ArabamPriceResult, ArabamPriceData } from '@/types/external-apis';
 
 const logger = createLogger('API_ARAC_DEGERI');
 
 export const dynamic = 'force-dynamic';
+
+// Rate limit: 10 requests per hour per IP (scraping protection)
+const ARAC_DEGERI_RATE_LIMIT = 10;
+const ARAC_DEGERI_RATE_WINDOW = 60 * 60 * 1000; // 1 hour
 
 // Marka slug mapping
 const brandSlugs: Record<string, string> = {
@@ -389,6 +394,26 @@ async function fetchPricesFromArabam(
 }
 
 export async function GET(request: NextRequest) {
+  // Rate limiting check (scraping protection)
+  const identifier = getClientIdentifier(request.headers, 'arac-degeri');
+  const rateLimit = await checkRouteRateLimit(identifier, ARAC_DEGERI_RATE_LIMIT, ARAC_DEGERI_RATE_WINDOW);
+  
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: 'Cok fazla istek gonderdiniz. Lutfen 1 saat bekleyin.',
+        retryAfter: rateLimit.retryAfter 
+      },
+      { 
+        status: 429,
+        headers: {
+          'Retry-After': String(rateLimit.retryAfter || 3600),
+        }
+      }
+    );
+  }
+
   const searchParams = request.nextUrl.searchParams;
 
   // Yeni slug bazli parametreler

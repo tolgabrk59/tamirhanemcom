@@ -2,12 +2,44 @@ import { NextRequest, NextResponse } from 'next/server';
 import { successResponse, errors, logError } from '@/lib/api-response';
 import { getUserContext, saveConversation } from '@/lib/supermemory';
 import { createLogger } from '@/lib/logger';
+import { validate, chatSchema } from '@/lib/validators';
+import { checkRouteRateLimit, getClientIdentifier } from '@/lib/route-rate-limit';
 
 const logger = createLogger('API_CHAT');
 
+// Rate limit: 20 requests per hour per IP
+const CHAT_RATE_LIMIT = 20;
+const CHAT_RATE_WINDOW = 60 * 60 * 1000; // 1 hour
+
 export async function POST(request: NextRequest) {
   try {
-    const { message, history, userId, vehicleInfo } = await request.json();
+    // Rate limiting check
+    const identifier = getClientIdentifier(request.headers, 'chat');
+    const rateLimit = await checkRouteRateLimit(identifier, CHAT_RATE_LIMIT, CHAT_RATE_WINDOW);
+    
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { 
+          error: 'Çok fazla istek gönderdiniz', 
+          retryAfter: rateLimit.retryAfter 
+        },
+        { 
+          status: 429,
+          headers: {
+            'Retry-After': String(rateLimit.retryAfter || 3600),
+            'X-RateLimit-Limit': String(CHAT_RATE_LIMIT),
+            'X-RateLimit-Remaining': '0',
+          }
+        }
+      );
+    }
+
+    const body = await request.json();
+    const validation = validate(chatSchema, body);
+    if (!validation.success) {
+      return errors.badRequest(validation.error);
+    }
+    const { message, history, userId, vehicleInfo } = validation.data;
 
     if (!message || typeof message !== 'string') {
       return errors.badRequest('Mesaj gereklidir');
@@ -179,12 +211,13 @@ SEN YAPAY ZEKA OLDUĞUNU BELİRTME, TamirHanem asistanı olarak konuş.${memoryC
     const keyIndex = Math.floor(Date.now() / 60000) % apiKeys.length;
     const apiKey = apiKeys[keyIndex];
 
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey,
       },
       body: JSON.stringify(requestBody),
     });
@@ -208,7 +241,14 @@ SEN YAPAY ZEKA OLDUĞUNU BELİRTME, TamirHanem asistanı olarak konuş.${memoryC
       logger.debug({ error: e }, 'Memory save skipped');
     });
 
-    return successResponse({ message: aiMessage });
+    // Return response with rate limit headers
+    const response_data = successResponse({ message: aiMessage });
+    return NextResponse.json(response_data, {
+      headers: {
+        'X-RateLimit-Limit': String(CHAT_RATE_LIMIT),
+        'X-RateLimit-Remaining': String(rateLimit.remaining),
+      }
+    });
   } catch (error) {
     logError('Chat API', error);
     return errors.internal('Bir hata oluştu. Lütfen tekrar deneyin.');

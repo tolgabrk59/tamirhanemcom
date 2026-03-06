@@ -24,14 +24,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: friendly }, { status: 401 })
     }
 
+    // Genişletilmiş kullanıcı bilgisini çek
+    let fullUser = data.user
+    try {
+      const meRes = await fetch(`${STRAPI_API}/users/me`, {
+        headers: { Authorization: `Bearer ${data.jwt}` },
+      })
+      if (meRes.ok) fullUser = await meRes.json()
+    } catch {}
+
+    // Strapi'de name + surname alanları var
+    const name = fullUser.name || ''
+    const surname = fullUser.surname || ''
+    const displayName = [name, surname].filter(Boolean).join(' ') || fullUser.username
+
     return NextResponse.json({
       success: true,
       jwt: data.jwt,
       user: {
-        id: data.user.id,
-        username: data.user.username,
-        email: data.user.email,
-        name: data.user.name || data.user.username,
+        id: fullUser.id,
+        username: fullUser.username,
+        email: fullUser.email,
+        name: displayName,
+        firstName: name,
+        lastName: surname,
+        phone: fullUser.phone || '',
+        adress: fullUser.adress || '',
       },
     })
   } catch {
