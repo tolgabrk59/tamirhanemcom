@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { ArrowLeft, Star, MapPin, Phone, Calendar, Clock, Shield, Truck, CheckCircle, ExternalLink, Share2, Mail, Tag, Wrench, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Star, MapPin, Phone, Calendar, Clock, Shield, Truck, CheckCircle, ExternalLink, Share2, Mail, Tag, Wrench, ChevronLeft, ChevronRight, Heart, X, Eye, EyeOff, User, Lock } from 'lucide-react'
 import AnimatedSection from '@/components/shared/AnimatedSection'
 import { cn } from '@/lib/utils'
 
@@ -20,6 +20,9 @@ export default function ServiceDetailPage() {
   const [busySlots, setBusySlots] = useState<Record<string, string[]>>({})
   const [calendarDate, setCalendarDate] = useState(new Date())
   const [selectedCalDay, setSelectedCalDay] = useState<string | null>(null)
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const [loginForm, setLoginForm] = useState({ username: '', password: '' })
+  const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
     const fetchService = async () => {
@@ -180,6 +183,7 @@ export default function ServiceDetailPage() {
   })()
 
   return (
+    <>
     <div className="min-h-screen pt-24 pb-16">
       <section className="section-container mb-6">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-th-overlay/5 border border-th-border/10 text-sm text-th-fg-sub">
@@ -237,8 +241,8 @@ export default function ServiceDetailPage() {
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <a href={`/randevu?servis=${encodeURIComponent(attrs.name)}&servis_id=${service.id}`} className="flex items-center justify-center gap-2 btn-gold py-3 rounded-xl font-bold text-sm"><Calendar className="w-4 h-4" />Randevu Al</a>
-                  <a href={`tel:${attrs.phone}`} className="flex items-center justify-center gap-2 border border-th-border/20 py-3 rounded-xl font-medium text-sm hover:border-brand-500/30 hover:text-brand-500"><Phone className="w-4 h-4" />Ara</a>
-                  <button className="flex items-center justify-center gap-2 border border-th-border/20 py-3 rounded-xl font-medium text-sm hover:border-brand-500/30 hover:text-brand-500"><Mail className="w-4 h-4" />Soru Sor</button>
+                  <a href={`tel:${attrs.phone}`} className="flex items-center justify-center gap-2 border border-th-border/20 py-3 rounded-xl font-medium text-sm hover:border-brand-500/30 hover:text-brand-500"><Tag className="w-4 h-4" />Teklif Al</a>
+                  <button onClick={() => setShowLoginModal(true)} className="flex items-center justify-center gap-2 border border-th-border/20 py-3 rounded-xl font-medium text-sm hover:border-red-500/30 hover:text-red-400 transition-colors"><Heart className="w-4 h-4" />Favorilere Ekle</button>
                   <button className="flex items-center justify-center gap-2 border border-th-border/20 py-3 rounded-xl font-medium text-sm hover:border-brand-500/30 hover:text-brand-500"><Share2 className="w-4 h-4" />Paylaş</button>
                 </div>
               </div>
@@ -723,5 +727,61 @@ export default function ServiceDetailPage() {
         </div>
       </div>
     </div>
+
+    {/* Favorilere Ekle Login Modalı */}
+    {showLoginModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowLoginModal(false)} />
+        <div className="relative w-full max-w-sm glass-card p-6 shadow-2xl">
+          <button onClick={() => setShowLoginModal(false)} className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-th-overlay/10 text-th-fg-sub hover:text-th-fg transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+
+          <div className="flex flex-col items-center mb-6">
+            <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-3">
+              <Heart className="w-6 h-6 text-red-400" />
+            </div>
+            <h2 className="text-lg font-display font-bold text-th-fg">Favorilere Ekle</h2>
+            <p className="text-sm text-th-fg-sub mt-1 text-center">Devam etmek için hesabınıza giriş yapın</p>
+          </div>
+
+          <div className="space-y-3">
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-th-fg-muted" />
+              <input
+                type="text"
+                placeholder="Kullanıcı adı veya e-posta"
+                value={loginForm.username}
+                onChange={e => setLoginForm(f => ({ ...f, username: e.target.value }))}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-th-bg-alt border border-th-border/20 text-th-fg placeholder:text-th-fg-muted text-sm focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/30"
+              />
+            </div>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-th-fg-muted" />
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Şifre"
+                value={loginForm.password}
+                onChange={e => setLoginForm(f => ({ ...f, password: e.target.value }))}
+                className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-th-bg-alt border border-th-border/20 text-th-fg placeholder:text-th-fg-muted text-sm focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/30"
+              />
+              <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-th-fg-muted hover:text-th-fg">
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+          <button className="w-full mt-4 btn-gold py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2">
+            <Heart className="w-4 h-4" />Giriş Yap & Favorilere Ekle
+          </button>
+
+          <div className="mt-4 text-center text-xs text-th-fg-muted">
+            Hesabınız yok mu?{' '}
+            <a href="/kayit" className="text-brand-400 hover:text-brand-300 font-medium">Kayıt Ol</a>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   )
 }
