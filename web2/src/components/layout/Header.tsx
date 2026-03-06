@@ -8,6 +8,7 @@ import { Menu, X, ChevronRight, ChevronDown, Sun, Moon, Car, BookOpen, Building2
 import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTheme } from '@/components/providers/ThemeProvider'
+import LoginModal from '@/components/shared/LoginModal'
 
 interface ThUser { id: number; username: string; jwt: string }
 
@@ -107,6 +108,17 @@ export default function Header() {
   const [notifCount, setNotifCount] = useState(0)
   const [profileOpen, setProfileOpen] = useState(false)
   const profileRef = useRef<HTMLDivElement>(null)
+
+  // ─── Login Modal ──────────────────────────────
+  const [loginModalOpen, setLoginModalOpen] = useState(false)
+  const [loginModalTab, setLoginModalTab] = useState<'login' | 'register'>('login')
+
+  const openLogin = () => { setLoginModalTab('login'); setLoginModalOpen(true) }
+  const openRegister = () => { setLoginModalTab('register'); setLoginModalOpen(true) }
+
+  const handleModalLogin = (user: ThUser) => {
+    setThUser(user)
+  }
 
   useEffect(() => {
     try {
@@ -461,8 +473,9 @@ export default function Header() {
                 </>
               ) : (
                 <>
-                  <Link
-                    href="/giris"
+                  <button
+                    type="button"
+                    onClick={openLogin}
                     className={cn(
                       'flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl transition-all duration-300',
                       'border border-th-border/10 hover:border-brand-500/30',
@@ -472,12 +485,12 @@ export default function Header() {
                   >
                     <LogIn className="w-4 h-4" />
                     Giriş
-                  </Link>
+                  </button>
 
-                  <Link href="/kayit" className="btn-gold px-4 py-2 text-sm">
+                  <button type="button" onClick={openRegister} className="btn-gold px-4 py-2 text-sm">
                     <UserPlus className="w-4 h-4" />
                     Kayıt Ol
-                  </Link>
+                  </button>
                 </>
               )}
             </div>
@@ -673,22 +686,22 @@ export default function Header() {
                     </div>
                   ) : (
                   <div className="flex gap-2">
-                    <Link
-                      href="/giris"
-                      onClick={() => setIsMobileMenuOpen(false)}
+                    <button
+                      type="button"
+                      onClick={() => { setIsMobileMenuOpen(false); openLogin() }}
                       className="btn-ghost flex-1 text-center text-sm py-3"
                     >
                       <LogIn className="w-4 h-4" />
                       Giriş
-                    </Link>
-                    <Link
-                      href="/kayit"
-                      onClick={() => setIsMobileMenuOpen(false)}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setIsMobileMenuOpen(false); openRegister() }}
                       className="btn-gold flex-1 text-center text-sm py-3"
                     >
                       <UserPlus className="w-4 h-4" />
                       Kayıt Ol
-                    </Link>
+                    </button>
                   </div>
                   )}
                   <Link
@@ -705,6 +718,12 @@ export default function Header() {
           </>
         )}
       </AnimatePresence>
+      <LoginModal
+        isOpen={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+        onLogin={handleModalLogin}
+        defaultTab={loginModalTab}
+      />
     </>
   )
 }
