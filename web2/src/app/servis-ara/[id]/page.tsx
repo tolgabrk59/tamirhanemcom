@@ -114,7 +114,7 @@ export default function ServiceDetailPage() {
     const startMin = oh * 60 + om
     const endMin = ch * 60 + cm
     const slots: string[] = []
-    for (let m = startMin; m < endMin; m += 60) {
+    for (let m = startMin; m < endMin; m += 30) {
       slots.push(`${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`)
     }
     return slots
