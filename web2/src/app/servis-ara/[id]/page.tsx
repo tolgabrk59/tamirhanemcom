@@ -23,6 +23,12 @@ export default function ServiceDetailPage() {
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [loginForm, setLoginForm] = useState({ username: '', password: '' })
   const [showPassword, setShowPassword] = useState(false)
+  const [loginLoading, setLoginLoading] = useState(false)
+  const [loginError, setLoginError] = useState<string | null>(null)
+  const [isFavorited, setIsFavorited] = useState(false)
+  const [favoriteId, setFavoriteId] = useState<number | null>(null)
+  const [favoriteLoading, setFavoriteLoading] = useState(false)
+  const [currentUser, setCurrentUser] = useState<{ id: number; username: string; jwt: string } | null>(null)
 
   useEffect(() => {
     const fetchService = async () => {
@@ -109,6 +115,110 @@ export default function ServiceDetailPage() {
 
     if (params.id) fetchService()
   }, [params.id])
+
+  // localStorage'dan oturum yükle + favori durumu kontrol et
+  useEffect(() => {
+    const stored = typeof window !== 'undefined' ? localStorage.getItem('th_user') : null
+    if (stored) {
+      try {
+        const user = JSON.parse(stored)
+        setCurrentUser(user)
+        // Favori durumu kontrol et
+        if (params.id) {
+          fetch(`/api/favorites?serviceId=${params.id}&userId=${user.id}`)
+            .then(r => r.json())
+            .then(data => {
+              if (data.success) {
+                setIsFavorited(data.isFavorited)
+                setFavoriteId(data.favoriteId)
+              }
+            })
+            .catch(() => {})
+        }
+      } catch {}
+    }
+  }, [params.id])
+
+  async function handleFavoriteClick() {
+    // Giriş yapılmamışsa modal aç
+    if (!currentUser) {
+      setShowLoginModal(true)
+      return
+    }
+    // Zaten favorideyse çıkar
+    if (isFavorited && favoriteId) {
+      setFavoriteLoading(true)
+      try {
+        const res = await fetch(`/api/favorites?id=${favoriteId}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${currentUser.jwt}` },
+        })
+        const data = await res.json()
+        if (data.success) {
+          setIsFavorited(false)
+          setFavoriteId(null)
+        }
+      } catch {}
+      setFavoriteLoading(false)
+      return
+    }
+    // Favoriye ekle
+    setFavoriteLoading(true)
+    try {
+      const res = await fetch('/api/favorites', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ serviceId: params.id, jwt: currentUser.jwt }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setIsFavorited(true)
+        setFavoriteId(data.favoriteId)
+      }
+    } catch {}
+    setFavoriteLoading(false)
+  }
+
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault()
+    setLoginLoading(true)
+    setLoginError(null)
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier: loginForm.username, password: loginForm.password }),
+      })
+      const data = await res.json()
+      if (!data.success) {
+        setLoginError(data.error || 'Giriş başarısız')
+        setLoginLoading(false)
+        return
+      }
+      // Oturumu kaydet
+      const user = { id: data.user.id, username: data.user.username, jwt: data.jwt }
+      localStorage.setItem('th_user', JSON.stringify(user))
+      setCurrentUser(user)
+      setShowLoginModal(false)
+      setLoginForm({ username: '', password: '' })
+      // Favoriye ekle
+      setFavoriteLoading(true)
+      const favRes = await fetch('/api/favorites', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ serviceId: params.id, jwt: data.jwt }),
+      })
+      const favData = await favRes.json()
+      if (favData.success) {
+        setIsFavorited(true)
+        setFavoriteId(favData.favoriteId)
+      }
+      setFavoriteLoading(false)
+    } catch {
+      setLoginError('Bağlantı hatası')
+    }
+    setLoginLoading(false)
+  }
 
   // Çalışma saatine göre saat dilimleri üret (her saat başı)
   function generateTimeSlots(open: string, close: string): string[] {
@@ -242,7 +352,20 @@ export default function ServiceDetailPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <a href={`/randevu?servis=${encodeURIComponent(attrs.name)}&servis_id=${service.id}`} className="flex items-center justify-center gap-2 btn-gold py-3 rounded-xl font-bold text-sm"><Calendar className="w-4 h-4" />Randevu Al</a>
                   <a href={`tel:${attrs.phone}`} className="flex items-center justify-center gap-2 border border-th-border/20 py-3 rounded-xl font-medium text-sm hover:border-brand-500/30 hover:text-brand-500"><Tag className="w-4 h-4" />Teklif Al</a>
-                  <button onClick={() => setShowLoginModal(true)} className="flex items-center justify-center gap-2 border border-th-border/20 py-3 rounded-xl font-medium text-sm hover:border-red-500/30 hover:text-red-400 transition-colors"><Heart className="w-4 h-4" />Favorilere Ekle</button>
+                  <button
+                    onClick={handleFavoriteClick}
+                    disabled={favoriteLoading}
+                    className={cn(
+                      'flex items-center justify-center gap-2 border py-3 rounded-xl font-medium text-sm transition-colors',
+                      isFavorited
+                        ? 'border-red-500/40 bg-red-500/10 text-red-400 hover:border-red-500/60 hover:bg-red-500/20'
+                        : 'border-th-border/20 hover:border-red-500/30 hover:text-red-400',
+                      favoriteLoading && 'opacity-60 cursor-wait'
+                    )}
+                  >
+                    <Heart className={cn('w-4 h-4', isFavorited && 'fill-red-400')} />
+                    {isFavorited ? 'Favorilerde' : 'Favorilere Ekle'}
+                  </button>
                   <button className="flex items-center justify-center gap-2 border border-th-border/20 py-3 rounded-xl font-medium text-sm hover:border-brand-500/30 hover:text-brand-500"><Share2 className="w-4 h-4" />Paylaş</button>
                 </div>
               </div>
@@ -731,9 +854,9 @@ export default function ServiceDetailPage() {
     {/* Favorilere Ekle Login Modalı */}
     {showLoginModal && (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowLoginModal(false)} />
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => { setShowLoginModal(false); setLoginError(null) }} />
         <div className="relative w-full max-w-sm glass-card p-6 shadow-2xl">
-          <button onClick={() => setShowLoginModal(false)} className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-th-overlay/10 text-th-fg-sub hover:text-th-fg transition-colors">
+          <button onClick={() => { setShowLoginModal(false); setLoginError(null) }} className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-th-overlay/10 text-th-fg-sub hover:text-th-fg transition-colors">
             <X className="w-4 h-4" />
           </button>
 
@@ -745,7 +868,7 @@ export default function ServiceDetailPage() {
             <p className="text-sm text-th-fg-sub mt-1 text-center">Devam etmek için hesabınıza giriş yapın</p>
           </div>
 
-          <div className="space-y-3">
+          <form onSubmit={handleLogin} className="space-y-3">
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-th-fg-muted" />
               <input
@@ -753,7 +876,9 @@ export default function ServiceDetailPage() {
                 placeholder="Kullanıcı adı veya e-posta"
                 value={loginForm.username}
                 onChange={e => setLoginForm(f => ({ ...f, username: e.target.value }))}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-th-bg-alt border border-th-border/20 text-th-fg placeholder:text-th-fg-muted text-sm focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/30"
+                required
+                disabled={loginLoading}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-th-bg-alt border border-th-border/20 text-th-fg placeholder:text-th-fg-muted text-sm focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/30 disabled:opacity-60"
               />
             </div>
             <div className="relative">
@@ -763,17 +888,32 @@ export default function ServiceDetailPage() {
                 placeholder="Şifre"
                 value={loginForm.password}
                 onChange={e => setLoginForm(f => ({ ...f, password: e.target.value }))}
-                className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-th-bg-alt border border-th-border/20 text-th-fg placeholder:text-th-fg-muted text-sm focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/30"
+                required
+                disabled={loginLoading}
+                className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-th-bg-alt border border-th-border/20 text-th-fg placeholder:text-th-fg-muted text-sm focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/30 disabled:opacity-60"
               />
               <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-th-fg-muted hover:text-th-fg">
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-          </div>
 
-          <button className="w-full mt-4 btn-gold py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2">
-            <Heart className="w-4 h-4" />Giriş Yap & Favorilere Ekle
-          </button>
+            {loginError && (
+              <p className="text-red-400 text-xs text-center px-2">{loginError}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={loginLoading}
+              className="w-full btn-gold py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-wait"
+            >
+              {loginLoading ? (
+                <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Heart className="w-4 h-4" />
+              )}
+              {loginLoading ? 'Giriş yapılıyor...' : 'Giriş Yap & Favorilere Ekle'}
+            </button>
+          </form>
 
           <div className="mt-4 text-center text-xs text-th-fg-muted">
             Hesabınız yok mu?{' '}
