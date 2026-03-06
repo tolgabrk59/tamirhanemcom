@@ -4,10 +4,12 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, ChevronRight, ChevronDown, Sun, Moon, Car, BookOpen } from 'lucide-react'
+import { Menu, X, ChevronRight, ChevronDown, Sun, Moon, Car, BookOpen, Building2, Bell, Phone, LogIn, UserPlus, UserCircle, Heart, Tag, LogOut } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTheme } from '@/components/providers/ThemeProvider'
+
+interface ThUser { id: number; username: string; jwt: string }
 
 // ─── Tipler ──────────────────────────────────────
 interface MegaMenuItem {
@@ -29,9 +31,10 @@ interface MegaMenuDef {
 }
 
 // ─── Sabitler ────────────────────────────────────
-const SIMPLE_LINKS = [
-  { label: 'Kurumsal', href: '/kurumsal' },
-  { label: 'İletişim', href: '/iletisim' },
+const SIMPLE_LINKS: { label: string; href: string; icon: LucideIcon }[] = [
+  { label: 'Kurumsal', href: '/kurumsal', icon: Building2 },
+  { label: 'Hatalı Park Bildirimi', href: '/arac/park-mesaj', icon: Bell },
+  { label: 'İletişim', href: '/iletisim', icon: Phone },
 ]
 
 const MEGA_MENUS: MegaMenuDef[] = [
@@ -98,6 +101,52 @@ export default function Header() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
   const [openMobileSubmenu, setOpenMobileSubmenu] = useState<string | null>(null)
   const menuTimeoutRef = useRef<NodeJS.Timeout>()
+
+  // ─── Oturum / Bildirim ───────────────────────
+  const [thUser, setThUser] = useState<ThUser | null>(null)
+  const [notifCount, setNotifCount] = useState(0)
+  const [profileOpen, setProfileOpen] = useState(false)
+  const profileRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('th_user')
+      if (stored) setThUser(JSON.parse(stored))
+    } catch {}
+  }, [])
+
+  // Bildirimleri çek (her 60 saniyede bir)
+  useEffect(() => {
+    if (!thUser) return
+    const fetch_ = async () => {
+      try {
+        const res = await fetch(`/api/user/notifications?jwt=${encodeURIComponent(thUser.jwt)}`)
+        const data = await res.json()
+        if (data.success) setNotifCount(data.count || 0)
+      } catch {}
+    }
+    fetch_()
+    const timer = setInterval(fetch_, 60_000)
+    return () => clearInterval(timer)
+  }, [thUser])
+
+  // Profil dropdown dışına tıklanınca kapat
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem('th_user')
+    setThUser(null)
+    setNotifCount(0)
+    setProfileOpen(false)
+  }
 
   const handleScroll = useCallback(() => {
     setIsScrolled(window.scrollY > SCROLL_THRESHOLD)
@@ -172,18 +221,24 @@ export default function Header() {
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-1">
               {/* Kurumsal */}
-              <Link
-                href={SIMPLE_LINKS[0].href}
-                className={cn(
-                  'relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-lg',
-                  isActiveLink(SIMPLE_LINKS[0].href) ? 'text-brand-500' : 'text-th-fg-sub hover:text-th-fg'
-                )}
-              >
-                {SIMPLE_LINKS[0].label}
-                {isActiveLink(SIMPLE_LINKS[0].href) && (
-                  <motion.span layoutId="headerActiveNav" className="absolute bottom-0 left-2 right-2 h-[2px] bg-brand-500 rounded-full" transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
-                )}
-              </Link>
+              {(() => {
+                const FirstIcon = SIMPLE_LINKS[0].icon
+                return (
+                  <Link
+                    href={SIMPLE_LINKS[0].href}
+                    className={cn(
+                      'relative flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors duration-300 rounded-lg',
+                      isActiveLink(SIMPLE_LINKS[0].href) ? 'text-brand-500' : 'text-th-fg-sub hover:text-th-fg'
+                    )}
+                  >
+                    <FirstIcon className="w-4 h-4" />
+                    {SIMPLE_LINKS[0].label}
+                    {isActiveLink(SIMPLE_LINKS[0].href) && (
+                      <motion.span layoutId="headerActiveNav" className="absolute bottom-0 left-2 right-2 h-[2px] bg-brand-500 rounded-full" transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
+                    )}
+                  </Link>
+                )
+              })()}
 
               {/* Mega menu triggers */}
               {MEGA_MENUS.map((menu) => {
@@ -267,23 +322,30 @@ export default function Header() {
                 )
               })}
 
-              {/* İletişim */}
-              <Link
-                href={SIMPLE_LINKS[1].href}
-                className={cn(
-                  'relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-lg',
-                  isActiveLink(SIMPLE_LINKS[1].href) ? 'text-brand-500' : 'text-th-fg-sub hover:text-th-fg'
-                )}
-              >
-                {SIMPLE_LINKS[1].label}
-                {isActiveLink(SIMPLE_LINKS[1].href) && (
-                  <motion.span layoutId="headerActiveNav" className="absolute bottom-0 left-2 right-2 h-[2px] bg-brand-500 rounded-full" transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
-                )}
-              </Link>
+              {/* Mega menüler sonrası linkler */}
+              {SIMPLE_LINKS.slice(1).map((link) => {
+                const LinkIcon = link.icon
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={cn(
+                      'relative flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors duration-300 rounded-lg',
+                      isActiveLink(link.href) ? 'text-brand-500' : 'text-th-fg-sub hover:text-th-fg'
+                    )}
+                  >
+                    <LinkIcon className="w-4 h-4" />
+                    {link.label}
+                    {isActiveLink(link.href) && (
+                      <motion.span layoutId="headerActiveNav" className="absolute bottom-0 left-2 right-2 h-[2px] bg-brand-500 rounded-full" transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
+                    )}
+                  </Link>
+                )
+              })}
             </div>
 
             {/* Desktop CTA + Theme Toggle */}
-            <div className="hidden lg:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-2">
               <button
                 type="button"
                 onClick={toggleTheme}
@@ -308,10 +370,116 @@ export default function Header() {
                 </AnimatePresence>
               </button>
 
-              <Link href="/randevu" className="btn-ghost px-5 py-2.5 text-sm">
-                Randevu Al
-                <ChevronRight className="w-4 h-4" />
-              </Link>
+              {/* Divider */}
+              <div className="w-px h-5 bg-th-border/[0.08] mx-1" />
+
+              {thUser ? (
+                <>
+                  {/* Bildirim Zili */}
+                  <Link
+                    href="/profilim/teklifler"
+                    className="relative w-10 h-10 rounded-xl flex items-center justify-center border border-th-border/10 hover:border-brand-500/30 bg-th-overlay/[0.04] hover:bg-th-overlay/[0.08] text-th-fg-sub hover:text-brand-500 transition-all duration-300"
+                    aria-label="Bildirimler"
+                  >
+                    <Bell className="w-[18px] h-[18px]" />
+                    {notifCount > 0 && (
+                      <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                        {notifCount > 9 ? '9+' : notifCount}
+                      </span>
+                    )}
+                  </Link>
+
+                  {/* Profil Dropdown */}
+                  <div ref={profileRef} className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setProfileOpen(prev => !prev)}
+                      className={cn(
+                        'flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-300',
+                        'border border-th-border/10 hover:border-brand-500/30',
+                        'bg-th-overlay/[0.04] hover:bg-th-overlay/[0.08]',
+                        profileOpen ? 'text-brand-500 border-brand-500/30' : 'text-th-fg-sub hover:text-brand-500'
+                      )}
+                    >
+                      <UserCircle className="w-4 h-4" />
+                      <span className="max-w-[80px] truncate">{thUser.username}</span>
+                      <ChevronDown className={cn('w-3 h-3 transition-transform duration-200', profileOpen && 'rotate-180')} />
+                    </button>
+
+                    <AnimatePresence>
+                      {profileOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 8 }}
+                          transition={{ duration: 0.18 }}
+                          className="absolute top-full right-0 pt-2 z-50 w-48"
+                        >
+                          <div className="bg-th-bg/95 backdrop-blur-xl rounded-xl border border-th-border/[0.08] shadow-2xl shadow-black/20 overflow-hidden py-1">
+                            <Link
+                              href="/profilim"
+                              onClick={() => setProfileOpen(false)}
+                              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-th-fg-sub hover:text-th-fg hover:bg-th-overlay/5 transition-colors"
+                            >
+                              <UserCircle className="w-4 h-4" />
+                              Profilim
+                            </Link>
+                            <Link
+                              href="/profilim/favoriler"
+                              onClick={() => setProfileOpen(false)}
+                              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-th-fg-sub hover:text-th-fg hover:bg-th-overlay/5 transition-colors"
+                            >
+                              <Heart className="w-4 h-4" />
+                              Favorilerim
+                            </Link>
+                            <Link
+                              href="/profilim/teklifler"
+                              onClick={() => setProfileOpen(false)}
+                              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-th-fg-sub hover:text-th-fg hover:bg-th-overlay/5 transition-colors"
+                            >
+                              <Tag className="w-4 h-4" />
+                              Tekliflerim
+                              {notifCount > 0 && (
+                                <span className="ml-auto w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                                  {notifCount > 9 ? '9+' : notifCount}
+                                </span>
+                              )}
+                            </Link>
+                            <div className="mx-3 my-1 border-t border-th-border/[0.06]" />
+                            <button
+                              onClick={handleLogout}
+                              className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-colors"
+                            >
+                              <LogOut className="w-4 h-4" />
+                              Çıkış Yap
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/giris"
+                    className={cn(
+                      'flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl transition-all duration-300',
+                      'border border-th-border/10 hover:border-brand-500/30',
+                      'bg-th-overlay/[0.04] hover:bg-th-overlay/[0.08]',
+                      'text-th-fg-sub hover:text-brand-500'
+                    )}
+                  >
+                    <LogIn className="w-4 h-4" />
+                    Giriş
+                  </Link>
+
+                  <Link href="/kayit" className="btn-gold px-4 py-2 text-sm">
+                    <UserPlus className="w-4 h-4" />
+                    Kayıt Ol
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Mobile: Theme Toggle + Menu Button */}
@@ -378,6 +546,7 @@ export default function Header() {
                   {/* Simple links */}
                   {SIMPLE_LINKS.map((item, index) => {
                     const isActive = isActiveLink(item.href)
+                    const ItemIcon = item.icon
                     return (
                       <motion.div
                         key={item.href}
@@ -393,7 +562,10 @@ export default function Header() {
                             isActive ? 'text-brand-500 bg-brand-500/10' : 'text-th-fg-sub hover:text-th-fg hover:bg-th-overlay/5'
                           )}
                         >
-                          <span>{item.label}</span>
+                          <span className="flex items-center gap-2.5">
+                            <ItemIcon className={cn('w-4.5 h-4.5', isActive ? 'text-brand-500' : 'text-th-fg-muted')} />
+                            {item.label}
+                          </span>
                           {isActive && <span className="w-1.5 h-1.5 rounded-full bg-brand-500" />}
                         </Link>
                       </motion.div>
@@ -472,12 +644,57 @@ export default function Header() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.3 }}
-                  className="pt-6 border-t border-th-border/[0.06]"
+                  className="pt-6 border-t border-th-border/[0.06] space-y-2.5"
                 >
+                  {thUser ? (
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2 px-1 mb-2">
+                        <UserCircle className="w-5 h-5 text-brand-400" />
+                        <span className="text-sm font-medium text-th-fg">{thUser.username}</span>
+                        {notifCount > 0 && (
+                          <span className="ml-auto flex items-center gap-1 text-xs text-red-400">
+                            <Bell className="w-3.5 h-3.5" />
+                            {notifCount} yeni
+                          </span>
+                        )}
+                      </div>
+                      <Link href="/profilim" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-th-fg-sub hover:text-th-fg hover:bg-th-overlay/5 transition-colors">
+                        <UserCircle className="w-4 h-4" />Profilim
+                      </Link>
+                      <Link href="/profilim/favoriler" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-th-fg-sub hover:text-th-fg hover:bg-th-overlay/5 transition-colors">
+                        <Heart className="w-4 h-4" />Favorilerim
+                      </Link>
+                      <Link href="/profilim/teklifler" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-th-fg-sub hover:text-th-fg hover:bg-th-overlay/5 transition-colors">
+                        <Tag className="w-4 h-4" />Tekliflerim
+                      </Link>
+                      <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false) }} className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-colors">
+                        <LogOut className="w-4 h-4" />Çıkış Yap
+                      </button>
+                    </div>
+                  ) : (
+                  <div className="flex gap-2">
+                    <Link
+                      href="/giris"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="btn-ghost flex-1 text-center text-sm py-3"
+                    >
+                      <LogIn className="w-4 h-4" />
+                      Giriş
+                    </Link>
+                    <Link
+                      href="/kayit"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="btn-gold flex-1 text-center text-sm py-3"
+                    >
+                      <UserPlus className="w-4 h-4" />
+                      Kayıt Ol
+                    </Link>
+                  </div>
+                  )}
                   <Link
                     href="/randevu"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="btn-gold w-full text-center text-sm py-3.5"
+                    className="btn-ghost w-full text-center text-sm py-3"
                   >
                     Randevu Al
                     <ChevronRight className="w-4 h-4" />

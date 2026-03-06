@@ -351,7 +351,7 @@ export default function ServiceDetailPage() {
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <a href={`/randevu?servis=${encodeURIComponent(attrs.name)}&servis_id=${service.id}`} className="flex items-center justify-center gap-2 btn-gold py-3 rounded-xl font-bold text-sm"><Calendar className="w-4 h-4" />Randevu Al</a>
-                  <a href={`tel:${attrs.phone}`} className="flex items-center justify-center gap-2 border border-th-border/20 py-3 rounded-xl font-medium text-sm hover:border-brand-500/30 hover:text-brand-500"><Tag className="w-4 h-4" />Teklif Al</a>
+                  <a href={`/teklif-al?servis_id=${service.id}&servis_adi=${encodeURIComponent(attrs.name || '')}`} className="flex items-center justify-center gap-2 border border-th-border/20 py-3 rounded-xl font-medium text-sm hover:border-brand-500/30 hover:text-brand-500"><Tag className="w-4 h-4" />Teklif Al</a>
                   <button
                     onClick={handleFavoriteClick}
                     disabled={favoriteLoading}
