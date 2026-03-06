@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 const STRAPI_API = (process.env.STRAPI_API_URL || 'https://api.tamirhanem.net/api').trim()
 
 // GET /api/user/offers?jwt=X
-// isOfferRequest=true olan appointments = teklifler
+// Kullanıcının gönderdiği teklif taleplerini getirir (teklifler collection)
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -14,9 +14,10 @@ export async function GET(request: NextRequest) {
     }
 
     const endpoint =
-      `${STRAPI_API}/appointments?filters[isOfferRequest][$eq]=true` +
-      `&populate[service][populate]=ProfilePicture` +
-      `&populate[category]=*` +
+      `${STRAPI_API}/teklifler?` +
+      `populate[service]=name,location` +
+      `&populate[category]=name` +
+      `&populate[vehicle]=brand,model,plate` +
       `&sort=createdAt:desc`
 
     const res = await fetch(endpoint, {
@@ -36,18 +37,24 @@ export async function GET(request: NextRequest) {
       const a = item.attributes || {}
       const service = (a.service as { data?: { id?: number; attributes?: Record<string, unknown> } } | null)?.data
       const category = (a.category as { data?: { id?: number; attributes?: Record<string, unknown> } } | null)?.data
+      const vehicle = (a.vehicle as { data?: { id?: number; attributes?: Record<string, unknown> } } | null)?.data
 
       return {
         id: item.id,
-        status: String(a.offerStatus || a.status || 'Teklif Verildi'),
-        offerPrice: Number(a.offerPrice || a.price || 0),
-        isOfferRequest: Boolean(a.isOfferRequest),
-        note: String(a.note || ''),
+        city: String(a.city || ''),
+        district: String(a.district || ''),
+        scope: String(a.scope || 'all'),
+        status: String(a.status || 'bekliyor'),
+        notes: String(a.notes || ''),
         createdAt: String(a.createdAt || ''),
-        appointmentDate: String(a.appointmentDate || a.date || ''),
         serviceName: String(service?.attributes?.name || ''),
+        serviceLocation: String(service?.attributes?.location || ''),
         serviceId: service?.id || null,
         categoryName: String(category?.attributes?.name || ''),
+        vehicleInfo: vehicle
+          ? `${vehicle.attributes?.brand || ''} ${vehicle.attributes?.model || ''}`.trim()
+          : '',
+        vehiclePlate: String(vehicle?.attributes?.plate || ''),
       }
     })
 

@@ -1,29 +1,18 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Car, MapPin, Tag, Wrench, CheckCircle, Loader2, AlertCircle, ChevronDown, X } from 'lucide-react'
+import { ArrowLeft, Car, MapPin, Tag, Wrench, CheckCircle, Loader2, AlertCircle, ChevronDown, Search, Building2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
-
-// ─── Türkiye İlleri ──────────────────────────────
-const ILLER = [
-  'Adana','Adıyaman','Afyonkarahisar','Ağrı','Amasya','Ankara','Antalya','Artvin',
-  'Aydın','Balıkesir','Bilecik','Bingöl','Bitlis','Bolu','Burdur','Bursa','Çanakkale',
-  'Çankırı','Çorum','Denizli','Diyarbakır','Edirne','Elazığ','Erzincan','Erzurum',
-  'Eskişehir','Gaziantep','Giresun','Gümüşhane','Hakkari','Hatay','Isparta','Mersin',
-  'İstanbul','İzmir','Kars','Kastamonu','Kayseri','Kırklareli','Kırşehir','Kocaeli',
-  'Konya','Kütahya','Malatya','Manisa','Kahramanmaraş','Mardin','Muğla','Muş',
-  'Nevşehir','Niğde','Ordu','Rize','Sakarya','Samsun','Siirt','Sinop','Sivas',
-  'Tekirdağ','Tokat','Trabzon','Tunceli','Şanlıurfa','Uşak','Van','Yozgat','Zonguldak',
-  'Aksaray','Bayburt','Karaman','Kırıkkale','Batman','Şırnak','Bartın','Ardahan',
-  'Iğdır','Yalova','Karabük','Kilis','Osmaniye','Düzce',
-]
+import { ILCELER } from '@/lib/ilceler'
+import { ILLER } from '@/lib/iller'
 
 interface Vehicle { id: number; brand: string; model: string; year: number | string; plate: string; fuelType: string }
 interface Category { id: number; name: string }
+interface ServiceResult { id: number; name: string; location: string; rating: number | null; categories: string[] }
 
-export default function TeklifAlPage() {
+function TeklifAlContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -38,10 +27,15 @@ export default function TeklifAlPage() {
   const [city, setCity] = useState('')
   const [district, setDistrict] = useState('')
   const [scope, setScope] = useState<'single' | 'all'>(servisId ? 'single' : 'all')
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([])
-  const [minPrice, setMinPrice] = useState('')
-  const [maxPrice, setMaxPrice] = useState('')
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | string>('')
   const [notes, setNotes] = useState('')
+
+  // Service picker (scope='single', no pre-selected servisId)
+  const [selectedServiceId, setSelectedServiceId] = useState<number | null>(servisId ? parseInt(servisId) : null)
+  const [selectedServiceName, setSelectedServiceName] = useState<string>(servisAdi || '')
+  const [services, setServices] = useState<ServiceResult[]>([])
+  const [loadingServices, setLoadingServices] = useState(false)
+  const [serviceSearch, setServiceSearch] = useState('')
 
   // Data
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
@@ -54,7 +48,9 @@ export default function TeklifAlPage() {
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Load user from localStorage
+  const ilceler = city ? (ILCELER[city] || []) : []
+
+  // Load user
   useEffect(() => {
     try {
       const stored = localStorage.getItem('th_user')
@@ -69,8 +65,9 @@ export default function TeklifAlPage() {
       const res = await fetch(`/api/user/vehicles?jwt=${encodeURIComponent(jwt)}`)
       const data = await res.json()
       if (data.success) {
-        setVehicles(data.vehicles)
-        if (data.vehicles.length === 1) setSelectedVehicleId(data.vehicles[0].id)
+        const list = data.data || data.vehicles || []
+        setVehicles(list)
+        if (list.length === 1) setSelectedVehicleId(list[0].id)
       }
     } catch {}
     setLoadingVehicles(false)
@@ -96,10 +93,36 @@ export default function TeklifAlPage() {
     loadCategories()
   }, [user, loadVehicles, loadCategories])
 
-  const toggleCategory = (id: number) => {
-    setSelectedCategoryIds(prev =>
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    )
+  // Load services when city changes and scope is 'single' without pre-selected service
+  const loadServices = useCallback(async () => {
+    if (!city || servisId) return
+    setLoadingServices(true)
+    try {
+      const params = new URLSearchParams({ city, limit: '50' })
+      if (district) params.set('district', district)
+      if (selectedCategoryId) {
+        const cat = categories.find(c => c.id === Number(selectedCategoryId))
+        if (cat) params.set('category', cat.name)
+      }
+      const res = await fetch(`/api/services/search?${params.toString()}`)
+      const data = await res.json()
+      if (data.success) setServices(data.data || [])
+    } catch {}
+    setLoadingServices(false)
+  }, [city, district, selectedCategoryId, categories, servisId])
+
+  useEffect(() => {
+    if (scope === 'single' && !servisId) {
+      loadServices()
+    }
+  }, [scope, city, district, selectedCategoryId, loadServices, servisId])
+
+  // City change → reset district and service
+  const handleCityChange = (v: string) => {
+    setCity(v)
+    setDistrict('')
+    setSelectedServiceId(null)
+    setSelectedServiceName('')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -109,6 +132,7 @@ export default function TeklifAlPage() {
     if (!user) { setError('Teklif göndermek için giriş yapmanız gerekiyor.'); return }
     if (!selectedVehicleId) { setError('Lütfen araç seçin.'); return }
     if (!city) { setError('Lütfen il seçin.'); return }
+    if (scope === 'single' && !selectedServiceId) { setError('Lütfen bir servis seçin.'); return }
 
     setSubmitting(true)
     try {
@@ -121,11 +145,9 @@ export default function TeklifAlPage() {
           city,
           district,
           scope,
-          categoryIds: selectedCategoryIds,
-          minPrice: minPrice ? parseInt(minPrice) : null,
-          maxPrice: maxPrice ? parseInt(maxPrice) : null,
+          categoryIds: selectedCategoryId ? [Number(selectedCategoryId)] : [],
           notes,
-          serviceId: servisId,
+          serviceId: selectedServiceId,
         }),
       })
       const data = await res.json()
@@ -150,16 +172,13 @@ export default function TeklifAlPage() {
           </div>
           <h2 className="text-xl font-bold text-th-fg font-display">Teklif Talebiniz Alındı!</h2>
           <p className="text-th-fg-sub text-sm leading-relaxed">
-            {servisAdi
-              ? `${servisAdi} servisine teklif talebiniz iletildi.`
-              : 'Uygun servislere teklif talebiniz iletildi.'}
+            {selectedServiceName
+              ? `${selectedServiceName} servisine teklif talebiniz iletildi.`
+              : `${city} bölgesindeki uygun servislere teklif talebiniz iletildi.`}
             {' '}Servisler en kısa sürede sizinle iletişime geçecek.
           </p>
           <div className="flex flex-col gap-2 pt-2">
-            <button
-              onClick={() => router.back()}
-              className="btn-gold py-2.5 text-sm"
-            >
+            <button onClick={() => router.back()} className="btn-gold py-2.5 text-sm">
               Geri Dön
             </button>
             <Link href="/" className="text-sm text-th-fg-sub hover:text-brand-500 transition-colors">
@@ -171,10 +190,13 @@ export default function TeklifAlPage() {
     )
   }
 
+  const filteredServices = services.filter(s =>
+    !serviceSearch || s.name.toLowerCase().includes(serviceSearch.toLowerCase()) || s.location.toLowerCase().includes(serviceSearch.toLowerCase())
+  )
+
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
       <div className="max-w-2xl mx-auto">
-        {/* Geri butonu */}
         <button
           onClick={() => router.back()}
           className="flex items-center gap-2 text-sm text-th-fg-sub hover:text-th-fg transition-colors mb-6"
@@ -183,38 +205,31 @@ export default function TeklifAlPage() {
           Geri
         </button>
 
-        {/* Başlık */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-th-fg font-display mb-1">
-            {servisAdi ? `${servisAdi} — Teklif Al` : 'Teklif Al'}
+            {selectedServiceName ? `${selectedServiceName} — Teklif Al` : 'Teklif Al'}
           </h1>
-          <p className="text-sm text-th-fg-sub">
-            Aracınız için servislerden fiyat teklifi alın.
-          </p>
+          <p className="text-sm text-th-fg-sub">Aracınız için servislerden fiyat teklifi alın.</p>
         </div>
 
-        {/* Giriş yapılmamış uyarı */}
         {!user && (
           <div className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
             <div>
               <p className="text-sm text-amber-300 font-medium">Giriş yapmanız gerekiyor</p>
-              <p className="text-xs text-amber-400/70 mt-0.5">
-                Teklif almak için servis ara sayfasından giriş yapın.
-              </p>
+              <p className="text-xs text-amber-400/70 mt-0.5">Teklif almak için önce giriş yapın.</p>
             </div>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
 
-          {/* ─── Araç Seçimi ───────────────────── */}
+          {/* ─── Araç Seçimi ─────────────────────── */}
           <div className="glass-card p-5 rounded-2xl space-y-4">
             <div className="flex items-center gap-2 mb-1">
               <Car className="w-4 h-4 text-brand-400" />
               <h3 className="text-sm font-semibold text-th-fg">Araç Seçimi</h3>
             </div>
-
             {loadingVehicles ? (
               <div className="flex items-center gap-2 text-sm text-th-fg-sub py-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -254,21 +269,20 @@ export default function TeklifAlPage() {
             )}
           </div>
 
-          {/* ─── Konum ─────────────────────────── */}
+          {/* ─── Konum ──────────────────────────── */}
           <div className="glass-card p-5 rounded-2xl space-y-4">
             <div className="flex items-center gap-2 mb-1">
               <MapPin className="w-4 h-4 text-brand-400" />
               <h3 className="text-sm font-semibold text-th-fg">Konum</h3>
             </div>
-
             <div className="grid grid-cols-2 gap-3">
-              {/* İl seçimi */}
-              <div className="relative">
+              {/* İl */}
+              <div>
                 <label className="text-xs text-th-fg-sub block mb-1.5">İl *</label>
                 <div className="relative">
                   <select
                     value={city}
-                    onChange={e => setCity(e.target.value)}
+                    onChange={e => handleCityChange(e.target.value)}
                     className="w-full appearance-none bg-th-overlay/5 border border-th-border/15 rounded-xl px-3 py-2.5 text-sm text-th-fg focus:outline-none focus:border-brand-500/40 pr-8"
                     required
                   >
@@ -284,24 +298,72 @@ export default function TeklifAlPage() {
               {/* İlçe */}
               <div>
                 <label className="text-xs text-th-fg-sub block mb-1.5">İlçe</label>
-                <input
-                  type="text"
-                  value={district}
-                  onChange={e => setDistrict(e.target.value)}
-                  placeholder="İlçe (opsiyonel)"
-                  className="w-full bg-th-overlay/5 border border-th-border/15 rounded-xl px-3 py-2.5 text-sm text-th-fg placeholder:text-th-fg-muted focus:outline-none focus:border-brand-500/40"
-                />
+                <div className="relative">
+                  {ilceler.length > 0 ? (
+                    <>
+                      <select
+                        value={district}
+                        onChange={e => { setDistrict(e.target.value); setSelectedServiceId(null); setSelectedServiceName('') }}
+                        className="w-full appearance-none bg-th-overlay/5 border border-th-border/15 rounded-xl px-3 py-2.5 text-sm text-th-fg focus:outline-none focus:border-brand-500/40 pr-8"
+                      >
+                        <option value="">Tüm ilçeler</option>
+                        {ilceler.map(ilce => (
+                          <option key={ilce} value={ilce}>{ilce}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-th-fg-muted pointer-events-none" />
+                    </>
+                  ) : (
+                    <input
+                      type="text"
+                      value={district}
+                      onChange={e => setDistrict(e.target.value)}
+                      placeholder="İlçe (opsiyonel)"
+                      className="w-full bg-th-overlay/5 border border-th-border/15 rounded-xl px-3 py-2.5 text-sm text-th-fg placeholder:text-th-fg-muted focus:outline-none focus:border-brand-500/40"
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* ─── Kapsam ────────────────────────── */}
+          {/* ─── Hizmet Kategorisi ───────────────── */}
+          <div className="glass-card p-5 rounded-2xl">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Wrench className="w-4 h-4 text-brand-400" />
+                <h3 className="text-sm font-semibold text-th-fg">Hizmet Kategorisi</h3>
+              </div>
+              <span className="text-xs text-th-fg-muted">(Opsiyonel)</span>
+            </div>
+            {loadingCategories ? (
+              <div className="flex items-center gap-2 text-sm text-th-fg-sub">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Yükleniyor...
+              </div>
+            ) : (
+              <div className="relative">
+                <select
+                  value={selectedCategoryId}
+                  onChange={e => { setSelectedCategoryId(e.target.value); setSelectedServiceId(null); setSelectedServiceName('') }}
+                  className="w-full appearance-none bg-th-overlay/5 border border-th-border/15 rounded-xl px-3 py-2.5 text-sm text-th-fg focus:outline-none focus:border-brand-500/40 pr-8"
+                >
+                  <option value="">Tüm kategoriler</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-th-fg-muted pointer-events-none" />
+              </div>
+            )}
+          </div>
+
+          {/* ─── Kapsam ─────────────────────────── */}
           <div className="glass-card p-5 rounded-2xl space-y-4">
             <div className="flex items-center gap-2 mb-1">
               <Tag className="w-4 h-4 text-brand-400" />
               <h3 className="text-sm font-semibold text-th-fg">Teklif Kapsamı</h3>
             </div>
-
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
@@ -315,7 +377,7 @@ export default function TeklifAlPage() {
               >
                 <span className="text-sm font-medium mb-1">Sadece Bu Servis</span>
                 <span className="text-[11px] text-th-fg-muted">
-                  {servisAdi ? servisAdi : 'Seçili servisten teklif al'}
+                  {selectedServiceName || (servisAdi ? servisAdi : 'Listeden servis seç')}
                 </span>
               </button>
               <button
@@ -332,85 +394,69 @@ export default function TeklifAlPage() {
                 <span className="text-[11px] text-th-fg-muted">Bölgedeki servislerden teklif al</span>
               </button>
             </div>
-          </div>
 
-          {/* ─── Hizmet Kategorileri ────────────── */}
-          <div className="glass-card p-5 rounded-2xl space-y-4">
-            <div className="flex items-center justify-between mb-1">
-              <div className="flex items-center gap-2">
-                <Wrench className="w-4 h-4 text-brand-400" />
-                <h3 className="text-sm font-semibold text-th-fg">Hizmet Kategorileri</h3>
-              </div>
-              <span className="text-xs text-th-fg-muted">(Opsiyonel)</span>
-            </div>
+            {/* Servis Listesi — scope=single, servisId URL'den gelmediyse */}
+            {scope === 'single' && !servisId && (
+              <div className="mt-4 space-y-3">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-th-fg-muted pointer-events-none" />
+                  <input
+                    type="text"
+                    value={serviceSearch}
+                    onChange={e => setServiceSearch(e.target.value)}
+                    placeholder="Servis adı veya konum ara..."
+                    className="w-full bg-th-overlay/5 border border-th-border/15 rounded-xl pl-9 pr-3 py-2.5 text-sm text-th-fg placeholder:text-th-fg-muted focus:outline-none focus:border-brand-500/40"
+                  />
+                </div>
 
-            {loadingCategories ? (
-              <div className="flex items-center gap-2 text-sm text-th-fg-sub">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Yükleniyor...
-              </div>
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {categories.map(cat => {
-                  const selected = selectedCategoryIds.includes(cat.id)
-                  return (
-                    <button
-                      key={cat.id}
-                      type="button"
-                      onClick={() => toggleCategory(cat.id)}
-                      className={cn(
-                        'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all',
-                        selected
-                          ? 'border-brand-500/50 bg-brand-500/15 text-brand-300'
-                          : 'border-th-border/15 text-th-fg-sub hover:border-th-border/30 hover:text-th-fg'
-                      )}
-                    >
-                      {selected && <X className="w-3 h-3" />}
-                      {cat.name}
-                    </button>
-                  )
-                })}
+                {!city ? (
+                  <div className="text-center py-6 text-xs text-th-fg-muted">
+                    Servisleri görmek için önce il seçin
+                  </div>
+                ) : loadingServices ? (
+                  <div className="flex items-center justify-center gap-2 py-6 text-sm text-th-fg-sub">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Servisler aranıyor...
+                  </div>
+                ) : filteredServices.length === 0 ? (
+                  <div className="text-center py-6 text-xs text-th-fg-muted">
+                    Bu kriterlere uygun servis bulunamadı
+                  </div>
+                ) : (
+                  <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                    {filteredServices.map(s => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => { setSelectedServiceId(s.id); setSelectedServiceName(s.name) }}
+                        className={cn(
+                          'w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left',
+                          selectedServiceId === s.id
+                            ? 'border-brand-500/50 bg-brand-500/10'
+                            : 'border-th-border/15 hover:border-th-border/30'
+                        )}
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-th-overlay/10 border border-th-border/10 flex items-center justify-center shrink-0">
+                          <Building2 className="w-4 h-4 text-th-fg-muted" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-th-fg truncate">{s.name}</div>
+                          <div className="text-xs text-th-fg-muted truncate">{s.location}</div>
+                        </div>
+                        {selectedServiceId === s.id && (
+                          <div className="w-4 h-4 rounded-full bg-brand-500 flex items-center justify-center shrink-0">
+                            <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
 
-          {/* ─── Fiyat Aralığı ──────────────────── */}
-          <div className="glass-card p-5 rounded-2xl space-y-4">
-            <div className="flex items-center justify-between mb-1">
-              <div className="flex items-center gap-2">
-                <span className="text-brand-400 text-sm font-bold">₺</span>
-                <h3 className="text-sm font-semibold text-th-fg">Bütçe Aralığı</h3>
-              </div>
-              <span className="text-xs text-th-fg-muted">(Opsiyonel)</span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs text-th-fg-sub block mb-1.5">Min (₺)</label>
-                <input
-                  type="number"
-                  value={minPrice}
-                  onChange={e => setMinPrice(e.target.value)}
-                  placeholder="0"
-                  min={0}
-                  className="w-full bg-th-overlay/5 border border-th-border/15 rounded-xl px-3 py-2.5 text-sm text-th-fg placeholder:text-th-fg-muted focus:outline-none focus:border-brand-500/40"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-th-fg-sub block mb-1.5">Max (₺)</label>
-                <input
-                  type="number"
-                  value={maxPrice}
-                  onChange={e => setMaxPrice(e.target.value)}
-                  placeholder="Sınır yok"
-                  min={0}
-                  className="w-full bg-th-overlay/5 border border-th-border/15 rounded-xl px-3 py-2.5 text-sm text-th-fg placeholder:text-th-fg-muted focus:outline-none focus:border-brand-500/40"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* ─── Notlar ─────────────────────────── */}
+          {/* ─── Ek Bilgiler ────────────────────── */}
           <div className="glass-card p-5 rounded-2xl">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-th-fg">Ek Bilgiler</h3>
@@ -455,5 +501,17 @@ export default function TeklifAlPage() {
         </form>
       </div>
     </div>
+  )
+}
+
+export default function TeklifAlPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-gold" />
+      </div>
+    }>
+      <TeklifAlContent />
+    </Suspense>
   )
 }

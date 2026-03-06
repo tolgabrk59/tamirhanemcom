@@ -131,8 +131,8 @@ export default function CuzdanimPage() {
                 Bakiye Yükle
               </button>
               <button className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-th-overlay/10 border border-th-border/10 text-th-fg font-bold text-sm transition-all hover:bg-th-overlay/15">
-                <ArrowUpRight className="w-4 h-4" />
-                Para Çek
+                <Plus className="w-4 h-4" />
+                Hesabına Kredi Ekle
               </button>
             </div>
           </div>

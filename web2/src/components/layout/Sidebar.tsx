@@ -2,11 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Home, Search, CalendarDays, Wrench, Bot, Zap,
+  Home, Search, CalendarDays, Wrench, Bot, Zap, Bell, Tag,
   ChevronDown, User, X, Menu, Sun, Moon,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -41,6 +40,7 @@ const navLinks: NavLink[] = [
   { href: '/', label: 'Ana Sayfa', icon: Home },
   { href: '/servis-ara', label: 'Servis Ara', icon: Search },
   { href: '/randevu', label: 'Randevu Al', icon: CalendarDays },
+  { href: '/teklif-al', label: 'Teklif Al', icon: Tag },
   { href: '/sarj-istasyonlari', label: 'Şarj İstasyonları', icon: Zap },
 ]
 
@@ -416,6 +416,16 @@ export default function Sidebar() {
             <span className="hidden xl:inline">Destek</span>
           </a>
 
+          {/* Hatalı Park Bildirimi */}
+          <Link
+            href="/arac/park-mesaj"
+            className="flex items-center justify-center gap-1.5 px-2 xl:px-3 py-2 bg-transparent border-2 border-brand-950/60 hover:border-brand-950 hover:bg-brand-950/10 rounded-lg transition-all text-brand-950 font-semibold text-xs font-display shrink-0 whitespace-nowrap"
+            title="Hatalı Park Bildirimi"
+          >
+            <Bell className="w-4 h-4 shrink-0" />
+            <span className="hidden xl:inline">Hatalı Park</span>
+          </Link>
+
           {/* Hata Bildir */}
           <Link
             href="/hata-bildir"
@@ -425,20 +435,11 @@ export default function Sidebar() {
             <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
-            <span className="hidden xl:inline">Bildir</span>
+            <span className="hidden xl:inline">Sorun Bildir</span>
           </Link>
         </div>
 
         <div className="flex items-center gap-1.5 shrink ml-2 min-w-0">
-          <Image
-            src="/logolar-v2.png"
-            alt="İş Ortakları"
-            width={400}
-            height={50}
-            className="h-8 xl:h-10 object-contain shrink"
-            style={{ maxWidth: 'clamp(120px, 15vw, 280px)' }}
-          />
-
           <div className="h-6 w-px bg-brand-700/30 mx-1 shrink-0" />
 
           {/* AI Soru Sor */}

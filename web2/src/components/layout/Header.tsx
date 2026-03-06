@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, ChevronRight, ChevronDown, Sun, Moon, Car, BookOpen, Building2, Bell, Phone, LogIn, UserPlus, UserCircle, Heart, Tag, LogOut } from 'lucide-react'
+import { Menu, X, ChevronRight, ChevronDown, Sun, Moon, Car, BookOpen, Building2, Bell, Phone, LogIn, UserPlus, UserCircle, Heart, Tag, LogOut, Wallet } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTheme } from '@/components/providers/ThemeProvider'
@@ -34,7 +34,6 @@ interface MegaMenuDef {
 // ─── Sabitler ────────────────────────────────────
 const SIMPLE_LINKS: { label: string; href: string; icon: LucideIcon }[] = [
   { label: 'Kurumsal', href: '/kurumsal', icon: Building2 },
-  { label: 'Hatalı Park Bildirimi', href: '/arac/park-mesaj', icon: Bell },
   { label: 'İletişim', href: '/iletisim', icon: Phone },
 ]
 
@@ -106,6 +105,7 @@ export default function Header() {
   // ─── Oturum / Bildirim ───────────────────────
   const [thUser, setThUser] = useState<ThUser | null>(null)
   const [notifCount, setNotifCount] = useState(0)
+  const [walletBalance, setWalletBalance] = useState<number | null>(null)
   const [profileOpen, setProfileOpen] = useState(false)
   const profileRef = useRef<HTMLDivElement>(null)
 
@@ -151,6 +151,19 @@ export default function Header() {
     fetch_()
     const timer = setInterval(fetch_, 60_000)
     return () => clearInterval(timer)
+  }, [thUser])
+
+  // Cüzdan bakiyesini çek
+  useEffect(() => {
+    if (!thUser) { setWalletBalance(null); return }
+    const fetchWallet = async () => {
+      try {
+        const res = await fetch(`/api/user/wallet?jwt=${encodeURIComponent(thUser.jwt)}`)
+        const data = await res.json()
+        if (data.success) setWalletBalance(data.data?.balance ?? 0)
+      } catch {}
+    }
+    fetchWallet()
   }, [thUser])
 
   // Profil dropdown dışına tıklanınca kapat
@@ -224,8 +237,8 @@ export default function Header() {
             : 'bg-transparent border-b border-transparent'
         )}
       >
-        <nav className="section-container">
-          <div className="flex h-16 items-center justify-between">
+        <nav className="w-full px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center">
             {/* Logo */}
             <Link
               href="/"
@@ -368,7 +381,7 @@ export default function Header() {
             </div>
 
             {/* Desktop CTA + Theme Toggle */}
-            <div className="hidden lg:flex items-center gap-2">
+            <div className="hidden lg:flex items-center gap-2 ml-auto">
               <button
                 type="button"
                 onClick={toggleTheme}
@@ -398,6 +411,20 @@ export default function Header() {
 
               {thUser ? (
                 <>
+                  {/* Cüzdan Bakiyesi */}
+                  {walletBalance !== null && (
+                    <Link
+                      href="/profilim/cuzdanim"
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-th-border/10 hover:border-brand-500/30 bg-th-overlay/[0.04] hover:bg-th-overlay/[0.08] transition-all duration-300 group"
+                      title="Cüzdanım"
+                    >
+                      <Wallet className="w-4 h-4 text-gold group-hover:text-brand-500 transition-colors" />
+                      <span className="text-sm font-bold text-th-fg group-hover:text-brand-500 transition-colors">
+                        ₺{walletBalance.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
+                    </Link>
+                  )}
+
                   {/* Bildirim Zili */}
                   <Link
                     href="/profilim/teklifler"
@@ -514,7 +541,7 @@ export default function Header() {
             </div>
 
             {/* Mobile: Theme Toggle + Menu Button */}
-            <div className="flex lg:hidden items-center gap-2">
+            <div className="flex lg:hidden items-center gap-2 ml-auto">
               <button
                 type="button"
                 onClick={toggleTheme}
@@ -689,6 +716,17 @@ export default function Header() {
                           </span>
                         )}
                       </div>
+                      {walletBalance !== null && (
+                        <Link
+                          href="/profilim/cuzdanim"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-gold/5 border border-gold/20 mb-1"
+                        >
+                          <Wallet className="w-4 h-4 text-gold" />
+                          <span className="text-sm font-bold text-th-fg">Bakiye:</span>
+                          <span className="text-sm font-bold text-gold ml-auto">₺{walletBalance.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        </Link>
+                      )}
                       <Link href="/profilim" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-th-fg-sub hover:text-th-fg hover:bg-th-overlay/5 transition-colors">
                         <UserCircle className="w-4 h-4" />Profilim
                       </Link>

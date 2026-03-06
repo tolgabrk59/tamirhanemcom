@@ -1,47 +1,11 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { Mail, Phone, MapPin, ExternalLink, Globe, MessageCircle, Rss, Send, Lock, ShieldCheck } from 'lucide-react'
+import { Mail, Phone, MapPin, ExternalLink, Globe, MessageCircle, Rss, Send } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-function MastercardLogo() {
-  return (
-    <svg width="36" height="22" viewBox="0 0 38 24" fill="none" aria-label="Mastercard">
-      <rect width="38" height="24" rx="4" fill="white" fillOpacity="0.07" />
-      <circle cx="15" cy="12" r="7" fill="white" fillOpacity="0.5" />
-      <circle cx="23" cy="12" r="7" fill="white" fillOpacity="0.3" />
-      <path d="M19 6.8a7 7 0 0 1 0 10.4A7 7 0 0 1 19 6.8z" fill="white" fillOpacity="0.4" />
-    </svg>
-  )
-}
-
-function VisaLogo() {
-  return (
-    <svg width="44" height="22" viewBox="0 0 48 24" fill="none" aria-label="Visa">
-      <rect width="48" height="24" rx="4" fill="white" fillOpacity="0.07" />
-      <text x="7" y="17" fontFamily="Arial, sans-serif" fontSize="13" fontWeight="800" fill="white" fillOpacity="0.6" letterSpacing="1">VISA</text>
-    </svg>
-  )
-}
-
-function SslBadge() {
-  return (
-    <div className="flex items-center gap-1 px-2 py-1 rounded border border-white/10 bg-white/[0.05]" title="256-bit SSL Şifreleme">
-      <Lock className="w-3 h-3 text-white/50" />
-      <span className="text-[10px] font-semibold text-white/50 tracking-wide">SSL</span>
-    </div>
-  )
-}
-
-function KvkkBadge() {
-  return (
-    <div className="flex items-center gap-1 px-2 py-1 rounded border border-white/10 bg-white/[0.05]" title="KVKK Uyumlu">
-      <ShieldCheck className="w-3 h-3 text-white/50" />
-      <span className="text-[10px] font-semibold text-white/50 tracking-wide">KVKK</span>
-    </div>
-  )
-}
 
 interface FooterLink {
   label: string
@@ -237,13 +201,6 @@ export default function Footer() {
               </li>
             </ul>
 
-            {/* Güven Logoları */}
-            <div className="flex items-center gap-2 mt-6 pt-5 border-t border-white/[0.06]">
-              <MastercardLogo />
-              <VisaLogo />
-              <SslBadge />
-              <KvkkBadge />
-            </div>
           </FooterColumn>
         </div>
       </div>
@@ -251,21 +208,29 @@ export default function Footer() {
       {/* Bottom Bar */}
       <div className="border-t border-th-border/[0.06]">
         <div className="section-container py-5">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-slate-600">
-              &copy; {currentYear} TamirHanem. Tüm hakları saklıdır.
-            </p>
-
-            <div className="flex items-center gap-6">
-              {LEGAL_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-xs text-slate-600 hover:text-th-fg-sub transition-colors duration-300"
-                >
-                  {link.label}
-                </Link>
-              ))}
+          <div className="flex flex-col items-center gap-4">
+            <Image
+              src="/logolar-v2.png"
+              alt="İş Ortakları ve Ödeme Yöntemleri"
+              width={500}
+              height={40}
+              className="h-8 object-contain brightness-0 invert opacity-30 hover:opacity-50 transition-opacity duration-300"
+            />
+            <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-3">
+              <p className="text-xs text-slate-600">
+                &copy; {currentYear} TamirHanem. Tüm hakları saklıdır.
+              </p>
+              <div className="flex items-center gap-6">
+                {LEGAL_LINKS.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="text-xs text-slate-600 hover:text-th-fg-sub transition-colors duration-300"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </div>

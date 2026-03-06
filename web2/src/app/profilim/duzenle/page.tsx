@@ -31,6 +31,8 @@ export default function ProfilDuzenlePage() {
   const [saving, setSaving] = useState(false)
   const [loadingProfile, setLoadingProfile] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null)
+  const [profileMsg, setProfileMsg] = useState<{ message: string; type: ToastType } | null>(null)
+  const [passwordMsg, setPasswordMsg] = useState<{ message: string; type: ToastType } | null>(null)
 
   // Orijinal değerler (Strapi'den gelen)
   const originalEmail = useRef('')
@@ -231,7 +233,7 @@ export default function ProfilDuzenlePage() {
       })
       const data = await res.json().catch(() => ({}))
       if (data.success === false) {
-        showToast('Profil güncellenemedi', 'error')
+        setProfileMsg({ message: 'Profil güncellenemedi', type: 'error' })
       } else {
         const updated: ThUser = {
           ...user,
@@ -245,10 +247,11 @@ export default function ProfilDuzenlePage() {
         }
         localStorage.setItem('th_user', JSON.stringify(updated))
         setUser(updated)
-        showToast('Profil başarıyla güncellendi!', 'success')
+        setProfileMsg({ message: 'Değişiklik Kaydedildi', type: 'success' })
+        setTimeout(() => setProfileMsg(null), 4000)
       }
     } catch {
-      showToast('Profil güncellenemedi', 'error')
+      setProfileMsg({ message: 'Profil güncellenemedi', type: 'error' })
     } finally {
       setSaving(false)
     }
@@ -258,16 +261,16 @@ export default function ProfilDuzenlePage() {
     e.preventDefault()
     if (!user) return
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      showToast('Yeni şifreler eşleşmiyor', 'error')
+      setPasswordMsg({ message: 'Yeni şifreler eşleşmiyor', type: 'error' })
       return
     }
     if (passwordForm.newPassword.length < 6) {
-      showToast('Şifre en az 6 karakter olmalı', 'error')
+      setPasswordMsg({ message: 'Şifre en az 6 karakter olmalı', type: 'error' })
       return
     }
     setSaving(true)
     try {
-      await fetch('/api/auth/change-password', {
+      const res = await fetch('/api/auth/change-password', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${user.jwt}` },
         body: JSON.stringify({
@@ -275,10 +278,16 @@ export default function ProfilDuzenlePage() {
           newPassword: passwordForm.newPassword,
         }),
       })
-      showToast('Şifre değiştirildi!', 'success')
-      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || data.success === false) {
+        setPasswordMsg({ message: data.error || 'Mevcut şifre hatalı', type: 'error' })
+      } else {
+        setPasswordMsg({ message: 'Değişiklik Kaydedildi', type: 'success' })
+        setTimeout(() => setPasswordMsg(null), 4000)
+        setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
+      }
     } catch {
-      showToast('Şifre değiştirilemedi', 'error')
+      setPasswordMsg({ message: 'Şifre değiştirilemedi', type: 'error' })
     } finally {
       setSaving(false)
     }
@@ -295,14 +304,14 @@ export default function ProfilDuzenlePage() {
     <main className="min-h-screen bg-th-bg pt-20 pb-24 lg:pb-8 lg:pl-16 animate-fade-in">
       <div className="max-w-3xl mx-auto px-4 py-6">
 
-        {/* Toast */}
+        {/* Toast (OTP/genel bildirimler için) */}
         {toast && (
-          <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-card text-sm font-semibold transition-all duration-300 ${
-            toast.type === 'success' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' :
-            toast.type === 'error' ? 'bg-red-500/10 border border-red-500/20 text-red-400' :
-            'bg-brand-500/10 border border-brand-500/20 text-brand-500'
+          <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-4 rounded-2xl shadow-xl text-sm font-bold transition-all duration-300 ${
+            toast.type === 'success' ? 'bg-emerald-500 text-white' :
+            toast.type === 'error' ? 'bg-red-500 text-white' :
+            'bg-brand-500 text-surface-900'
           }`}>
-            {toast.type === 'success' ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+            {toast.type === 'success' ? <CheckCircle className="w-5 h-5" /> : <XCircle className="w-5 h-5" />}
             {toast.message}
           </div>
         )}
@@ -431,6 +440,15 @@ export default function ProfilDuzenlePage() {
                 <Save className="w-4 h-4" />
                 {saving ? 'Kaydediliyor...' : (emailChanged || phoneChanged) ? 'Önce e-posta / telefonu doğrulayın' : 'Değişiklikleri Kaydet'}
               </button>
+
+              {profileMsg && (
+                <div className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold ${
+                  profileMsg.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
+                }`}>
+                  {profileMsg.type === 'success' ? <CheckCircle className="w-4 h-4 shrink-0" /> : <XCircle className="w-4 h-4 shrink-0" />}
+                  {profileMsg.message}
+                </div>
+              )}
             </form>
           </div>
 
@@ -471,6 +489,15 @@ export default function ProfilDuzenlePage() {
                 <Lock className="w-4 h-4" />
                 {saving ? 'Güncelleniyor...' : 'Şifreyi Güncelle'}
               </button>
+
+              {passwordMsg && (
+                <div className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold ${
+                  passwordMsg.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
+                }`}>
+                  {passwordMsg.type === 'success' ? <CheckCircle className="w-4 h-4 shrink-0" /> : <XCircle className="w-4 h-4 shrink-0" />}
+                  {passwordMsg.message}
+                </div>
+              )}
             </form>
           </div>
         </div>
