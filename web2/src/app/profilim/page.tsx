@@ -14,8 +14,6 @@ import { cn } from '@/lib/utils'
 interface ThUser {
   id: number
   username: string
-  jwt: string
-  name?: string
   email?: string
   phone?: string
   firstName?: string
@@ -25,49 +23,66 @@ interface ThUser {
 interface ProfileStats {
   appointments: number
   completed: number
-  points: number
   balance: string
 }
 
 export default function ProfilimPage() {
   const router = useRouter()
   const [user, setUser] = useState<ThUser | null>(null)
-  const [stats, setStats] = useState<ProfileStats>({ appointments: 0, completed: 0, points: 0, balance: '0' })
+  const [stats, setStats] = useState<ProfileStats>({ appointments: 0, completed: 0, balance: '0' })
   const [loadingStats, setLoadingStats] = useState(true)
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('th_user')
-      if (!stored) { router.push('/'); return }
-      const u: ThUser = JSON.parse(stored)
-      setUser(u)
-      fetchStats(u)
-    } catch {
-      router.push('/')
-    }
+    const jwt = localStorage.getItem('tamirhanem_jwt')
+    if (!jwt) { router.push('/giris'); return }
+    fetchUser(jwt)
   }, [router])
 
-  const fetchStats = async (u: ThUser) => {
+  const fetchUser = async (jwt: string) => {
+    try {
+      const res = await fetch('/api/users/me', { headers: { Authorization: `Bearer ${jwt}` } })
+      if (!res.ok) { router.push('/giris'); return }
+      const data = await res.json()
+      setUser(data)
+      fetchStats(jwt)
+    } catch {
+      router.push('/giris')
+    }
+  }
+
+  const fetchStats = async (jwt: string) => {
     setLoadingStats(true)
     try {
-      const res = await fetch(`/api/user/stats?jwt=${encodeURIComponent(u.jwt)}`)
-      if (res.ok) {
-        const data = await res.json()
-        if (data.success) setStats(data.stats)
+      const [apptRes, walletRes] = await Promise.allSettled([
+        fetch('/api/appointments?pagination[pageSize]=1&fields[0]=id,status', { headers: { Authorization: `Bearer ${jwt}` } }),
+        fetch('/api/wallets/me', { headers: { Authorization: `Bearer ${jwt}` } }),
+      ])
+      let apptCount = 0
+      let completedCount = 0
+      let balance = '0'
+      if (apptRes.status === 'fulfilled' && apptRes.value.ok) {
+        const d = await apptRes.value.json()
+        apptCount = d.meta?.pagination?.total ?? 0
       }
+      if (walletRes.status === 'fulfilled' && walletRes.value.ok) {
+        const d = await walletRes.value.json()
+        const b = d.balance ?? d.amount ?? d.data?.balance ?? 0
+        balance = Number(b).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      }
+      setStats({ appointments: apptCount, completed: completedCount, balance })
     } catch {}
     setLoadingStats(false)
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('th_user')
-    window.dispatchEvent(new CustomEvent('th-logout'))
+    localStorage.removeItem('tamirhanem_jwt')
+    localStorage.removeItem('tamirhanem_user')
     router.push('/')
   }
 
   if (!user) return null
 
-  const displayName = user.name || user.username
+  const displayName = user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.username
   const initial = displayName.charAt(0).toUpperCase()
 
   const menuSections = [
@@ -75,31 +90,30 @@ export default function ProfilimPage() {
       title: 'HESABIM',
       items: [
         { icon: User, label: 'Profili Düzenle', desc: 'Kişisel bilgilerinizi güncelleyin', href: '/profilim/duzenle' },
-        { icon: Car, label: 'Araçlarım', desc: 'Kayıtlı araçları yönetin', href: '/profilim/araclar' },
-        { icon: Heart, label: 'Favori Servislerim', desc: 'Beğendiğiniz servislere hızlı erişim', href: '/profilim/favoriler' },
+        { icon: Car, label: 'Araçlarım', desc: 'Kayıtlı araçları yönetin', href: '/araclarim' },
+        { icon: Heart, label: 'Favori Servislerim', desc: 'Beğendiğiniz servislere hızlı erişim', href: '/favoriler' },
       ],
     },
     {
       title: 'FİNANS & ÖDEMELER',
       items: [
-        { icon: Wallet, label: 'TamirHanem Cüzdan', desc: 'Bakiye ve ödemeler', href: '/profilim/cuzdanim' },
-        { icon: CreditCard, label: 'Ödeme Yöntemleri', desc: 'Kayıtlı kartlarınızı yönetin', href: '/profilim/odeme' },
+        { icon: Wallet, label: 'TamirHanem Cüzdan', desc: 'Bakiye ve ödemeler', href: '/cuzdan' },
+        { icon: CreditCard, label: 'Ödeme Yöntemleri', desc: 'Kayıtlı kartlarınızı yönetin', href: '/cuzdan' },
       ],
     },
     {
       title: 'AKTİVİTELERİM',
       items: [
-        { icon: CalendarDays, label: 'Randevularım', desc: 'Geçmiş ve gelecek randevular', href: '/profilim/randevular' },
-        { icon: Tag, label: 'Tekliflerim', desc: 'Aldığınız teklifleri görüntüleyin', href: '/profilim/teklifler' },
-        { icon: MessageCircle, label: 'Mesajlarım', desc: 'Servislerle mesajlaşmalarınız', href: '/profilim/mesajlar' },
-        { icon: Star, label: 'Değerlendirmelerim', desc: 'Verdiğiniz puanlar ve yorumlar', href: '/profilim/degerlendirmeler' },
-        { icon: MessageCircle, label: 'Soru & Cevaplarım', desc: 'Sorularınız ve yanıtlar', href: '/profilim/sorular' },
+        { icon: CalendarDays, label: 'Randevularım', desc: 'Geçmiş ve gelecek randevular', href: '/randevularim' },
+        { icon: Tag, label: 'Tekliflerim', desc: 'Aldığınız teklifleri görüntüleyin', href: '/randevularim' },
+        { icon: MessageCircle, label: 'Destek', desc: 'Destek talepleriniz', href: '/destek' },
+        { icon: Star, label: 'Değerlendirmelerim', desc: 'Verdiğiniz puanlar ve yorumlar', href: '/yorumlar' },
       ],
     },
     {
       title: 'AYARLAR & DESTEK',
       items: [
-        { icon: Bell, label: 'Bildirimler', desc: 'Bildirim tercihlerinizi yönetin', href: '/profilim/bildirimler' },
+        { icon: Bell, label: 'Bildirimler', desc: 'Bildirim tercihlerinizi yönetin', href: '/bildirimler' },
         { icon: HelpCircle, label: 'Yardım Merkezi', desc: 'Sıkça sorulan sorular ve destek', href: '/yardim' },
       ],
     },
@@ -136,11 +150,10 @@ export default function ProfilimPage() {
           </div>
 
           {/* İstatistikler */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
+          <div className="grid grid-cols-3 gap-3 mt-5">
             {[
               { label: 'RANDEVU', value: loadingStats ? '–' : stats.appointments },
               { label: 'TAMAMLANAN', value: loadingStats ? '–' : stats.completed },
-              { label: 'PUAN', value: loadingStats ? '–' : stats.points },
               { label: 'BAKİYE', value: loadingStats ? '–' : `₺${stats.balance}` },
             ].map((s) => (
               <div key={s.label} className="bg-th-bg/60 rounded-xl p-3 text-center border border-th-border/[0.06]">
