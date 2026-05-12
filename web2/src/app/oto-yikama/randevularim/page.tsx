@@ -21,7 +21,22 @@ import {
     RefreshCw,
     Plus,
     ChevronRight,
+    Wallet,
+    CreditCard,
 } from 'lucide-react';
+
+// ---------------------------------------------------------------------------
+// Cancel reasons
+// ---------------------------------------------------------------------------
+
+const CANCEL_REASONS: { key: string; label: string }[] = [
+    { key: 'plans_changed', label: 'Planlarım değişti' },
+    { key: 'vehicle_issue', label: 'Aracımla ilgili sorun çıktı' },
+    { key: 'wrong_datetime', label: 'Yanlış tarih/saat seçtim' },
+    { key: 'found_alternative', label: 'Alternatif servis buldum' },
+    { key: 'financial', label: 'Maddi sebepler' },
+    { key: 'other', label: 'Diğer' },
+];
 
 // ---------------------------------------------------------------------------
 // Types
@@ -49,13 +64,17 @@ interface Appointment {
     availableDates: AvailableDate[] | null;
     matchedDate: AvailableDate[] | null;
     is_guaranteed: boolean;
-    paymentMethod: string | null;
+    paymentMethod: 'card' | 'wallet' | string | null;
     notes: string | null;
     cancelReason: string | null;
     noShowMarkedAt: string | null;
     isNoShowReplacement: boolean;
     serviceCompletionConfirmed: boolean;
     userCompletionConfirmed: boolean;
+    refund_status?: string;
+    refund_percentage?: number;
+    original_price?: number;
+    discount_amount?: number;
     createdAt: string;
     updatedAt: string;
     service: {
@@ -422,7 +441,7 @@ function AppointmentCard({
 }: {
     apt: Appointment;
     jwt: string;
-    onCancelClick: (id: number) => void;
+    onCancelClick: (apt: Appointment) => void;
     onRateClick: (id: number, serviceId?: number) => void;
     onActionDone: () => void;
     onToast: (message: string, type: 'success' | 'error') => void;
@@ -631,7 +650,7 @@ function AppointmentCard({
                 <div className="flex flex-wrap gap-2 pt-3 border-t border-gray-800">
                     {status === 'Beklemede' && (
                         <button
-                            onClick={() => onCancelClick(apt.id)}
+                            onClick={() => onCancelClick(apt)}
                             className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 transition-colors"
                         >
                             <XCircle className="w-3.5 h-3.5" />
@@ -654,7 +673,7 @@ function AppointmentCard({
                                 Onayla
                             </button>
                             <button
-                                onClick={() => onCancelClick(apt.id)}
+                                onClick={() => onCancelClick(apt)}
                                 className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 transition-colors"
                             >
                                 <XCircle className="w-3.5 h-3.5" />
@@ -665,7 +684,7 @@ function AppointmentCard({
 
                     {status === 'Onaylandı' && canCancelByTime && (
                         <button
-                            onClick={() => onCancelClick(apt.id)}
+                            onClick={() => onCancelClick(apt)}
                             className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 transition-colors"
                         >
                             <XCircle className="w-3.5 h-3.5" />
@@ -882,9 +901,44 @@ function RatingModal({
 interface CancelModalState {
     open: boolean;
     appointmentId: number | null;
+    appointment: Appointment | null;
     reason: string;
+    reasonKey: string;
+    cancelChoice: 'wallet_refund' | 'card_refund' | 'free_rebooking' | 'refund' | null;
     submitting: boolean;
     error: string;
+}
+
+function calculateCancellationPolicy(appointment: Appointment): {
+    refundPercentage: number;
+    canChoose: boolean;
+    hasRebookingRight: boolean;
+} {
+    const matchedDate = appointment.matchedDate?.[0];
+    if (!matchedDate) {
+        return { refundPercentage: 100, canChoose: true, hasRebookingRight: false };
+    }
+
+    const apptDateTime = new Date(matchedDate.date);
+    if (matchedDate.timeSlot) {
+        const [h, m] = matchedDate.timeSlot.split(':').map(Number);
+        apptDateTime.setHours(h ?? 0, m ?? 0, 0, 0);
+    }
+    const hoursUntil = (apptDateTime.getTime() - Date.now()) / (1000 * 60 * 60);
+
+    if (hoursUntil <= 0) {
+        return { refundPercentage: 0, canChoose: false, hasRebookingRight: true };
+    }
+    if (hoursUntil <= 3) {
+        return { refundPercentage: 0, canChoose: false, hasRebookingRight: true };
+    }
+    if (hoursUntil <= 6) {
+        return { refundPercentage: 50, canChoose: true, hasRebookingRight: false };
+    }
+    if (hoursUntil <= 24) {
+        return { refundPercentage: 70, canChoose: true, hasRebookingRight: false };
+    }
+    return { refundPercentage: 100, canChoose: true, hasRebookingRight: false };
 }
 
 function CancelModal({
@@ -900,32 +954,184 @@ function CancelModal({
 }) {
     if (!modal.open) return null;
 
+    const apt = modal.appointment;
+    const policy = apt
+        ? calculateCancellationPolicy(apt)
+        : { refundPercentage: 100, canChoose: true, hasRebookingRight: false };
+
+    const { refundPercentage, canChoose, hasRebookingRight } = policy;
+    const showCardOption = apt?.paymentMethod !== 'wallet';
+
+    const penaltyBannerColor =
+        refundPercentage === 100
+            ? { bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', text: 'text-emerald-400' }
+            : refundPercentage === 70
+            ? { bg: 'bg-yellow-500/10', border: 'border-yellow-500/20', text: 'text-yellow-400' }
+            : refundPercentage === 50
+            ? { bg: 'bg-orange-500/10', border: 'border-orange-500/20', text: 'text-orange-400' }
+            : { bg: 'bg-red-500/10', border: 'border-red-500/20', text: 'text-red-400' };
+
+    const penaltyLabel =
+        refundPercentage === 100
+            ? 'Tam iade hakkınız mevcut'
+            : refundPercentage > 0
+            ? `%${refundPercentage} iade hakkınız var`
+            : hasRebookingRight
+            ? 'İade yapılamaz — ücretsiz yeniden randevu hakkı'
+            : 'İade yapılamaz';
+
+    const selectedReasonKey = modal.reasonKey;
+    const isOtherSelected = selectedReasonKey === 'other';
+
+    // Determine if form is submittable
+    const hasReason = selectedReasonKey !== '' && (selectedReasonKey !== 'other' || modal.reason.trim() !== '');
+    const hasChoice = !canChoose || modal.cancelChoice !== null;
+    const canSubmit = hasReason && hasChoice && !modal.submitting;
+
     return (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4">
-            <div className="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-sm p-6">
-                <div className="flex items-center gap-3 mb-3">
+            <div className="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-sm p-6 max-h-[90vh] overflow-y-auto">
+                {/* Header */}
+                <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 bg-red-500/10 rounded-xl flex items-center justify-center">
                         <XCircle className="w-5 h-5 text-red-400" />
                     </div>
                     <h2 className="text-base font-bold text-white">Randevuyu İptal Et</h2>
                 </div>
-                <p className="text-gray-400 text-sm mb-4">
-                    Bu oto yıkama randevusunu iptal etmek istediğinize emin misiniz?
-                </p>
 
-                <textarea
-                    value={modal.reason}
-                    onChange={e => onChange({ reason: e.target.value })}
-                    placeholder="İptal sebebi (opsiyonel)"
-                    rows={2}
-                    className="w-full bg-gray-800 border border-gray-700 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-red-500 resize-none placeholder-gray-500 mb-4 transition-colors"
-                />
+                {/* Penalty info banner */}
+                <div className={`mb-4 px-3 py-2.5 rounded-xl border ${penaltyBannerColor.bg} ${penaltyBannerColor.border}`}>
+                    <p className={`text-xs font-medium ${penaltyBannerColor.text}`}>{penaltyLabel}</p>
+                </div>
+
+                {/* Guaranteed notice */}
+                {apt?.is_guaranteed && (
+                    <div className="mb-4 px-3 py-2.5 bg-emerald-500/5 border border-emerald-500/20 rounded-xl flex items-start gap-2">
+                        <Shield className="w-3.5 h-3.5 text-emerald-400 mt-0.5 flex-shrink-0" />
+                        <p className="text-xs text-emerald-400">TamirHanem güvenceli randevunuz koruma altındadır.</p>
+                    </div>
+                )}
+
+                {/* Cancel choice section */}
+                {canChoose && refundPercentage > 0 && (
+                    <div className="mb-4">
+                        <p className="text-xs font-medium text-gray-400 mb-2">İptal seçeneği</p>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => onChange({ cancelChoice: 'free_rebooking' })}
+                                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-medium border transition-colors text-left ${
+                                    modal.cancelChoice === 'free_rebooking'
+                                        ? 'bg-amber-500/20 border-amber-500/50 text-amber-300'
+                                        : 'bg-gray-800 border-gray-700 text-gray-300 hover:border-gray-600'
+                                }`}
+                            >
+                                <div className="flex items-center gap-1.5 mb-0.5">
+                                    <Gift className="w-3.5 h-3.5" />
+                                    Ücretsiz Randevu
+                                </div>
+                                <p className="text-gray-500 text-[10px] leading-tight">24 saat içinde yeniden al</p>
+                            </button>
+                            <button
+                                onClick={() => onChange({ cancelChoice: 'refund' })}
+                                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-medium border transition-colors text-left ${
+                                    modal.cancelChoice === 'refund' || modal.cancelChoice === 'wallet_refund' || modal.cancelChoice === 'card_refund'
+                                        ? 'bg-blue-500/20 border-blue-500/50 text-blue-300'
+                                        : 'bg-gray-800 border-gray-700 text-gray-300 hover:border-gray-600'
+                                }`}
+                            >
+                                <div className="flex items-center gap-1.5 mb-0.5">
+                                    <CreditCard className="w-3.5 h-3.5" />
+                                    {refundPercentage === 100 ? 'Tam İade' : `%${refundPercentage} İade`}
+                                </div>
+                                <p className="text-gray-500 text-[10px] leading-tight">Ödeme iadesi</p>
+                            </button>
+                        </div>
+
+                        {/* Refund sub-choice */}
+                        {(modal.cancelChoice === 'refund' || modal.cancelChoice === 'wallet_refund' || modal.cancelChoice === 'card_refund') && (
+                            <div className="flex gap-2 mt-2">
+                                <button
+                                    onClick={() => onChange({ cancelChoice: 'wallet_refund' })}
+                                    className={`flex-1 py-2 px-3 rounded-xl text-xs font-medium border transition-colors text-left ${
+                                        modal.cancelChoice === 'wallet_refund'
+                                            ? 'bg-purple-500/20 border-purple-500/50 text-purple-300'
+                                            : 'bg-gray-800 border-gray-700 text-gray-300 hover:border-gray-600'
+                                    }`}
+                                >
+                                    <div className="flex items-center gap-1.5 mb-0.5">
+                                        <Wallet className="w-3 h-3" />
+                                        Cüzdan
+                                    </div>
+                                    <p className="text-gray-500 text-[10px]">+%5 sonraki randevuda</p>
+                                </button>
+                                {showCardOption && (
+                                    <button
+                                        onClick={() => onChange({ cancelChoice: 'card_refund' })}
+                                        className={`flex-1 py-2 px-3 rounded-xl text-xs font-medium border transition-colors text-left ${
+                                            modal.cancelChoice === 'card_refund'
+                                                ? 'bg-blue-500/20 border-blue-500/50 text-blue-300'
+                                                : 'bg-gray-800 border-gray-700 text-gray-300 hover:border-gray-600'
+                                        }`}
+                                    >
+                                        <div className="flex items-center gap-1.5 mb-0.5">
+                                            <CreditCard className="w-3 h-3" />
+                                            Kart
+                                        </div>
+                                        <p className="text-gray-500 text-[10px]">3-5 iş günü</p>
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* No refund / rebooking only notice */}
+                {!canChoose && hasRebookingRight && (
+                    <div className="mb-4 px-3 py-2.5 bg-amber-500/5 border border-amber-500/20 rounded-xl flex items-start gap-2">
+                        <Gift className="w-3.5 h-3.5 text-amber-400 mt-0.5 flex-shrink-0" />
+                        <p className="text-xs text-amber-400">
+                            İade yapılamaz ancak 24 saat içinde ücretsiz yeniden randevu alabilirsiniz.
+                        </p>
+                    </div>
+                )}
+
+                {/* Cancel reason grid */}
+                <div className="mb-4">
+                    <p className="text-xs font-medium text-gray-400 mb-2">İptal sebebi</p>
+                    <div className="grid grid-cols-2 gap-2">
+                        {CANCEL_REASONS.map(r => (
+                            <button
+                                key={r.key}
+                                onClick={() => {
+                                    onChange({ reasonKey: r.key, reason: r.key !== 'other' ? r.label : modal.reason });
+                                }}
+                                className={`py-2 px-3 rounded-xl text-xs font-medium border text-left transition-colors ${
+                                    selectedReasonKey === r.key
+                                        ? 'bg-red-500/20 border-red-500/50 text-red-300'
+                                        : 'bg-gray-800 border-gray-700 text-gray-300 hover:border-gray-600'
+                                }`}
+                            >
+                                {r.label}
+                            </button>
+                        ))}
+                    </div>
+                    {isOtherSelected && (
+                        <textarea
+                            value={modal.reason}
+                            onChange={e => onChange({ reason: e.target.value })}
+                            placeholder="Lütfen belirtin..."
+                            rows={2}
+                            className="w-full mt-2 bg-gray-800 border border-gray-700 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-red-500 resize-none placeholder-gray-500 transition-colors"
+                        />
+                    )}
+                </div>
 
                 {modal.error && (
                     <p className="text-red-400 text-sm mb-4 bg-red-500/10 px-3 py-2 rounded-lg">
                         {modal.error}
                     </p>
                 )}
+
                 <div className="flex gap-3">
                     <button
                         onClick={onClose}
@@ -936,7 +1142,7 @@ function CancelModal({
                     </button>
                     <button
                         onClick={onConfirm}
-                        disabled={modal.submitting}
+                        disabled={!canSubmit}
                         className="flex-1 py-2.5 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                         {modal.submitting && <Loader2 className="w-4 h-4 animate-spin" />}
@@ -1012,7 +1218,10 @@ export default function OtoYikamaRandevularimPage() {
     const [cancelModal, setCancelModal] = useState<CancelModalState>({
         open: false,
         appointmentId: null,
+        appointment: null,
         reason: '',
+        reasonKey: '',
+        cancelChoice: null,
         submitting: false,
         error: '',
     });
@@ -1135,25 +1344,66 @@ export default function OtoYikamaRandevularimPage() {
     }
 
     // Cancel handlers
-    function openCancelModal(id: number) {
-        setCancelModal({ open: true, appointmentId: id, reason: '', submitting: false, error: '' });
+    function openCancelModal(apt: Appointment) {
+        setCancelModal({
+            open: true,
+            appointmentId: apt.id,
+            appointment: apt,
+            reason: '',
+            reasonKey: '',
+            cancelChoice: null,
+            submitting: false,
+            error: '',
+        });
     }
 
     async function handleCancelConfirm() {
         if (!jwt || !cancelModal.appointmentId) return;
         setCancelModal(prev => ({ ...prev, submitting: true, error: '' }));
         try {
+            const reasonLabel = cancelModal.reasonKey === 'other'
+                ? cancelModal.reason
+                : CANCEL_REASONS.find(r => r.key === cancelModal.reasonKey)?.label ?? cancelModal.reason;
+
+            // Determine final cancelChoice — if user picked 'refund' without sub-choice, default to wallet_refund
+            let finalChoice = cancelModal.cancelChoice;
+            if (finalChoice === 'refund') finalChoice = 'wallet_refund';
+
             const res = await fetch(`/api/appointments/${cancelModal.appointmentId}/cancel`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${jwt}`,
                 },
-                body: JSON.stringify({ cancelReason: cancelModal.reason }),
+                body: JSON.stringify({
+                    reason: reasonLabel,
+                    cancelReason: reasonLabel,
+                    cancelReasonKey: cancelModal.reasonKey,
+                    cancelChoice: finalChoice,
+                }),
             });
             if (!res.ok) throw new Error();
-            setCancelModal({ open: false, appointmentId: null, reason: '', submitting: false, error: '' });
-            addToast('Randevu başarıyla iptal edildi.', 'success');
+            setCancelModal({
+                open: false,
+                appointmentId: null,
+                appointment: null,
+                reason: '',
+                reasonKey: '',
+                cancelChoice: null,
+                submitting: false,
+                error: '',
+            });
+
+            const successMessage =
+                finalChoice === 'wallet_refund'
+                    ? 'Randevu iptal edildi. İade cüzdanınıza aktarıldı.'
+                    : finalChoice === 'card_refund'
+                    ? 'Randevu iptal edildi. Kart iadesi başlatıldı.'
+                    : finalChoice === 'free_rebooking'
+                    ? 'Randevu iptal edildi. 24 saat içinde ücretsiz randevu alabilirsiniz.'
+                    : 'Randevu başarıyla iptal edildi.';
+
+            addToast(successMessage, 'success');
             fetchAppointments(jwt);
         } catch {
             setCancelModal(prev => ({
@@ -1342,7 +1592,16 @@ export default function OtoYikamaRandevularimPage() {
             <CancelModal
                 modal={cancelModal}
                 onClose={() =>
-                    setCancelModal({ open: false, appointmentId: null, reason: '', submitting: false, error: '' })
+                    setCancelModal({
+                        open: false,
+                        appointmentId: null,
+                        appointment: null,
+                        reason: '',
+                        reasonKey: '',
+                        cancelChoice: null,
+                        submitting: false,
+                        error: '',
+                    })
                 }
                 onConfirm={handleCancelConfirm}
                 onChange={updates => setCancelModal(prev => ({ ...prev, ...updates }))}
