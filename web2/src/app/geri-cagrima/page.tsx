@@ -8,18 +8,34 @@ import { cn } from '@/lib/utils'
 
 interface GeriCagirma {
   id: number
-  attributes: {
-    kampanya_no: string
-    marka: string
-    model: string
-    yil: number | null
-    uretici: string
-    bilesen: string
-    sikayet: string
-    sonuc: string
-    cozum: string
-    geri_cagirma_tarihi: string | null
-    veri_kaynagi: string
+  kampanya_no: string
+  marka: string
+  model: string
+  yil: number | null
+  uretici: string
+  bilesen: string
+  sikayet: string
+  sonuc: string
+  cozum: string
+  geri_cagirma_tarihi: string | null
+  veri_kaynagi: string
+}
+
+function normalize(item: any): GeriCagirma {
+  const a = item.attributes ?? item
+  return {
+    id: item.id,
+    kampanya_no: a.kampanya_no ?? '',
+    marka: a.marka ?? '',
+    model: a.model ?? '',
+    yil: a.yil ?? null,
+    uretici: a.uretici ?? '',
+    bilesen: a.bilesen ?? '',
+    sikayet: a.sikayet ?? '',
+    sonuc: a.sonuc ?? '',
+    cozum: a.cozum ?? '',
+    geri_cagirma_tarihi: a.geri_cagirma_tarihi ?? null,
+    veri_kaynagi: a.veri_kaynagi ?? '',
   }
 }
 
@@ -97,7 +113,7 @@ export default function GeriCagrimaPage() {
       if (selectedYil) params.append('yil', selectedYil)
       const res = await fetch(`/api/geri-cagirmalar?${params.toString()}`)
       const data = await res.json()
-      setResults(data.data || [])
+      setResults((data.data || []).map(normalize))
     } catch (error) {
       console.error('Arama hatasi:', error)
       setResults([])
@@ -255,17 +271,17 @@ export default function GeriCagrimaPage() {
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <span className="text-xs px-3 py-1 rounded-full font-semibold bg-red-500/15 text-red-400 border border-red-500/20">
-                              {item.attributes.kampanya_no}
+                              {item.kampanya_no}
                             </span>
                             <span className="text-th-fg-muted text-sm">
-                              {formatDate(item.attributes.geri_cagirma_tarihi)}
+                              {formatDate(item.geri_cagirma_tarihi)}
                             </span>
                           </div>
                           <h4 className="text-lg font-display font-bold text-th-fg mb-1">
-                            {item.attributes.marka} {item.attributes.model} ({item.attributes.yil || '-'})
+                            {item.marka} {item.model} ({item.yil || '-'})
                           </h4>
                           <p className="text-th-fg-sub text-sm line-clamp-2">
-                            {item.attributes.bilesen}
+                            {item.bilesen}
                           </p>
                         </div>
                         <ChevronDown
@@ -286,7 +302,7 @@ export default function GeriCagrimaPage() {
                               <h5 className="font-display font-bold text-th-fg text-sm">Sorun</h5>
                             </div>
                             <p className="text-th-fg-sub text-sm leading-relaxed">
-                              {item.attributes.sikayet || '-'}
+                              {item.sikayet || '-'}
                             </p>
                           </div>
 
@@ -296,7 +312,7 @@ export default function GeriCagrimaPage() {
                               <h5 className="font-display font-bold text-th-fg text-sm">Olası Sonuçlar</h5>
                             </div>
                             <p className="text-th-fg-sub text-sm leading-relaxed">
-                              {item.attributes.sonuc || '-'}
+                              {item.sonuc || '-'}
                             </p>
                           </div>
 
@@ -306,13 +322,13 @@ export default function GeriCagrimaPage() {
                               <h5 className="font-display font-bold text-th-fg text-sm">Çözüm</h5>
                             </div>
                             <p className="text-th-fg-sub text-sm leading-relaxed">
-                              {item.attributes.cozum || '-'}
+                              {item.cozum || '-'}
                             </p>
                           </div>
 
                           <div className="pt-2 flex items-center gap-4 text-xs text-th-fg-muted">
-                            <span>Üretici: {item.attributes.uretici}</span>
-                            <span>Kaynak: {item.attributes.veri_kaynagi}</span>
+                            <span>Üretici: {item.uretici}</span>
+                            <span>Kaynak: {item.veri_kaynagi}</span>
                           </div>
                         </div>
                       </div>

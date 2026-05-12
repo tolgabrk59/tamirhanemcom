@@ -7,7 +7,7 @@ import {
   User, Car, Heart, Wallet, CreditCard,
   CalendarDays, Tag, Star, MessageCircle,
   Bell, HelpCircle, LogOut, ChevronRight,
-  Phone, Mail, Shield, Crown,
+  Phone, Mail, Shield, Crown, Lock,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -113,6 +113,7 @@ export default function ProfilimPage() {
     {
       title: 'AYARLAR & DESTEK',
       items: [
+        { icon: Lock, label: 'Şifre Değiştir', desc: 'Hesap güvenliğinizi güncelleyin', href: '/sifre-degistir' },
         { icon: Bell, label: 'Bildirimler', desc: 'Bildirim tercihlerinizi yönetin', href: '/bildirimler' },
         { icon: HelpCircle, label: 'Yardım Merkezi', desc: 'Sıkça sorulan sorular ve destek', href: '/yardim' },
       ],

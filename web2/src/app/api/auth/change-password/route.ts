@@ -2,12 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
-export async function PUT(request: NextRequest) {
+async function handleChangePassword(request: NextRequest) {
   try {
     const jwt = request.headers.get('Authorization')?.replace('Bearer ', '')
-    const { currentPassword, newPassword } = await request.json()
+    const body = await request.json()
+    const { currentPassword, password, newPassword, passwordConfirmation } = body
+    const actualPassword = password || newPassword
 
-    if (!jwt || !currentPassword || !newPassword) {
+    if (!jwt || !currentPassword || !actualPassword) {
       return NextResponse.json({ success: false, error: 'Eksik parametre' }, { status: 400 })
     }
 
@@ -21,15 +23,15 @@ export async function PUT(request: NextRequest) {
       },
       body: JSON.stringify({
         currentPassword,
-        password: newPassword,
-        passwordConfirmation: newPassword,
+        password: actualPassword,
+        passwordConfirmation: passwordConfirmation || actualPassword,
       }),
     })
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}))
       const rawMsg: string = err?.error?.message || ''
-      const msg = rawMsg.toLowerCase().includes('invalid') || rawMsg.toLowerCase().includes('incorrect') || rawMsg.toLowerCase().includes('wrong')
+      const msg = rawMsg.toLowerCase().includes('invalid') || rawMsg.toLowerCase().includes('incorrect') || rawMsg.toLowerCase().includes('wrong') || rawMsg.toLowerCase().includes('current')
         ? 'Mevcut şifre hatalı'
         : rawMsg || 'Şifre değiştirilemedi'
       return NextResponse.json({ success: false, error: msg }, { status: 400 })
@@ -40,3 +42,6 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Sunucu hatası' }, { status: 500 })
   }
 }
+
+export const POST = handleChangePassword
+export const PUT = handleChangePassword
