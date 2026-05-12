@@ -1,14 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const STRAPI_API = (process.env.STRAPI_API_URL || 'https://api.tamirhanem.net/api').trim()
-const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN || ''
+export const dynamic = 'force-dynamic'
 
-function apiHeaders(): HeadersInit {
-  return {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${STRAPI_TOKEN}`,
-  }
-}
+const STRAPI_API = (process.env.STRAPI_API_URL || 'https://api.tamirhanem.net/api').trim()
 
 interface StrapiUser {
   id: number
@@ -19,15 +13,15 @@ interface StrapiUser {
   phone?: string
 }
 
-// GET /api/user/messages?jwt=X
+// GET /api/user/messages
 // Kullanıcının conversation'larını ve son mesajlarını döner
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const jwt = searchParams.get('jwt')
+    const authHeader = request.headers.get('Authorization')
+    const jwt = authHeader?.replace('Bearer ', '').trim()
 
     if (!jwt) {
-      return NextResponse.json({ success: false, error: 'jwt gerekli' }, { status: 400 })
+      return NextResponse.json({ success: false, error: 'JWT gerekli' }, { status: 400 })
     }
 
     // 1. Kullanıcı bilgisini JWT ile doğrula
@@ -41,10 +35,10 @@ export async function GET(request: NextRequest) {
 
     const me: StrapiUser = await meRes.json()
 
-    // 2. Kullanıcının conversation'larını API token ile çek
+    // 2. Kullanıcının conversation'larını JWT ile çek (Strapi v5 flat format)
     const convsRes = await fetch(
-      `${STRAPI_API}/conversations?populate=*&filters[user][id][$eq]=${me.id}&sort=updatedAt:desc&pagination[pageSize]=50`,
-      { headers: apiHeaders() }
+      `${STRAPI_API}/conversations?filters[user][id][$eq]=${me.id}&populate[service][fields][0]=name&populate[service][fields][1]=phone&populate[service][fields][2]=location&sort=updatedAt:desc&pagination[pageSize]=50`,
+      { headers: { Authorization: `Bearer ${jwt}` } }
     )
 
     if (!convsRes.ok) {
@@ -54,19 +48,17 @@ export async function GET(request: NextRequest) {
     const convsData = await convsRes.json()
     const conversations = convsData.data || []
 
-    // 3. Her conversation için son mesajı çek
+    // 3. Her conversation için son mesajı ve okunmamış sayısını çek
     const results = await Promise.all(
       conversations.map(async (conv: Record<string, unknown>) => {
         const convId = conv.id as number
-        const convAttrs = (conv.attributes || conv) as Record<string, unknown>
-        const service = (convAttrs.service as Record<string, unknown>) || {}
-        const sData = (service as Record<string, unknown>).data as Record<string, unknown> | undefined
-        const serviceAttrs = (sData?.attributes || (service as Record<string, unknown>).attributes || service) as Record<string, unknown>
+        // Strapi v5: flat format, no attributes wrapper
+        const service = (conv.service as Record<string, unknown>) || {}
 
         // Son mesajı çek
         const msgsRes = await fetch(
-          `${STRAPI_API}/messages?filters[conversation][id][$eq]=${convId}&sort=createdAt:desc&pagination[pageSize]=1&populate=senderUser,senderService`,
-          { headers: apiHeaders() }
+          `${STRAPI_API}/messages?filters[conversation][id][$eq]=${convId}&sort=createdAt:desc&pagination[pageSize]=1&populate[senderUser][fields][0]=id&populate[senderService][fields][0]=id`,
+          { headers: { Authorization: `Bearer ${jwt}` } }
         )
 
         let lastMessage = null
@@ -76,21 +68,20 @@ export async function GET(request: NextRequest) {
           const msgsData = await msgsRes.json()
           const msgs = msgsData.data || []
           if (msgs.length > 0) {
-            const msg = msgs[0]
-            const msgAttrs = (msg.attributes || msg) as Record<string, unknown>
+            const msg = msgs[0] as Record<string, unknown>
             lastMessage = {
               id: msg.id as number,
-              text: String(msgAttrs.text || ''),
-              isRead: Boolean(msgAttrs.isRead),
-              createdAt: String(msgAttrs.createdAt || ''),
-              senderType: msgAttrs.senderService ? 'service' : 'user',
+              text: String(msg.text || ''),
+              isRead: Boolean(msg.isRead),
+              createdAt: String(msg.createdAt || ''),
+              senderType: msg.senderUser ? 'user' : 'service',
             }
           }
 
-          // Okunmamış mesaj sayısı (servisten gelen okunmamışlar)
+          // Okunmamış mesaj sayısı (servisten gelen, senderUser yoksa service mesajı)
           const unreadRes = await fetch(
-            `${STRAPI_API}/messages?filters[conversation][id][$eq]=${convId}&filters[isRead][$eq]=false&filters[senderService][id][$notNull]=true&pagination[pageSize]=1`,
-            { headers: apiHeaders() }
+            `${STRAPI_API}/messages?filters[conversation][id][$eq]=${convId}&filters[isRead][$eq]=false&filters[senderUser][id][$null]=true&pagination[pageSize]=1`,
+            { headers: { Authorization: `Bearer ${jwt}` } }
           )
           if (unreadRes.ok) {
             const unreadData = await unreadRes.json()
@@ -100,14 +91,14 @@ export async function GET(request: NextRequest) {
 
         return {
           id: convId,
-          type: String(convAttrs.type || 'general'),
-          createdAt: String(convAttrs.createdAt || ''),
-          updatedAt: String(convAttrs.updatedAt || ''),
+          type: String(conv.type ?? 'general'),
+          createdAt: String(conv.createdAt || ''),
+          updatedAt: String(conv.updatedAt || ''),
           service: {
-            id: ((sData?.id || (service as Record<string, unknown>).id || 0) as number),
-            name: String(serviceAttrs.name || 'Bilinmeyen Servis'),
-            location: String(serviceAttrs.location || ''),
-            phone: String(serviceAttrs.phone || ''),
+            id: (service.id as number) || 0,
+            name: String(service.name ?? 'Servis'),
+            location: String(service.location ?? ''),
+            phone: String(service.phone ?? ''),
           },
           lastMessage,
           unreadCount,
@@ -123,13 +114,20 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/user/messages — Yeni mesaj gönder
-// Body: { jwt, conversationId, text }
+// Body: { conversationId, text }  —  JWT from Authorization header
 export async function POST(request: NextRequest) {
   try {
-    const { jwt, conversationId, text } = await request.json()
+    const authHeader = request.headers.get('Authorization')
+    const jwt = authHeader?.replace('Bearer ', '').trim()
 
-    if (!jwt || !conversationId || !text) {
-      return NextResponse.json({ success: false, error: 'jwt, conversationId ve text gerekli' }, { status: 400 })
+    if (!jwt) {
+      return NextResponse.json({ success: false, error: 'JWT gerekli' }, { status: 400 })
+    }
+
+    const { conversationId, text } = await request.json()
+
+    if (!conversationId || !text) {
+      return NextResponse.json({ success: false, error: 'conversationId ve text gerekli' }, { status: 400 })
     }
 
     // Kullanıcı bilgisini JWT ile doğrula
@@ -143,10 +141,13 @@ export async function POST(request: NextRequest) {
 
     const me: StrapiUser = await meRes.json()
 
-    // Mesajı API token ile oluştur
+    // Mesajı kullanıcı JWT ile oluştur
     const res = await fetch(`${STRAPI_API}/messages`, {
       method: 'POST',
-      headers: apiHeaders(),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${jwt}`,
+      },
       body: JSON.stringify({
         data: {
           text: text.trim(),

@@ -19,7 +19,6 @@ import { cn } from '@/lib/utils'
 interface ThUser {
   id: number
   username: string
-  jwt: string
   name?: string
   email?: string
   phone?: string
@@ -100,6 +99,7 @@ function formatMessageTime(dateStr: string): string {
 export default function MesajlarPage() {
   const router = useRouter()
   const [user, setUser] = useState<ThUser | null>(null)
+  const [jwt, setJwt] = useState<string>('')
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -114,22 +114,23 @@ export default function MesajlarPage() {
 
   useEffect(() => {
     try {
-      const jwt = localStorage.getItem('tamirhanem_jwt')
-      if (!jwt) { router.push('/'); return }
+      const storedJwt = localStorage.getItem('tamirhanem_jwt')
+      if (!storedJwt) { router.push('/'); return }
+      setJwt(storedJwt)
       const storedUser = localStorage.getItem('tamirhanem_user')
       const parsed = storedUser ? JSON.parse(storedUser) : {}
-      const u: ThUser = { id: parsed.id || 0, username: parsed.username || '', jwt, name: parsed.name, email: parsed.email, phone: parsed.phone, firstName: parsed.firstName, lastName: parsed.lastName }
+      const u: ThUser = { id: parsed.id || 0, username: parsed.username || '', name: parsed.name, email: parsed.email, phone: parsed.phone, firstName: parsed.firstName, lastName: parsed.lastName }
       setUser(u)
-      loadConversations(u)
+      loadConversations(storedJwt)
     } catch {
       router.push('/')
     }
   }, [router])
 
-  const loadConversations = async (u: ThUser) => {
+  const loadConversations = async (token: string) => {
     setLoading(true)
     try {
-      const res = await fetch(`/api/user/messages?jwt=${encodeURIComponent(u.jwt)}`)
+      const res = await fetch('/api/user/messages', { headers: { Authorization: 'Bearer ' + token } })
       const data = await res.json()
       if (data.success) {
         // En yeni mesajı olan konuşma en üstte olacak şekilde sırala
@@ -148,13 +149,13 @@ export default function MesajlarPage() {
   }
 
   const openConversation = useCallback(async (conv: Conversation) => {
-    if (!user) return
+    if (!user || !jwt) return
     setActiveConv(conv)
     setChatLoading(true)
     setMessages([])
 
     try {
-      const res = await fetch(`/api/user/messages/${conv.id}?jwt=${encodeURIComponent(user.jwt)}`)
+      const res = await fetch(`/api/user/messages/${conv.id}`, { headers: { Authorization: 'Bearer ' + jwt } })
       const data = await res.json()
       if (data.success) {
         setMessages(data.messages || [])
@@ -164,8 +165,7 @@ export default function MesajlarPage() {
       if (conv.unreadCount > 0) {
         await fetch(`/api/user/messages/${conv.id}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ jwt: user.jwt }),
+          headers: { Authorization: 'Bearer ' + jwt },
         })
         setConversations(prev =>
           prev.map(c => c.id === conv.id ? { ...c, unreadCount: 0 } : c)
@@ -176,14 +176,14 @@ export default function MesajlarPage() {
     } finally {
       setChatLoading(false)
     }
-  }, [user])
+  }, [user, jwt])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
   const handleSend = async () => {
-    if (!user || !activeConv || !newMessage.trim() || sending) return
+    if (!user || !jwt || !activeConv || !newMessage.trim() || sending) return
     const text = newMessage.trim()
     setNewMessage('')
     setSending(true)
@@ -202,8 +202,8 @@ export default function MesajlarPage() {
     try {
       const res = await fetch('/api/user/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jwt: user.jwt, conversationId: activeConv.id, text }),
+        headers: { Authorization: 'Bearer ' + jwt, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conversationId: activeConv.id, text }),
       })
       const data = await res.json()
       if (data.success && data.message) {

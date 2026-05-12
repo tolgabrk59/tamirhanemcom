@@ -1,16 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 const STRAPI_API = (process.env.STRAPI_API_URL || 'https://api.tamirhanem.net/api').trim()
-const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN || ''
 
-function apiHeaders(): HeadersInit {
-  return {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${STRAPI_TOKEN}`,
-  }
-}
-
-// GET /api/user/messages/[conversationId]?jwt=X
+// GET /api/user/messages/[conversationId]
 // Bir conversation'ın tüm mesajlarını döner
 export async function GET(
   request: NextRequest,
@@ -18,11 +12,11 @@ export async function GET(
 ) {
   try {
     const { conversationId } = await params
-    const { searchParams } = new URL(request.url)
-    const jwt = searchParams.get('jwt')
+    const authHeader = request.headers.get('Authorization')
+    const jwt = authHeader?.replace('Bearer ', '').trim()
 
     if (!jwt) {
-      return NextResponse.json({ success: false, error: 'jwt gerekli' }, { status: 400 })
+      return NextResponse.json({ success: false, error: 'JWT gerekli' }, { status: 400 })
     }
 
     // JWT ile kullanıcı doğrula
@@ -34,27 +28,12 @@ export async function GET(
       return NextResponse.json({ success: false, error: 'Kullanıcı doğrulanamadı' }, { status: 401 })
     }
 
-    // Conversation bilgisini API token ile çek
-    const convRes = await fetch(
-      `${STRAPI_API}/conversations/${conversationId}?populate=*`,
-      { headers: apiHeaders() }
-    )
+    const me = await meRes.json()
 
-    if (!convRes.ok) {
-      return NextResponse.json({ success: false, error: 'Konuşma bulunamadı' }, { status: 404 })
-    }
-
-    const convData = await convRes.json()
-    const conv = convData.data || {}
-    const convAttrs = (conv.attributes || conv) as Record<string, unknown>
-    const service = (convAttrs.service as Record<string, unknown>) || {}
-    const sData = (service as Record<string, unknown>).data as Record<string, unknown> | undefined
-    const serviceAttrs = (sData?.attributes || (service as Record<string, unknown>).attributes || service) as Record<string, unknown>
-
-    // Mesajları API token ile çek
+    // Mesajları JWT ile çek (Strapi v5 flat format)
     const msgsRes = await fetch(
-      `${STRAPI_API}/messages?filters[conversation][id][$eq]=${conversationId}&sort=createdAt:asc&pagination[pageSize]=200&populate=senderUser,senderService`,
-      { headers: apiHeaders() }
+      `${STRAPI_API}/messages?filters[conversation][id][$eq]=${conversationId}&sort=createdAt:asc&pagination[pageSize]=100&populate[senderUser][fields][0]=id&populate[senderUser][fields][1]=username&populate[senderService][fields][0]=id&populate[senderService][fields][1]=name`,
+      { headers: { Authorization: `Bearer ${jwt}` } }
     )
 
     if (!msgsRes.ok) {
@@ -64,61 +43,45 @@ export async function GET(
     const msgsData = await msgsRes.json()
     const rawMsgs = msgsData.data || []
 
+    // Strapi v5 flat format — no .attributes wrapper
     const messages = rawMsgs.map((msg: Record<string, unknown>) => {
-      const attrs = (msg.attributes || msg) as Record<string, unknown>
-      const senderUser = attrs.senderUser as Record<string, unknown> | null
-      const senderService = attrs.senderService as Record<string, unknown> | null
-      const suData = senderUser ? (senderUser as Record<string, unknown>).data as Record<string, unknown> | undefined : undefined
-      const ssData = senderService ? (senderService as Record<string, unknown>).data as Record<string, unknown> | undefined : undefined
-      const suAttrs = (suData?.attributes || (senderUser as Record<string, unknown> | null)?.attributes || senderUser) as Record<string, unknown> | null
-      const ssAttrs = (ssData?.attributes || (senderService as Record<string, unknown> | null)?.attributes || senderService) as Record<string, unknown> | null
+      const senderUser = msg.senderUser as Record<string, unknown> | null
+      const senderService = msg.senderService as Record<string, unknown> | null
 
       return {
         id: msg.id as number,
-        text: String(attrs.text || ''),
-        isRead: Boolean(attrs.isRead),
-        createdAt: String(attrs.createdAt || ''),
-        senderType: ssAttrs && (ssData || (senderService as Record<string, unknown> | null)?.id) ? 'service' : 'user',
-        senderName: ssAttrs && (ssData || (senderService as Record<string, unknown> | null)?.id)
-          ? String(ssAttrs.name || 'Servis')
-          : suAttrs
-            ? String((suAttrs as Record<string, unknown>).name || (suAttrs as Record<string, unknown>).username || 'Kullanıcı')
-            : 'Bilinmeyen',
+        text: String(msg.text || ''),
+        isRead: Boolean(msg.isRead),
+        createdAt: String(msg.createdAt || ''),
+        senderType: senderUser ? 'user' : 'service',
+        senderName: senderUser
+          ? String(senderUser.username || '')
+          : senderService
+            ? String(senderService.name || '')
+            : '',
       }
     })
 
-    return NextResponse.json({
-      success: true,
-      conversation: {
-        id: conv.id,
-        type: String(convAttrs.type || 'general'),
-        service: {
-          id: ((sData?.id || (service as Record<string, unknown>).id || 0) as number),
-          name: String(serviceAttrs.name || 'Bilinmeyen Servis'),
-          location: String(serviceAttrs.location || ''),
-          phone: String(serviceAttrs.phone || ''),
-        },
-      },
-      messages,
-    })
+    return NextResponse.json({ success: true, messages, userId: me.id })
   } catch (err) {
-    console.error('[messages/conv] Hata:', err)
+    console.error('[messages/conv] GET hata:', err)
     return NextResponse.json({ success: false, error: 'Sunucu hatası' }, { status: 500 })
   }
 }
 
-// PUT /api/user/messages/[conversationId] — Mesajları okundu yap
-// Body: { jwt }
+// PUT /api/user/messages/[conversationId] — Servis mesajlarını okundu yap
+// JWT from Authorization header
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ conversationId: string }> }
 ) {
   try {
     const { conversationId } = await params
-    const { jwt } = await request.json()
+    const authHeader = request.headers.get('Authorization')
+    const jwt = authHeader?.replace('Bearer ', '').trim()
 
     if (!jwt) {
-      return NextResponse.json({ success: false, error: 'jwt gerekli' }, { status: 400 })
+      return NextResponse.json({ success: false, error: 'JWT gerekli' }, { status: 400 })
     }
 
     // JWT ile kullanıcı doğrula
@@ -130,10 +93,10 @@ export async function PUT(
       return NextResponse.json({ success: false, error: 'Kullanıcı doğrulanamadı' }, { status: 401 })
     }
 
-    // Okunmamış mesajları API token ile bul
+    // Okunmamış servis mesajlarını bul (senderUser yoksa = servis mesajı)
     const msgsRes = await fetch(
-      `${STRAPI_API}/messages?filters[conversation][id][$eq]=${conversationId}&filters[isRead][$eq]=false&filters[senderService][id][$notNull]=true&pagination[pageSize]=100`,
-      { headers: apiHeaders() }
+      `${STRAPI_API}/messages?filters[conversation][id][$eq]=${conversationId}&filters[isRead][$eq]=false&filters[senderUser][id][$null]=true&pagination[pageSize]=100`,
+      { headers: { Authorization: `Bearer ${jwt}` } }
     )
 
     if (!msgsRes.ok) {
@@ -148,7 +111,10 @@ export async function PUT(
       unreadMsgs.map((msg: Record<string, unknown>) =>
         fetch(`${STRAPI_API}/messages/${msg.id}`, {
           method: 'PUT',
-          headers: apiHeaders(),
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${jwt}`,
+          },
           body: JSON.stringify({ data: { isRead: true } }),
         })
       )
