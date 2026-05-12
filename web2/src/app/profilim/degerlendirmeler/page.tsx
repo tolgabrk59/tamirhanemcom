@@ -2,14 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Star, ThumbsUp, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react'
-
-interface ThUser {
-  id: number
-  username: string
-  jwt: string
-  name?: string
-}
+import { ArrowLeft, Star, ThumbsUp } from 'lucide-react'
 
 interface Review {
   id: number
@@ -19,32 +12,7 @@ interface Review {
   comment: string
   date: string
   helpfulCount: number
-  replyFrom?: string
-  reply?: string
 }
-
-const MOCK: Review[] = [
-  {
-    id: 1,
-    serviceName: 'Yıldız Oto Servis',
-    serviceCategory: 'Yağ Değişimi',
-    rating: 5,
-    comment: 'Harika bir servis deneyimi yaşadım. Ustalar çok ilgili ve işini biliyor, fiyatlar da oldukça uygun.',
-    date: '28 Şubat 2026',
-    helpfulCount: 4,
-    replyFrom: 'Yıldız Oto Servis',
-    reply: 'Teşekkür ederiz! Sizi tekrar görmekten mutluluk duyarız.',
-  },
-  {
-    id: 2,
-    serviceName: 'Güven Lastik',
-    serviceCategory: 'Lastik Değişimi',
-    rating: 4,
-    comment: 'Hızlı ve kaliteli hizmet. Biraz bekleme süresi oldu ama genel olarak memnunum.',
-    date: '10 Şubat 2026',
-    helpfulCount: 1,
-  },
-]
 
 function StarRating({ value }: { value: number }) {
   return (
@@ -61,54 +29,37 @@ function StarRating({ value }: { value: number }) {
 
 export default function DegerlendirmelerPage() {
   const router = useRouter()
-  const [user, setUser] = useState<ThUser | null>(null)
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
-  const [expanded, setExpanded] = useState<number | null>(null)
 
   useEffect(() => {
-    try {
-      const jwt = localStorage.getItem('tamirhanem_jwt')
-      if (!jwt) { router.push('/'); return }
-      const storedUser = localStorage.getItem('tamirhanem_user')
-      const parsed = storedUser ? JSON.parse(storedUser) : {}
-      const u: ThUser = { id: parsed.id || 0, username: parsed.username || '', jwt, name: parsed.name }
-      setUser(u)
-      fetch(`/api/user/ratings?jwt=${encodeURIComponent(jwt)}`)
-        .then(r => r.ok ? r.json() : null)
-        .then(d => {
-          if (d?.success && Array.isArray(d.data) && d.data.length > 0) {
-            setReviews(d.data.map((r: {
-              id: number
-              rating: number
-              comment: string
-              createdAt: string
-              serviceName: string
-              serviceCategory: string
-              helpfulCount: number
-              replyFrom: string
-              reply: string
-            }) => ({
-              id: r.id,
-              serviceName: r.serviceName || 'Servis',
-              serviceCategory: r.serviceCategory || '',
-              rating: r.rating || 0,
-              comment: r.comment || '',
-              date: r.createdAt ? new Date(r.createdAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) : '',
-              helpfulCount: r.helpfulCount || 0,
-              replyFrom: r.replyFrom || '',
-              reply: r.reply || '',
-            })))
-          } else {
-            setReviews(MOCK)
-          }
-        })
-        .catch(() => setReviews(MOCK))
-        .finally(() => setLoading(false))
-    } catch { router.push('/') }
-  }, [router])
+    const jwt = localStorage.getItem('tamirhanem_jwt')
+    if (!jwt) { router.push('/giris'); return }
 
-  if (!user) return null
+    const stored = localStorage.getItem('tamirhanem_user')
+    const userId = stored ? (JSON.parse(stored)?.id || null) : null
+
+    const url = userId
+      ? `/api/ratings?filters[user][id][$eq]=${userId}&populate[service][fields][0]=name&sort=createdAt:desc`
+      : `/api/ratings?populate[service][fields][0]=name&sort=createdAt:desc`
+
+    fetch(url, { headers: { Authorization: `Bearer ${jwt}` } })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        const items = d?.data || []
+        setReviews(items.map((r: any) => ({
+          id: r.id,
+          serviceName: r.service?.name || 'Servis',
+          serviceCategory: r.service?.category || '',
+          rating: r.score ?? r.rating ?? 0,
+          comment: r.comment || '',
+          date: r.createdAt ? new Date(r.createdAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) : '',
+          helpfulCount: 0,
+        })))
+      })
+      .catch(() => setReviews([]))
+      .finally(() => setLoading(false))
+  }, [router])
 
   const avgRating = reviews.length > 0
     ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
@@ -176,9 +127,7 @@ export default function DegerlendirmelerPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {reviews.map(r => {
-              const isExp = expanded === r.id
-              return (
+            {reviews.map(r => (
                 <div key={r.id} className="glass-card rounded-2xl border border-th-border/[0.06] hover:border-gold/20 transition-all overflow-hidden">
                   <div className="p-5">
                     {/* Servis & Puan */}
@@ -197,34 +146,15 @@ export default function DegerlendirmelerPage() {
                     <p className="text-sm text-th-fg-muted leading-relaxed">{r.comment}</p>
 
                     {/* Alt */}
-                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-th-border/[0.06]">
+                    <div className="flex items-center mt-3 pt-3 border-t border-th-border/[0.06]">
                       <div className="flex items-center gap-1.5 text-xs text-th-fg-muted">
                         <ThumbsUp className="w-3.5 h-3.5" />
                         <span>{r.helpfulCount} kişi faydalı buldu</span>
                       </div>
-                      {r.reply && (
-                        <button
-                          onClick={() => setExpanded(isExp ? null : r.id)}
-                          className="flex items-center gap-1 text-xs text-brand-500 font-semibold hover:text-brand-400 transition-colors"
-                        >
-                          <MessageCircle className="w-3.5 h-3.5" />
-                          Yanıt var
-                          {isExp ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                        </button>
-                      )}
                     </div>
                   </div>
-
-                  {/* Servis Yanıtı */}
-                  {isExp && r.reply && (
-                    <div className="mx-5 mb-4 p-4 rounded-xl bg-brand-500/[0.04] border border-brand-500/10">
-                      <div className="text-xs font-bold text-brand-500 mb-1">{r.replyFrom}</div>
-                      <p className="text-xs text-th-fg-muted leading-relaxed">{r.reply}</p>
-                    </div>
-                  )}
                 </div>
-              )
-            })}
+            ))}
           </div>
         )}
       </div>
