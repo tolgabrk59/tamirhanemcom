@@ -17,7 +17,8 @@ import {
   Calendar,
 } from 'lucide-react';
 
-interface ServiceAttributes {
+interface Service {
+  id: number;
   name: string;
   address?: string;
   city?: string;
@@ -30,13 +31,8 @@ interface ServiceAttributes {
   isOpen?: boolean;
   lat?: number;
   lng?: number;
-  ProfilePicture?: { data?: { attributes: { url: string } } };
-  categories?: { data: Array<{ id: number; attributes: { name: string } }> };
-}
-
-interface Service {
-  id: number;
-  attributes: ServiceAttributes;
+  ProfilePicture?: { url?: string };
+  categories?: Array<{ id: number; name: string }>;
 }
 
 interface Rating {
@@ -44,26 +40,13 @@ interface Rating {
   score: number;
   comment?: string;
   createdAt: string;
-  user?: { data?: { attributes: { username?: string; firstName?: string; lastName?: string } } };
+  user?: { id: number; username?: string; firstName?: string; lastName?: string };
 }
-
-interface RatingRaw {
-  id: number;
-  attributes: {
-    score: number;
-    comment?: string;
-    createdAt: string;
-    user?: { data?: { attributes: { username?: string; firstName?: string; lastName?: string } } };
-  };
-}
-
-const STRAPI_BASE = 'https://api.tamirhanem.net';
-const STRAPI_API = process.env.NEXT_PUBLIC_STRAPI_API_URL || 'https://api.tamirhanem.net/api';
 
 function getProfilePicUrl(service: Service): string | null {
-  const raw = service.attributes.ProfilePicture?.data?.attributes?.url;
-  if (!raw) return null;
-  return raw.startsWith('http') ? raw : STRAPI_BASE + raw;
+  const url = service.ProfilePicture?.url;
+  if (!url) return null;
+  return url.startsWith('http') ? url : 'https://api.tamirhanem.net' + url;
 }
 
 function StarRating({ score, size = 'sm' }: { score: number; size?: 'sm' | 'lg' }) {
@@ -109,10 +92,10 @@ function formatDate(dateStr: string): string {
 }
 
 function getUserDisplayName(rating: Rating): string {
-  const attrs = rating.user?.data?.attributes;
-  if (!attrs) return 'Anonim';
-  if (attrs.firstName && attrs.lastName) return `${attrs.firstName} ${attrs.lastName}`;
-  return attrs.username || 'Anonim';
+  const u = rating.user;
+  if (!u) return 'Anonim';
+  if (u.firstName && u.lastName) return `${u.firstName} ${u.lastName}`;
+  return u.username || 'Anonim';
 }
 
 export default function ServisDetailPage({ params }: { params: { id: string } }) {
@@ -127,34 +110,29 @@ export default function ServisDetailPage({ params }: { params: { id: string } })
   const fetchService = useCallback(async () => {
     try {
       const res = await fetch(
-        `${STRAPI_API}/services/${params.id}?populate=ProfilePicture,ratings,categories`,
+        `/api/services/${params.id}?populate[ProfilePicture]=*&populate[categories]=*`,
         { cache: 'no-store' }
       );
       if (!res.ok) throw new Error('Servis bulunamadı');
       const json = await res.json();
       const raw = json.data ?? json;
-      // Normalize: if flat (no attributes), wrap it
-      const svc: Service = raw.attributes
-        ? { id: raw.id, attributes: raw.attributes }
-        : {
-            id: raw.id,
-            attributes: {
-              name: raw.name,
-              address: raw.address,
-              city: raw.city,
-              district: raw.district,
-              phone: raw.phone,
-              description: raw.description,
-              workingHours: raw.workingHours,
-              rating: raw.rating,
-              reviewCount: raw.reviewCount,
-              isOpen: raw.isOpen,
-              lat: raw.lat,
-              lng: raw.lng,
-              ProfilePicture: raw.ProfilePicture,
-              categories: raw.categories,
-            },
-          };
+      const svc: Service = {
+        id: raw.id,
+        name: raw.name,
+        address: raw.address,
+        city: raw.city,
+        district: raw.district,
+        phone: raw.phone,
+        description: raw.description,
+        workingHours: raw.workingHours,
+        rating: raw.rating,
+        reviewCount: raw.reviewCount,
+        isOpen: raw.isOpen,
+        lat: raw.lat,
+        lng: raw.lng,
+        ProfilePicture: raw.ProfilePicture,
+        categories: Array.isArray(raw.categories) ? raw.categories : [],
+      };
       setService(svc);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Bir hata oluştu');
@@ -166,17 +144,17 @@ export default function ServisDetailPage({ params }: { params: { id: string } })
   const fetchRatings = useCallback(async () => {
     try {
       const res = await fetch(
-        `${STRAPI_API}/ratings?filters[service][id][$eq]=${params.id}&populate=user&sort=createdAt:desc&pagination[pageSize]=5`,
+        `/api/ratings?filters[service][id][$eq]=${params.id}&populate=user&sort=createdAt:desc&pagination[pageSize]=5`,
         { cache: 'no-store' }
       );
       if (!res.ok) return;
       const json = await res.json();
-      const list: Rating[] = (json.data || []).map((r: RatingRaw) => ({
+      const list: Rating[] = (json.data || []).map((r: any) => ({
         id: r.id,
-        score: r.attributes.score,
-        comment: r.attributes.comment,
-        createdAt: r.attributes.createdAt,
-        user: r.attributes.user,
+        score: r.score,
+        comment: r.comment,
+        createdAt: r.createdAt,
+        user: r.user,
       }));
       setRatings(list);
     } catch {
@@ -241,13 +219,12 @@ export default function ServisDetailPage({ params }: { params: { id: string } })
     );
   }
 
-  const attrs = service.attributes;
   const profilePicUrl = getProfilePicUrl(service);
-  const displayRating = attrs.rating ?? 0;
-  const reviewCount = attrs.reviewCount ?? 0;
-  const categories = attrs.categories?.data ?? [];
-  const locationStr = [attrs.district, attrs.city].filter(Boolean).join(', ');
-  const isOpen = attrs.isOpen;
+  const displayRating = service.rating ?? 0;
+  const reviewCount = service.reviewCount ?? 0;
+  const categories = service.categories ?? [];
+  const locationStr = [service.district, service.city].filter(Boolean).join(', ');
+  const isOpen = service.isOpen;
 
   return (
     <div className="min-h-screen bg-gray-950 pb-28">
@@ -257,7 +234,7 @@ export default function ServisDetailPage({ params }: { params: { id: string } })
           <>
             <Image
               src={profilePicUrl}
-              alt={attrs.name}
+              alt={service.name}
               fill
               className="object-cover"
               unoptimized
@@ -304,7 +281,7 @@ export default function ServisDetailPage({ params }: { params: { id: string } })
       <div className="px-4 sm:px-6 max-w-2xl mx-auto -mt-4 relative z-10 flex flex-col gap-4">
         {/* Name + location + rating */}
         <div className="flex flex-col gap-2">
-          <h1 className="text-white text-2xl font-bold leading-tight">{attrs.name}</h1>
+          <h1 className="text-white text-2xl font-bold leading-tight">{service.name}</h1>
           {locationStr && (
             <p className="text-gray-400 text-sm flex items-center gap-1.5">
               <MapPin className="w-4 h-4 text-orange-500 shrink-0" />
@@ -324,48 +301,48 @@ export default function ServisDetailPage({ params }: { params: { id: string } })
 
         {/* Contact card */}
         <div className="bg-gray-900 border border-gray-800 rounded-2xl divide-y divide-gray-800">
-          {attrs.address && (
+          {service.address && (
             <div className="flex items-start gap-3 p-4">
               <MapPin className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
               <div>
                 <p className="text-gray-500 text-xs mb-0.5">Adres</p>
-                <p className="text-gray-200 text-sm">{attrs.address}</p>
+                <p className="text-gray-200 text-sm">{service.address}</p>
               </div>
             </div>
           )}
-          {attrs.phone && (
+          {service.phone && (
             <div className="flex items-center gap-3 p-4">
               <Phone className="w-5 h-5 text-orange-500 shrink-0" />
               <div>
                 <p className="text-gray-500 text-xs mb-0.5">Telefon</p>
                 <a
-                  href={`tel:${attrs.phone}`}
+                  href={`tel:${service.phone}`}
                   className="text-orange-400 hover:text-orange-300 text-sm font-medium transition-colors"
                 >
-                  {attrs.phone}
+                  {service.phone}
                 </a>
               </div>
             </div>
           )}
-          {attrs.workingHours && (
+          {service.workingHours && (
             <div className="flex items-start gap-3 p-4">
               <Clock className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
               <div>
                 <p className="text-gray-500 text-xs mb-0.5">Çalışma Saatleri</p>
-                <p className="text-gray-200 text-sm whitespace-pre-line">{attrs.workingHours}</p>
+                <p className="text-gray-200 text-sm whitespace-pre-line">{service.workingHours}</p>
               </div>
             </div>
           )}
         </div>
 
         {/* Description */}
-        {attrs.description && (
+        {service.description && (
           <div className="bg-gray-900 border border-gray-800 rounded-2xl p-4">
             <h2 className="text-white font-semibold text-sm mb-2 flex items-center gap-2">
               <Wrench className="w-4 h-4 text-orange-500" />
               Servis Hakkında
             </h2>
-            <p className="text-gray-400 text-sm leading-relaxed">{attrs.description}</p>
+            <p className="text-gray-400 text-sm leading-relaxed">{service.description}</p>
           </div>
         )}
 
@@ -379,7 +356,7 @@ export default function ServisDetailPage({ params }: { params: { id: string } })
                   key={cat.id}
                   className="bg-gray-800 border border-gray-700 text-gray-300 text-xs font-medium px-3 py-1.5 rounded-full"
                 >
-                  {cat.attributes.name}
+                  {cat.name}
                 </span>
               ))}
             </div>
