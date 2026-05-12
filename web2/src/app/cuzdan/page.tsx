@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import {
   Wallet, ArrowUpCircle, ArrowDownCircle, CreditCard, Plus,
   Trash2, Lock, Loader2, AlertCircle, CheckCircle, X,
+  Trophy, Gift, Copy, Check,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -47,6 +48,18 @@ interface AddCardForm {
   expiryYear: string;
   cardHolderName: string;
   cvv: string;
+}
+
+interface LoyaltyData {
+  totalWashes: number;
+  rewardsEarned: number;
+  rewardsUsed: number;
+  availableRewards: number;
+  currentCycleWashes: number;
+  targetWashes: number;
+  washesUntilNextReward: number;
+  progress: number;
+  hasAvailableReward: boolean;
 }
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -94,6 +107,9 @@ export default function CuzdanPage() {
   const [addCardError, setAddCardError] = useState<string | null>(null);
   const [addCardSuccess, setAddCardSuccess] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [loyalty, setLoyalty] = useState<LoyaltyData | null>(null);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('tamirhanem_jwt');
@@ -113,10 +129,12 @@ export default function CuzdanPage() {
       setLoading(true);
       setWalletError(null);
 
-      const [walletRes, txRes, cardsRes] = await Promise.allSettled([
+      const [walletRes, txRes, cardsRes, loyaltyRes, referralRes] = await Promise.allSettled([
         fetch('/api/wallets/me', { headers }),
         fetch('/api/transactions', { headers }),
         fetch('/api/credit-cards', { headers }),
+        fetch('/api/platform-loyalty/my-status', { headers }),
+        fetch('/api/referrals/my-code', { headers }),
       ]);
 
       if (walletRes.status === 'fulfilled' && walletRes.value.ok) {
@@ -137,6 +155,16 @@ export default function CuzdanPage() {
       if (cardsRes.status === 'fulfilled' && cardsRes.value.ok) {
         const data = await cardsRes.value.json();
         setCards(data.data || data.cards || []);
+      }
+
+      if (loyaltyRes.status === 'fulfilled' && loyaltyRes.value.ok) {
+        const data = await loyaltyRes.value.json();
+        setLoyalty(data.data || data);
+      }
+
+      if (referralRes.status === 'fulfilled' && referralRes.value.ok) {
+        const data = await referralRes.value.json();
+        setReferralCode(data.code || data.referralCode || data.data?.code || null);
       }
 
       setLoading(false);
@@ -202,6 +230,14 @@ export default function CuzdanPage() {
     }
   }
 
+  function handleCopy() {
+    if (!referralCode) return;
+    navigator.clipboard.writeText(referralCode).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
   // Not logged in
   if (jwt === null) return null; // loading JWT from localStorage
 
@@ -261,6 +297,80 @@ export default function CuzdanPage() {
                 </>
               )}
             </div>
+
+            {/* Platform Loyalty */}
+            {loyalty && (
+              <section className="bg-gray-900 border border-gray-800 rounded-2xl p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <Trophy className="w-5 h-5 text-yellow-400" />
+                  <h2 className="text-white font-semibold text-base">Sadakat Programı</h2>
+                  {loyalty.hasAvailableReward && (
+                    <span className="ml-auto bg-green-500/20 border border-green-500/30 text-green-400 text-xs font-semibold px-2.5 py-1 rounded-full">
+                      {loyalty.availableRewards} Ücretsiz Yıkama
+                    </span>
+                  )}
+                </div>
+
+                {/* Progress bar */}
+                <div className="mb-3">
+                  <div className="flex items-center justify-between text-xs text-gray-400 mb-1.5">
+                    <span>Bu dönem: {loyalty.currentCycleWashes}/{loyalty.targetWashes} yıkama</span>
+                    <span>{loyalty.washesUntilNextReward} yıkama kaldı</span>
+                  </div>
+                  <div className="w-full bg-gray-800 rounded-full h-2.5 overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-yellow-500 to-orange-400 rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min(loyalty.progress, 100)}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3 mt-4">
+                  {[
+                    { label: 'Toplam Yıkama', value: loyalty.totalWashes },
+                    { label: 'Kazanılan Ödül', value: loyalty.rewardsEarned },
+                    { label: 'Kullanılan', value: loyalty.rewardsUsed },
+                  ].map((s) => (
+                    <div key={s.label} className="bg-gray-800/60 rounded-xl p-3 text-center">
+                      <div className="text-lg font-bold text-white">{s.value}</div>
+                      <div className="text-[10px] text-gray-500 mt-0.5">{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {loyalty.hasAvailableReward && (
+                  <div className="mt-4 flex items-center gap-2.5 bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3">
+                    <Gift className="w-5 h-5 text-green-400 shrink-0" />
+                    <p className="text-green-300 text-sm">
+                      <span className="font-semibold">{loyalty.availableRewards} ücretsiz yıkama</span> hakkınız var! Randevu alırken otomatik uygulanır.
+                    </p>
+                  </div>
+                )}
+              </section>
+            )}
+
+            {/* Referral Code */}
+            {referralCode && (
+              <section className="bg-gray-900 border border-gray-800 rounded-2xl p-5">
+                <h2 className="text-white font-semibold text-base mb-1">Arkadaşını Davet Et</h2>
+                <p className="text-gray-400 text-sm mb-4">Referans kodunu paylaş, her iki taraf da kazansın.</p>
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 font-mono text-white text-sm tracking-widest select-all">
+                    {referralCode}
+                  </div>
+                  <button
+                    onClick={handleCopy}
+                    className={`flex items-center gap-1.5 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                      copied
+                        ? 'bg-green-500/20 border border-green-500/30 text-green-400'
+                        : 'bg-primary-600 hover:bg-primary-700 text-white'
+                    }`}
+                  >
+                    {copied ? <><Check className="w-4 h-4" />Kopyalandı</> : <><Copy className="w-4 h-4" />Kopyala</>}
+                  </button>
+                </div>
+              </section>
+            )}
 
             {/* Transactions */}
             <section>
