@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Tag, MapPin, Car, Building2, Clock, CheckCircle, XCircle, Eye, X, MessageSquare } from 'lucide-react'
 
-interface ThUser { id: number; username: string; jwt: string }
-
 interface TeklifTalebi {
   id: number
   city: string
@@ -38,7 +36,6 @@ function formatDate(dateStr: string) {
 
 export default function TekliflerPage() {
   const router = useRouter()
-  const [user, setUser] = useState<ThUser | null>(null)
   const [teklifler, setTeklifler] = useState<TeklifTalebi[]>([])
   const [loading, setLoading] = useState(true)
   const [detail, setDetail] = useState<TeklifTalebi | null>(null)
@@ -46,22 +43,16 @@ export default function TekliflerPage() {
   useEffect(() => {
     try {
       const jwt = localStorage.getItem('tamirhanem_jwt')
-      if (!jwt) { router.push('/'); return }
-      const storedUser = localStorage.getItem('tamirhanem_user')
-      const parsed = storedUser ? JSON.parse(storedUser) : {}
-      const u: ThUser = { id: parsed.id || 0, username: parsed.username || '', jwt }
-      setUser(u)
-      fetch(`/api/user/offers?jwt=${encodeURIComponent(jwt)}`)
+      if (!jwt) { router.push('/giris'); return }
+      fetch('/api/user/offers', { headers: { Authorization: `Bearer ${jwt}` } })
         .then(r => r.json())
         .then(d => { if (d.success) setTeklifler(d.data || []) })
         .catch(() => {})
         .finally(() => setLoading(false))
     } catch {
-      router.push('/')
+      router.push('/giris')
     }
   }, [router])
-
-  if (!user) return null
 
   return (
     <main className="min-h-screen bg-th-bg pt-20 pb-24 lg:pb-8 lg:pl-16 animate-fade-in">
