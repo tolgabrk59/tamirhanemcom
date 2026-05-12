@@ -6,27 +6,19 @@ import { Heart, MapPin, Phone, Star, Car, Trash2, Calendar, Store, X, Loader2 } 
 
 interface Favorite {
     id: number;
-    attributes: {
-        createdAt: string;
-        service?: {
-            data: {
-                id: number;
-                attributes: {
-                    name: string;
-                    address?: string;
-                    city?: string;
-                    district?: string;
-                    phone?: string;
-                    rating?: number;
-                    reviewCount?: number;
-                    category?: string;
-                    ProfilePicture?: {
-                        data?: { attributes: { url: string } };
-                    };
-                };
-            };
-        };
-    };
+    createdAt: string;
+    service?: {
+        id: number;
+        name: string;
+        address?: string;
+        city?: string;
+        district?: string;
+        phone?: string;
+        rating?: number;
+        reviewCount?: number;
+        category?: string;
+        ProfilePicture?: { url?: string };
+    } | null;
 }
 
 function SkeletonCard() {
@@ -107,7 +99,7 @@ export default function FavorilerPage() {
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch('/api/favorites?populate=service,service.ProfilePicture', {
+            const res = await fetch('/api/favorites?populate[service][populate][0]=ProfilePicture&populate[service][populate][1]=categories', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (!res.ok) throw new Error('Favoriler yüklenemedi');
@@ -223,11 +215,10 @@ export default function FavorilerPage() {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {favorites.map((fav) => {
-                            const service = fav.attributes.service?.data;
+                            const service = fav.service;
                             if (!service) return null;
-                            const attrs = service.attributes;
-                            const pictureUrl = attrs.ProfilePicture?.data?.attributes?.url;
-                            const locationParts = [attrs.district, attrs.city].filter(Boolean);
+                            const pictureUrl = service.ProfilePicture?.url;
+                            const locationParts = [service.district, service.city].filter(Boolean);
 
                             return (
                                 <div
@@ -238,7 +229,7 @@ export default function FavorilerPage() {
                                         {pictureUrl ? (
                                             <img
                                                 src={pictureUrl}
-                                                alt={attrs.name}
+                                                alt={service.name}
                                                 className="w-full h-full object-cover"
                                             />
                                         ) : (
@@ -257,7 +248,7 @@ export default function FavorilerPage() {
 
                                     <div className="p-4 flex flex-col flex-1">
                                         <h3 className="text-white font-bold text-base mb-1 leading-tight line-clamp-1">
-                                            {attrs.name}
+                                            {service.name}
                                         </h3>
 
                                         {locationParts.length > 0 && (
@@ -267,29 +258,29 @@ export default function FavorilerPage() {
                                             </div>
                                         )}
 
-                                        {attrs.phone && (
+                                        {service.phone && (
                                             <div className="flex items-center gap-1.5 text-gray-400 text-sm mb-1">
                                                 <Phone className="w-3.5 h-3.5 flex-shrink-0" />
-                                                <span>{attrs.phone}</span>
+                                                <span>{service.phone}</span>
                                             </div>
                                         )}
 
-                                        {(attrs.rating !== undefined || attrs.reviewCount !== undefined) && (
+                                        {(service.rating !== undefined || service.reviewCount !== undefined) && (
                                             <div className="flex items-center gap-1.5 text-sm mb-2">
                                                 <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
                                                 <span className="text-yellow-400 font-medium">
-                                                    {attrs.rating?.toFixed(1) ?? '—'}
+                                                    {service.rating?.toFixed(1) ?? '—'}
                                                 </span>
-                                                {attrs.reviewCount !== undefined && (
-                                                    <span className="text-gray-500">({attrs.reviewCount} yorum)</span>
+                                                {service.reviewCount !== undefined && (
+                                                    <span className="text-gray-500">({service.reviewCount} yorum)</span>
                                                 )}
                                             </div>
                                         )}
 
-                                        {attrs.category && (
+                                        {service.category && (
                                             <div className="mb-3">
                                                 <span className="bg-gray-800 text-gray-400 text-xs px-2 py-1 rounded-full">
-                                                    {attrs.category}
+                                                    {service.category}
                                                 </span>
                                             </div>
                                         )}

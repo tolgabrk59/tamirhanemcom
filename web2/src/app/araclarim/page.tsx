@@ -17,16 +17,14 @@ import {
 
 interface Vehicle {
     id: number;
-    attributes: {
-        brand: string;
-        model: string;
-        plate: string;
-        year?: number;
-        fuelType?: string;
-        color?: string;
-        km?: number;
-        createdAt: string;
-    };
+    brand: string;
+    model: string;
+    plate: string;
+    year?: number;
+    fuelType?: string;
+    color?: string;
+    km?: number;
+    createdAt: string;
 }
 
 interface VehicleForm {
@@ -162,13 +160,13 @@ export default function AraclarimPage() {
     const openEditModal = (vehicle: Vehicle) => {
         setEditingVehicle(vehicle);
         setForm({
-            brand: vehicle.attributes.brand ?? '',
-            model: vehicle.attributes.model ?? '',
-            plate: vehicle.attributes.plate ?? '',
-            year: vehicle.attributes.year ? String(vehicle.attributes.year) : '',
-            fuelType: vehicle.attributes.fuelType ?? '',
-            color: vehicle.attributes.color ?? '',
-            km: vehicle.attributes.km ? String(vehicle.attributes.km) : '',
+            brand: vehicle.brand ?? '',
+            model: vehicle.model ?? '',
+            plate: vehicle.plate ?? '',
+            year: vehicle.year ? String(vehicle.year) : '',
+            fuelType: vehicle.fuelType ?? '',
+            color: vehicle.color ?? '',
+            km: vehicle.km ? String(vehicle.km) : '',
         });
         setFormError('');
         setShowFormModal(true);
@@ -360,27 +358,27 @@ export default function AraclarimPage() {
                                 </div>
 
                                 <p className="font-bold text-white text-base leading-tight mb-1">
-                                    {[vehicle.attributes.brand, vehicle.attributes.model, vehicle.attributes.year ? `(${vehicle.attributes.year})` : ''].filter(Boolean).join(' ')}
+                                    {[vehicle.brand, vehicle.model, vehicle.year ? `(${vehicle.year})` : ''].filter(Boolean).join(' ')}
                                 </p>
 
                                 <div className="flex flex-wrap gap-2 mb-3">
-                                    {vehicle.attributes.fuelType && (
+                                    {vehicle.fuelType && (
                                         <span className="flex items-center gap-1 text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded-lg">
                                             <Fuel className="w-3 h-3 text-orange-500/70" />
-                                            {vehicle.attributes.fuelType}
+                                            {vehicle.fuelType}
                                         </span>
                                     )}
-                                    {vehicle.attributes.km != null && (
+                                    {vehicle.km != null && (
                                         <span className="flex items-center gap-1 text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded-lg">
                                             <Gauge className="w-3 h-3 text-orange-500/70" />
-                                            {formatKm(vehicle.attributes.km)}
+                                            {formatKm(vehicle.km)}
                                         </span>
                                     )}
                                 </div>
 
                                 <div className="mt-auto">
                                     <span className="inline-block bg-yellow-400 text-gray-900 font-mono font-bold text-lg px-3 py-1 rounded">
-                                        {vehicle.attributes.plate}
+                                        {vehicle.plate}
                                     </span>
                                 </div>
                             </div>

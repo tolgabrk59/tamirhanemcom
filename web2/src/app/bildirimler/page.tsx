@@ -13,13 +13,11 @@ import {
 
 interface Notification {
     id: number;
-    attributes: {
-        title: string;
-        body: string;
-        isRead: boolean;
-        createdAt: string;
-        type?: string;
-    };
+    title: string;
+    body: string;
+    isRead: boolean;
+    createdAt: string;
+    type?: string;
 }
 
 function timeAgo(dateStr: string): string {
@@ -55,7 +53,7 @@ export default function BildirimlerPage() {
     const [markingAll, setMarkingAll] = useState(false);
     const [error, setError] = useState('');
 
-    const unreadCount = notifications.filter(n => !n.attributes.isRead).length;
+    const unreadCount = notifications.filter(n => !n.isRead).length;
 
     const fetchNotifications = useCallback(async (token: string) => {
         setLoading(true);
@@ -90,7 +88,7 @@ export default function BildirimlerPage() {
     const markNotificationRead = async (id: number) => {
         if (!jwt) return;
         setNotifications(prev =>
-            prev.map(n => n.id === id ? { ...n, attributes: { ...n.attributes, isRead: true } } : n)
+            prev.map(n => n.id === id ? { ...n, isRead: true } : n)
         );
         try {
             await fetch(`/api/notifications?id=${id}`, {
@@ -118,7 +116,7 @@ export default function BildirimlerPage() {
                 },
             });
             setNotifications(prev =>
-                prev.map(n => ({ ...n, attributes: { ...n.attributes, isRead: true } }))
+                prev.map(n => ({ ...n, isRead: true }))
             );
         } catch {
             setError('Tümü okundu işaretlenemedi.');
@@ -183,31 +181,31 @@ export default function BildirimlerPage() {
                             <button
                                 key={notif.id}
                                 onClick={() => {
-                                    if (!notif.attributes.isRead) {
+                                    if (!notif.isRead) {
                                         markNotificationRead(notif.id);
                                     }
                                 }}
                                 className={`w-full flex gap-3 p-4 text-left transition-colors hover:bg-gray-900/80 ${
-                                    !notif.attributes.isRead ? 'bg-blue-500/5' : ''
+                                    !notif.isRead ? 'bg-blue-500/5' : ''
                                 }`}
                             >
                                 <div className="flex-shrink-0 mt-1.5">
-                                    {notif.attributes.isRead ? (
+                                    {notif.isRead ? (
                                         <Circle className="w-2 h-2 text-gray-700 fill-gray-700" />
                                     ) : (
                                         <Circle className="w-2 h-2 text-blue-500 fill-blue-500" />
                                     )}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className={`text-sm font-medium leading-snug mb-0.5 ${notif.attributes.isRead ? 'text-gray-300' : 'text-white'}`}>
-                                        {notif.attributes.title}
+                                    <p className={`text-sm font-medium leading-snug mb-0.5 ${notif.isRead ? 'text-gray-300' : 'text-white'}`}>
+                                        {notif.title}
                                     </p>
                                     <p className="text-sm text-gray-500 leading-relaxed">
-                                        {notif.attributes.body}
+                                        {notif.body}
                                     </p>
                                     <p className="text-xs text-gray-600 mt-1.5 flex items-center gap-1">
                                         <Clock className="w-3 h-3" />
-                                        {timeAgo(notif.attributes.createdAt)}
+                                        {timeAgo(notif.createdAt)}
                                     </p>
                                 </div>
                             </button>
