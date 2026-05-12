@@ -172,10 +172,20 @@ function extractPricesFromHtml(html: string): number[] {
 function calculatePriceStats(prices: number[]): { avg: number; min: number; max: number; median: number } {
   prices.sort((a, b) => a - b)
 
-  // Uç değerleri kırp (%10 alt ve üst)
+  // 1. Adım: %10 alt-üst kırpma
   const trimStart = Math.floor(prices.length * 0.1)
   const trimEnd = Math.ceil(prices.length * 0.9)
-  const trimmed = prices.slice(trimStart, trimEnd)
+  let trimmed = prices.slice(trimStart, trimEnd)
+
+  if (trimmed.length === 0) {
+    throw new Error('Yeterli fiyat verisi yok')
+  }
+
+  // 2. Adım: Medyan bazlı outlier temizliği (hasarlı/pert araçları çıkar)
+  const rawMedian = trimmed[Math.floor(trimmed.length / 2)]
+  const lowerBound = rawMedian * 0.50  // medyanın %50'sinden düşükler çıkar
+  const upperBound = rawMedian * 1.75  // medyanın %175'inden yüksekler çıkar
+  trimmed = trimmed.filter(p => p >= lowerBound && p <= upperBound)
 
   if (trimmed.length === 0) {
     throw new Error('Yeterli fiyat verisi yok')

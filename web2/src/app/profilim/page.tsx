@@ -91,6 +91,7 @@ export default function ProfilimPage() {
       items: [
         { icon: CalendarDays, label: 'Randevularım', desc: 'Geçmiş ve gelecek randevular', href: '/profilim/randevular' },
         { icon: Tag, label: 'Tekliflerim', desc: 'Aldığınız teklifleri görüntüleyin', href: '/profilim/teklifler' },
+        { icon: MessageCircle, label: 'Mesajlarım', desc: 'Servislerle mesajlaşmalarınız', href: '/profilim/mesajlar' },
         { icon: Star, label: 'Değerlendirmelerim', desc: 'Verdiğiniz puanlar ve yorumlar', href: '/profilim/degerlendirmeler' },
         { icon: MessageCircle, label: 'Soru & Cevaplarım', desc: 'Sorularınız ve yanıtlar', href: '/profilim/sorular' },
       ],
@@ -106,7 +107,7 @@ export default function ProfilimPage() {
 
   return (
     <main className="min-h-screen bg-th-bg pt-20 pb-24 lg:pb-8 lg:pl-16">
-      <div className="max-w-3xl mx-auto px-4 py-6 space-y-5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
 
         {/* Üst Kart */}
         <div className="relative bg-gradient-to-br from-brand-500/10 via-th-overlay/[0.03] to-th-overlay/[0.01] rounded-2xl border border-brand-500/10 p-5 overflow-hidden">
@@ -135,7 +136,7 @@ export default function ProfilimPage() {
           </div>
 
           {/* İstatistikler */}
-          <div className="grid grid-cols-4 gap-3 mt-5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
             {[
               { label: 'RANDEVU', value: loadingStats ? '–' : stats.appointments },
               { label: 'TAMAMLANAN', value: loadingStats ? '–' : stats.completed },
@@ -186,7 +187,7 @@ export default function ProfilimPage() {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      'flex items-center gap-3.5 px-4 py-3.5 transition-colors duration-200',
+                      'flex items-center gap-3.5 px-4 py-4 min-h-[56px] transition-colors duration-200',
                       'hover:bg-brand-500/[0.04] group'
                     )}
                   >

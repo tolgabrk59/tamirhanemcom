@@ -34,6 +34,9 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
     localStorage.setItem('tamirhanem-theme', next)
     document.documentElement.classList.remove('dark', 'light')
     document.documentElement.classList.add(next)
+    document.documentElement.style.colorScheme = next
+    const meta = document.querySelector('meta[name="color-scheme"]')
+    if (meta) meta.setAttribute('content', next)
   }
 
   return (

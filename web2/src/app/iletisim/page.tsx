@@ -180,7 +180,7 @@ export default function IletisimPage() {
 
       {/* Main Content */}
       <section className="section-container">
-        <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-8">
           {/* Contact Form */}
           <AnimatedSection direction="left">
             <div className="glass-card p-6 md:p-8">

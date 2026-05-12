@@ -122,7 +122,7 @@ export default function SSSPage() {
       </section>
 
       {/* Main Content */}
-      <section className="section-container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-container">
         {/* Category Filters */}
         <AnimatedSection delay={0.1}>
           <div className="flex flex-wrap gap-2 mb-8 justify-center">

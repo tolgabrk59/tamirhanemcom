@@ -75,15 +75,15 @@ const troubleshootingParts = [
 
 const sidebarLinks = {
   yolaGeriDon: [
-    { label: 'Yakinimda oto tamir bul', href: '/servis-ara' },
+    { label: 'Yakınımda oto tamir bul', href: '/servis-ara' },
     { label: 'Soru sor', href: '/soru-sor' },
-    { label: 'Ucretsiz tamir tahminleri', href: '/fiyat-hesapla' },
-    { label: 'Arac bakim tavsiyeleri', href: '/arac/bakim-tavsiyeleri' },
+    { label: 'Ücretsiz tamir tahminleri', href: '/fiyat-hesapla' },
+    { label: 'Araç bakım tavsiyeleri', href: '/arac/bakim-tavsiyeleri' },
   ],
   aracArastir: [
-    { label: 'Arac ansiklopedisi', href: '/arac' },
+    { label: 'Araç ansiklopedisi', href: '/arac' },
     { label: 'Kronik sorunlar', href: '/arac' },
-    { label: 'OBD ariza kodlari', href: '/obd' },
+    { label: 'OBD arıza kodları', href: '/obd' },
   ],
 }
 
@@ -96,17 +96,17 @@ export default function ArizaRehberiPage() {
       {/* Page Header */}
       <section className="section-container mb-12">
         <AnimatedSection>
-          <div className="text-center max-w-3xl mx-auto">
+          <div className="text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-500/10 border border-brand-500/20 mb-6">
               <AlertTriangle className="w-4 h-4 text-brand-500" />
-              <span className="text-sm font-semibold text-brand-500">Ariza Teshis</span>
+              <span className="text-sm font-semibold text-brand-500">Arıza Teşhis</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-display font-extrabold mb-4">
-              Ariza Belirti <span className="text-gold">Rehberi</span>
+              Arıza Belirti <span className="text-gold">Rehberi</span>
             </h1>
             <p className="text-th-fg-sub text-lg mb-6">
-              Aracinizdaki belirtilerden yola cikarak olasi sorunlari tespit edin.
-              Erken teshis, buyuk tamiratlari onler ve cebinizi korur.
+              Aracınızdaki belirtilerden yola çıkarak olası sorunları tespit edin.
+              Erken teşhis, büyük tamiratları önler ve cebinizi korur.
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
               {[
@@ -136,16 +136,16 @@ export default function ArizaRehberiPage() {
             <AnimatedSection delay={0.1}>
               <div>
                 <h2 className="text-2xl font-display font-bold text-th-fg mb-4">
-                  Aracinizin Sorununu <span className="text-gold">Teshis Edin</span>
+                  Aracınızın Sorununu <span className="text-gold">Teşhis Edin</span>
                 </h2>
                 <div className="text-th-fg-sub text-sm leading-relaxed space-y-3">
                   <p>
-                    Ister rahatsiz edici bir tikirti, benzin kokusu veya gosterge panelinizdeki bir uyari lambasi ile baslasin,
-                    tanimlanamayan arac sorunu midenizi bulandirabilir.
+                    İster rahatsız edici bir tıkırtı, benzin kokusu veya gösterge panelinizdeki bir uyarı lambası ile başlasın,
+                    tanımlanamayan araç sorunu midenizi bulandırabilir.
                   </p>
                   <p>
-                    TamirHanem, sizin icin kaputun altina bakmasi icin guvenilir bir tamirci bulmanizi kolaylastirir.
-                    Ancak once aracinizi teshis etmek yararlidir cunku bir tamirin ne kadar acil oldugunu bileceksiniz.
+                    TamirHanem, sizin için kaputun altına bakması için güvenilir bir tamirci bulmanızı kolaylaştırır.
+                    Ancak önce aracınızı teşhis etmek yararlıdır çünkü bir tamirin ne kadar acil olduğunu bileceksiniz.
                   </p>
                 </div>
               </div>
@@ -155,7 +155,7 @@ export default function ArizaRehberiPage() {
             <AnimatedSection delay={0.15}>
               <div>
                 <h2 className="text-xl font-display font-bold text-th-fg mb-6">
-                  Ariza Teshis <span className="text-gold">Testleri</span>
+                  Arıza Teşhis <span className="text-gold">Testleri</span>
                 </h2>
                 <div className="grid md:grid-cols-2 gap-6">
                   <Link href="/ariza-bul" className="group">
@@ -168,10 +168,10 @@ export default function ArizaRehberiPage() {
                         <AlertTriangle className="w-6 h-6 text-orange-400" />
                       </div>
                       <h3 className="text-base font-display font-bold text-th-fg mb-2 group-hover:text-brand-500 transition-colors">
-                        Motor Kontrol Lambasi Yaniyor
+                        Motor Kontrol Lambası Yanıyor
                       </h3>
                       <p className="text-xs text-th-fg-sub">
-                        Aracinizin check engine lambasinin ne isaret ediyor olabilecegini ogrenin.
+                        Aracınızın check engine lambasının ne işaret ediyor olabileceğini öğrenin.
                       </p>
                     </motion.div>
                   </Link>
@@ -185,10 +185,10 @@ export default function ArizaRehberiPage() {
                         <KeyRound className="w-6 h-6 text-red-400" />
                       </div>
                       <h3 className="text-base font-display font-bold text-th-fg mb-2 group-hover:text-brand-500 transition-colors">
-                        Arac Calismiyor
+                        Araç Çalışmıyor
                       </h3>
                       <p className="text-xs text-th-fg-sub">
-                        Birkac kisa soruyu yanitlayarak calismayan aracin nedenini daraltin.
+                        Birkaç kısa soruyu yanıtlayarak çalışmayan aracın nedenini daraltın.
                       </p>
                     </motion.div>
                   </Link>
@@ -200,11 +200,11 @@ export default function ArizaRehberiPage() {
             <AnimatedSection delay={0.2}>
               <div>
                 <h2 className="text-xl font-display font-bold text-th-fg mb-3">
-                  Yaygin <span className="text-gold">Belirtiler</span>
+                  Yaygın <span className="text-gold">Belirtiler</span>
                 </h2>
                 <p className="text-th-fg-sub text-sm mb-6">
-                  Aracinizin sagligini takip etmek icin teknisyen olmaniza gerek yok -
-                  sadece olagandisi degisiklikler konusunda dikkatli olmaniz gerekir.
+                  Aracınızın sağlığını takip etmek için teknisyen olmanıza gerek yok -
+                  sadece olağandışı değişiklikler konusunda dikkatli olmanız gerekir.
                 </p>
 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -250,11 +250,11 @@ export default function ArizaRehberiPage() {
             <AnimatedSection delay={0.3}>
               <div>
                 <h2 className="text-xl font-display font-bold text-th-fg mb-3">
-                  Arac Uyari <span className="text-gold">Lambalari</span>
+                  Araç Uyarı <span className="text-gold">Lambaları</span>
                 </h2>
                 <p className="text-th-fg-sub text-sm mb-6">
-                  Gosterge paneli uyari lambalari, aracinizin ic sistemlerinin sorun buyumeden once
-                  potansiyel bir sorunu isaret etmesinin bir yoludur.
+                  Gösterge paneli uyarı lambaları, aracınızın iç sistemlerinin sorun büyümeden önce
+                  potansiyel bir sorunu işaret etmesinin bir yoludur.
                 </p>
 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -281,7 +281,7 @@ export default function ArizaRehberiPage() {
                     href="/ariza-bul"
                     className="text-xs text-brand-500 hover:text-brand-400 font-semibold inline-flex items-center gap-1 transition-colors"
                   >
-                    Tum uyari lambalarini gorun
+                    Tüm uyarı lambalarını görün
                     <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
@@ -292,7 +292,7 @@ export default function ArizaRehberiPage() {
             <AnimatedSection delay={0.35}>
               <div>
                 <h2 className="text-xl font-display font-bold text-th-fg mb-6">
-                  Arizali Oto Parcalari <span className="text-gold">Sorun Giderme</span>
+                  Arızalı Oto Parçaları <span className="text-gold">Sorun Giderme</span>
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   {troubleshootingParts.map((part, idx) => (
@@ -311,7 +311,7 @@ export default function ArizaRehberiPage() {
                     href="/arac/yedek-parca"
                     className="text-xs text-brand-500 hover:text-brand-400 font-semibold inline-flex items-center gap-1 transition-colors"
                   >
-                    Daha fazla oto parca belirtisi gorun
+                    Daha fazla oto parça belirtisi görün
                     <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
@@ -328,10 +328,10 @@ export default function ArizaRehberiPage() {
                   <MapPin className="w-6 h-6 text-brand-500" />
                 </div>
                 <h3 className="text-lg font-display font-bold text-th-fg mb-2">
-                  Onayli Servis Bul
+                  Onaylı Servis Bul
                 </h3>
                 <p className="text-xs text-th-fg-sub mb-4">
-                  Yakininizda yuksek kaliteli bir oto tamir servisi bulun
+                  Yakınınızda yüksek kaliteli bir oto tamir servisi bulun
                 </p>
                 <Link href="/servis-ara" className="btn-gold w-full py-3 text-sm">
                   <Search className="w-4 h-4" />
@@ -343,7 +343,7 @@ export default function ArizaRehberiPage() {
             {/* Quick Links */}
             <AnimatedSection delay={0.2}>
               <div className="glass-card p-6">
-                <h3 className="font-display font-bold text-th-fg mb-4">Yola Geri Don</h3>
+                <h3 className="font-display font-bold text-th-fg mb-4">Yola Geri Dön</h3>
                 <ul className="space-y-2.5">
                   {sidebarLinks.yolaGeriDon.map((link) => (
                     <li key={link.href}>
@@ -360,7 +360,7 @@ export default function ArizaRehberiPage() {
 
                 <div className="section-divider my-4" />
 
-                <h3 className="font-display font-bold text-th-fg mb-4">Bir Arac Arastir</h3>
+                <h3 className="font-display font-bold text-th-fg mb-4">Bir Araç Araştır</h3>
                 <ul className="space-y-2.5">
                   {sidebarLinks.aracArastir.map((link, idx) => (
                     <li key={idx}>
@@ -377,7 +377,7 @@ export default function ArizaRehberiPage() {
 
                 <div className="section-divider my-4" />
 
-                <h3 className="font-display font-bold text-th-fg mb-4">Daha Fazlasi</h3>
+                <h3 className="font-display font-bold text-th-fg mb-4">Daha Fazlası</h3>
                 <ul className="space-y-2.5">
                   <li>
                     <Link
@@ -385,7 +385,7 @@ export default function ArizaRehberiPage() {
                       className="text-sm text-th-fg-sub hover:text-brand-500 transition-colors flex items-center gap-1.5"
                     >
                       <ChevronRight className="w-3 h-3 text-brand-500/50" />
-                      Teshis OBD-II kodlari
+                      Teşhis OBD-II kodları
                     </Link>
                   </li>
                   <li>
@@ -394,7 +394,7 @@ export default function ArizaRehberiPage() {
                       className="text-sm text-th-fg-sub hover:text-brand-500 transition-colors flex items-center gap-1.5"
                     >
                       <ChevronRight className="w-3 h-3 text-brand-500/50" />
-                      Ariza bul
+                      Arıza bul
                     </Link>
                   </li>
                 </ul>

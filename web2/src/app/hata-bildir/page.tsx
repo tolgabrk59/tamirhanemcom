@@ -119,7 +119,7 @@ export default function HataBildirPage() {
     <div className="min-h-screen pt-24 pb-16">
       <div className="glow-dot w-96 h-96 top-0 left-1/2 -translate-x-1/2 opacity-20" />
 
-      <div className="section-container max-w-2xl mx-auto">
+      <div className="section-container">
         {/* Back Link */}
         <Link
           href="/"

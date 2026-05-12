@@ -14,7 +14,7 @@ export default function CommonProblems() {
   const problems = getProblemsByBrand(activeBrand)
 
   return (
-    <section id="yaygin-problemler" className="relative py-24 md:py-32">
+    <section id="yaygin-problemler" className="relative py-16 sm:py-24 md:py-32">
       <div className="section-container">
         {/* Header */}
         <AnimatedSection className="text-center mb-16">
@@ -25,10 +25,10 @@ export default function CommonProblems() {
             </span>
             <div className="w-8 h-px bg-brand-500/50" />
           </div>
-          <h2 className="font-display text-3xl md:text-5xl font-extrabold mb-4">
+          <h2 className="font-display text-2xl sm:text-3xl md:text-5xl font-extrabold mb-3 sm:mb-4">
             Sık Görülen <span className="text-gold">Araç Sorunları</span>
           </h2>
-          <p className="text-th-fg text-lg max-w-xl mx-auto">
+          <p className="text-th-fg text-base sm:text-lg max-w-xl mx-auto">
             Marka bazında en yaygın arızalar ve tahmini tamir maliyetleri
           </p>
         </AnimatedSection>
@@ -41,7 +41,7 @@ export default function CommonProblems() {
               type="button"
               onClick={() => setActiveBrand(brand)}
               className={cn(
-                'px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300',
+                'px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300',
                 activeBrand === brand
                   ? 'bg-brand-500 text-th-bg shadow-glow-sm'
                   : 'glass-card text-th-fg-sub hover:text-brand-500 hover:border-brand-500/30'
@@ -53,7 +53,7 @@ export default function CommonProblems() {
         </AnimatedSection>
 
         {/* Problems Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {problems.map((problem, idx) => (
             <AnimatedSection key={problem.id} delay={idx * 0.08}>
               <ProblemCard problem={problem} />
@@ -86,7 +86,7 @@ function ProblemCard({ problem }: { problem: CommonProblem }) {
   return (
     <div
       className={cn(
-        'glass-card p-6 md:p-8 h-full flex flex-col',
+        'glass-card p-5 sm:p-6 md:p-8 h-full flex flex-col',
         'transition-all duration-300',
         'hover:-translate-y-1 hover:shadow-glow-sm'
       )}

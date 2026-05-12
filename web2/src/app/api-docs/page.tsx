@@ -158,7 +158,7 @@ export default function ApiDocsPage() {
 
       {/* Features */}
       <section className="section-container mb-12">
-        <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-6">
           {features.map((feature, idx) => {
             const Icon = feature.icon
             return (
@@ -179,7 +179,7 @@ export default function ApiDocsPage() {
       </section>
 
       {/* OpenAPI Spec */}
-      <section className="section-container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+      <section className="section-container mb-8">
         <AnimatedSection delay={0.1}>
           <div className="glass-card p-6 md:p-8">
             <div className="flex items-center gap-3 mb-4">
@@ -211,7 +211,7 @@ export default function ApiDocsPage() {
       </section>
 
       {/* Endpoints */}
-      <section className="section-container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <section className="section-container space-y-6">
         <AnimatedSection delay={0.15}>
           <h2 className="text-xl font-display font-extrabold text-th-fg mb-2">
             Endpoint&apos;ler

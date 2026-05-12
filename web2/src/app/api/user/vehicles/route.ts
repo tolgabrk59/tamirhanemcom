@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const STRAPI_API = (process.env.STRAPI_API_URL || 'https://api.tamirhanem.net/api').trim()
 
-// GET /api/user/vehicles?jwt=X
+// GET /api/user/vehicles?jwt=X  (veya Authorization: Bearer X header)
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const jwt = searchParams.get('jwt')
+    const authHeader = request.headers.get('authorization')
+    const jwt = searchParams.get('jwt') || (authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null)
     if (!jwt) return NextResponse.json({ success: false, error: 'jwt gerekli' }, { status: 400 })
 
     const res = await fetch(

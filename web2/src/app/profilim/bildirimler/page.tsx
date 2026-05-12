@@ -76,6 +76,44 @@ const filterOptions: { key: FilterType; label: string }[] = [
   { key: 'promotion', label: 'Fırsat' },
 ]
 
+// Strapi'den gelen Türkçe karaktersiz metinleri düzelt
+function fixTurkishChars(text: string): string {
+  const replacements: [RegExp, string][] = [
+    [/\bIptal\b/g, 'İptal'],
+    [/\bUcretsiz\b/g, 'Ücretsiz'],
+    [/\bHakki\b/g, 'Hakkı'],
+    [/\bTamamlandi\b/gi, 'Tamamlandı'],
+    [/\bYikama\b/g, 'Yıkama'],
+    [/\bOnaylandi\b/g, 'Onaylandı'],
+    [/\bGonderildi\b/g, 'Gönderildi'],
+    [/\bGuncellendi\b/g, 'Güncellendi'],
+    [/\bHatirlatma\b/g, 'Hatırlatma'],
+    [/\bOlusturuldu\b/g, 'Oluşturuldu'],
+    [/\bDegistirildi\b/g, 'Değiştirildi'],
+    [/\bBasarisiz\b/g, 'Başarısız'],
+    [/\bBasarili\b/g, 'Başarılı'],
+    [/\bOdeme\b/g, 'Ödeme'],
+    [/\bYukleme\b/g, 'Yükleme'],
+    [/\bYuklendi\b/g, 'Yüklendi'],
+    [/\bEklendi\b/g, 'Eklendi'],
+    [/\bGelinmedi\b/g, 'Gelinmedi'],
+    [/\bIslem\b/g, 'İşlem'],
+    [/\bIslemleri\b/g, 'İşlemleri'],
+    [/\bIndirim\b/g, 'İndirim'],
+    [/\bFirsat\b/g, 'Fırsat'],
+    [/\bDegerlendir/g, 'Değerlendir'],
+    [/\bCuzdaniniz/g, 'Cüzdanınız'],
+    [/\bCuzdana\b/g, 'Cüzdana'],
+    [/\bServisiniz\b/g, 'Servisiniz'],
+    [/\btamamlandi\b/gi, 'tamamlandı'],
+  ]
+  let result = text
+  for (const [pattern, replacement] of replacements) {
+    result = result.replace(pattern, replacement)
+  }
+  return result
+}
+
 function formatRelativeTime(dateStr: string): string {
   try {
     const diff = Date.now() - new Date(dateStr).getTime()
@@ -165,20 +203,21 @@ export default function BildirimlerPage() {
     }
   }, [router])
 
+
   const loadNotifications = async (u: ThUser) => {
     setLoading(true)
     try {
       const res = await fetch(`/api/user/notifications-full?jwt=${encodeURIComponent(u.jwt)}`)
       const data = await res.json()
       const rawList = data.data?.data || data.data || []
-      if (data.success && Array.isArray(rawList) && rawList.length > 0) {
+      if (data.success && Array.isArray(rawList)) {
         setNotifications(
           rawList.map((n: { id: number; attributes?: Record<string, unknown> } & Record<string, unknown>) => {
             const attrs = (n.attributes || n) as Record<string, unknown>
             return {
               id: n.id,
-              title: String(attrs.title || ''),
-              message: String(attrs.message || ''),
+              title: fixTurkishChars(String(attrs.title || '')),
+              message: fixTurkishChars(String(attrs.message || attrs.description || '')),
               type: String(attrs.type || 'system') as NotifType,
               read: Boolean(attrs.read),
               createdAt: String(attrs.createdAt || ''),
@@ -186,14 +225,16 @@ export default function BildirimlerPage() {
           })
         )
       } else {
-        setNotifications(generateMockNotifications())
+        setNotifications([])
       }
     } catch {
-      setNotifications(generateMockNotifications())
+      setNotifications([])
     } finally {
       setLoading(false)
     }
   }
+
+  const emitBadgeUpdate = () => window.dispatchEvent(new Event('badge-update'))
 
   const markAsRead = async (id: number) => {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))
@@ -208,19 +249,62 @@ export default function BildirimlerPage() {
     } catch {
       // sessizce devam et
     }
+    emitBadgeUpdate()
   }
 
-  const deleteNotification = (id: number) => {
+  const deleteNotification = async (id: number) => {
     setNotifications(prev => prev.filter(n => n.id !== id))
+    if (user) {
+      try {
+        await fetch('/api/user/notifications-full', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jwt: user.jwt, id }),
+        })
+      } catch {
+        // sessizce devam et
+      }
+    }
+    emitBadgeUpdate()
   }
 
-  const markAllRead = () => {
+  const markAllRead = async () => {
+    const unread = notifications.filter(n => !n.read)
     setNotifications(prev => prev.map(n => ({ ...n, read: true })))
+    if (user && unread.length > 0) {
+      try {
+        await Promise.all(
+          unread.map(n =>
+            fetch('/api/user/notifications-full', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ jwt: user.jwt, id: n.id }),
+            })
+          )
+        )
+      } catch {
+        // sessizce devam et
+      }
+    }
+    emitBadgeUpdate()
   }
 
-  const clearAll = () => {
+  const clearAll = async () => {
     if (!window.confirm('Tüm bildirimleri silmek istiyor musunuz?')) return
+    const allIds = notifications.map(n => n.id)
     setNotifications([])
+    if (user && allIds.length > 0) {
+      try {
+        await fetch('/api/user/notifications-full', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jwt: user.jwt, ids: allIds }),
+        })
+      } catch {
+        // sessizce devam et
+      }
+    }
+    emitBadgeUpdate()
   }
 
   if (!user) return null
@@ -228,14 +312,15 @@ export default function BildirimlerPage() {
   const unreadCount = notifications.filter(n => !n.read).length
 
   const filtered = (() => {
-    if (activeFilter === 'all') return notifications
-    if (activeFilter === 'unread') return notifications.filter(n => !n.read)
-    return notifications.filter(n => n.type === activeFilter)
+    let list = notifications
+    if (activeFilter === 'unread') list = notifications.filter(n => !n.read)
+    else if (activeFilter !== 'all') list = notifications.filter(n => n.type === activeFilter)
+    return [...list].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
   })()
 
   return (
     <main className="min-h-screen bg-th-bg pt-20 pb-24 lg:pb-8 lg:pl-16 animate-fade-in">
-      <div className="max-w-3xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         {/* Geri */}
         <button
@@ -371,7 +456,7 @@ export default function BildirimlerPage() {
                       <button
                         onClick={() => markAsRead(notif.id)}
                         className="w-8 h-8 rounded-full flex items-center justify-center text-emerald-400 hover:bg-emerald-400/10 transition-all duration-200"
-                        title="Okundu isaretla"
+                        title="Okundu işaretle"
                       >
                         <Check className="w-3.5 h-3.5" />
                       </button>

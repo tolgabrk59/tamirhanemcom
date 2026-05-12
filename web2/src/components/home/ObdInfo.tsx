@@ -40,7 +40,7 @@ const severityColors: Record<string, string> = {
 
 export default function ObdInfo() {
   return (
-    <section className="relative py-24 md:py-32">
+    <section className="relative py-16 sm:py-24 md:py-32">
       <div className="section-container">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
           {/* Left Content */}
@@ -49,7 +49,7 @@ export default function ObdInfo() {
               <span className="text-brand-500 text-sm font-semibold">OBD-II Arıza Kodları</span>
             </div>
 
-            <h2 className="font-display text-3xl md:text-4xl font-extrabold mb-4 text-th-fg">
+            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold mb-3 sm:mb-4 text-th-fg">
               Aracınızdaki Arıza Kodlarını <span className="text-gold">Anlayın</span>
             </h2>
 

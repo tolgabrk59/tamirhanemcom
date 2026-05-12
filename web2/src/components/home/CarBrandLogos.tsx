@@ -23,9 +23,18 @@ interface LogoItem {
 
 export default function CarBrandLogos() {
   const [activeLogos, setActiveLogos] = useState<LogoItem[]>([])
+  const [isMobile, setIsMobile] = useState(false)
   const logoIdRef = useRef(0)
 
   useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  useEffect(() => {
+    // Mobilde daha az logo ve daha yavaş interval = daha az GPU yükü
     const spawnLogo = () => {
       const brand = carBrands[Math.floor(Math.random() * carBrands.length)]
       const logo: LogoItem = {
@@ -34,12 +43,13 @@ export default function CarBrandLogos() {
         x: Math.random() * 60 + 20,
         y: Math.random() * 60 + 20,
       }
-      setActiveLogos((prev) => [...prev.slice(-3), logo])
+      const maxLogos = isMobile ? 1 : 3
+      setActiveLogos((prev) => [...prev.slice(-maxLogos), logo])
     }
     spawnLogo()
-    const interval = setInterval(spawnLogo, 2500)
+    const interval = setInterval(spawnLogo, isMobile ? 4000 : 2500)
     return () => clearInterval(interval)
-  }, [])
+  }, [isMobile])
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-[1]" aria-hidden="true">
@@ -53,11 +63,11 @@ export default function CarBrandLogos() {
               top: `${logo.y}%`,
               transform: 'translate(-50%, -50%)',
             }}
-            initial={{ opacity: 0, scale: 0.3, filter: 'blur(10px)' }}
+            initial={{ opacity: 0, scale: 0.3, ...(isMobile ? {} : { filter: 'blur(10px)' }) }}
             animate={{
               opacity: [0, 0.05, 0.05, 0],
               scale: [0.3, 1, 1, 0.7],
-              filter: ['blur(10px)', 'blur(0px)', 'blur(0px)', 'blur(5px)'],
+              ...(isMobile ? {} : { filter: ['blur(10px)', 'blur(0px)', 'blur(0px)', 'blur(5px)'] }),
             }}
             exit={{ opacity: 0, scale: 0.5 }}
             transition={{

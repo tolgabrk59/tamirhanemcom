@@ -159,7 +159,7 @@ export default function LoginModal({
             <button
               type="button"
               onClick={onClose}
-              className="absolute top-4 right-4 z-10 w-8 h-8 rounded-lg flex items-center justify-center text-th-fg-muted hover:text-th-fg hover:bg-th-overlay/8 transition-colors"
+              className="absolute top-3 right-3 z-10 w-11 h-11 rounded-lg flex items-center justify-center text-th-fg-muted hover:text-th-fg hover:bg-th-overlay/8 transition-colors"
               aria-label="Kapat"
             >
               <X className="w-4 h-4" />
@@ -181,7 +181,7 @@ export default function LoginModal({
                   type="button"
                   onClick={() => switchTab('login')}
                   className={cn(
-                    'flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200',
+                    'flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-lg text-sm font-medium transition-all duration-200',
                     tab === 'login'
                       ? 'bg-brand-500 text-brand-950 shadow-sm'
                       : 'text-th-fg-sub hover:text-th-fg'
@@ -194,7 +194,7 @@ export default function LoginModal({
                   type="button"
                   onClick={() => switchTab('register')}
                   className={cn(
-                    'flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200',
+                    'flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-lg text-sm font-medium transition-all duration-200',
                     tab === 'register'
                       ? 'bg-brand-500 text-brand-950 shadow-sm'
                       : 'text-th-fg-sub hover:text-th-fg'
@@ -293,7 +293,7 @@ export default function LoginModal({
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full btn-gold py-2.5 text-sm rounded-xl disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="w-full btn-gold py-3 text-sm rounded-xl min-h-[44px] disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       {loading ? (
                         <span className="flex items-center justify-center gap-2">
@@ -404,7 +404,7 @@ export default function LoginModal({
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full btn-gold py-2.5 text-sm rounded-xl disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="w-full btn-gold py-3 text-sm rounded-xl min-h-[44px] disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       {loading ? (
                         <span className="flex items-center justify-center gap-2">

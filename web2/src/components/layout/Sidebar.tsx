@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -11,6 +12,8 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTheme } from '@/components/providers/ThemeProvider'
+import { getActiveCampaigns } from '@/data/campaigns'
+import type { Campaign } from '@/types/sponsor'
 
 // ─── Tipler ──────────────────────────────────────
 interface NavLink {
@@ -46,7 +49,7 @@ const navLinks: NavLink[] = [
 
 const megaMenus: Record<string, MegaMenuDef> = {
   hizmetler: {
-    title: 'Hizmetlerimiz',
+    title: 'Hizmetler',
     icon: Wrench,
     columns: [{
       title: 'Hizmetler',
@@ -79,6 +82,21 @@ export default function Sidebar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [openMobileSubmenu, setOpenMobileSubmenu] = useState<string | null>(null)
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null)
+  const [campaigns, setCampaigns] = useState<Campaign[]>([])
+  const [campaignIndex, setCampaignIndex] = useState(0)
+
+  useEffect(() => {
+    const active = getActiveCampaigns()
+    if (active.length > 0) setCampaigns(active)
+  }, [])
+
+  useEffect(() => {
+    if (campaigns.length <= 1) return
+    const interval = setInterval(() => {
+      setCampaignIndex((prev) => (prev + 1) % campaigns.length)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [campaigns.length])
 
   useEffect(() => {
     setIsMobileOpen(false)
@@ -108,7 +126,7 @@ export default function Sidebar() {
       {/* ═══════════════════════════════════════════
           MOBILE: Top Gold Bar + Slide-out Drawer
          ═══════════════════════════════════════════ */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-brand-500 shadow-lg">
+      <div className="hidden fixed top-0 left-0 right-0 z-50 bg-brand-500 shadow-lg">
         <div className="flex items-center justify-between h-14 px-4">
           <Link href="/" onClick={(e) => handleNavClick(e, '/')} className="flex items-center">
             <span className="text-2xl font-extrabold tracking-tight font-display">
@@ -147,7 +165,7 @@ export default function Sidebar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="lg:hidden fixed inset-0 bg-black/50 z-[45] backdrop-blur-sm"
+            className="hidden fixed inset-0 bg-black/50 z-[45] backdrop-blur-sm"
             onClick={() => setIsMobileOpen(false)}
           />
         )}
@@ -156,7 +174,7 @@ export default function Sidebar() {
       {/* Mobile Sidebar Drawer */}
       <aside
         className={cn(
-          'lg:hidden fixed top-14 left-0 bottom-0 w-72 bg-brand-500 z-50 transform transition-transform duration-300 ease-in-out shadow-2xl overflow-y-auto',
+          'hidden fixed top-14 left-0 bottom-0 w-72 bg-brand-500 z-50 transform transition-transform duration-300 ease-in-out shadow-2xl overflow-y-auto',
           isMobileOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
@@ -269,21 +287,21 @@ export default function Sidebar() {
       {/* ═══════════════════════════════════════════
           DESKTOP: Left Branding Sidebar
          ═══════════════════════════════════════════ */}
-      <aside className="hidden lg:flex fixed top-0 left-0 bottom-0 w-16 z-40 flex-col items-center justify-between py-4 bg-brand-500 shadow-lg">
+      <aside className="hidden lg:flex fixed top-0 left-0 bottom-0 w-16 z-40 flex-col items-center justify-between py-4 bg-brand-500 shadow-lg overflow-visible">
         <div className="flex flex-col items-center gap-2" />
 
-        <div className="flex flex-col items-center justify-center mb-32 gap-16">
-          <Link href="/" className="flex flex-col items-center ml-2">
+        <div className="flex flex-col items-center justify-center mb-24 gap-12 overflow-visible">
+          <Link href="/" className="flex flex-col items-center overflow-visible">
             <span
-              className="text-[#454545] text-3xl text-center font-accent"
-              style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+              className="text-[#454545] text-sm text-center font-light italic whitespace-nowrap"
+              style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', letterSpacing: '0.02em' }}
             >
               &ldquo;her araç kıymetlidir&rdquo;
             </span>
           </Link>
-          <Link href="/" className="flex flex-col items-center">
+          <Link href="/" className="flex flex-col items-center overflow-visible">
             <span
-              className="font-extrabold text-6xl tracking-tight text-[#454545] text-center"
+              className="font-extrabold text-3xl leading-none tracking-tight text-[#454545] text-center whitespace-nowrap"
               style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
             >
               tamirhanem
@@ -307,14 +325,15 @@ export default function Sidebar() {
                 onClick={(e) => handleNavClick(e, link.href)}
                 title={link.label}
                 className={cn(
-                  'flex items-center gap-1.5 px-2 xl:px-3 py-2 rounded-lg transition-all text-sm font-semibold font-display',
+                  'flex items-center gap-1 px-1.5 xl:px-3 py-2 rounded-lg transition-all font-semibold font-display whitespace-nowrap',
                   active
-                    ? 'bg-brand-600/40 text-brand-950'
-                    : 'text-brand-950/80 hover:bg-brand-600/20'
+                    ? 'bg-brand-950 text-brand-500'
+                    : 'text-brand-950/80 hover:bg-brand-950/10 hover:text-brand-950'
                 )}
+                style={{ fontSize: 'clamp(10px, 1.1vw, 14px)' }}
               >
                 <Icon className="w-4 h-4 shrink-0" />
-                <span className="whitespace-nowrap">{link.label}</span>
+                <span>{link.label}</span>
               </Link>
             )
           })}
@@ -335,14 +354,15 @@ export default function Sidebar() {
                 <button
                   type="button"
                   className={cn(
-                    'flex items-center gap-1.5 px-2 xl:px-3 py-2 rounded-lg transition-all text-sm font-semibold font-display',
+                    'flex items-center gap-1 px-1.5 xl:px-3 py-2 rounded-lg transition-all font-semibold font-display whitespace-nowrap',
                     isOpen
-                      ? 'bg-brand-600/40 text-brand-950'
-                      : 'text-brand-950/80 hover:bg-brand-600/20'
+                      ? 'bg-brand-950 text-brand-500'
+                      : 'text-brand-950/80 hover:bg-brand-950/10 hover:text-brand-950'
                   )}
+                  style={{ fontSize: 'clamp(10px, 1.1vw, 14px)' }}
                 >
                   <Icon className="w-4 h-4 shrink-0" />
-                  <span className="whitespace-nowrap">{menu.title}</span>
+                  <span>{menu.title}</span>
                   <ChevronDown className={cn('w-3 h-3 transition-transform shrink-0', isOpen && 'rotate-180')} />
                 </button>
 
@@ -400,84 +420,57 @@ export default function Sidebar() {
             )
           })}
 
-          <div className="h-6 w-px bg-brand-700/30 mx-1 xl:mx-2 shrink-0" />
-
-          {/* WhatsApp Destek */}
-          <a
-            href="https://wa.me/905446207275"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-1.5 px-2 xl:px-3 py-2 bg-[#128C7E] hover:bg-[#075E54] rounded-lg transition-all text-white font-semibold text-xs shadow-md hover:shadow-lg font-display shrink-0 whitespace-nowrap"
-            title="WhatsApp Destek"
-          >
-            <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-            </svg>
-            <span className="hidden xl:inline">Destek</span>
-          </a>
-
-          {/* Hatalı Park Bildirimi */}
-          <Link
-            href="/arac/park-mesaj"
-            className="flex items-center justify-center gap-1.5 px-2 xl:px-3 py-2 bg-transparent border-2 border-brand-950/60 hover:border-brand-950 hover:bg-brand-950/10 rounded-lg transition-all text-brand-950 font-semibold text-xs font-display shrink-0 whitespace-nowrap"
-            title="Hatalı Park Bildirimi"
-          >
-            <Bell className="w-4 h-4 shrink-0" />
-            <span className="hidden xl:inline">Hatalı Park</span>
-          </Link>
-
-          {/* Hata Bildir */}
-          <Link
-            href="/hata-bildir"
-            className="flex items-center justify-center gap-1.5 px-2 xl:px-3 py-2 bg-transparent border-2 border-brand-950/60 hover:border-brand-950 hover:bg-brand-950/10 rounded-lg transition-all text-brand-950 font-semibold text-xs font-display shrink-0 whitespace-nowrap"
-            title="Hata Bildir"
-          >
-            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            <span className="hidden xl:inline">Sorun Bildir</span>
-          </Link>
         </div>
 
-        <div className="flex items-center gap-1.5 shrink ml-2 min-w-0">
-          <div className="h-6 w-px bg-brand-700/30 mx-1 shrink-0" />
+        {/* Kampanya Alanı */}
+        {campaigns.length > 0 && (
+          <div className="hidden xl:flex items-center gap-2 mx-2 min-w-0 shrink justify-end">
+            <div className="h-6 w-px bg-brand-700/30 shrink-0" />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={campaigns[campaignIndex].id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.4 }}
+                className="flex items-center gap-2 min-w-0 bg-brand-950/10 rounded-lg px-2 xl:px-3 py-1.5"
+              >
+                <span className="text-base flex-shrink-0">{campaigns[campaignIndex].emoji}</span>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-brand-950 font-bold text-xs leading-tight truncate">
+                    {campaigns[campaignIndex].title}
+                  </span>
+                  <span className="hidden 2xl:inline text-brand-950/70 text-[10px] leading-tight truncate">
+                    {campaigns[campaignIndex].description}
+                  </span>
+                </div>
+                <Link
+                  href={campaigns[campaignIndex].url}
+                  className="flex-shrink-0 bg-brand-950 hover:bg-brand-900 text-brand-500 px-3 py-1 rounded-lg text-xs font-bold transition-colors whitespace-nowrap"
+                >
+                  {campaigns[campaignIndex].ctaText} →
+                </Link>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        )}
 
-          {/* AI Soru Sor */}
+        <div className="flex items-center gap-1 shrink ml-1 min-w-0">
+          <div className="h-6 w-px bg-brand-700/30 mx-0.5 shrink-0" />
+
+          {/* AI Sohbet Butonu */}
           <div className="relative group shrink-0">
             <Link
               href="/ai/sohbet"
-              className="flex items-center justify-center w-9 h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-brand-950 to-brand-900 text-brand-500 rounded-xl hover:from-brand-900 hover:to-brand-800 transition-all shadow-md hover:shadow-lg hover:scale-105"
-              title="AI Soru Sor"
+              className="relative flex items-center gap-1 px-2 xl:px-4 py-2 bg-brand-950 text-brand-500 rounded-lg font-semibold hover:bg-brand-900 transition-colors font-display shrink-0"
+              style={{ fontSize: 'clamp(10px, 1.1vw, 14px)' }}
+              title="AI Asistana Sor"
             >
-              <Bot className="w-5 h-5" />
+              <Image src="/testbott.webp" alt="AI Asistan" width={20} height={20} className="w-5 h-5" unoptimized />
+              <span>AI</span>
             </Link>
-            {/* Sabit yazı - simgenin üstünde */}
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 pointer-events-none">
-              <div className="relative bg-brand-950 text-brand-500 px-3 py-2 rounded-lg shadow-xl whitespace-nowrap">
-                <p className="text-[11px] font-bold font-display leading-tight">Yapay zeka desteğiyle</p>
-                <p className="text-[10px] font-medium text-brand-400 leading-tight">sizi doğru servise yönlendirelim</p>
-                {/* Ok işareti - aşağı */}
-                <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-brand-950 rotate-45" />
-              </div>
-            </div>
           </div>
 
-          <button
-            type="button"
-            title="Giriş Yap"
-            onClick={() => window.dispatchEvent(new CustomEvent('open-login-modal', { detail: { tab: 'login' } }))}
-            className="flex items-center gap-1.5 px-2 xl:px-3 py-2 text-brand-950/80 hover:bg-brand-600/20 rounded-lg transition-colors text-sm font-semibold font-display shrink-0"
-          >
-            <User className="w-4 h-4" />
-            <span className="hidden xl:inline">Giriş</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => window.dispatchEvent(new CustomEvent('open-login-modal', { detail: { tab: 'register' } }))}
-            className="px-3 xl:px-4 py-2 bg-brand-950 text-brand-500 rounded-lg font-semibold text-sm hover:bg-brand-900 transition-colors font-display shrink-0"
-          >
-            Kayıt
-          </button>
         </div>
       </nav>
     </>

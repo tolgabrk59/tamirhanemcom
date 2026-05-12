@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils'
 import Link from 'next/link'
 
 const currentYear = new Date().getFullYear()
-const years = Array.from({ length: 25 }, (_, i) => currentYear - i)
+const defaultYears = Array.from({ length: 25 }, (_, i) => currentYear - i)
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat('tr-TR', {
@@ -50,6 +50,7 @@ export default function AracDegeriPage() {
   const [models, setModels] = useState<string[]>([])
   const [brandsLoading, setBrandsLoading] = useState(true)
   const [modelsLoading, setModelsLoading] = useState(false)
+  const [availableYears, setAvailableYears] = useState<number[]>(defaultYears)
   const [brand, setBrand] = useState('')
   const [model, setModel] = useState('')
   const [year, setYear] = useState(currentYear - 3)
@@ -100,6 +101,30 @@ export default function AracDegeriPage() {
   useEffect(() => {
     fetchModels(brand)
   }, [brand, fetchModels])
+
+  // Model seçildiğinde lokal vehicle-data'dan yılları çek
+  useEffect(() => {
+    if (brand && model) {
+      fetch(`/api/packages?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.data && Array.isArray(data.data)) {
+            const allYears = new Set<number>()
+            data.data.forEach((item: { years?: number[] }) => {
+              if (item.years) item.years.forEach((y: number) => allYears.add(y))
+            })
+            if (allYears.size > 0) {
+              setAvailableYears(Array.from(allYears).sort((a, b) => b - a))
+            } else {
+              setAvailableYears(defaultYears)
+            }
+          }
+        })
+        .catch(() => setAvailableYears(defaultYears))
+    } else {
+      setAvailableYears(defaultYears)
+    }
+  }, [brand, model])
 
   const handleCalculate = async () => {
     if (!brand || !model) return
@@ -161,7 +186,7 @@ export default function AracDegeriPage() {
 
         {/* Info Box */}
         <AnimatedSection delay={0.1}>
-          <div className="glass-card p-6 max-w-3xl mx-auto">
+          <div className="glass-card p-6">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center shrink-0">
                 <AlertCircle className="w-6 h-6 text-brand-500" />
@@ -250,7 +275,7 @@ export default function AracDegeriPage() {
                       onChange={(e) => setYear(Number(e.target.value))}
                       className="input-dark appearance-none cursor-pointer text-sm py-3.5"
                     >
-                      {years.map((y) => (
+                      {availableYears.map((y) => (
                         <option key={y} value={y} className="bg-th-bg-alt">{y}</option>
                       ))}
                     </select>

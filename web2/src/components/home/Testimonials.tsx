@@ -72,7 +72,7 @@ function StarRating({ rating }: { rating: number }) {
 
 export default function Testimonials() {
   return (
-    <section className="relative py-24 md:py-32">
+    <section className="relative py-16 sm:py-24 md:py-32">
       <div className="section-container">
         {/* Section Header */}
         <AnimatedSection className="text-center mb-16">
@@ -83,10 +83,10 @@ export default function Testimonials() {
             </span>
             <div className="w-8 h-px bg-brand-500/50" />
           </div>
-          <h2 className="font-display text-3xl md:text-5xl font-extrabold mb-4">
+          <h2 className="font-display text-2xl sm:text-3xl md:text-5xl font-extrabold mb-3 sm:mb-4">
             Kullanıcılarımız Ne <span className="text-gold">Diyor?</span>
           </h2>
-          <p className="text-th-fg text-lg max-w-xl mx-auto">
+          <p className="text-th-fg text-base sm:text-lg max-w-xl mx-auto">
             Binlerce mutlu kullanıcının deneyimlerinden bazıları
           </p>
         </AnimatedSection>
@@ -95,7 +95,7 @@ export default function Testimonials() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {testimonials.map((testimonial, idx) => (
             <AnimatedSection key={testimonial.name} delay={idx * 0.1}>
-              <div className="glass-card p-8 h-full flex flex-col hover:shadow-glow-sm transition-all duration-300">
+              <div className="glass-card p-5 sm:p-8 h-full flex flex-col hover:shadow-glow-sm transition-all duration-300">
                 {/* Quote icon + Stars */}
                 <div className="flex items-center justify-between mb-5">
                   <Quote className="w-8 h-8 text-brand-500/20" />

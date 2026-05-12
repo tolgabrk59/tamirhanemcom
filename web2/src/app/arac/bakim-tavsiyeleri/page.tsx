@@ -116,7 +116,7 @@ export default function BakimTavsiyeleriPage() {
             </p>
 
             {/* Search */}
-            <div className="max-w-2xl mx-auto">
+            <div>
               <div className="glass-card p-2">
                 <div className="relative">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-th-fg-sub" />
@@ -210,7 +210,7 @@ export default function BakimTavsiyeleriPage() {
             <span className="text-brand-500 text-sm font-semibold tracking-widest uppercase">Sıkça Sorulan Sorular</span>
             <div className="w-8 h-px bg-brand-500/50" />
           </div>
-          <div className="max-w-3xl mx-auto space-y-4">
+          <div className="space-y-4">
             {faqs.map((faq, idx) => (
               <div key={idx} className="glass-card p-6 hover:-translate-y-0.5 hover:shadow-glow-sm transition-all duration-300">
                 <div className="flex items-start gap-3">

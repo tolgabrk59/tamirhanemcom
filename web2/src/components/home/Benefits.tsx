@@ -92,7 +92,7 @@ function BenefitColumn({
 
 export default function Benefits() {
   return (
-    <section className="relative py-24 md:py-32">
+    <section className="relative py-16 sm:py-24 md:py-32">
       <div className="section-container">
         {/* Header */}
         <AnimatedSection className="text-center mb-16">
@@ -100,10 +100,10 @@ export default function Benefits() {
             <ShieldCheck className="w-4 h-4 text-brand-500" />
             <span className="text-brand-500 text-sm font-semibold">TamirHanem Onaylı</span>
           </div>
-          <h2 className="font-display text-3xl md:text-5xl font-extrabold mb-4">
+          <h2 className="font-display text-2xl sm:text-3xl md:text-5xl font-extrabold mb-3 sm:mb-4">
             Herkes İçin <span className="text-gold">Avantajlı</span>
           </h2>
-          <p className="text-th-fg text-lg max-w-2xl mx-auto">
+          <p className="text-th-fg text-base sm:text-lg max-w-2xl mx-auto">
             TamirHanem, hem araç sahiplerine hem de servis işletmelerine değer katıyor.
             Platformumuza katılın, avantajlardan yararlanın.
           </p>
@@ -136,24 +136,24 @@ export default function Benefits() {
 
         {/* Bottom CTA */}
         <AnimatedSection delay={0.3} className="mt-10">
-          <div className="glass-card p-8 md:p-10 text-center bg-gradient-to-r from-brand-500/5 to-brand-500/10">
-            <h3 className="font-display text-2xl font-bold text-th-fg mb-3">
+          <div className="glass-card p-6 sm:p-8 md:p-10 text-center bg-gradient-to-r from-brand-500/5 to-brand-500/10">
+            <h3 className="font-display text-xl sm:text-2xl font-bold text-th-fg mb-3">
               TamirHanem Ailesine Katılın
             </h3>
             <p className="text-th-fg-sub max-w-2xl mx-auto mb-6">
               İster araç sahibi olun ister servis işletmesi, TamirHanem ile otomotiv dünyasını daha kolay ve güvenilir hale getiriyoruz.
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
               <a
                 href="https://tamirhanem.net/register.html"
-                className="inline-flex items-center gap-2 bg-brand-500 text-th-bg px-8 py-3.5 rounded-xl font-bold text-sm transition-all duration-300 hover:bg-brand-400 hover:shadow-glow-sm"
+                className="inline-flex items-center justify-center gap-2 bg-brand-500 text-th-bg px-6 sm:px-8 py-3.5 rounded-xl font-bold text-sm transition-all duration-300 hover:bg-brand-400 hover:shadow-glow-sm min-h-[44px]"
               >
                 <User className="w-5 h-5" />
                 Araç Sahibi Olarak Başla
               </a>
               <a
                 href="https://tamirhanem.net/register.html"
-                className="inline-flex items-center gap-2 bg-th-fg/10 text-th-fg px-8 py-3.5 rounded-xl font-bold text-sm transition-all duration-300 hover:bg-th-fg/20"
+                className="inline-flex items-center justify-center gap-2 bg-th-fg/10 text-th-fg px-6 sm:px-8 py-3.5 rounded-xl font-bold text-sm transition-all duration-300 hover:bg-th-fg/20 min-h-[44px]"
               >
                 <Building2 className="w-5 h-5" />
                 Servis Olarak Katıl

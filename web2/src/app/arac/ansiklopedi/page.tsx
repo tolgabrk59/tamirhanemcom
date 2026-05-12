@@ -142,7 +142,7 @@ export default function EncyclopediaPage() {
       {/* Arama */}
       <section className="section-container mb-12">
         <AnimatedSection delay={0.1}>
-          <div className="max-w-2xl mx-auto relative" ref={searchRef}>
+          <div className="relative" ref={searchRef}>
             <div className="glass-card p-2">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-th-fg-sub" />

@@ -116,7 +116,7 @@ export default function SorularPage() {
 
   return (
     <main className="min-h-screen bg-th-bg pt-20 pb-24 lg:pb-8 lg:pl-16">
-      <div className="max-w-3xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         {/* Geri */}
         <button onClick={() => router.back()} className="flex items-center gap-2 text-th-fg-muted hover:text-th-fg text-sm font-semibold mb-6 transition-colors group">

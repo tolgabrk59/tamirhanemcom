@@ -98,7 +98,7 @@ export default function PlakaKayitPage() {
       {/* Form */}
       <section className="section-container mb-12">
         <AnimatedSection delay={0.1}>
-          <div className="glass-card p-6 md:p-8 max-w-2xl mx-auto">
+          <div className="glass-card p-6 md:p-8">
             {submitted ? (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -255,7 +255,7 @@ export default function PlakaKayitPage() {
             Neden Kayıt <span className="text-gold">Olmalıyım?</span>
           </h2>
         </AnimatedSection>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {benefits.map((item, index) => (
             <AnimatedSection key={item.title} delay={0.2 + index * 0.1}>
               <motion.div

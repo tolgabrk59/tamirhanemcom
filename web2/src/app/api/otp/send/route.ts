@@ -44,11 +44,21 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({ phone: cleanPhone }),
     })
 
-    const result = await response.json()
+    const responseText = await response.text()
+    let result: Record<string, unknown>
+    try {
+      result = JSON.parse(responseText)
+    } catch {
+      console.error('[OTP send] Strapi JSON değil:', response.status, responseText.slice(0, 200))
+      return NextResponse.json(
+        { success: false, error: 'Strapi sunucusuna erişilemiyor. Lütfen daha sonra tekrar deneyin.' },
+        { status: 502 }
+      )
+    }
 
     if (!response.ok || result.success === false) {
       return NextResponse.json(
-        { success: false, error: result.message || result.error?.message || 'SMS gönderilemedi' },
+        { success: false, error: (result.message || (result.error as { message?: string })?.message || 'SMS gönderilemedi') as string },
         { status: response.status }
       )
     }

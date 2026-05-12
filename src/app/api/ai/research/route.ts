@@ -30,6 +30,12 @@ const openaiKey = process.env.OPENAI_API_KEY;
 const grokKey = process.env.GROK_API_KEY;
 const grokBaseUrl = "https://api12.codefast.app/v1";
 
+// z.ai Anthropic API
+const ZAI_API_URL = "https://api.z.ai/api/anthropic/v1/messages";
+const ZAI_API_KEY = "042213d5518349509f67b0dcabb054d2.CrALf2SAl4jKXBgw";
+const ZAI_MODEL = "glm-4.5-air";
+const ZAI_TIMEOUT_MS = 120_000; // 2 dakika timeout
+
 // Cache TTL (gün)
 const CACHE_TTL_DAYS = 30;
 
@@ -215,6 +221,48 @@ async function generateWithGrok(prompt: string): Promise<string> {
   return text;
 }
 
+// z.ai (Anthropic uyumlu) ile generate
+async function generateWithZAI(prompt: string): Promise<string> {
+  logger.info("Trying z.ai (glm-4.5-air)...");
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), ZAI_TIMEOUT_MS);
+
+  try {
+    const res = await fetch(ZAI_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": ZAI_API_KEY,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: ZAI_MODEL,
+        max_tokens: 4096,
+        messages: [
+          {
+            role: "user",
+            content: `Sen uzman bir otomobil teknisyenisin. Türkçe yanıt ver. Sadece geçerli JSON döndür, markdown kullanma.\n\n${prompt}`,
+          },
+        ],
+      }),
+      signal: controller.signal,
+    });
+
+    if (!res.ok) {
+      const errBody = await res.text();
+      throw new Error(`z.ai HTTP ${res.status}: ${errBody}`);
+    }
+
+    const json = await res.json();
+    const text = json.content?.[0]?.text || "";
+    logger.info("z.ai Success");
+    return text;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 // Gemini ile generate (primary), Grok ve OpenAI fallback
 async function generateWithRetry(prompt: string, modelName: string) {
   let lastError;
@@ -276,9 +324,18 @@ async function generateWithRetry(prompt: string, modelName: string) {
     }
   }
 
-  // 5: All Gemini keys failed - try Grok as first fallback (limitsiz)
+  // 5: All Gemini keys failed - try z.ai as first fallback
+  logger.warn("All Gemini keys failed, falling back to z.ai...");
+  try {
+    return await generateWithZAI(prompt);
+  } catch (zaiError: any) {
+    logger.error({ message: zaiError.message }, "z.ai also failed");
+    lastError = zaiError;
+  }
+
+  // 6: z.ai failed - try Grok as second fallback (limitsiz)
   if (grokKey) {
-    logger.warn("All Gemini keys failed, falling back to Grok...");
+    logger.warn("z.ai failed, falling back to Grok...");
     try {
       return await generateWithGrok(prompt);
     } catch (grokError: any) {
@@ -287,7 +344,7 @@ async function generateWithRetry(prompt: string, modelName: string) {
     }
   }
 
-  // 6: Grok failed - try OpenAI as last fallback
+  // 7: Grok failed - try OpenAI as last fallback
   if (openaiKey) {
     logger.warn("Grok failed, falling back to OpenAI...");
     try {
@@ -397,14 +454,22 @@ export async function POST(req: Request) {
     try {
         data = JSON.parse(cleanText) as VehicleAnalysisData;
     } catch (jsonError) {
-        // Fallback: Try without tools (Pure AI)
-        logger.error("JSON parse error, retrying...");
-        const fallbackGenAI = new GoogleGenerativeAI(geminiKeys[0]);
-        const modelAI = fallbackGenAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-        const result = await modelAI.generateContent(prompt + "\n\n(Not: JSON format hatası alındı, lütfen sadece geçerli JSON döndür.)");
-        const response = await result.response;
-        const fallbackText = response.text().replace(/```json/g, "").replace(/```/g, "").trim();
-        data = JSON.parse(fallbackText) as VehicleAnalysisData;
+        // Fallback: JSON parse hatası - z.ai ile tekrar dene
+        logger.error("JSON parse error, retrying with z.ai...");
+        try {
+          const retryText = await generateWithZAI(prompt + "\n\n(Not: JSON format hatası alındı, lütfen sadece geçerli JSON döndür.)");
+          const fallbackText = retryText.replace(/```json/g, "").replace(/```/g, "").trim();
+          data = JSON.parse(fallbackText) as VehicleAnalysisData;
+        } catch (zaiRetryError) {
+          // z.ai de başarısız olursa Gemini'ye düş
+          logger.error("z.ai retry failed, trying Gemini...");
+          const fallbackGenAI = new GoogleGenerativeAI(geminiKeys[0]);
+          const modelAI = fallbackGenAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+          const result = await modelAI.generateContent(prompt + "\n\n(Not: JSON format hatası alındı, lütfen sadece geçerli JSON döndür.)");
+          const response = await result.response;
+          const fallbackText = response.text().replace(/```json/g, "").replace(/```/g, "").trim();
+          data = JSON.parse(fallbackText) as VehicleAnalysisData;
+        }
     }
 
     // Add image url to data

@@ -50,22 +50,39 @@ export async function POST(request: NextRequest) {
       }),
     })
 
-    const result = await response.json()
+    const responseText = await response.text()
+    let result: Record<string, unknown>
+    try {
+      result = JSON.parse(responseText)
+    } catch {
+      console.error('[OTP verify] Strapi JSON değil:', response.status, responseText.slice(0, 200))
+      return NextResponse.json(
+        { success: false, error: 'Strapi sunucusuna erişilemiyor. Lütfen daha sonra tekrar deneyin.' },
+        { status: 502 }
+      )
+    }
+
+    console.log('[OTP verify] Strapi status:', response.status)
+    console.log('[OTP verify] Strapi response:', JSON.stringify(result, null, 2))
 
     if (!response.ok || result.success === false) {
+      console.error('[OTP verify] Doğrulama başarısız:', result.message || result.error)
       return NextResponse.json(
         {
           success: false,
-          error: result.message || result.error?.message || 'Doğrulama başarısız',
-          remainingAttempts: result.remainingAttempts,
+          error: (result.message || (result.error as { message?: string })?.message || 'Doğrulama başarısız') as string,
+          remainingAttempts: result.remainingAttempts as number | undefined,
         },
         { status: response.status }
       )
     }
 
+    const user = result.user as { id?: number; username?: string } | undefined
+    console.log('[OTP verify] User found:', user?.id, user?.username, 'JWT:', !!result.jwt)
+
     return NextResponse.json({
       success: true,
-      message: result.message || 'Doğrulama başarılı',
+      message: (result.message || 'Doğrulama başarılı') as string,
       jwt: result.jwt,
       user: result.user,
     })

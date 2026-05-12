@@ -47,7 +47,7 @@ async function getAdminToken(): Promise<string> {
   return token
 }
 
-async function adminFetch(
+export async function adminFetch(
   path: string,
   options: RequestInit = {}
 ): Promise<Response> {

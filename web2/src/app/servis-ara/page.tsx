@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils'
 import { isServiceOpen } from '@/lib/service-utils'
 import ServiceDetailPanel from '@/components/service-search/ServiceDetailPanel'
 import { cityList, getDistrictsByCity } from '@/data/turkey-locations'
+import { useLocationStore } from '@/lib/useLocationStore'
 
 interface ServiceResult {
   id: number
@@ -322,14 +323,19 @@ function ServiceCard({
 
 function ServisAraContent() {
   const searchParams = useSearchParams()
+  const { location: storedLocation } = useLocationStore()
 
-  // Filter states - initialized from URL params (defaults: Tekirdağ / Çorlu)
+  // Filter states - initialized from URL params → store → defaults
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '')
   const [selectedCategoryType, setSelectedCategoryType] = useState(searchParams.get('tip') || 'car_wash')
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('kategori') || '')
   const [selectedCity, setSelectedCity] = useState(() => {
     const konumParam = searchParams.get('konum')
-    if (!konumParam) return 'Tekirdağ'
+    if (!konumParam) {
+      // URL'de konum yoksa store'dan oku
+      if (storedLocation.city) return storedLocation.city
+      return 'Tekirdağ'
+    }
     // Doğrudan şehir listesinde var mı?
     if (cityList.includes(konumParam)) return konumParam
     // Normalize ile eşleştir
@@ -343,11 +349,15 @@ function ServisAraContent() {
       const distMatch = districts.find((d) => normalize(d) === normalizedParam)
       if (distMatch) return city
     }
-    return 'Tekirdağ'
+    return storedLocation.city || 'Tekirdağ'
   })
   const [selectedDistrict, setSelectedDistrict] = useState(() => {
     const konumParam = searchParams.get('konum')
-    if (!konumParam) return 'Çorlu'
+    if (!konumParam) {
+      // URL'de konum yoksa store'dan oku
+      if (storedLocation.district) return storedLocation.district
+      return 'Çorlu'
+    }
     const normalize = (s: string) => s.toLowerCase().replace(/\s+/g, '').replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ş/g, 's').replace(/ç/g, 'c').replace(/ğ/g, 'g')
     const normalizedParam = normalize(konumParam)
     // İlçe olarak eşleşiyor mu?
@@ -356,7 +366,7 @@ function ServisAraContent() {
       const distMatch = districts.find((d) => normalize(d) === normalizedParam)
       if (distMatch) return distMatch
     }
-    return 'Çorlu'
+    return storedLocation.district || 'Çorlu'
   })
   const [selectedBrand, setSelectedBrand] = useState('')
   const [showOpenOnly, setShowOpenOnly] = useState(false)
@@ -375,6 +385,15 @@ function ServisAraContent() {
   const [hasSearched, setHasSearched] = useState(false)
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [selectedService, setSelectedService] = useState<ServiceResult | null>(null)
+
+  // Store'dan konum değiştiğinde filtreleri güncelle
+  useEffect(() => {
+    if (storedLocation.city && !searchParams.get('konum')) {
+      setSelectedCity(storedLocation.city)
+      if (storedLocation.district) setSelectedDistrict(storedLocation.district)
+      setLocationDetected(true)
+    }
+  }, [storedLocation.city, storedLocation.district]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Match geolocation city name to our static city list
   const matchCity = useCallback((geoCity: string): string => {

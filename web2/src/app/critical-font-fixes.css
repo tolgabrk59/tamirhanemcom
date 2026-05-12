@@ -1,0 +1,110 @@
+/* ═══════════════════════════════════════════
+   CRITICAL FONT FIXES - Override Tailwind
+   Force 14px minimum on all text elements
+   ═══════════════════════════════════════════ */
+
+/* GLOBAL: Force minimum 14px on ALL text */
+*, *::before, *::after {
+  font-size: max(14px, var(--tw-prose-body, 1rem));
+}
+
+/* Headings can be larger */
+h1, h2, h3, h4, h5, h6 {
+  font-size: max(16px, var(--tw-prose-headings, 1.25rem));
+}
+
+/* Exception: Already large text */
+.text-xs, .text-\[10px\], .text-\[11px\], .text-\[12px\] {
+  font-size: 14px !important;
+}
+
+.text-sm {
+  font-size: 14px !important;
+}
+
+/* Specific problematic elements */
+[class*="text-3xl"] span,
+[class*="text-4xl"] span,
+[class*="text-5xl"] span {
+  font-size: inherit !important;
+  min-font-size: 16px;
+}
+
+/* Badge text */
+[class*="rounded-full"].bg-brand,
+[class*="badge"],
+[class*="pill"] {
+  font-size: 14px !important;
+}
+
+/* ALL links - force 14px minimum */
+a {
+  font-size: max(14px, inherit) !important;
+}
+
+/* ALL buttons - force 14px minimum */
+button, [role="button"] {
+  font-size: max(14px, inherit) !important;
+}
+
+/* Hero specific - "Aracınızın" */
+h1 > span:first-child {
+  font-size: clamp(16px, 5vw, 32px) !important;
+}
+
+/* Header navigation - ALL links */
+header a,
+[class*="header"] a,
+nav a {
+  font-size: 14px !important;
+}
+
+/* Footer navigation - ALL links */
+footer a,
+[class*="footer"] a,
+[class*="footer-link"] {
+  font-size: 14px !important;
+}
+
+/* Sidebar items - ALL text */
+aside a,
+aside button,
+aside span,
+[class*="sidebar"] a,
+[class*="sidebar"] button,
+[class*="sidebar"] span {
+  font-size: 14px !important;
+}
+
+/* Intro modal */
+[class*="modal"] button,
+[class*="intro"] button {
+  font-size: 14px !important;
+}
+
+/* Mobile-specific font enforcement */
+@media (max-width: 640px) {
+  * {
+    font-size: max(14px, inherit) !important;
+  }
+  
+  h1 {
+    font-size: clamp(20px, 6vw, 32px) !important;
+  }
+  
+  h2 {
+    font-size: clamp(18px, 5vw, 28px) !important;
+  }
+}
+
+/* Navigation menu items */
+[class*="nav-item"],
+[class*="menu-item"],
+a[class*="link"] {
+  font-size: 14px !important;
+}
+
+/* ALL buttons everywhere - nuclear option */
+button {
+  font-size: 14px !important;
+}

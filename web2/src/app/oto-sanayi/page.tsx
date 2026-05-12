@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import {
@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 import AnimatedSection from '@/components/shared/AnimatedSection'
 import { cn } from '@/lib/utils'
+import { useLocationStore } from '@/lib/useLocationStore'
 
 const serviceCategories = [
   {
@@ -105,6 +106,10 @@ const popularCities = [
 
 export default function OtoSanayiPage() {
   const [selectedCity, setSelectedCity] = useState('')
+  const { location: storedLocation } = useLocationStore()
+  useEffect(() => {
+    if (storedLocation.city && !selectedCity) setSelectedCity(storedLocation.city)
+  }, [storedLocation.city]) // eslint-disable-line react-hooks/exhaustive-deps
   const [searchQuery, setSearchQuery] = useState('')
 
   return (

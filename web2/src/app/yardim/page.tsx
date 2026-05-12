@@ -122,7 +122,7 @@ export default function YardimPage() {
             </p>
 
             {/* Search Box */}
-            <div className="max-w-xl mx-auto">
+            <div>
               <div className="relative">
                 <input
                   type="text"
@@ -183,7 +183,7 @@ export default function YardimPage() {
             Hizli Erisim
           </h2>
         </AnimatedSection>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {quickActions.map((action, idx) => {
             const Icon = action.icon
             return (

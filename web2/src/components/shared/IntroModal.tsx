@@ -28,8 +28,12 @@ import {
   UserPlus,
   CarIcon,
   CircleCheckBig,
+  LocateFixed,
+  Loader2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useLocationStore } from '@/lib/useLocationStore'
+import { cityList } from '@/data/turkey-locations'
 
 /* ------------------------------------------------------------------ */
 /*  Slide 1 — Yolculuğumuz                                           */
@@ -244,7 +248,154 @@ function Slide4() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Slide 5 — Hemen Başla                                             */
+/*  Slide 5 — Konumunu Seç                                            */
+/* ------------------------------------------------------------------ */
+
+function SlideLocation() {
+  const { location, detecting, error, hasLocation, detectLocation, setLocation } = useLocationStore()
+  const [showCityList, setShowCityList] = useState(false)
+  const [citySearch, setCitySearch] = useState('')
+
+  const filteredCities = citySearch.trim()
+    ? cityList.filter((c) => {
+        const norm = (s: string) => s.toLowerCase().replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ş/g, 's').replace(/ç/g, 'c').replace(/ğ/g, 'g')
+        return norm(c).includes(norm(citySearch))
+      })
+    : cityList.slice(0, 15)
+
+  const handleDetect = async () => {
+    await detectLocation()
+  }
+
+  const handleCitySelect = (city: string) => {
+    setLocation({ city, district: '', lat: null, lon: null, isManuallySet: true })
+    setShowCityList(false)
+    setCitySearch('')
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      {/* Icon */}
+      <div className="w-16 h-16 rounded-full bg-brand-500/15 flex items-center justify-center">
+        <MapPin className="w-8 h-8 text-brand-500" />
+      </div>
+
+      <div className="text-center">
+        <h3 className="font-display font-bold text-xl text-th-fg">Konumunu Seç</h3>
+        <p className="text-th-fg-sub text-sm mt-1 max-w-xs mx-auto leading-relaxed">
+          Sana en yakın servisleri gösterebilmemiz için konumunu belirle
+        </p>
+      </div>
+
+      {/* Konum durumu */}
+      {hasLocation && (
+        <div className="w-full max-w-xs flex items-center gap-3 p-3 rounded-xl bg-green-500/10 border border-green-500/20">
+          <MapPin className="w-5 h-5 text-green-400 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-semibold text-th-fg">
+              {location.city}{location.district ? `, ${location.district}` : ''}
+            </div>
+            <div className="text-[10px] text-green-400">Konum belirlendi</div>
+          </div>
+          <CircleCheckBig className="w-5 h-5 text-green-400 shrink-0" />
+        </div>
+      )}
+
+      {!showCityList ? (
+        <div className="flex flex-col gap-2 w-full max-w-xs">
+          {/* Otomatik Tespit */}
+          <button
+            type="button"
+            onClick={handleDetect}
+            disabled={detecting}
+            className={cn(
+              'flex items-center gap-3 rounded-xl bg-th-bg-alt border border-th-border/10 p-3 transition-all hover:border-brand-500/30',
+              detecting && 'opacity-60 cursor-wait'
+            )}
+          >
+            <div className="w-9 h-9 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
+              {detecting ? (
+                <Loader2 className="w-4.5 h-4.5 text-green-400 animate-spin" />
+              ) : (
+                <LocateFixed className="w-4.5 h-4.5 text-green-400" />
+              )}
+            </div>
+            <div className="flex-1 min-w-0 text-left">
+              <div className="text-sm font-semibold text-th-fg">
+                {detecting ? 'Tespit ediliyor...' : 'Otomatik Tespit Et'}
+              </div>
+              <div className="text-[11px] text-th-fg-muted leading-snug">GPS ile konumunu bul</div>
+            </div>
+          </button>
+
+          {/* Hata mesajı */}
+          {error && (
+            <div className="text-xs text-red-400 px-1">{error}</div>
+          )}
+
+          {/* Manuel Seç */}
+          <button
+            type="button"
+            onClick={() => setShowCityList(true)}
+            className="flex items-center gap-3 rounded-xl bg-th-bg-alt border border-th-border/10 p-3 transition-all hover:border-brand-500/30"
+          >
+            <div className="w-9 h-9 rounded-lg bg-brand-500/10 flex items-center justify-center shrink-0">
+              <Search className="w-4.5 h-4.5 text-brand-500" />
+            </div>
+            <div className="flex-1 min-w-0 text-left">
+              <div className="text-sm font-semibold text-th-fg">Manuel Seç</div>
+              <div className="text-[11px] text-th-fg-muted leading-snug">Şehrini listeden seç</div>
+            </div>
+          </button>
+        </div>
+      ) : (
+        <div className="w-full max-w-xs">
+          {/* Arama */}
+          <div className="relative mb-2">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-th-fg-sub" />
+            <input
+              type="text"
+              placeholder="Şehir ara..."
+              value={citySearch}
+              onChange={(e) => setCitySearch(e.target.value)}
+              className="w-full bg-th-bg-alt border border-th-border/10 rounded-lg pl-8 pr-3 py-2 text-sm text-th-fg placeholder-th-fg-muted focus:outline-none focus:border-brand-500/30"
+              autoFocus
+            />
+          </div>
+          {/* Liste */}
+          <div className="max-h-44 overflow-y-auto space-y-0.5 scrollbar-thin">
+            {filteredCities.map((city) => (
+              <button
+                key={city}
+                type="button"
+                onClick={() => handleCitySelect(city)}
+                className={cn(
+                  'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors text-left',
+                  city === location.city
+                    ? 'bg-brand-500/10 text-brand-500 font-semibold'
+                    : 'text-th-fg-sub hover:text-th-fg hover:bg-th-bg-alt'
+                )}
+              >
+                <MapPin className="w-3 h-3 shrink-0 text-th-fg-muted" />
+                {city}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => { setShowCityList(false); setCitySearch('') }}
+            className="mt-2 text-xs text-th-fg-muted hover:text-th-fg transition-colors"
+          >
+            ← Geri
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Slide 6 — Hemen Başla                                             */
 /* ------------------------------------------------------------------ */
 
 const onboardSteps = [
@@ -297,6 +448,7 @@ const slides = [
   { Illustration: Slide2, cta: 'Devam Et' },
   { Illustration: Slide3, cta: 'Anladım' },
   { Illustration: Slide4, cta: 'Devam Et' },
+  { Illustration: SlideLocation, cta: 'Devam Et' },
   { Illustration: Slide5, cta: 'Haydi Başlayalım!' },
 ]
 

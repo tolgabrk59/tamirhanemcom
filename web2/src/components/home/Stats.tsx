@@ -80,7 +80,7 @@ export default function Stats() {
       <div className="section-divider absolute top-0 left-0" />
 
       <div className="section-container relative z-10" ref={ref}>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 md:gap-12">
           {statsData.map((stat, idx) => {
             const Icon = stat.icon
             return (
@@ -96,14 +96,14 @@ export default function Stats() {
                 }}
               >
                 {/* Icon */}
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-500/10 border border-brand-500/15 mb-4">
-                  <Icon className="w-6 h-6 text-brand-500" />
+                <div className="inline-flex items-center justify-center w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-brand-500/10 border border-brand-500/15 mb-3 sm:mb-4">
+                  <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-brand-500" />
                 </div>
 
                 {/* Number */}
                 <div
                   className={cn(
-                    'font-display font-extrabold text-4xl md:text-5xl text-gold mb-2',
+                    'font-display font-extrabold text-2xl sm:text-4xl md:text-5xl text-gold mb-1 sm:mb-2',
                     'tabular-nums'
                   )}
                 >

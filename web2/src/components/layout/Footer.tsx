@@ -112,8 +112,8 @@ export default function Footer() {
       <div className="section-divider" />
 
       {/* Main Footer Content */}
-      <div className="section-container py-16 lg:py-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+      <div className="section-container py-10 sm:py-16 lg:py-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-8">
           {/* Brand Column */}
           <div className="sm:col-span-2 lg:col-span-1">
             <Link href="/" className="inline-block mb-4">
@@ -142,7 +142,7 @@ export default function Footer() {
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   className={cn(
-                    'flex items-center justify-center w-9 h-9 rounded-lg',
+                    'flex items-center justify-center w-11 h-11 sm:w-9 sm:h-9 rounded-lg',
                     'bg-th-overlay/[0.04] border border-th-border/[0.06]',
                     'text-slate-500 hover:text-brand-500 hover:border-brand-500/30 hover:bg-brand-500/10',
                     'transition-colors duration-300'
@@ -220,12 +220,12 @@ export default function Footer() {
               <p className="text-xs text-slate-600">
                 &copy; {currentYear} TamirHanem. Tüm hakları saklıdır.
               </p>
-              <div className="flex items-center gap-6">
+              <div className="flex items-center gap-4 sm:gap-6 flex-wrap justify-center sm:justify-end">
                 {LEGAL_LINKS.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="text-xs text-slate-600 hover:text-th-fg-sub transition-colors duration-300"
+                    className="text-xs text-slate-600 hover:text-th-fg-sub transition-colors duration-300 py-1"
                   >
                     {link.label}
                   </Link>

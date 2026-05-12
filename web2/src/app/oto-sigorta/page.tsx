@@ -249,7 +249,7 @@ export default function OtoSigortaPage() {
           </div>
         </AnimatedSection>
 
-        <div className="max-w-3xl mx-auto space-y-4">
+        <div className="space-y-4">
           {faqs.map((faq, index) => (
             <AnimatedSection key={index} delay={0.1 + index * 0.06}>
               <div className="glass-card overflow-hidden">

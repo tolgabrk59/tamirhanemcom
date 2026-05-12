@@ -102,7 +102,7 @@ export default function KVKKPage() {
       </section>
 
       {/* Content */}
-      <section className="section-container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <section className="section-container space-y-6">
 
         {/* 1. Veri Sorumlusu */}
         <div className="glass-card p-6 md:p-8">

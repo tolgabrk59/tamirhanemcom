@@ -1,0 +1,277 @@
+/* ═══════════════════════════════════════════════════════
+   TAMİRHANEM.COM - RESPONSIVE FIXES (TARGETED, SAFE)
+   Focus: Horizontal scroll & touch targets ONLY
+   DO NOT MODIFY: Header, Profile, Wallet, Navigation
+   ═══════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════
+   1. RESPONSIVE IMAGES - Prevent horizontal scroll
+   ═══════════════════════════════════════════ */
+img, picture, video, canvas, svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Container overflow - prevent scroll */
+.container, .wrapper, section, main,
+[class*="container"] {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.section-container {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Hero section - ensure images fit */
+section.relative:has(img) {
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════
+   2. TOUCH TARGETS - Mobile only (≤768px)
+   ═══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Content buttons - NOT header/nav/sidebar */
+  main button,
+  main a,
+  section button,
+  section a,
+  article button,
+  article a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Glass cards - category links */
+  .glass-card a {
+    display: flex;
+    flex-direction: column;
+    min-height: 100px;
+    padding: 16px;
+  }
+  
+  /* "Detay" links in cards */
+  a[href*="detay"],
+  [class*="detail"] {
+    min-width: 80px;
+    padding: 12px 20px;
+  }
+  
+  /* App store badges */
+  .store-badge {
+    min-height: 60px;
+    padding: 14px 18px;
+  }
+  
+  /* Carousel dots - larger touch area */
+  button[class*="carousel"],
+  [class*="swiper-pagination"] button,
+  [class*="slider-dot"] {
+    min-width: 20px !important;
+    min-height: 20px !important;
+    margin: 8px !important;
+    padding: 10px !important;
+  }
+  
+  /* CTA buttons */
+  button[class*="btn"],
+  a[class*="btn"],
+  button[class*="gold"],
+  a[class*="gold"] {
+    min-height: 52px;
+    padding: 14px 28px;
+    width: 100%;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   3. CONTENT FONT SIZES - Mobile readability
+   Only affect main content, NOT sidebar/header/nav
+   ═══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Glass card content in main area */
+  main .glass-card h3,
+  main .glass-card p,
+  main .glass-card span,
+  section .glass-card h3,
+  section .glass-card p,
+  section .glass-card span {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  /* Service cards */
+  [class*="service"] h3,
+  [class*="service"] p {
+    font-size: 14px;
+  }
+  
+  /* Category names in cards */
+  .glass-card > h3,
+  .glass-card > div > h3 {
+    font-size: 15px;
+    min-height: 2.5em;
+    word-wrap: break-word;
+  }
+  
+  /* Hero section - "Aracınızın" text */
+  section.relative h1 > span:first-child {
+    font-size: clamp(18px, 5vw, 28px);
+  }
+  
+  /* Hero rotating text */
+  section.relative .text-gold span {
+    font-size: inherit;
+  }
+  
+  /* Quick category pills - "Aktif"/"Yakında" badges */
+  button[onClick*="handleCategoryClick"] span[class*="rounded-full"] {
+    font-size: 11px; /* Keep small, it's a badge */
+  }
+}
+
+/* ═══════════════════════════════════════════
+   4. PRESERVE SIDEBAR/HEADER/PROFILE/WALLET
+   Keep original styling but ensure uniform font sizes
+   ═══════════════════════════════════════════ */
+
+/* Sidebar - uniform font sizes for all menu items */
+aside,
+[class*="sidebar"] {
+  font-size: 13px !important;
+}
+
+aside *,
+[class*="sidebar"] * {
+  font-size: 13px !important;
+  min-height: revert !important;
+  min-width: revert !important;
+  white-space: revert !important;
+}
+
+/* Sidebar navigation links - all same size */
+aside a,
+aside button,
+[class*="sidebar"] a,
+[class*="sidebar"] button {
+  font-size: 13px !important;
+}
+
+/* Sidebar mega menu titles */
+aside h3,
+aside h4,
+[class*="sidebar"] h3,
+[class*="sidebar"] h4 {
+  font-size: 13px !important;
+  font-weight: 600;
+}
+
+/* Header - keep original */
+header,
+[class*="header"] {
+  font-size: revert !important;
+}
+
+header *,
+[class*="header"] * {
+  font-size: revert !important;
+  min-height: revert !important;
+  min-width: revert !important;
+}
+
+/* Navigation - keep original */
+nav,
+[class*="nav"] {
+  font-size: revert !important;
+}
+
+nav *,
+[class*="nav"] * {
+  font-size: revert !important;
+  min-height: revert !important;
+  min-width: revert !important;
+}
+
+/* Profile section - keep original */
+[class*="profil"],
+[class*="profile"] {
+  font-size: revert !important;
+}
+
+[class*="profil"] *,
+[class*="profile"] * {
+  font-size: revert !important;
+  min-height: revert !important;
+  min-width: revert !important;
+}
+
+/* Wallet/Cüzdan - keep original (single line) */
+[class*="cuzdan"],
+[class*="wallet"],
+[class*="balance"] {
+  font-size: revert !important;
+}
+
+[class*="cüzdan"] *,
+[class*="wallet"] *,
+[class*="balance"] * {
+  font-size: revert !important;
+  min-height: revert !important;
+  min-width: revert !important;
+  white-space: nowrap !important; /* Prevent 2 lines */
+}
+
+/* Modal dialogs - keep original */
+[role="dialog"],
+[class*="modal"],
+[class*="intro"] {
+  font-size: revert !important;
+}
+
+[role="dialog"] *,
+[class*="modal"] *,
+[class*="intro"] * {
+  font-size: revert !important;
+  min-height: revert !important;
+  min-width: revert !important;
+}
+
+/* ═══════════════════════════════════════════
+   5. ACCESSIBILITY - Focus states (safe)
+   ═══════════════════════════════════════════ */
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid rgba(251, 201, 29, 0.9);
+  outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   6. SKIP LINK - Keyboard nav (safe)
+   ═══════════════════════════════════════════ */
+.skip-link {
+  position: absolute;
+  top: -9999px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999999;
+  padding: 16px 32px;
+  background: rgba(251, 201, 29, 0.95);
+  color: #0a0a12;
+  font-weight: 700;
+  border-radius: 0 0 8px 8px;
+}
+
+.skip-link:focus {
+  top: 0;
+}

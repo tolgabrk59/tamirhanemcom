@@ -149,7 +149,7 @@ export default function ParkMesajPage() {
       {/* Main Form Section */}
       <section className="section-container mb-12">
         <AnimatedSection delay={0.15}>
-          <div className="glass-card p-6 md:p-8 max-w-2xl mx-auto">
+          <div className="glass-card p-6 md:p-8">
             <AnimatePresence mode="wait">
               {/* STEP 1: Plaka Sorgulama */}
               {step === 'plaka' && (
@@ -390,7 +390,7 @@ export default function ParkMesajPage() {
 
       {/* Feature Cards */}
       <section className="section-container mb-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[
             {
               icon: Bell,

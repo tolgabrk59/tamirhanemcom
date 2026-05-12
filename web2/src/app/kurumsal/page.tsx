@@ -328,7 +328,7 @@ export default function KurumsalPage() {
             <h2 className="font-display text-2xl md:text-3xl font-extrabold text-th-fg mb-4">
               Yerli Teknoloji, Yerli Vizyon
             </h2>
-            <div className="max-w-2xl mx-auto space-y-4 text-th-fg-sub leading-relaxed">
+            <div className="space-y-4 text-th-fg-sub leading-relaxed">
               <p>
                 TamirHanem ve tüm altyapısı Next AI tarafından <strong className="text-th-fg">Türkiye&apos;de</strong> geliştirilmiştir.
               </p>

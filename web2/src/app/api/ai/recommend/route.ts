@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { buildPricingContext } from '@/lib/pricing-data'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,7 +36,29 @@ Sorun tipi: "{issue_type}"
 
 Araç bilgisi verilmediyse genel araçlar için yanıt ver. JSON formatında yanıt ver.`
 
-async function callZai(prompt: string): Promise<string> {
+// Fiyat bağlamı cache (30 dk)
+let pricingCache: { data: string; ts: number } | null = null
+const PRICING_CACHE_TTL = 30 * 60 * 1000
+
+async function getPricingContext(): Promise<string> {
+  const now = Date.now()
+  if (pricingCache && (now - pricingCache.ts) < PRICING_CACHE_TTL) {
+    return pricingCache.data
+  }
+  const data = await buildPricingContext()
+  pricingCache = { data, ts: now }
+  return data
+}
+
+async function callZai(prompt: string, vehicleInfo?: string): Promise<string> {
+  const pricingContext = await getPricingContext()
+
+  let systemPrompt = `${SYSTEM_PROMPT}\n\n${pricingContext}\n\nestimated_cost_range alanını yukarıdaki fiyat referanslarına göre hesapla. Birden fazla işlem gerekiyorsa toplam aralığı ver.`
+
+  if (vehicleInfo) {
+    systemPrompt += `\n\nKULLANICININ ARACI:\n${vehicleInfo}\nBu araca özel bilinen kronik sorunları, yaygın arızaları, recall/servis kampanyalarını dikkate al. Premium/lüks markalarda fiyatları %30-50 yukarı ayarla.`
+  }
+
   const res = await fetch(ZAI_URL, {
     method: 'POST',
     headers: {
@@ -46,7 +69,7 @@ async function callZai(prompt: string): Promise<string> {
     body: JSON.stringify({
       model: 'glm-4.5-air',
       max_tokens: 1024,
-      system: SYSTEM_PROMPT,
+      system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
     }),
     signal: AbortSignal.timeout(15000),
@@ -75,8 +98,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: 'type gerekli' }, { status: 400 })
     }
 
-    // Araç bilgisi varsa prompt'a ekle
-    let vehicleContext = ''
+    // Araç bilgisi string'i oluştur
+    let vehicleInfoStr: string | undefined
     if (vehicle) {
       const parts: string[] = []
       if (vehicle.brand) parts.push(`Marka: ${vehicle.brand}`)
@@ -84,25 +107,46 @@ export async function POST(request: Request) {
       if (vehicle.year) parts.push(`Yıl: ${vehicle.year}`)
       if (vehicle.fuel) parts.push(`Yakıt: ${vehicle.fuel}`)
       if (parts.length > 0) {
-        vehicleContext = `\n\nAraç Bilgisi: ${parts.join(', ')}\nBu araca özel bilinen sorunları ve önerileri de dikkate al.`
+        vehicleInfoStr = parts.join(', ')
       }
     }
 
     let prompt: string
 
     if (type === 'quick' && issue_type) {
-      prompt = QUICK_ISSUE_PROMPT.replace('{issue_type}', issue_type) + vehicleContext
+      prompt = QUICK_ISSUE_PROMPT.replace('{issue_type}', issue_type)
     } else if (type === 'chat' && message) {
-      prompt = message + vehicleContext
+      prompt = message
     } else {
       return NextResponse.json({ success: false, error: 'Geçersiz istek' }, { status: 400 })
     }
 
-    const rawResponse = await callZai(prompt)
+    // Araç bilgisi varsa user prompt'a da ekle
+    if (vehicleInfoStr) {
+      prompt += `\n\nAraç Bilgisi: ${vehicleInfoStr}`
+    }
+
+    const rawResponse = await callZai(prompt, vehicleInfoStr)
+
+    // LLM bazen markdown code block veya ek metin ile sarıyor, temizle
+    let jsonStr = rawResponse
+    // ```json ... ``` veya ``` ... ``` bloklarını çıkar
+    const codeBlockMatch = jsonStr.match(/```(?:json)?\s*\n?([\s\S]*?)\n?\s*```/)
+    if (codeBlockMatch) {
+      jsonStr = codeBlockMatch[1].trim()
+    }
+    // Hâlâ JSON değilse, ilk { ile son } arasını al
+    if (!jsonStr.startsWith('{')) {
+      const start = jsonStr.indexOf('{')
+      const end = jsonStr.lastIndexOf('}')
+      if (start !== -1 && end !== -1 && end > start) {
+        jsonStr = jsonStr.slice(start, end + 1)
+      }
+    }
 
     let parsed
     try {
-      parsed = JSON.parse(rawResponse)
+      parsed = JSON.parse(jsonStr)
     } catch {
       parsed = { analysis: rawResponse, possible_causes: [], urgency: 'medium', urgency_label: 'Orta', recommended_category: '', recommended_action: '', estimated_cost_range: '' }
     }

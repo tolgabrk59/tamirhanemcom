@@ -267,7 +267,96 @@ async function saveAnalysisToRedis(brand: string, model: string, year: number, d
   }
 }
 
+// ─── JSON Temizleme ──────────────────────────────────
+function cleanJsonText(raw: string): string {
+  let t = raw.trim()
+  // Markdown kod bloklarını kaldır (multiline)
+  t = t.replace(/```json\s*/gi, '').replace(/```\s*/g, '')
+  // İlk { ile son } arasını al
+  const firstBrace = t.indexOf('{')
+  const lastBrace = t.lastIndexOf('}')
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    t = t.slice(firstBrace, lastBrace + 1)
+  }
+  // Trailing comma'ları temizle (,} veya ,])
+  t = t.replace(/,\s*([}\]])/g, '$1')
+  // Tek tırnakları çift tırnağa çevir (key ve value'larda)
+  t = t.replace(/'/g, '"')
+  // Kontrol karakterlerini temizle (tab, newline string içinde)
+  t = t.replace(/[\x00-\x1F\x7F]/g, (ch) => ch === '\n' || ch === '\r' || ch === '\t' ? ' ' : '')
+  // Tırnaksız key'leri düzelt: { key: → { "key":
+  t = t.replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":')
+  // Çift çift tırnak düzelt: ""key"" → "key"
+  t = t.replace(/""([^"]+)""/g, '"$1"')
+  // NaN, undefined, Infinity → null
+  t = t.replace(/:\s*(NaN|undefined|Infinity|-Infinity)\b/g, ': null')
+  // Yorum satırlarını kaldır (// ...)
+  t = t.replace(/\/\/[^\n]*/g, '')
+  return t.trim()
+}
+
+function safeJsonParse(text: string): Record<string, unknown> | null {
+  // 1. Doğrudan dene
+  const clean = cleanJsonText(text)
+  try {
+    return JSON.parse(clean)
+  } catch { /* devam */ }
+
+  // 2. Satır satır kırparak dene (kesik JSON için)
+  // Son kapanmamış obje/array'i kapat
+  let t = clean
+  let openBraces = 0
+  let openBrackets = 0
+  for (const ch of t) {
+    if (ch === '{') openBraces++
+    if (ch === '}') openBraces--
+    if (ch === '[') openBrackets++
+    if (ch === ']') openBrackets--
+  }
+  // Eksik kapanışları ekle
+  while (openBrackets > 0) { t += ']'; openBrackets-- }
+  while (openBraces > 0) { t += '}'; openBraces-- }
+  // Trailing comma temizle (yeni eklenen kapanışlar öncesi)
+  t = t.replace(/,\s*([}\]])/g, '$1')
+  try {
+    return JSON.parse(t)
+  } catch { /* devam */ }
+
+  // 3. Hata pozisyonundan önceyi al ve kapat
+  try {
+    const errorMatch = clean.match(/position (\d+)/)
+    if (errorMatch) {
+      let partial = clean.slice(0, parseInt(errorMatch[1]))
+      // Son geçerli value sonuna kadar kırp
+      partial = partial.replace(/,\s*$/, '')
+      // Kapanışları ekle
+      let ob = 0, obk = 0
+      for (const ch of partial) {
+        if (ch === '{') ob++
+        if (ch === '}') ob--
+        if (ch === '[') obk++
+        if (ch === ']') obk--
+      }
+      while (obk > 0) { partial += ']'; obk-- }
+      while (ob > 0) { partial += '}'; ob-- }
+      return JSON.parse(partial)
+    }
+  } catch { /* devam */ }
+
+  return null
+}
+
 // ─── AI Provider (ZAI) ────────────────────────────────
+const ZAI_SYSTEM = `Sen uzman bir otomobil teknisyenisin ve veri analistisin.
+KRİTİK KURALLAR:
+- Yanıtın SADECE geçerli bir JSON nesnesi olmalı, başka hiçbir şey olmamalı.
+- Markdown KULLANMA (backtick, bold vb. yok).
+- Tüm string değerleri çift tırnak içinde olmalı.
+- JSON key'leri çift tırnak içinde olmalı.
+- Sayısal değerler tırnak içinde string olarak yazılabilir.
+- Trailing comma kullanma.
+- Türkçe yanıt ver.`
+
 async function generateWithRetry(prompt: string): Promise<string> {
   const res = await fetch(ZAI_URL, {
     method: 'POST',
@@ -277,12 +366,12 @@ async function generateWithRetry(prompt: string): Promise<string> {
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'glm-5',
+      model: 'glm-4.5-air',
       max_tokens: 8000,
-      system: 'Sen uzman bir otomobil teknisyenisin ve veri analistisin. Türkçe yanıt ver. Sadece geçerli JSON döndür, markdown kullanma.',
+      system: ZAI_SYSTEM,
       messages: [{ role: 'user', content: prompt }],
     }),
-    signal: AbortSignal.timeout(30000),
+    signal: AbortSignal.timeout(120_000),
   })
   if (!res.ok) {
     const err = await res.text()
@@ -292,6 +381,93 @@ async function generateWithRetry(prompt: string): Promise<string> {
   const text = data.content?.[0]?.text?.trim()
   if (!text) throw new Error('ZAI boş yanıt döndü')
   return text
+}
+
+// ─── Euro NCAP Model Adı Sadeleştirme ────────────────────────
+function simplifyModelForNcap(model: string): string {
+  // "CLIO III HB EXTREME EDITION 1.2 16V" → "Clio"
+  // "C5 AIRCROSS SHINEBOLD 1.5 BLUEHDI 130 S&S EAT8" → "C5 Aircross"
+  // "COROLLA 1.8 HYBRID FLAME X-PACK" → "Corolla"
+  const parts = model.split(/[\s/]+/)
+  const baseWords: string[] = []
+
+  for (const part of parts) {
+    // Motor hacmi (1.2, 1.5, 2.0 vs.) veya sayısal değere gelince dur
+    if (/^\d+\.\d+$/.test(part)) break
+    // HP, beygir, motor kodu gibi teknik bilgiler
+    if (/^\d+$/.test(part) && parseInt(part) > 10) break
+    // Trim/paket adları (genellikle 2+ kelimeden sonra gelen büyük harfli kelimeler)
+    const trimNames = new Set(['HB', 'SEDAN', 'SW', 'WAGON', 'COUPE', 'CABRIO', 'EDITION', 'EXTREME', 'STYLE', 'ACTIVE', 'ALLURE', 'SHINE', 'SHINEBOLD', 'FEEL', 'LIFE', 'ZEN', 'INTENS', 'ICONIC', 'RS', 'GT', 'LINE', 'PACK', 'PLUS', 'PREMIUM', 'ELEGANCE', 'COMFORT', 'TITANIUM', 'TREND', 'HIGHLINE', 'COMFORTLINE', 'TRENDLINE'])
+    if (baseWords.length >= 1 && trimNames.has(part.toUpperCase())) break
+    // Nesil kodları (III, IV, V vs.) atla - Euro NCAP bunları kullanmaz
+    if (/^[IVX]+$/.test(part) && baseWords.length >= 1) break
+    baseWords.push(part)
+  }
+
+  if (baseWords.length === 0 && parts.length > 0) {
+    baseWords.push(parts[0])
+  }
+
+  // Title case yap
+  return baseWords.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')
+}
+
+// ─── Euro NCAP Veri Çekme (glm-5-turbo modeli) ────────────────────────
+async function fetchEuroNcapData(brand: string, model: string, year: number): Promise<VehicleAnalysisData['safety'] | null> {
+  try {
+    const simpleModel = simplifyModelForNcap(model)
+    console.log(`[EuroNCAP] ${year} ${brand} ${simpleModel} sorgulanıyor (glm-5-turbo)...`)
+    const ncapPrompt = `${brand} ${simpleModel} aracının Euro NCAP crash test sonuçlarını bildir.
+Bu araç veya aynı nesil platformu (${year-3}-${year} arası) Euro NCAP tarafından test edilmiş olabilir.
+Örneğin Citroen C5 Aircross 2019'da test edildi ve 4 yıldız aldı, Renault Clio 2019'da test edildi ve 5 yıldız aldı.
+
+Eğer bu araç veya aynı nesil modeli için Euro NCAP testi VARSA:
+{"euro_ncap_stars":4,"adult_occupant":"87%","child_occupant":"82%","pedestrian":"65%","safety_assist":"74%","test_year":2019}
+
+Eğer Euro NCAP testi YOKSA veya emin değilsen:
+null
+
+SADECE JSON veya null döndür, başka bir şey yazma. Markdown kullanma.`
+
+    const res = await fetch(ZAI_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ZAI_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'glm-5-turbo',
+        max_tokens: 500,
+        system: 'Sen Euro NCAP veritabanı uzmanısın. Araçların Euro NCAP crash test sonuçlarını biliyorsun. Aynı nesil platformdaki test sonuçları sonraki model yılları için de geçerlidir. SADECE gerçek verileri döndür, uydurma. Markdown kullanma.',
+        messages: [{ role: 'user', content: ncapPrompt }],
+      }),
+      signal: AbortSignal.timeout(60_000),
+    })
+
+    if (!res.ok) {
+      console.warn(`[EuroNCAP] API hatası: ${res.status}`)
+      return null
+    }
+    const data = await res.json()
+    const text = data.content?.[0]?.text?.trim()
+    if (!text || text.toLowerCase() === 'null') {
+      console.log('[EuroNCAP] Veri bulunamadı')
+      return null
+    }
+
+    const clean = cleanJsonText(text)
+    const parsed = JSON.parse(clean)
+    if (parsed && parsed.euro_ncap_stars) {
+      console.log(`[EuroNCAP] ✓ ${parsed.euro_ncap_stars} yıldız (${parsed.test_year} testi)`)
+      return parsed
+    }
+    console.log('[EuroNCAP] Geçersiz veri döndü')
+    return null
+  } catch (err) {
+    console.warn('[EuroNCAP] Hata:', err instanceof Error ? err.message : err)
+    return null
+  }
 }
 
 // ─── Helpers ─────────────────────────────────────
@@ -304,7 +480,7 @@ function getCarImageUrl(brand: string, model: string, year: number): string {
 // ─── POST Handler ────────────────────────────────
 export async function POST(req: Request) {
   try {
-    const { brand, model, year } = await req.json()
+    const { brand, model, year, force } = await req.json()
     if (!brand || !model || !year) {
       return NextResponse.json({ error: 'Brand, model ve year gerekli' }, { status: 400 })
     }
@@ -315,9 +491,9 @@ export async function POST(req: Request) {
 
     console.log(`[Research] Sorgu: ${brandUpper} ${modelUpper} ${yearNum}`)
 
-    // 1. ÖNCELİK 1: Strapi'den kontrol et
+    // 1. ÖNCELİK 1: Strapi'den kontrol et (force=true ise atla)
     console.log('[Research] Adım 1: Strapi\'den kontrol ediliyor...')
-    const strapiResult = await getAnalysisFromStrapi(brandUpper, modelUpper, yearNum)
+    const strapiResult = force ? null : await getAnalysisFromStrapi(brandUpper, modelUpper, yearNum)
     if (strapiResult && !isStrapiStale(strapiResult.updatedAt)) {
       console.log('[Research] ✓ Strapi\'den bulundu (güncel)')
       await saveAnalysisToRedis(brandUpper, modelUpper, yearNum, strapiResult.data)
@@ -330,8 +506,8 @@ export async function POST(req: Request) {
       console.log('[Research] ✗ Strapi\'de bulunamadı')
     }
 
-    // 2. ÖNCELİK 2: Redis'ten kontrol et (sadece Strapi'de hiç yoksa)
-    if (!strapiResult) {
+    // 2. ÖNCELİK 2: Redis'ten kontrol et (sadece Strapi'de hiç yoksa, force=true ise atla)
+    if (!strapiResult && !force) {
       console.log('[Research] Adım 2: Redis\'ten kontrol ediliyor...')
       const redisData = await getCachedAnalysisFromRedis(brandUpper, modelUpper, yearNum)
       if (redisData) {
@@ -359,7 +535,7 @@ Hiçbir markdown formatı kullanma, sadece saf JSON döndür.
     "engine": "Motor hacmi ve tipi (örn: 1.0L 3 Silindir Turbo)",
     "horsepower": "Beygir gücü (örn: 110 HP)",
     "torque": "Tork (örn: 200 Nm)",
-    "transmission": "Şanzıman tipi (örn: 7 İleri DSG Otomatik)",
+    "transmission": "Mevcut TÜM şanzıman seçenekleri (örn: 5 İleri Manuel / 6 İleri Otomatik DCT)",
     "drivetrain": "Çekiş sistemi (Önden/Arkadan/4x4)",
     "fuel_economy": "Ortalama yakıt tüketimi (örn: 5.8 L/100km)"
   },
@@ -377,7 +553,8 @@ Hiçbir markdown formatı kullanma, sadece saf JSON döndür.
     "child_occupant": "Çocuk yolcu skoru (örn: 84%)",
     "pedestrian": "Yaya güvenliği skoru (örn: 70%)",
     "safety_assist": "Güvenlik asistanı skoru (örn: 80%)",
-    "test_year": 2021
+    "test_year": 2021,
+    "source_note": "Euro NCAP resmi test verisi - eğer bu araç için GERÇEK Euro NCAP testi yoksa null yaz"
   },
   "tires": {
     "standard": "Standart lastik ebatı (örn: 205/55R16)",
@@ -458,32 +635,50 @@ Hiçbir markdown formatı kullanma, sadece saf JSON döndür.
 
 ÖNEMLİ NOTLAR:
 - Tüm fiyatları Türk Lirası (TL) cinsinden yaz
-- Euro NCAP puanları gerçek veriler olsun
+- Euro NCAP puanları SADECE gerçek, doğrulanmış veriler olsun. Eğer bu araç için Euro NCAP testi yapılmamışsa veya test yılını bilmiyorsan safety alanlarını null yap, KESİNLİKLE UYDURMA
 - OBD kodları bu modele özel yaygın arızalar olsun (en az 4 tane)
 - Rakip araçlar aynı segment ve fiyat aralığında olsun (en az 3 tane)
 - Yıllık bakım maliyetini detaylı kır (en az 5 kalem)
 - Değer kaybı 5 yıllık projeksiyon olsun
 - Yakıt tüketimi ve fiyatı sayısal (number) olsun
+- Şanzıman (transmission) alanında bu aracın TÜM mevcut şanzıman seçeneklerini "/" ile ayırarak yaz (örn: "5 İleri Manuel / 7 İleri DSG Otomatik")
 - Türkçe yanıt ver
 `
 
     const text = await generateWithRetry(prompt)
-    const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim()
 
-    let data: VehicleAnalysisData
-    try {
-      data = JSON.parse(cleanText)
-    } catch {
-      // Retry with special prompt
-      const retryPrompt = prompt + '\n\n(Not: JSON format hatası alındı, lütfen sadece geçerli JSON döndür.)'
+    let data: VehicleAnalysisData | null = safeJsonParse(text) as VehicleAnalysisData | null
+    if (!data) {
+      console.warn('[Research] JSON parse hatası (1. deneme)')
+      console.warn('[Research] Ham metin (ilk 500 karakter):', text.slice(0, 500))
+      // Retry with stricter prompt
+      const retryPrompt = prompt + '\n\nKRİTİK: Yanıtın SADECE geçerli JSON olmalı. Markdown (```) KULLANMA. İlk karakter { son karakter } olmalı.'
       const retryText = await generateWithRetry(retryPrompt)
-      const retryCleanText = retryText.replace(/```json/g, '').replace(/```/g, '').trim()
-      data = JSON.parse(retryCleanText)
+      data = safeJsonParse(retryText) as VehicleAnalysisData | null
+      if (!data) {
+        console.warn('[Research] JSON parse hatası (2. deneme), kısa prompt deneniyor...')
+        // 3. deneme: çok kısa prompt
+        const shortPrompt = `${year} ${brand} ${model} aracı için JSON döndür. Anahtarlar: specs (engine,horsepower,torque,transmission,drivetrain,fuel_economy), tires (standard,alternative,pressure), chronic_problems (problem,description,severity dizisi), maintenance (oil_type,oil_capacity,intervals), pros (dizi), cons (dizi), summary (string), estimated_prices (market_min,market_max,average). Türkçe yaz. SADECE JSON.`
+        const shortText = await generateWithRetry(shortPrompt)
+        data = safeJsonParse(shortText) as VehicleAnalysisData | null
+        if (!data) {
+          console.error('[Research] 3 denemede de JSON parse başarısız')
+          throw new Error('AI yanıtı geçerli JSON formatında değil. Lütfen tekrar deneyin.')
+        }
+      }
     }
 
     data.image_url = getCarImageUrl(brand, model, yearNum)
 
-    // 3b. Arabam.com'dan gerçek fiyat çek ve override et
+    // 3b. Euro NCAP + Arabam.com paralel çek
+    const [ncapData] = await Promise.all([
+      fetchEuroNcapData(brand, model, yearNum),
+    ])
+    if (ncapData) {
+      data.safety = ncapData
+    }
+
+    // 3c. Arabam.com'dan gerçek fiyat çek ve override et
     try {
       const prices = await scrapeArabamPrices(brand, model, yearNum)
       if (prices.source === 'arabam.com' && prices.count >= 3) {

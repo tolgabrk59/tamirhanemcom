@@ -25,6 +25,7 @@ import {
 import AnimatedSection from '@/components/shared/AnimatedSection'
 import { cn } from '@/lib/utils'
 import { turkeyLocations, cityList } from '@/data/turkey-locations'
+import { useLocationStore } from '@/lib/useLocationStore'
 
 // ─── Constants ─────────────────────────────────────────────
 const fuelTypes = ['Benzin', 'Dizel', 'LPG', 'Hibrit', 'Elektrik', 'Benzin + LPG']
@@ -270,9 +271,70 @@ export default function RandevuPage() {
   // Guest mode (üye olmadan devam)
   const [isGuestMode, setIsGuestMode] = useState(false)
 
+  // Randevu takvimi
+  const [calendarDate, setCalendarDate] = useState(new Date())
+  const [selectedCalDay, setSelectedCalDay] = useState<string | null>(null)
+  const [busySlots, setBusySlots] = useState<Record<string, string[]>>({})
+  const [serviceDetail, setServiceDetail] = useState<{ working_hours?: Record<string, { isOpen?: boolean; open?: string; close?: string; closed?: boolean }>; is_open_24_7?: boolean } | null>(null)
+
   // Status
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [submitMessage, setSubmitMessage] = useState('')
+
+  // ─── Otomatik konum tespiti ────────────────────
+  const { location: storedLocation } = useLocationStore()
+  useEffect(() => {
+    if (storedLocation.city && !city) {
+      setCity(storedLocation.city)
+      if (storedLocation.district) setDistrict(storedLocation.district)
+    }
+  }, [storedLocation.city, storedLocation.district]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ─── Giriş yapan kullanıcıyı kontrol et ────────────────────
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('th_user')
+      if (!stored) return
+      const user = JSON.parse(stored) as { id?: number; username?: string; jwt?: string; name?: string; phone?: string }
+      if (!user.jwt || !user.id) return
+
+      // Zaten giriş yapmış — OTP'yi atla
+      setJwt(user.jwt)
+      setUserId(user.id)
+      if (user.username) setUsername(user.username)
+      if (user.name) setName(user.name)
+      if (user.phone) setPhone(user.phone)
+      setPhoneVerified(true)
+
+      // Kullanıcının araçlarını çek
+      fetch(`/api/user/vehicles?jwt=${encodeURIComponent(user.jwt)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.data?.length > 0) {
+            const realVehicles = data.data.filter(
+              (v: { brand: string }) => v.brand !== 'BELIRLENECEK'
+            )
+            if (realVehicles.length > 0) {
+              setUserVehicles(realVehicles)
+              const firstVehicle = realVehicles[0]
+              setSelectedVehicleId(String(firstVehicle.id))
+              setBrand(firstVehicle.brand || '')
+              setModel(firstVehicle.model || '')
+              setYear(firstVehicle.year ? String(firstVehicle.year) : '')
+              setFuelType(firstVehicle.fuelType || '')
+            }
+          }
+          // Araç olsun olmasın direkt form-vehicle adımına geç
+          goToStep('form-vehicle')
+        })
+        .catch(() => {
+          goToStep('form-vehicle')
+        })
+    } catch {
+      // localStorage okuma hatası — normal akışa devam
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // ─── Computed ──────────────────────────────────────────────
   const districts = useMemo(() => (city ? turkeyLocations[city] || [] : []), [city])
@@ -439,6 +501,56 @@ export default function RandevuPage() {
       .catch(() => setServices([]))
       .finally(() => setServicesLoading(false))
   }, [selectedCategories, selectedCategoryType, categories, city, district])
+
+  // ─── Takvim yardımcıları ───────────────────────────────────
+  function generateCalendarSlots(open: string, close: string): string[] {
+    const [oh, om] = open.split(':').map(Number)
+    const [ch, cm] = close.split(':').map(Number)
+    const startMin = oh * 60 + om
+    const endMin = ch * 60 + cm
+    const slots: string[] = []
+    for (let m = startMin; m < endMin; m += 30) {
+      slots.push(`${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`)
+    }
+    return slots
+  }
+
+  function isSlotBusy(slotTime: string, busyRanges: string[]): boolean {
+    const [sh, sm] = slotTime.split(':').map(Number)
+    const slotMin = sh * 60 + sm
+    return busyRanges.some(range => {
+      const parts = range.split('-')
+      if (parts.length < 2) return false
+      const [startH, startM] = parts[0].split(':').map(Number)
+      const [endH, endM] = parts[1].split(':').map(Number)
+      return slotMin >= startH * 60 + startM && slotMin < endH * 60 + endM
+    })
+  }
+
+  // Servis seçildiğinde müsaitlik + detay çek
+  useEffect(() => {
+    if (!selectedService) {
+      setBusySlots({})
+      setServiceDetail(null)
+      setSelectedCalDay(null)
+      return
+    }
+    // Randevu müsaitliği
+    fetch(`/api/services/${selectedService}/appointments`)
+      .then(r => r.json())
+      .then(data => { if (data.success) setBusySlots(data.data || {}) })
+      .catch(() => {})
+    // Servis detayı (çalışma saatleri)
+    fetch(`/api/services/${selectedService}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          const attrs = data.data?.attributes || data.data || {}
+          setServiceDetail({ working_hours: attrs.working_hours, is_open_24_7: attrs.is_open_24_7 })
+        }
+      })
+      .catch(() => {})
+  }, [selectedService])
 
   // ─── Navigation ────────────────────────────────────────────
   const goToStep = (step: FlowStep) => {
@@ -688,7 +800,7 @@ export default function RandevuPage() {
     return (
       <div className="min-h-screen pt-24 pb-16">
         <div className="glow-dot w-96 h-96 top-0 left-1/2 -translate-x-1/2 opacity-20" />
-        <section className="section-container max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+        <section className="section-container mt-20">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -848,7 +960,7 @@ export default function RandevuPage() {
       </section>
 
       {/* Form Steps */}
-      <section className="section-container max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-container">
         <AnimatePresence mode="wait" custom={direction}>
 
           {/* ───── Step 1a: Phone Input ───── */}
@@ -1598,38 +1710,181 @@ export default function RandevuPage() {
                     </div>
                   )}
 
-                  {/* Tarih & Saat */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm text-th-fg mb-2 font-medium">
-                        <Calendar className="w-3.5 h-3.5 inline mr-1" />
-                        Tarih
-                      </label>
-                      <input
-                        type="date"
-                        value={appointmentDate}
-                        onChange={(e) => setAppointmentDate(e.target.value)}
-                        min={today}
-                        max={maxDate}
-                        className="input-dark cursor-pointer"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm text-th-fg mb-2 font-medium">
-                        <Clock className="w-3.5 h-3.5 inline mr-1" />
-                        Saat
-                      </label>
-                      <select
-                        value={appointmentTime}
-                        onChange={(e) => setAppointmentTime(e.target.value)}
-                        className="input-dark appearance-none cursor-pointer"
-                      >
-                        <option value="" className="bg-th-bg-alt">Saat seçin</option>
-                        {timeSlots.map((t) => (
-                          <option key={t} value={t} className="bg-th-bg-alt">{t}</option>
-                        ))}
-                      </select>
-                    </div>
+                  {/* Randevu Takvimi */}
+                  <div>
+                    <label className="block text-sm text-th-fg mb-3 font-medium">
+                      <Calendar className="w-3.5 h-3.5 inline mr-1" />
+                      Randevu Tarihi & Saati
+                    </label>
+
+                    {!selectedService ? (
+                      <div className="p-4 rounded-xl bg-th-overlay/[0.03] border border-th-border/[0.08] text-sm text-th-fg-muted text-center">
+                        Takvimi görmek için yukarıdan servis seçin
+                      </div>
+                    ) : (
+                      <div className="rounded-xl border border-th-border/10 bg-th-overlay/[0.03] p-3 max-w-sm">
+                        {/* Ay navigasyonu */}
+                        <div className="flex items-center justify-between mb-2">
+                          <button
+                            type="button"
+                            onClick={() => setCalendarDate(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))}
+                            className="p-1.5 rounded-lg hover:bg-th-overlay/10 text-th-fg-sub hover:text-th-fg"
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                          </button>
+                          <span className="text-sm font-medium text-th-fg">
+                            {calendarDate.toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setCalendarDate(d => new Date(d.getFullYear(), d.getMonth() + 1, 1))}
+                            className="p-1.5 rounded-lg hover:bg-th-overlay/10 text-th-fg-sub hover:text-th-fg"
+                          >
+                            <ChevronRight className="w-4 h-4" />
+                          </button>
+                        </div>
+
+                        {/* Takvim grid */}
+                        {(() => {
+                          const cYear = calendarDate.getFullYear()
+                          const cMonth = calendarDate.getMonth()
+                          const firstDay = new Date(cYear, cMonth, 1).getDay()
+                          const startOffset = firstDay === 0 ? 6 : firstDay - 1
+                          const daysInMonth = new Date(cYear, cMonth + 1, 0).getDate()
+                          const now = new Date()
+                          const todayStr2 = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+                          const dayNames = ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pz']
+
+                          return (
+                            <div>
+                              <div className="grid grid-cols-7 mb-1">
+                                {dayNames.map(d => (
+                                  <div key={d} className="text-center text-[10px] font-semibold text-th-fg-muted py-1">{d}</div>
+                                ))}
+                              </div>
+                              <div className="grid grid-cols-7 gap-0.5">
+                                {Array.from({ length: startOffset }).map((_, i) => <div key={`e-${i}`} />)}
+                                {Array.from({ length: daysInMonth }).map((_, i) => {
+                                  const day = i + 1
+                                  const dateStr = `${cYear}-${String(cMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+                                  const isBusy = !!busySlots[dateStr]
+                                  const isTodayD = dateStr === todayStr2
+                                  const isPast = new Date(dateStr) < now && !isTodayD
+                                  const isSelected = selectedCalDay === dateStr
+
+                                  return (
+                                    <button
+                                      key={day}
+                                      type="button"
+                                      onClick={() => {
+                                        if (isPast) return
+                                        const newDay = isSelected ? null : dateStr
+                                        setSelectedCalDay(newDay)
+                                        setAppointmentDate(newDay || '')
+                                        setAppointmentTime('')
+                                      }}
+                                      disabled={isPast}
+                                      className={cn(
+                                        'relative w-8 h-8 flex items-center justify-center text-[11px] rounded-md transition-all',
+                                        isPast && 'text-th-fg-muted/40 cursor-default',
+                                        !isPast && !isBusy && !isSelected && 'hover:bg-th-overlay/10 text-th-fg',
+                                        isBusy && !isPast && 'bg-red-500/10 text-red-400 hover:bg-red-500/20',
+                                        isTodayD && !isSelected && 'ring-1 ring-brand-500/50 font-bold text-brand-400',
+                                        isSelected && 'bg-brand-500/20 text-brand-400 ring-1 ring-brand-500/40 font-bold',
+                                      )}
+                                    >
+                                      {day}
+                                      {isBusy && !isPast && (
+                                        <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-red-400" />
+                                      )}
+                                    </button>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          )
+                        })()}
+
+                        {/* Saat slotları */}
+                        {selectedCalDay && (() => {
+                          const dateLabel = new Date(selectedCalDay + 'T00:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' })
+                          const busyRanges = busySlots[selectedCalDay] || []
+                          const selDate = new Date(selectedCalDay + 'T00:00:00')
+                          const selDayKey = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'][selDate.getDay()]
+                          const daySchedule = serviceDetail?.is_open_24_7
+                            ? { isOpen: true, open: '00:00', close: '24:00' }
+                            : serviceDetail?.working_hours?.[selDayKey]
+                          const isClosed = !serviceDetail?.is_open_24_7 && (!daySchedule || (daySchedule as { closed?: boolean }).closed || !daySchedule?.isOpen)
+                          const slots = !isClosed ? generateCalendarSlots(
+                            daySchedule?.open || '09:00',
+                            daySchedule?.close === '24:00' ? '23:00' : (daySchedule?.close || '18:00')
+                          ) : []
+
+                          const now2 = new Date()
+                          const todayStr3 = `${now2.getFullYear()}-${String(now2.getMonth()+1).padStart(2,'0')}-${String(now2.getDate()).padStart(2,'0')}`
+                          const isTodaySlot = selectedCalDay === todayStr3
+                          const currentMin = now2.getHours() * 60 + now2.getMinutes()
+
+                          return (
+                            <div className="mt-4 pt-4 border-t border-th-border/10">
+                              <p className="text-xs font-semibold text-th-fg-sub mb-3 capitalize">{dateLabel}</p>
+                              {isClosed ? (
+                                <p className="text-xs text-red-400">Bu gün servis kapalı.</p>
+                              ) : slots.length === 0 ? (
+                                <p className="text-xs text-th-fg-muted">Saat bilgisi alınamadı.</p>
+                              ) : (
+                                <div className="grid grid-cols-5 sm:grid-cols-6 gap-1">
+                                  {slots.map((slot) => {
+                                    const busy = isSlotBusy(slot, busyRanges)
+                                    const [sh2, sm2] = slot.split(':').map(Number)
+                                    const past = isTodaySlot && (sh2 * 60 + sm2) < currentMin
+                                    const clickable = !busy && !past
+                                    const isTimeSelected = appointmentTime === slot
+
+                                    return (
+                                      <button
+                                        key={slot}
+                                        type="button"
+                                        disabled={!clickable}
+                                        onClick={() => {
+                                          if (!clickable) return
+                                          setAppointmentTime(isTimeSelected ? '' : slot)
+                                        }}
+                                        className={cn(
+                                          'text-center text-[11px] px-1.5 py-1.5 rounded-lg font-medium border transition-all',
+                                          past
+                                            ? 'text-th-fg-muted/40 border-th-border/5 bg-transparent cursor-default'
+                                            : busy
+                                              ? 'bg-red-500/10 border-red-500/20 text-red-400 cursor-not-allowed'
+                                              : isTimeSelected
+                                                ? 'bg-brand-500/20 border-brand-500/40 text-brand-400 ring-1 ring-brand-500/30'
+                                                : 'bg-green-500/10 border-green-500/20 text-green-400 hover:bg-green-500/20 hover:border-green-500/40 cursor-pointer'
+                                        )}
+                                      >
+                                        {slot}
+                                      </button>
+                                    )
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          )
+                        })()}
+
+                        {/* Renk açıklaması */}
+                        <div className="flex items-center gap-4 mt-3 pt-3 border-t border-th-border/10">
+                          <div className="flex items-center gap-1.5 text-[10px] text-th-fg-muted">
+                            <span className="w-2.5 h-2.5 rounded bg-green-500/20 border border-green-500/30" /> Müsait
+                          </div>
+                          <div className="flex items-center gap-1.5 text-[10px] text-th-fg-muted">
+                            <span className="w-2.5 h-2.5 rounded bg-red-500/20 border border-red-500/30" /> Dolu
+                          </div>
+                          <div className="flex items-center gap-1.5 text-[10px] text-th-fg-muted">
+                            <span className="w-2.5 h-2.5 rounded bg-brand-500/20 border border-brand-500/30" /> Seçili
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 

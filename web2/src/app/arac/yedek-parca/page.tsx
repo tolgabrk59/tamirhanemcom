@@ -112,7 +112,7 @@ export default function YedekParcaPage() {
             </p>
 
             {/* Search */}
-            <div className="max-w-2xl mx-auto">
+            <div>
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-th-fg-sub" />
                 <input

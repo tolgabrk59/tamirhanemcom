@@ -108,7 +108,7 @@ export default function FavorilerPage() {
 
   return (
     <main className="min-h-screen bg-th-bg pt-20 pb-24 lg:pb-8 lg:pl-16 animate-fade-in">
-      <div className="max-w-3xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         {/* Toast */}
         {toast && (

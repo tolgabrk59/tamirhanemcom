@@ -38,13 +38,13 @@ const steps: Step[] = [
 
 export default function HowItWorks() {
   return (
-    <section className="relative py-24 md:py-32 overflow-hidden">
+    <section className="relative py-16 sm:py-24 md:py-32 overflow-hidden">
       {/* Background accent */}
       <div className="absolute inset-0 bg-mesh-gradient opacity-50" aria-hidden="true" />
 
       <div className="section-container relative z-10">
         {/* Section Header */}
-        <AnimatedSection className="text-center mb-20">
+        <AnimatedSection className="text-center mb-10 sm:mb-20">
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="w-8 h-px bg-brand-500/50" />
             <span className="text-brand-500 text-sm font-semibold tracking-widest uppercase">
@@ -52,16 +52,16 @@ export default function HowItWorks() {
             </span>
             <div className="w-8 h-px bg-brand-500/50" />
           </div>
-          <h2 className="font-display text-3xl md:text-5xl font-extrabold mb-4">
+          <h2 className="font-display text-2xl sm:text-3xl md:text-5xl font-extrabold mb-3 sm:mb-4">
             Nasıl <span className="text-gold">Çalışır?</span>
           </h2>
-          <p className="text-th-fg text-lg max-w-xl mx-auto">
+          <p className="text-th-fg text-base sm:text-lg max-w-xl mx-auto">
             Üç basit adımda aracının bakımını gerçekleştir
           </p>
         </AnimatedSection>
 
         {/* Steps */}
-        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6">
+        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8 md:gap-6">
           {/* Connecting line - desktop only */}
           <div className="hidden md:block absolute top-1/2 left-[16.67%] right-[16.67%] -translate-y-1/2 h-px z-0" aria-hidden="true">
             <div className="w-full h-full bg-gradient-to-r from-brand-500/30 via-brand-500/50 to-brand-500/30" />
@@ -81,7 +81,7 @@ export default function HowItWorks() {
               >
                 <div
                   className={cn(
-                    'glass-card p-8 md:p-10 text-center relative overflow-hidden group',
+                    'glass-card p-6 sm:p-8 md:p-10 text-center relative overflow-hidden group',
                     'hover:-translate-y-1 transition-all duration-300'
                   )}
                 >

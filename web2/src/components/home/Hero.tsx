@@ -353,32 +353,32 @@ export default function Hero() {
         )}
       </AnimatePresence>
 
-      {/* Decorative glow dots */}
-      <div className="glow-dot w-[500px] h-[500px] -top-40 -left-40 opacity-40" aria-hidden="true" />
-      <div className="glow-dot w-[400px] h-[400px] top-1/3 -right-32 opacity-25" aria-hidden="true" />
-      <div className="glow-dot w-[300px] h-[300px] bottom-20 left-1/4 opacity-20" aria-hidden="true" />
+      {/* Decorative glow dots - smaller on mobile */}
+      <div className="glow-dot w-[250px] h-[250px] lg:w-[500px] lg:h-[500px] -top-40 -left-40 opacity-40" aria-hidden="true" />
+      <div className="glow-dot w-[200px] h-[200px] lg:w-[400px] lg:h-[400px] top-1/3 -right-32 opacity-25" aria-hidden="true" />
+      <div className="hidden lg:block glow-dot w-[300px] h-[300px] bottom-20 left-1/4 opacity-20" aria-hidden="true" />
 
-      {/* Floating decorative shapes */}
+      {/* Floating decorative shapes - hidden on mobile for performance */}
       <motion.div
-        className="absolute top-[15%] right-[12%] w-20 h-20 rounded-full border border-brand-500/10"
+        className="hidden lg:block absolute top-[15%] right-[12%] w-20 h-20 rounded-full border border-brand-500/10"
         animate={{ y: [-10, 15, -10], rotate: [0, 90, 0] }}
         transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
         aria-hidden="true"
       />
       <motion.div
-        className="absolute bottom-[25%] left-[8%] w-14 h-14 rounded-lg border border-brand-500/10 rotate-45"
+        className="hidden lg:block absolute bottom-[25%] left-[8%] w-14 h-14 rounded-lg border border-brand-500/10 rotate-45"
         animate={{ y: [10, -15, 10], rotate: [45, 135, 45] }}
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
         aria-hidden="true"
       />
       <motion.div
-        className="absolute top-[40%] left-[15%] w-3 h-3 rounded-full bg-brand-500/20"
+        className="hidden lg:block absolute top-[40%] left-[15%] w-3 h-3 rounded-full bg-brand-500/20"
         animate={{ y: [-8, 12, -8], x: [-5, 5, -5] }}
         transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
         aria-hidden="true"
       />
       <motion.div
-        className="absolute top-[20%] left-[45%] w-2 h-2 rounded-full bg-brand-500/15"
+        className="hidden lg:block absolute top-[20%] left-[45%] w-2 h-2 rounded-full bg-brand-500/15"
         animate={{ y: [5, -10, 5] }}
         transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
         aria-hidden="true"
@@ -387,7 +387,7 @@ export default function Hero() {
       {/* Content */}
       <motion.div
         style={{ opacity: heroOpacity, scale: heroScale }}
-        className="relative z-10 section-container w-full pt-8 pb-28 lg:pb-36"
+        className="relative z-10 section-container w-full pt-4 sm:pt-8 pb-20 sm:pb-28 lg:pb-36"
       >
         <motion.div
           className="flex flex-col items-center text-center"
@@ -395,18 +395,10 @@ export default function Hero() {
           initial="hidden"
           animate="visible"
         >
-          {/* Badge */}
-          <motion.div variants={fadeUpItem}>
-            <Badge variant="gold" className="mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse-glow" />
-              Türkiye&apos;nin Yeni Nesil Servis Platformu
-            </Badge>
-          </motion.div>
-
           {/* Headline */}
           <motion.h1
             variants={fadeUpItem}
-            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight mb-6"
+            className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight mb-4 sm:mb-6"
           >
             <span>Aracınızın</span>
             <br />
@@ -465,7 +457,7 @@ export default function Hero() {
           {/* Subtitle */}
           <motion.p
             variants={fadeUpItem}
-            className="text-th-fg text-lg md:text-xl max-w-2xl mb-10 text-balance"
+            className="text-th-fg text-base sm:text-lg md:text-xl max-w-2xl mb-6 sm:mb-10 text-balance px-2 sm:px-0"
           >
             Servis bul, fiyat karşılaştır, arıza tespit et, bakım takibi yap.
             Tüm araç ihtiyaçlarınız için <strong className="font-bold text-brand-500">TamirHanem.</strong>
@@ -475,7 +467,7 @@ export default function Hero() {
           <motion.form
             variants={fadeUpItem}
             onSubmit={handleSearch}
-            className="w-full max-w-2xl mb-8"
+            className="w-full max-w-2xl mb-6 sm:mb-8 px-2 sm:px-0"
           >
             <div ref={searchWrapperRef} className="relative">
               <div className="glass-card flex flex-col sm:flex-row items-stretch sm:items-center p-2 gap-2">
@@ -660,7 +652,7 @@ export default function Hero() {
           {/* Quick Category Pills */}
           <motion.div
             variants={fadeUpItem}
-            className="flex flex-wrap justify-center gap-2 mb-16"
+            className="flex flex-wrap justify-center gap-2 mb-10 sm:mb-16 px-2 sm:px-0"
           >
             {quickCategories.map((cat) => {
               const Icon = cat.icon
@@ -672,7 +664,7 @@ export default function Hero() {
                   onMouseEnter={() => setHoveredCategory(cat.label)}
                   onMouseLeave={() => setHoveredCategory(null)}
                   className={cn(
-                    'inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all duration-300',
+                    'inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 sm:py-2 rounded-full text-xs sm:text-sm transition-all duration-300',
                     cat.active
                       ? [
                           'bg-brand-500/[0.1] border border-brand-500/30 text-brand-400',
@@ -709,7 +701,7 @@ export default function Hero() {
             className="flex flex-col items-center gap-3"
           >
             <p className="text-brand-500 text-xs font-semibold tracking-wider">YAKINDA</p>
-            <div className="flex flex-wrap items-center justify-center gap-3">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
               {/* App Store */}
               <div className="store-badge">
                 <svg className="w-6 h-6 text-th-fg" viewBox="0 0 24 24" fill="currentColor">

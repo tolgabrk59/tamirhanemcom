@@ -112,7 +112,7 @@ export default function ArizaLambalariPage() {
       {/* Search */}
       <section className="section-container mb-8">
         <AnimatedSection delay={0.1}>
-          <div className="glass-card p-4 max-w-2xl mx-auto">
+          <div className="glass-card p-4">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-th-fg-sub" />
               <input
@@ -258,7 +258,7 @@ export default function ArizaLambalariPage() {
             <span className="text-brand-500 text-sm font-semibold tracking-widest uppercase">Sikca Sorulan Sorular</span>
             <div className="w-8 h-px bg-brand-500/50" />
           </div>
-          <div className="max-w-3xl mx-auto space-y-4">
+          <div className="space-y-4">
             {faqs.map((faq, idx) => (
               <div key={idx} className="glass-card p-6">
                 <h3 className="font-display font-bold text-th-fg mb-2">{faq.q}</h3>

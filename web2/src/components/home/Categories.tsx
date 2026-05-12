@@ -136,10 +136,10 @@ export default function Categories() {
   const hasMore = categories.length > initialCount
 
   return (
-    <section className="relative py-24 md:py-32">
+    <section className="relative py-16 sm:py-24 md:py-32">
       <div className="section-container">
         {/* Section Header */}
-        <AnimatedSection className="text-center mb-16">
+        <AnimatedSection className="text-center mb-8 sm:mb-16">
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="w-8 h-px bg-brand-500/50" />
             <span className="text-brand-500 text-sm font-semibold tracking-widest uppercase">
@@ -147,10 +147,10 @@ export default function Categories() {
             </span>
             <div className="w-8 h-px bg-brand-500/50" />
           </div>
-          <h2 className="font-display text-3xl md:text-5xl font-extrabold mb-4">
+          <h2 className="font-display text-2xl sm:text-3xl md:text-5xl font-extrabold mb-3 sm:mb-4">
             Hizmet <span className="text-gold">Kategorileri</span>
           </h2>
-          <p className="text-th-fg text-lg max-w-xl mx-auto">
+          <p className="text-th-fg text-base sm:text-lg max-w-xl mx-auto">
             Aracın için ihtiyacın olan her türlü hizmet, tek bir platformda
           </p>
         </AnimatedSection>
@@ -174,7 +174,7 @@ export default function Categories() {
           <>
             <motion.div
               layout
-              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
             >
               <AnimatePresence initial={false}>
                 {visibleCategories.map((category, idx) => {
@@ -195,18 +195,18 @@ export default function Categories() {
                         <Link
                           href={buildHref(category)}
                           className={cn(
-                            'glass-card p-6 md:p-8 block h-full',
+                            'glass-card p-4 sm:p-6 md:p-8 block h-full',
                             'transition-all duration-300',
                             'hover:-translate-y-1 hover:shadow-glow-sm'
                           )}
                         >
                           {/* Icon */}
-                          <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-brand-500/10 border border-brand-500/15 flex items-center justify-center mb-5 group-hover:bg-brand-500/20 transition-colors duration-300">
-                            <Icon className="w-6 h-6 md:w-7 md:h-7 text-brand-500" />
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-xl sm:rounded-2xl bg-brand-500/10 border border-brand-500/15 flex items-center justify-center mb-3 sm:mb-5 group-hover:bg-brand-500/20 transition-colors duration-300">
+                            <Icon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-brand-500" />
                           </div>
 
                           {/* Name */}
-                          <h3 className="font-display font-bold text-base md:text-lg mb-2 text-th-fg">
+                          <h3 className="font-display font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2 text-th-fg">
                             {category.name}
                           </h3>
 
@@ -263,7 +263,7 @@ export default function Categories() {
       </div>
 
       {/* Section divider */}
-      <div className="section-divider mt-24" />
+      <div className="section-divider mt-16 sm:mt-24" />
     </section>
   )
 }

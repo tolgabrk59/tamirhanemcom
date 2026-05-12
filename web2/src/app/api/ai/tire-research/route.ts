@@ -139,12 +139,12 @@ async function generateWithRetry(prompt: string): Promise<string> {
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'glm-5',
+      model: 'glm-4.5-air',
       max_tokens: 4000,
       system: 'Sen uzman bir otomobil teknisyeni ve lastik uzmanısın. Türkçe yanıt ver. Sadece geçerli JSON döndür, markdown kullanma.',
       messages: [{ role: 'user', content: prompt }],
     }),
-    signal: AbortSignal.timeout(30000),
+    signal: AbortSignal.timeout(120_000),
   })
   if (!res.ok) {
     const err = await res.text()
@@ -159,7 +159,7 @@ async function generateWithRetry(prompt: string): Promise<string> {
 const FALLBACK_DATA: TireResearchData = {
   standard_size: '205/55 R16 91V',
   alternative_sizes: ['215/50 R17', '195/65 R15'],
-  recommended_pressure: { front: '2.2 bar', rear: '2.0 bar' },
+  recommended_pressure: { front: '32 psi', rear: '29 psi' },
   recommended_brands: [
     { name: 'Michelin', model: 'Primacy 4', segment: 'Premium', price_per_tire: '3.200 TL', set_price: '12.800 TL', price_range: '₺₺₺', rating: 4.8, features: ['Uzun ömür', 'Sessiz sürüş', 'İyi kavrama'] },
     { name: 'Continental', model: 'EcoContact 6', segment: 'Premium', price_per_tire: '2.900 TL', set_price: '11.600 TL', price_range: '₺₺₺', rating: 4.7, features: ['Düşük yuvarlanma direnci', 'Sessiz', 'Güvenli'] },
@@ -243,8 +243,8 @@ Aşağıdaki JSON formatında yanıt ver (Türkçe):
   "standard_size": "Standart lastik boyutu (örn: 205/55 R16 91V)",
   "alternative_sizes": ["Alternatif boyut 1", "Alternatif boyut 2"],
   "recommended_pressure": {
-    "front": "Ön lastik basıncı (örn: 2.2 bar)",
-    "rear": "Arka lastik basıncı (örn: 2.0 bar)"
+    "front": "Ön lastik basıncı psi cinsinden (örn: 32 psi)",
+    "rear": "Arka lastik basıncı psi cinsinden (örn: 29 psi)"
   },
   "recommended_brands": [
     {

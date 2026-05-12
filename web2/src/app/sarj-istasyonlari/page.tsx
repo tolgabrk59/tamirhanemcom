@@ -5,6 +5,7 @@ import Link from 'next/link'
 import AnimatedSection from '@/components/shared/AnimatedSection'
 import { cn } from '@/lib/utils'
 import { turkeyLocations, cityList } from '@/data/turkey-locations'
+import { useLocationStore } from '@/lib/useLocationStore'
 import {
   Zap,
   Search,
@@ -30,10 +31,14 @@ interface Connector {
   typeName: string
   powerKw: number | null
   quantity: number
+  currentType?: 'AC' | 'DC' | null
+  currentTypeName?: string | null
+  amps?: number | null
+  voltage?: number | null
 }
 
 interface ChargingStation {
-  id: number
+  id: number | string
   name: string
   address: string
   rating: number | null
@@ -52,6 +57,14 @@ interface ChargingStation {
   is24Hours?: boolean | null
   isPublic?: boolean
   usageCost?: string | null
+  hasDC?: boolean
+  hasAC?: boolean
+  numberOfPoints?: number | null
+  usageType?: string | null
+  statusType?: string | null
+  isOperational?: boolean | null
+  email?: string | null
+  lastVerified?: string | null
 }
 
 type ChargingType = 'all' | 'ac' | 'dc'
@@ -94,8 +107,9 @@ export default function ŞarjİstasyonlarıPage() {
   const [error, setError] = useState<string | null>(null)
   const [city, setCity] = useState('İstanbul')
   const [district, setDistrict] = useState('')
+  const [userChangedCity, setUserChangedCity] = useState(false)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [favorites, setFavorites] = useState<number[]>([])
+  const [favorites, setFavorites] = useState<(number | string)[]>([])
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false)
 
   // Filters
@@ -111,6 +125,15 @@ export default function ŞarjİstasyonlarıPage() {
 
   const districts = city ? [...(turkeyLocations[city] || [])].sort() : []
 
+  // Otomatik konum tespiti (sadece ilk yüklemede, kullanıcı manuel değiştirmediyse)
+  const { location: storedLocation } = useLocationStore()
+  useEffect(() => {
+    if (storedLocation.city && !userChangedCity) {
+      setCity(storedLocation.city)
+      if (storedLocation.district) setDistrict(storedLocation.district)
+    }
+  }, [storedLocation.city, storedLocation.district, userChangedCity])
+
   // Load favorites from localStorage
   useEffect(() => {
     const savedFavorites = localStorage.getItem('ev-favorites')
@@ -119,7 +142,7 @@ export default function ŞarjİstasyonlarıPage() {
     }
   }, [])
 
-  const toggleFavorite = (stationId: number) => {
+  const toggleFavorite = (stationId: number | string) => {
     setFavorites((prev) => {
       const newFavorites = prev.includes(stationId)
         ? prev.filter((id) => id !== stationId)
@@ -135,6 +158,10 @@ export default function ŞarjİstasyonlarıPage() {
 
     if (chargingType !== 'all') {
       filtered = filtered.filter((station) => {
+        // Önce hasDC/hasAC alanlarını kontrol et (OpenChargeMap verisi)
+        if (chargingType === 'ac' && station.hasAC !== undefined) return station.hasAC
+        if (chargingType === 'dc' && station.hasDC !== undefined) return station.hasDC
+        // Fallback: güce göre filtrele
         if (!station.maxPowerKw) return true
         if (chargingType === 'ac') return station.maxPowerKw <= 22
         if (chargingType === 'dc') return station.maxPowerKw > 22
@@ -176,8 +203,12 @@ export default function ŞarjİstasyonlarıPage() {
     setLoading(true)
     setError(null)
     try {
-      const searchQuery = district ? `${district}, ${city}` : city
-      let url = `/api/ev-chargers?city=${encodeURIComponent(searchQuery)}`
+      let url = `/api/ev-chargers?city=${encodeURIComponent(city)}`
+      if (district) url += `&district=${encodeURIComponent(district)}`
+      // Koordinatları sadece kullanıcının konumuyla eşleşen şehirdeyse gönder
+      if (storedLocation.lat && storedLocation.lon && storedLocation.city === city) {
+        url += `&lat=${storedLocation.lat}&lng=${storedLocation.lon}`
+      }
       const response = await fetch(url)
       const data = await response.json()
 
@@ -192,7 +223,7 @@ export default function ŞarjİstasyonlarıPage() {
     } finally {
       setLoading(false)
     }
-  }, [city, district])
+  }, [city, district, storedLocation.lat, storedLocation.lon])
 
   useEffect(() => {
     fetchStations()
@@ -302,6 +333,7 @@ export default function ŞarjİstasyonlarıPage() {
                     onChange={(e) => {
                       setCity(e.target.value)
                       setDistrict('')
+                      setUserChangedCity(true)
                     }}
                     className="input-dark appearance-none cursor-pointer"
                   >
@@ -671,34 +703,69 @@ export default function ŞarjİstasyonlarıPage() {
                           {station.address}
                         </p>
 
-                        {/* Connectors */}
-                        {station.connectors && station.connectors.length > 0 && (
-                          <div className="flex flex-wrap gap-1.5 mt-2">
-                            {station.connectors.slice(0, 3).map((conn, i) => (
-                              <span
-                                key={i}
-                                className="inline-flex items-center gap-1 bg-th-overlay/5 border border-th-border/10 text-th-fg-sub text-xs px-2 py-1 rounded-lg"
-                              >
-                                {conn.typeName || conn.type}
-                                {conn.powerKw && (
-                                  <span className="text-brand-500 font-medium">
-                                    {conn.powerKw}kW
-                                  </span>
-                                )}
-                              </span>
-                            ))}
-                            {station.connectors.length > 3 && (
-                              <span className="text-th-fg-muted text-xs px-1">
-                                +{station.connectors.length - 3}
-                              </span>
-                            )}
-                          </div>
-                        )}
+                        {/* AC/DC Badge + Connectors */}
+                        <div className="flex flex-wrap gap-1.5 mt-3">
+                          {(station.hasDC || (!station.hasDC && station.hasAC === undefined && station.connectors?.some(c => c.currentType === 'DC' || (c.powerKw || 0) >= 50))) && (
+                            <span className="inline-flex items-center gap-1 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-bold px-2 py-1 rounded-lg">
+                              <BatteryCharging className="w-3 h-3" /> DC
+                            </span>
+                          )}
+                          {(station.hasAC || (!station.hasAC && station.hasDC === undefined && station.connectors?.some(c => c.currentType === 'AC' || ((c.powerKw || 0) < 50 && (c.powerKw || 0) > 0)))) && (
+                            <span className="inline-flex items-center gap-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold px-2 py-1 rounded-lg">
+                              <PlugZap className="w-3 h-3" /> AC
+                            </span>
+                          )}
+                          {station.connectors && station.connectors.map((conn, i) => (
+                            <span
+                              key={i}
+                              className="inline-flex items-center gap-1 bg-th-overlay/5 border border-th-border/10 text-th-fg-sub text-xs px-2 py-1 rounded-lg"
+                            >
+                              {conn.typeName || conn.type}
+                              {conn.powerKw && (
+                                <span className="text-brand-500 font-medium">
+                                  {conn.powerKw}kW
+                                </span>
+                              )}
+                              {conn.quantity > 1 && (
+                                <span className="text-th-fg-muted">{'\u00D7'}{conn.quantity}</span>
+                              )}
+                            </span>
+                          ))}
+                        </div>
 
-                        {/* İnfo Row */}
+                        {/* Ücret + Durum bilgisi */}
+                        <div className="flex flex-wrap items-center gap-2 mt-2">
+                          {station.usageCost && (
+                            <div className="flex items-center gap-1.5 p-1.5 px-2 rounded-lg bg-green-500/5 border border-green-500/10">
+                              <span className="text-green-400 text-xs font-semibold">{station.usageCost}</span>
+                            </div>
+                          )}
+                          {station.usageType && (
+                            <span className="text-th-fg-muted text-[10px] bg-th-overlay/5 border border-th-border/10 px-2 py-1 rounded-lg">
+                              {station.usageType}
+                            </span>
+                          )}
+                          {station.isOperational === true && (
+                            <span className="text-green-400 text-[10px] font-medium bg-green-500/5 border border-green-500/10 px-2 py-1 rounded-lg">
+                              Aktif
+                            </span>
+                          )}
+                          {station.isOperational === false && (
+                            <span className="text-red-400 text-[10px] font-medium bg-red-500/5 border border-red-500/10 px-2 py-1 rounded-lg">
+                              Kapalı
+                            </span>
+                          )}
+                          {station.numberOfPoints && station.numberOfPoints > 0 && (
+                            <span className="text-th-fg-muted text-[10px] bg-th-overlay/5 border border-th-border/10 px-2 py-1 rounded-lg">
+                              {station.numberOfPoints} soket
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Info Row */}
                         <div className="flex flex-wrap items-center gap-3 mt-3">
                           {station.maxPowerKw && (
-                            <div className="flex items-center gap-1.5 text-brand-500 text-sm">
+                            <div className="flex items-center gap-1.5 text-brand-500 text-sm font-semibold">
                               <Zap className="w-4 h-4" />
                               {formatPower(station.maxPowerKw)}
                             </div>
@@ -722,32 +789,46 @@ export default function ŞarjİstasyonlarıPage() {
                             </span>
                           )}
 
+                          {station.hours && !station.is24Hours && (
+                            <span className="flex items-center gap-1 text-th-fg-muted text-xs">
+                              <Clock className="w-3 h-3" />
+                              {station.hours}
+                            </span>
+                          )}
+
                           {station.phone && (
                             <a
                               href={`tel:${station.phone}`}
                               className="flex items-center gap-1.5 text-th-fg-muted hover:text-brand-500 transition-colors text-sm"
+                              title={station.phone}
                             >
                               <Phone className="w-4 h-4" />
+                              <span className="text-xs">{station.phone}</span>
                             </a>
                           )}
                         </div>
-
-                        {station.usageCost && (
-                          <p className="text-th-fg-muted text-xs mt-2 truncate">
-                            {station.usageCost}
-                          </p>
-                        )}
                       </div>
 
-                      {/* Action Button */}
-                      <div className={cn(viewMode === 'list' ? 'flex-shrink-0' : 'mt-4')}>
+                      {/* Action Buttons */}
+                      <div className={cn(viewMode === 'list' ? 'flex-shrink-0' : 'mt-4', 'flex gap-2')}>
                         <button
                           onClick={() => openInMaps(station)}
-                          className="btn-gold w-full py-3 text-sm"
+                          className="btn-gold flex-1 py-3 text-sm"
                         >
                           <Navigation className="w-4 h-4" />
-                          Yol Tarifi
+                          Konuma Git
                         </button>
+                        {station.website && (
+                          <a
+                            href={station.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center w-11 h-11 rounded-xl border border-th-border/20 bg-th-overlay/[0.05] text-th-fg-muted hover:text-brand-500 hover:bg-th-overlay/[0.08] transition-all"
+                            title="Web sitesi"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        )}
                       </div>
                     </div>
                   </div>

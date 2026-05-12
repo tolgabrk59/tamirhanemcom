@@ -18,6 +18,17 @@ import {
 import AnimatedSection from '@/components/shared/AnimatedSection'
 import { cn } from '@/lib/utils'
 
+function barToPsi(text: string): string {
+  if (text.toLowerCase().includes('psi')) return text
+  const match = text.match(/([\d.,]+)/)
+  if (!match) return text
+  const val = parseFloat(match[1].replace(',', '.'))
+  if (val <= 0) return text
+  // bar araligi 1.5-4.0, psi ise 20-60 civarinda
+  const psi = val < 10 ? Math.round(val * 14.5038) : Math.round(val)
+  return `${psi} psi`
+}
+
 interface TireData {
   standard_size: string
   alternative_sizes: string[]
@@ -84,6 +95,7 @@ export default function TireSelectionPage() {
   const [brands, setBrands] = useState<string[]>([])
   const [models, setModels] = useState<string[]>([])
   const [packages, setPackages] = useState<string[]>([])
+  const [packagesRaw, setPackagesRaw] = useState<Array<{ paket: string; years?: number[] }>>([])
   const [years, setYears] = useState<string[]>([])
 
   const [selectedBrand, setSelectedBrand] = useState('')
@@ -126,11 +138,31 @@ export default function TireSelectionPage() {
         .then(res => res.json())
         .then(data => {
           if (data.data && Array.isArray(data.data)) {
+            setPackagesRaw(data.data)
             const names = data.data.map((item: { paket?: string; package?: string; name?: string }) =>
               typeof item === 'string' ? item : (item.paket || item.package || item.name || '')
             ).filter((p: string) => p)
             setPackages(names)
-          } else if (data.packages) setPackages(data.packages)
+            // Tüm paketlerin yıllarını birleştir (model bazlı)
+            const allYears = new Set<number>()
+            data.data.forEach((item: { years?: number[] }) => {
+              if (item.years) item.years.forEach((y: number) => allYears.add(y))
+            })
+            if (allYears.size > 0) {
+              setYears(Array.from(allYears).sort((a, b) => b - a).map(String))
+            } else {
+              // Paketlerde yıl bilgisi yoksa genel yıl listesi oluştur
+              const currentYear = new Date().getFullYear()
+              setYears(Array.from({ length: currentYear - 1999 }, (_, i) => String(currentYear - i)))
+            }
+          } else if (data.packages) {
+            setPackages(data.packages)
+          }
+          // Hiç paket yoksa yıl listesini oluştur
+          if (!data.data?.length && !data.packages?.length) {
+            const currentYear = new Date().getFullYear()
+            setYears(Array.from({ length: currentYear - 1999 }, (_, i) => String(currentYear - i)))
+          }
         })
         .catch(err => console.error('Error fetching packages:', err))
     }
@@ -139,8 +171,11 @@ export default function TireSelectionPage() {
   useEffect(() => {
     if (selectedModel) {
       setSelectedYear(''); setTireData(null)
+      // Model seçildiğinde yıl listesini her zaman hazırla (paket olmayabilir)
       const currentYear = new Date().getFullYear()
-      setYears(Array.from({ length: currentYear - 1999 }, (_, i) => (currentYear - i).toString()))
+      if (years.length === 0) {
+        setYears(Array.from({ length: currentYear - 1999 }, (_, i) => String(currentYear - i)))
+      }
     }
   }, [selectedModel])
 
@@ -259,9 +294,12 @@ export default function TireSelectionPage() {
             </div>
 
             {canSearch && (
-              <button onClick={searchTireInfo} disabled={loading} className="btn-gold w-full md:w-auto px-8 py-3 text-sm flex items-center justify-center gap-2">
-                {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Araştırılıyor...</> : <><Search className="w-4 h-4" /> Lastik Önerisi Al</>}
-              </button>
+              <div className="flex items-center gap-3">
+                <button onClick={searchTireInfo} disabled={loading} className="btn-gold w-full md:w-auto px-8 py-3 text-sm flex items-center justify-center gap-2 shrink-0">
+                  {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Araştırılıyor...</> : <><Search className="w-4 h-4" /> Lastik Önerisi Al</>}
+                </button>
+                <span className="text-xs text-th-fg-sub/60">Uyumlu lastik modelleri yapay zeka ile getirildiği için 1 dk kadar sürebilir.</span>
+              </div>
             )}
 
             {error && (
@@ -288,18 +326,18 @@ export default function TireSelectionPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="glass-card p-4">
                       <p className="text-xs text-th-fg-sub mb-1">Ön Lastik Basıncı</p>
-                      <p className="text-2xl font-display font-extrabold text-gold">{tireData.recommended_pressure.front}</p>
+                      <p className="text-2xl font-display font-extrabold text-gold">{barToPsi(tireData.recommended_pressure.front)}</p>
                     </div>
                     <div className="glass-card p-4">
                       <p className="text-xs text-th-fg-sub mb-1">Arka Lastik Basıncı</p>
-                      <p className="text-2xl font-display font-extrabold text-gold">{tireData.recommended_pressure.rear}</p>
+                      <p className="text-2xl font-display font-extrabold text-gold">{barToPsi(tireData.recommended_pressure.rear)}</p>
                     </div>
                   </div>
                 )}
 
                 {tireData.recommended_brands?.length > 0 && (
                   <div>
-                    <h3 className="font-display font-bold text-th-fg mb-4">AI Tarafından Önerilen Lastikler</h3>
+                    <h3 className="font-display font-bold text-th-fg mb-4">TamirHanem Tarafından Önerilen Lastikler</h3>
                     <div className="space-y-3">
                       {tireData.recommended_brands.map((brand, idx) => (
                         <div key={idx} className="glass-card p-5 hover:-translate-y-0.5 hover:shadow-glow-sm transition-all duration-300">
@@ -340,6 +378,7 @@ export default function TireSelectionPage() {
                                 <p className="text-2xl font-display font-extrabold text-gold">{brand.price_per_tire}</p>
                               )}
                               <p className="text-xs text-th-fg-muted">adet fiyatı</p>
+                              <p className="text-[10px] text-th-fg-muted/60 mt-0.5">Akakce</p>
                               {brand.set_price && (
                                 <p className="text-sm font-semibold text-th-fg mt-1">4&apos;lü set: <span className="text-brand-500">{brand.set_price}</span></p>
                               )}

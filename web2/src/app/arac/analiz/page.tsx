@@ -43,8 +43,11 @@ function LoadingState({ brand, model, year }: { brand: string; model: string; ye
           <h2 className="text-2xl font-display font-extrabold text-th-fg mb-3">
             Araç Verileri Analiz Ediliyor...
           </h2>
-          <p className="text-th-fg-sub max-w-md mx-auto mb-6">
+          <p className="text-th-fg-sub max-w-md mx-auto mb-4">
             {year} {brand} {model} için teknik veriler derleniyor, kronik sorunlar ve piyasa değeri analiz ediliyor.
+          </p>
+          <p className="text-th-fg-sub/60 text-sm max-w-md mx-auto mb-6">
+            Veriler yapay zeka yardımıyla getirildiği için bu işlem 1-2 dakika sürebilir.
           </p>
           <div className="flex gap-2 justify-center">
             <div className="w-2 h-2 bg-brand-500 rounded-full animate-bounce [animation-delay:-0.3s]" />

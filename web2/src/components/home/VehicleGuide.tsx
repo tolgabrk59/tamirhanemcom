@@ -57,7 +57,7 @@ const GUIDE_CARDS: GuideCard[] = [
 
 export default function VehicleGuide() {
   return (
-    <section className="relative py-24 md:py-32">
+    <section className="relative py-16 sm:py-24 md:py-32">
       <div className="section-container">
         {/* Header */}
         <AnimatedSection className="text-center mb-16">
@@ -68,16 +68,16 @@ export default function VehicleGuide() {
             </span>
             <div className="w-8 h-px bg-brand-500/50" />
           </div>
-          <h2 className="font-display text-3xl md:text-5xl font-extrabold mb-4">
+          <h2 className="font-display text-2xl sm:text-3xl md:text-5xl font-extrabold mb-3 sm:mb-4">
             Tüm araç ihtiyaçlarınız için <span className="text-gold">tek yer</span>
           </h2>
-          <p className="text-th-fg text-lg max-w-xl mx-auto">
+          <p className="text-th-fg text-base sm:text-lg max-w-xl mx-auto">
             Aracınızı bakımda tutma, sorunları giderme ve daha fazlası için yardım alın
           </p>
         </AnimatedSection>
 
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
           {GUIDE_CARDS.map((card, idx) => {
             const Icon = card.icon
             return (
@@ -85,7 +85,7 @@ export default function VehicleGuide() {
                 <Link
                   href={card.href}
                   className={cn(
-                    'glass-card p-6 md:p-8 flex items-start gap-4 h-full',
+                    'glass-card p-4 sm:p-6 md:p-8 flex items-start gap-3 sm:gap-4 h-full',
                     'transition-all duration-300',
                     'hover:-translate-y-1 hover:shadow-glow-sm'
                   )}
