@@ -6,7 +6,7 @@ import {
   Calendar, Clock, Car, Loader2, Star, CalendarX, MapPin, Wrench,
   ChevronRight, XCircle, CheckCircle2, AlertTriangle, Shield, Gift,
   MessageSquare, Phone, RotateCcw, Check, X, Hourglass, Flag,
-  ChevronDown, ChevronUp, RefreshCw, Tag, Wallet,
+  ChevronDown, ChevronUp, RefreshCw, Tag, Wallet, CreditCard,
 } from 'lucide-react';
 
 // ─── Types ─────────────────────────────────────────────────────────────────
@@ -43,6 +43,9 @@ interface Appointment {
   original_price?: number;
   discount_amount?: number;
   discount_percentage?: number;
+  paymentMethod?: 'card' | 'wallet';
+  refund_status?: string;
+  refund_percentage?: number;
   service?: Service | null;
   vehicle?: Vehicle;
   category?: Category;
@@ -213,29 +216,31 @@ interface CancelData { cancelReason: string; cancelReasonKey: string; cancelChoi
 function CancelModal({ appointment, onClose, onConfirm }: { appointment: Appointment; onClose: () => void; onConfirm: (data: CancelData) => void }) {
   const [reasonKey, setReasonKey] = useState('');
   const [customReason, setCustomReason] = useState('');
-  const [cancelChoice, setCancelChoice] = useState<'wallet_refund' | 'free_rebooking'>('wallet_refund');
+  const [cancelChoice, setCancelChoice] = useState<'wallet_refund' | 'card_refund' | 'free_rebooking' | 'refund' | null>(null);
 
   const aptDate = appointment.matchedDate?.[0]?.date || appointment.preferredDateTime;
   const hoursUntil = aptDate ? (new Date(aptDate).getTime() - Date.now()) / (1000 * 60 * 60) : null;
+  const showCardOption = appointment.paymentMethod !== 'wallet';
 
   let refundPct = 100;
   let penaltyLabel = 'Tam İade';
   let penaltySummary = 'Randevunuzu 24 saat öncesinden iptal ettiğiniz için tam iade alacaksınız.';
   let trustPenalty = 0;
   let forcedRebook = false;
+  let canChoose = true;
 
   if (hoursUntil !== null) {
     if (hoursUntil >= 24) {
-      refundPct = 100; penaltyLabel = 'Tam İade'; trustPenalty = 0;
+      refundPct = 100; penaltyLabel = 'Tam İade'; trustPenalty = 0; canChoose = true;
       penaltySummary = 'Randevunuzu 24 saat öncesinden iptal ettiğiniz için tam iade alacaksınız.';
     } else if (hoursUntil >= 6) {
-      refundPct = 70; penaltyLabel = '%70 İade'; trustPenalty = -5;
-      penaltySummary = 'Randevuya 6-24 saat kala iptal ettiğiniz için kısmi iade alacaksınız. İade yönteminizi seçin.';
+      refundPct = 70; penaltyLabel = '%70 İade'; trustPenalty = -5; canChoose = true;
+      penaltySummary = `Randevuya ${Math.floor(hoursUntil)} saat kaldı. Cüzdan iadesi veya kart iadesi arasından seçim yapın.`;
     } else if (hoursUntil >= 3) {
-      refundPct = 50; penaltyLabel = '%50 İade'; trustPenalty = -5;
-      penaltySummary = 'Randevuya 3-6 saat kala iptal ettiğiniz için kısmi iade alacaksınız. İade yönteminizi seçin.';
+      refundPct = 50; penaltyLabel = '%50 İade'; trustPenalty = -5; canChoose = true;
+      penaltySummary = `Randevuya ${Math.floor(hoursUntil)} saat kaldı. Cüzdan iadesi veya kart iadesi arasından seçim yapın.`;
     } else {
-      refundPct = 0; penaltyLabel = 'İade Yok'; trustPenalty = -10; forcedRebook = true;
+      refundPct = 0; penaltyLabel = 'İade Yok'; trustPenalty = -10; forcedRebook = true; canChoose = false;
       penaltySummary = 'Randevuya 3 saatten az kala iptal ettiğiniz için iade yapılamamaktadır. 24 saat içinde ücretsiz randevu alabilirsiniz.';
     }
   }
@@ -244,7 +249,10 @@ function CancelModal({ appointment, onClose, onConfirm }: { appointment: Appoint
   const penaltyBg = refundPct === 100 ? 'bg-green-900/20 border-green-500/30' : refundPct >= 70 ? 'bg-yellow-900/20 border-yellow-500/30' : refundPct >= 50 ? 'bg-orange-900/20 border-orange-500/30' : 'bg-red-900/20 border-red-500/30';
 
   const finalReason = reasonKey === 'other' ? customReason : (CANCEL_REASONS.find(r => r.key === reasonKey)?.label || '');
-  const canSubmit = !!reasonKey && (reasonKey !== 'other' || customReason.trim().length > 0);
+  const isRefundSelected = cancelChoice === 'refund' || cancelChoice === 'wallet_refund' || cancelChoice === 'card_refund';
+  const choiceReady = !canChoose || cancelChoice === 'free_rebooking' || cancelChoice === 'wallet_refund' || cancelChoice === 'card_refund';
+  const canSubmit = !!reasonKey && (reasonKey !== 'other' || customReason.trim().length > 0) && choiceReady;
+  const finalChoice = forcedRebook ? 'free_rebooking' : (cancelChoice === 'refund' ? 'wallet_refund' : (cancelChoice || 'wallet_refund'));
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 flex items-end sm:items-center justify-center p-4">
@@ -272,6 +280,66 @@ function CancelModal({ appointment, onClose, onConfirm }: { appointment: Appoint
             </div>
           )}
 
+          {/* Step 1: Ücretsiz Randevu vs İade */}
+          {canChoose && (
+            <div className="mb-3">
+              <p className="text-gray-400 text-xs font-medium mb-2 uppercase tracking-wide">Ne yapmak istersiniz?</p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCancelChoice('free_rebooking')}
+                  className={`flex-1 flex flex-col items-center gap-1 py-3 rounded-xl text-sm font-medium border transition-colors ${cancelChoice === 'free_rebooking' ? 'bg-green-900/20 border-green-500/50 text-green-400' : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-gray-600'}`}
+                >
+                  <RotateCcw size={16} />
+                  <span>Ücretsiz Randevu</span>
+                  <span className="text-[10px] text-green-400/70">24 saat içinde geçerli</span>
+                </button>
+                <button
+                  onClick={() => setCancelChoice(isRefundSelected ? cancelChoice! : 'refund')}
+                  className={`flex-1 flex flex-col items-center gap-1 py-3 rounded-xl text-sm font-medium border transition-colors ${isRefundSelected ? 'bg-red-900/20 border-red-500/50 text-red-400' : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-gray-600'}`}
+                >
+                  <Wallet size={16} />
+                  <span>%{refundPct} İade</span>
+                  <span className="text-[10px] text-gray-500">Cüzdan veya kart</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Cüzdan vs Kart (if refund selected) */}
+          {isRefundSelected && (
+            <div className="mb-4">
+              <p className="text-gray-400 text-xs font-medium mb-2 uppercase tracking-wide">İade Yöntemi</p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCancelChoice('wallet_refund')}
+                  className={`flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl text-xs font-medium border transition-colors ${cancelChoice === 'wallet_refund' ? 'bg-green-900/20 border-green-500/50 text-green-400' : 'bg-gray-800 border-gray-700 text-gray-400'}`}
+                >
+                  <Wallet size={14} />
+                  <span className="font-semibold">Cüzdan</span>
+                  <span className="text-[10px] text-green-400">Sonraki randevuda %5 indirim 🎁</span>
+                </button>
+                {showCardOption && (
+                  <button
+                    onClick={() => setCancelChoice('card_refund')}
+                    className={`flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl text-xs font-medium border transition-colors ${cancelChoice === 'card_refund' ? 'bg-gray-700 border-gray-500 text-white' : 'bg-gray-800 border-gray-700 text-gray-400'}`}
+                  >
+                    <CreditCard size={14} />
+                    <span className="font-semibold">Kart</span>
+                    <span className="text-[10px] text-gray-500">3-5 iş günü</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Forced free rebook notice */}
+          {forcedRebook && (
+            <div className="flex items-center gap-2 bg-gray-800 border border-gray-700 rounded-xl p-3 mb-4">
+              <RotateCcw size={14} className="text-orange-400 flex-shrink-0" />
+              <p className="text-gray-300 text-xs">24 saat içinde ücretsiz yeni randevu alabilirsiniz.</p>
+            </div>
+          )}
+
           {/* Reason Grid */}
           <p className="text-gray-400 text-xs font-medium mb-2 uppercase tracking-wide">İptal Sebebi</p>
           <div className="grid grid-cols-2 gap-2 mb-3">
@@ -295,33 +363,10 @@ function CancelModal({ appointment, onClose, onConfirm }: { appointment: Appoint
             />
           )}
 
-          {/* Cancel Choice (partial refund only) */}
-          {hoursUntil !== null && refundPct > 0 && refundPct < 100 && (
-            <div className="mb-4">
-              <p className="text-gray-400 text-xs font-medium mb-2 uppercase tracking-wide">İade Yöntemi</p>
-              <div className="flex gap-2">
-                <button onClick={() => setCancelChoice('wallet_refund')} className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-medium border transition-colors ${cancelChoice === 'wallet_refund' ? 'bg-orange-500/20 border-orange-500/50 text-orange-400' : 'bg-gray-800 border-gray-700 text-gray-400'}`}>
-                  <Wallet size={13} /> Cüzdana İade
-                </button>
-                <button onClick={() => setCancelChoice('free_rebooking')} className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-medium border transition-colors ${cancelChoice === 'free_rebooking' ? 'bg-orange-500/20 border-orange-500/50 text-orange-400' : 'bg-gray-800 border-gray-700 text-gray-400'}`}>
-                  <RotateCcw size={13} /> Ücretsiz Randevu
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Forced free rebook notice */}
-          {forcedRebook && (
-            <div className="flex items-center gap-2 bg-gray-800 border border-gray-700 rounded-xl p-3 mb-4">
-              <RotateCcw size={14} className="text-orange-400 flex-shrink-0" />
-              <p className="text-gray-300 text-xs">24 saat içinde ücretsiz yeni randevu alabilirsiniz.</p>
-            </div>
-          )}
-
-          <div className="flex gap-3 mt-2">
+          <div className="flex gap-3 mt-4">
             <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-gray-700 text-gray-400 text-sm">Vazgeç</button>
             <button
-              onClick={() => canSubmit && onConfirm({ cancelReason: finalReason, cancelReasonKey: reasonKey || 'other', cancelChoice: forcedRebook ? 'free_rebooking' : cancelChoice })}
+              onClick={() => canSubmit && onConfirm({ cancelReason: finalReason, cancelReasonKey: reasonKey || 'other', cancelChoice: finalChoice })}
               disabled={!canSubmit}
               className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 disabled:bg-gray-700 disabled:text-gray-500 text-white text-sm font-semibold transition-colors"
             >
@@ -644,7 +689,9 @@ export default function RandevularimPage() {
       if (res.ok) {
         const msg = data.cancelChoice === 'free_rebooking'
           ? 'Randevu iptal edildi. 24 saat içinde ücretsiz randevu alabilirsiniz.'
-          : 'Randevu iptal edildi. İade işleminiz başlatıldı.';
+          : data.cancelChoice === 'card_refund'
+            ? 'Randevu iptal edildi. Kart iadesi başlatıldı (3-5 iş günü).'
+            : 'Randevu iptal edildi. İade cüzdanınıza aktarıldı.';
         showToast(msg);
         fetchAppointments(true);
       } else {
