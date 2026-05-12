@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { rateLimit } from '@/lib/rate-limit'
 
-const STRAPI_API = 'https://api.tamirhanem.com/api'
+const STRAPI_API = process.env.STRAPI_API_URL || 'https://api.tamirhanem.net/api'
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,6 +13,7 @@ export async function POST(request: NextRequest) {
     const {
       phone, name, city, district, brand, model, year, fuelType, category, notes,
       service_id, appointment_date, appointment_time, jwt, userId,
+      total_price, original_price, discount_percent, is_guaranteed,
     } = body
 
     // Guest appointment: no jwt/userId — accept but mark as guest
@@ -125,6 +126,10 @@ export async function POST(request: NextRequest) {
           preferredDateTime,
           availableDates,
           isQuickService: true,
+          ...(total_price !== undefined && { total_price: Number(total_price) }),
+          ...(original_price !== undefined && { original_price: Number(original_price) }),
+          ...(discount_percent !== undefined && discount_percent > 0 && { discount_percentage: Number(discount_percent) }),
+          ...(is_guaranteed && { is_guaranteed: true }),
         },
       }),
     })
