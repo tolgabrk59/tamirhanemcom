@@ -25,6 +25,7 @@ const VALID_ACTIONS = new Set([
   'service-cancel',
   'claim-from-pool',
   'reject',
+  'check-location-completion',
 ]);
 
 export async function POST(

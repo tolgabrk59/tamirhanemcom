@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     logger.info('Fetching user profile from Strapi');
 
     const response = await fetch(
-      STRAPI + '/users/me?populate=avatar,services,services.ProfilePicture',
+      STRAPI + '/users/me?populate=avatar,service,service.ProfilePicture,services,services.ProfilePicture',
       {
         headers: {
           'Content-Type': 'application/json',
