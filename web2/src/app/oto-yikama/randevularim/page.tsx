@@ -1,180 +1,317 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
+    Droplets,
     Calendar,
     Clock,
     Car,
-    Loader2,
     Star,
-    CalendarX,
-    MapPin,
-    Wrench,
-    ChevronRight,
-    XCircle,
     CheckCircle,
+    XCircle,
     AlertTriangle,
-    TrendingUp,
-    Droplets,
+    ChevronDown,
+    ChevronUp,
+    MapPin,
+    Shield,
+    Gift,
+    Loader2,
+    RefreshCw,
+    Plus,
+    ChevronRight,
 } from 'lucide-react';
 
-interface ServiceItem {
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+interface SelectedService {
     id: number;
-    attributes: {
-        name: string;
-        price?: number;
-    };
+    name: string;
+    price: number;
+    duration: number;
+}
+
+interface AvailableDate {
+    date: string;
+    timeSlot: string;
 }
 
 interface Appointment {
     id: number;
-    attributes: {
-        status: string;
+    status: string;
+    total_price: number;
+    total_duration: number;
+    selected_services: SelectedService[] | null;
+    preferredDateTime: string | null;
+    availableDates: AvailableDate[] | null;
+    matchedDate: AvailableDate[] | null;
+    is_guaranteed: boolean;
+    paymentMethod: string | null;
+    notes: string | null;
+    cancelReason: string | null;
+    noShowMarkedAt: string | null;
+    isNoShowReplacement: boolean;
+    serviceCompletionConfirmed: boolean;
+    userCompletionConfirmed: boolean;
+    createdAt: string;
+    updatedAt: string;
+    service: {
+        id: number;
+        name: string;
+        address?: string;
+        city?: string;
+        ProfilePicture?: { url?: string };
+    } | null;
+    vehicle: {
+        id: number;
+        brand: string;
+        model: string;
+        plate: string;
+        year: number;
+    } | null;
+    category: {
+        id: number;
+        name: string;
         serviceType?: string;
-        scheduledDate?: string;
-        scheduledTime?: string;
-        createdAt: string;
-        totalPrice?: number;
-        notes?: string;
-        offerPrice?: number;
-        offerNote?: string;
-        progressPercentage?: number;
-        cancelReason?: string;
-        duration?: number;
-        services?: { data: ServiceItem[] };
-        vehicle?: {
-            data?: {
-                id: number;
-                attributes: {
-                    brand: string;
-                    model: string;
-                    plate: string;
-                    year: number;
-                };
-            };
-        };
-        service?: {
-            data?: {
-                id: number;
-                attributes: {
-                    name: string;
-                    address?: string;
-                    city?: string;
-                };
-            };
-        };
-    };
+    } | null;
+    user: { id: number; username: string } | null;
 }
 
-interface RatingModal {
-    open: boolean;
-    appointmentId: number | null;
-    rating: number;
-    comment: string;
-    submitting: boolean;
-    error: string;
-    submitted: boolean;
-}
+// ---------------------------------------------------------------------------
+// Status config
+// ---------------------------------------------------------------------------
 
-interface CancelModal {
-    open: boolean;
-    appointmentId: number | null;
-    submitting: boolean;
-    error: string;
-}
-
-const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; text: string }> = {
-    Beklemede: { label: 'Beklemede', color: '#3B82F6', bg: 'bg-blue-500/10', text: 'text-blue-400' },
-    'Tarih Belirlendi': { label: 'Tarih Belirlendi', color: '#F59E0B', bg: 'bg-amber-500/10', text: 'text-amber-400' },
-    Onaylandı: { label: 'Onaylandı', color: '#10B981', bg: 'bg-emerald-500/10', text: 'text-emerald-400' },
-    'Araç Teslim Alındı': { label: 'Araç Teslim Alındı', color: '#6366F1', bg: 'bg-indigo-500/10', text: 'text-indigo-400' },
-    'İşlem Devam Ediyor': { label: 'İşlem Devam Ediyor', color: '#8B5CF6', bg: 'bg-violet-500/10', text: 'text-violet-400' },
-    'Müşteri Onayı Bekleniyor': { label: 'Müşteri Onayı Bekleniyor', color: '#EC4899', bg: 'bg-pink-500/10', text: 'text-pink-400' },
-    'Teslimata Hazır': { label: 'Teslimata Hazır', color: '#14B8A6', bg: 'bg-teal-500/10', text: 'text-teal-400' },
-    'Araç Teslim Edildi': { label: 'Araç Teslim Edildi', color: '#10B981', bg: 'bg-emerald-500/10', text: 'text-emerald-400' },
-    Tamamlandı: { label: 'Tamamlandı', color: '#10B981', bg: 'bg-emerald-500/10', text: 'text-emerald-400' },
-    İptal: { label: 'İptal', color: '#EF4444', bg: 'bg-red-500/10', text: 'text-red-400' },
-    'Randevu İptal': { label: 'Randevu İptal', color: '#EF4444', bg: 'bg-red-500/10', text: 'text-red-400' },
-    'Gecikme Raporu': { label: 'Gecikme Raporu', color: '#F97316', bg: 'bg-orange-500/10', text: 'text-orange-400' },
-    'Gelmedi (Müşteri)': { label: 'Gelmedi', color: '#6B7280', bg: 'bg-gray-500/10', text: 'text-gray-400' },
-    'Gelmedi (Servis)': { label: 'Servis Gelmedi', color: '#6B7280', bg: 'bg-gray-500/10', text: 'text-gray-400' },
-    'Ödeme Bekleniyor': { label: 'Ödeme Bekleniyor', color: '#F59E0B', bg: 'bg-amber-500/10', text: 'text-amber-400' },
+const STATUS_CONFIG: Record<
+    string,
+    { label: string; color: string; bg: string; text: string; description: string }
+> = {
+    Beklemede: {
+        label: 'TALEP ALINDI',
+        color: '#FFC507',
+        bg: 'bg-yellow-500/10',
+        text: 'text-yellow-400',
+        description: 'Randevu talebiniz servise iletildi',
+    },
+    'Tarih Belirlendi': {
+        label: 'SERVİS TARİH ÖNERDİ',
+        color: '#3B82F6',
+        bg: 'bg-blue-500/10',
+        text: 'text-blue-400',
+        description: 'Servis size tarih önerdi, onayınız bekleniyor',
+    },
+    Onaylandı: {
+        label: 'ONAYLANDI',
+        color: '#10B981',
+        bg: 'bg-emerald-500/10',
+        text: 'text-emerald-400',
+        description: 'Randevunuz onaylandı',
+    },
+    'İşlem Başladı': {
+        label: 'İŞLEM BAŞLADI',
+        color: '#F59E0B',
+        bg: 'bg-amber-500/10',
+        text: 'text-amber-400',
+        description: 'Aracınız yıkamada',
+    },
+    'Araç Hazır': {
+        label: 'ARAÇ HAZIR',
+        color: '#10B981',
+        bg: 'bg-emerald-500/10',
+        text: 'text-emerald-400',
+        description: 'Aracınız hazır, teslim alabilirsiniz',
+    },
+    'Tamamlama Bekleniyor': {
+        label: 'TAMAMLAMA BEKLENİYOR',
+        color: '#F59E0B',
+        bg: 'bg-amber-500/10',
+        text: 'text-amber-400',
+        description: 'Aracınızı teslim aldınız, tamamlama onayı bekleniyor',
+    },
+    Tamamlandı: {
+        label: 'TAMAMLANDI',
+        color: '#6366F1',
+        bg: 'bg-indigo-500/10',
+        text: 'text-indigo-400',
+        description: 'Yıkama başarıyla tamamlandı',
+    },
+    İptal: {
+        label: 'İPTAL EDİLDİ',
+        color: '#EF4444',
+        bg: 'bg-red-500/10',
+        text: 'text-red-400',
+        description: 'Randevu iptal edildi',
+    },
+    Reddedildi: {
+        label: 'REDDEDİLDİ',
+        color: '#EF4444',
+        bg: 'bg-red-500/10',
+        text: 'text-red-400',
+        description: 'Randevu reddedildi',
+    },
+    'Kullanıcı Gelmedi': {
+        label: 'KATILIM SAĞLANAMADI',
+        color: '#EF4444',
+        bg: 'bg-red-500/10',
+        text: 'text-red-400',
+        description: 'Randevuya katılım sağlanamadı',
+    },
+    'Ödeme Bekliyor': {
+        label: 'ÖDEME BEKLİYOR',
+        color: '#F59E0B',
+        bg: 'bg-amber-500/10',
+        text: 'text-amber-400',
+        description: 'Platformdan ödeme bekleniyor',
+    },
+    Gecikmeli: {
+        label: 'GECİKMELİ',
+        color: '#D98A00',
+        bg: 'bg-yellow-500/10',
+        text: 'text-yellow-600',
+        description: 'Gecikme bildirimi aktif',
+    },
+    Yaklaşıyor: {
+        label: 'YAKLAŞIYOR',
+        color: '#4B83D1',
+        bg: 'bg-blue-500/10',
+        text: 'text-blue-400',
+        description: 'Randevunuz yaklaşıyor',
+    },
 };
 
-const PAST_STATUSES = new Set(['Tamamlandı', 'İptal', 'Randevu İptal', 'Gelmedi (Müşteri)', 'Gelmedi (Servis)']);
-const CANCELLED_STATUSES = new Set(['İptal', 'Randevu İptal', 'Gelmedi (Müşteri)', 'Gelmedi (Servis)']);
+const ACTIVE_STATUSES = new Set([
+    'Beklemede',
+    'Tarih Belirlendi',
+    'Onaylandı',
+    'İşlem Başladı',
+    'Araç Hazır',
+    'Tamamlama Bekleniyor',
+    'Yaklaşıyor',
+    'Gecikmeli',
+]);
 
-const STEPPER_STEPS = [
-    { label: 'Talep', statuses: ['Beklemede'] },
-    { label: 'Onay', statuses: ['Tarih Belirlendi', 'Onaylandı'] },
-    { label: 'Yıkama', statuses: ['Araç Teslim Alındı', 'İşlem Devam Ediyor', 'Müşteri Onayı Bekleniyor'] },
-    { label: 'Hazır', statuses: ['Teslimata Hazır'] },
-    { label: 'Tamamlandı', statuses: ['Araç Teslim Edildi', 'Tamamlandı'] },
-];
+const COMPLETED_STATUSES = new Set(['Tamamlandı', 'Kullanıcı Gelmedi', 'Ödeme Bekliyor']);
+const CANCELLED_STATUSES = new Set(['İptal', 'Reddedildi']);
 
-function getStepperState(status: string): { activeStep: number; completed: boolean } {
-    for (let i = 0; i < STEPPER_STEPS.length; i++) {
-        if (STEPPER_STEPS[i].statuses.includes(status)) {
-            return { activeStep: i, completed: i === STEPPER_STEPS.length - 1 };
-        }
+// ---------------------------------------------------------------------------
+// Stepper helpers
+// ---------------------------------------------------------------------------
+
+const VISUAL_STEPS = ['TALEP', 'PLAN', 'ONAY', 'İŞLEM', 'TESLİM'];
+
+function getActiveStepIndex(status: string): number {
+    switch (status) {
+        case 'Beklemede':
+            return 0;
+        case 'Tarih Belirlendi':
+            return 1;
+        case 'Onaylandı':
+        case 'Yaklaşıyor':
+        case 'Gecikmeli':
+            return 2;
+        case 'İşlem Başladı':
+            return 3;
+        case 'Araç Hazır':
+        case 'Tamamlama Bekleniyor':
+            return 4;
+        case 'Tamamlandı':
+        case 'Ödeme Bekliyor':
+            return 4;
+        default:
+            return -1;
     }
-    return { activeStep: -1, completed: false };
 }
 
-const MONTHS_TR = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+function isCancelledStatus(status: string): boolean {
+    return CANCELLED_STATUSES.has(status) || status === 'Kullanıcı Gelmedi';
+}
 
-function formatDate(dateStr?: string, timeStr?: string): string {
-    if (!dateStr) return '—';
+// ---------------------------------------------------------------------------
+// Date formatting
+// ---------------------------------------------------------------------------
+
+const MONTHS_TR = [
+    'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+    'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık',
+];
+
+function formatDateTime(dateStr: string, timeSlot?: string): string {
     const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
     const day = d.getDate().toString().padStart(2, '0');
     const month = MONTHS_TR[d.getMonth()];
     const year = d.getFullYear();
-    if (timeStr) return `${day} ${month} ${year}, ${timeStr}`;
+    if (timeSlot) return `${day} ${month} ${year}, ${timeSlot}`;
+    const hh = d.getHours().toString().padStart(2, '0');
+    const mm = d.getMinutes().toString().padStart(2, '0');
+    return `${day} ${month} ${year}, ${hh}:${mm}`;
+}
+
+function formatDateShort(dateStr: string): string {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    const day = d.getDate().toString().padStart(2, '0');
+    const month = MONTHS_TR[d.getMonth()];
+    const year = d.getFullYear();
     return `${day} ${month} ${year}`;
 }
 
+// ---------------------------------------------------------------------------
+// Sub-components
+// ---------------------------------------------------------------------------
+
 function StatusBadge({ status }: { status: string }) {
-    const cfg = STATUS_CONFIG[status] ?? { label: status, bg: 'bg-gray-500/10', text: 'text-gray-400' };
+    const cfg = STATUS_CONFIG[status] ?? {
+        label: status,
+        bg: 'bg-gray-500/10',
+        text: 'text-gray-400',
+        description: '',
+    };
     return (
-        <span className={`inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full ${cfg.bg} ${cfg.text}`}>
+        <span
+            className={`inline-flex items-center text-[10px] font-bold tracking-wide px-2.5 py-1 rounded-full ${cfg.bg} ${cfg.text}`}
+        >
             {cfg.label}
         </span>
     );
 }
 
 function ProgressStepper({ status }: { status: string }) {
-    if (CANCELLED_STATUSES.has(status) || status === 'Ödeme Bekleniyor' || status === 'Gecikme Raporu') {
-        if (CANCELLED_STATUSES.has(status)) {
-            return (
-                <div className="flex items-center gap-2 mb-4">
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20">
-                        <XCircle className="w-3.5 h-3.5" />
-                        İptal Edildi
-                    </span>
-                </div>
-            );
-        }
-        return null;
+    const isCancelled = isCancelledStatus(status);
+    const activeIdx = getActiveStepIndex(status);
+
+    if (isCancelled) {
+        return (
+            <div className="flex items-center gap-2 mb-4">
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20">
+                    <XCircle className="w-3.5 h-3.5" />
+                    {STATUS_CONFIG[status]?.label ?? status}
+                </span>
+            </div>
+        );
     }
 
-    const { activeStep } = getStepperState(status);
+    if (activeIdx < 0) return null;
+
+    const allComplete = activeIdx === VISUAL_STEPS.length - 1 && COMPLETED_STATUSES.has(status);
 
     return (
         <div className="flex items-center gap-0 mb-4">
-            {STEPPER_STEPS.map((step, idx) => {
-                const isCompleted = idx < activeStep;
-                const isActive = idx === activeStep;
+            {VISUAL_STEPS.map((step, idx) => {
+                const isCompleted = allComplete ? true : idx < activeIdx;
+                const isActive = !allComplete && idx === activeIdx;
 
                 return (
-                    <div key={step.label} className="flex items-center flex-1">
+                    <div key={step} className="flex items-center flex-1">
                         <div className="flex flex-col items-center">
                             <div
-                                className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${
+                                className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold transition-all ${
                                     isCompleted
-                                        ? 'bg-blue-500 text-white'
+                                        ? 'bg-amber-500 text-white'
                                         : isActive
-                                        ? 'border-2 border-blue-500 bg-blue-500/20 text-blue-400'
+                                        ? 'border-2 border-amber-500 bg-amber-500/20 text-amber-400'
                                         : 'bg-gray-700 text-gray-500'
                                 }`}
                             >
@@ -186,16 +323,16 @@ function ProgressStepper({ status }: { status: string }) {
                             </div>
                             <span
                                 className={`text-[9px] mt-1 font-medium whitespace-nowrap ${
-                                    isCompleted || isActive ? 'text-blue-400' : 'text-gray-600'
+                                    isCompleted || isActive ? 'text-amber-400' : 'text-gray-600'
                                 }`}
                             >
-                                {step.label}
+                                {step}
                             </span>
                         </div>
-                        {idx < STEPPER_STEPS.length - 1 && (
+                        {idx < VISUAL_STEPS.length - 1 && (
                             <div
                                 className={`flex-1 h-0.5 mx-1 mb-3 ${
-                                    isCompleted ? 'bg-blue-500' : 'bg-gray-700'
+                                    isCompleted ? 'bg-amber-500' : 'bg-gray-700'
                                 }`}
                             />
                         )}
@@ -210,11 +347,14 @@ function SkeletonCard() {
     return (
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-5 animate-pulse">
             <div className="flex items-start justify-between mb-4">
-                <div className="space-y-2">
-                    <div className="h-4 w-44 bg-gray-800 rounded" />
-                    <div className="h-3 w-28 bg-gray-800 rounded" />
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gray-800 rounded-full" />
+                    <div className="space-y-2">
+                        <div className="h-4 w-40 bg-gray-800 rounded" />
+                        <div className="h-3 w-24 bg-gray-800 rounded" />
+                    </div>
                 </div>
-                <div className="h-6 w-24 bg-gray-800 rounded-full" />
+                <div className="h-6 w-28 bg-gray-800 rounded-full" />
             </div>
             <div className="flex gap-1 mb-4">
                 {[1, 2, 3, 4, 5].map(i => (
@@ -224,15 +364,53 @@ function SkeletonCard() {
             <div className="space-y-2 mb-4">
                 <div className="h-3 w-36 bg-gray-800 rounded" />
                 <div className="h-3 w-32 bg-gray-800 rounded" />
-                <div className="h-3 w-40 bg-gray-800 rounded" />
+                <div className="h-3 w-44 bg-gray-800 rounded" />
             </div>
-            <div className="flex gap-2">
-                <div className="h-9 w-24 bg-gray-800 rounded-xl" />
-                <div className="h-9 w-20 bg-gray-800 rounded-xl" />
+            <div className="flex gap-2 pt-3 border-t border-gray-800">
+                <div className="h-9 w-28 bg-gray-800 rounded-xl" />
             </div>
         </div>
     );
 }
+
+// ---------------------------------------------------------------------------
+// Toast
+// ---------------------------------------------------------------------------
+
+interface Toast {
+    id: number;
+    message: string;
+    type: 'success' | 'error';
+}
+
+function ToastContainer({ toasts, onRemove }: { toasts: Toast[]; onRemove: (id: number) => void }) {
+    return (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] flex flex-col gap-2 w-full max-w-sm px-4 pointer-events-none">
+            {toasts.map(t => (
+                <div
+                    key={t.id}
+                    className={`pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg text-sm font-medium animate-in slide-in-from-bottom-4 ${
+                        t.type === 'success'
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-red-600 text-white'
+                    }`}
+                    onClick={() => onRemove(t.id)}
+                >
+                    {t.type === 'success' ? (
+                        <CheckCircle className="w-4 h-4 flex-shrink-0" />
+                    ) : (
+                        <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                    )}
+                    {t.message}
+                </div>
+            ))}
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// AppointmentCard
+// ---------------------------------------------------------------------------
 
 function AppointmentCard({
     apt,
@@ -240,194 +418,262 @@ function AppointmentCard({
     onCancelClick,
     onRateClick,
     onActionDone,
+    onToast,
 }: {
     apt: Appointment;
     jwt: string;
     onCancelClick: (id: number) => void;
-    onRateClick: (id: number) => void;
+    onRateClick: (id: number, serviceId?: number) => void;
     onActionDone: () => void;
+    onToast: (message: string, type: 'success' | 'error') => void;
 }) {
     const [actionLoading, setActionLoading] = useState<string | null>(null);
+    const [expanded, setExpanded] = useState(false);
 
-    const status = apt.attributes.status;
-    const vehicle = apt.attributes.vehicle?.data?.attributes;
-    const workshop = apt.attributes.service?.data?.attributes;
-    const services = apt.attributes.services?.data ?? [];
-    const serviceNames = services.map(s => s.attributes.name).join(', ');
-    const isCancelled = CANCELLED_STATUSES.has(status);
-    const duration = apt.attributes.duration;
+    const status = apt.status;
+    const cfg = STATUS_CONFIG[status];
+    const vehicle = apt.vehicle;
+    const service = apt.service;
+    const selectedServices = apt.selected_services ?? [];
+    const isCancelled = isCancelledStatus(status);
 
-    async function handleAction(action: string) {
+    const scheduledLabel = (() => {
+        if (apt.matchedDate && apt.matchedDate.length > 0) {
+            const md = apt.matchedDate[0];
+            return formatDateTime(md.date, md.timeSlot);
+        }
+        if (apt.preferredDateTime) {
+            return formatDateTime(apt.preferredDateTime);
+        }
+        return null;
+    })();
+
+    const canCancelByTime = (() => {
+        if (status !== 'Onaylandı') return true;
+        if (!apt.matchedDate || apt.matchedDate.length === 0) return true;
+        const apptDate = new Date(apt.matchedDate[0].date);
+        return apptDate.getTime() - Date.now() > 2 * 60 * 60 * 1000;
+    })();
+
+    const imageUrl = service?.ProfilePicture?.url ?? null;
+
+    async function handleAction(action: string, body?: Record<string, unknown>) {
         setActionLoading(action);
         try {
-            await fetch(`/api/appointments/${apt.id}/${action}`, {
+            const res = await fetch(`/api/appointments/${apt.id}/${action}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${jwt}`,
                 },
-                body: JSON.stringify({}),
+                body: JSON.stringify(body ?? {}),
             });
+            if (!res.ok) {
+                const json = await res.json().catch(() => ({}));
+                throw new Error(json?.error?.message ?? 'İşlem başarısız');
+            }
+            onToast('İşlem başarıyla gerçekleştirildi.', 'success');
             onActionDone();
-        } catch {
-            // silently fail
+        } catch (err) {
+            const msg = err instanceof Error ? err.message : 'Bir hata oluştu';
+            onToast(msg, 'error');
         } finally {
             setActionLoading(null);
         }
     }
 
+    function handleAcceptDate() {
+        if (!apt.availableDates || apt.availableDates.length === 0) return;
+        handleAction('matchDate', { matchedDate: apt.availableDates[0] });
+    }
+
     return (
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-5 hover:border-gray-700 transition-colors">
-            <div className="flex items-start justify-between gap-3 mb-3">
-                <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-8 h-8 bg-blue-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <Droplets className="w-4 h-4 text-blue-400" />
-                    </div>
-                    <div className="min-w-0">
-                        <p className="font-semibold text-white text-sm leading-tight truncate">
-                            {workshop?.name ?? 'Oto Yıkama Servisi'}
-                        </p>
-                        {workshop?.city && (
-                            <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
-                                <MapPin className="w-3 h-3" />
-                                {workshop.city}
-                            </p>
-                        )}
-                    </div>
-                </div>
-                <StatusBadge status={status} />
-            </div>
-
-            <ProgressStepper status={status} />
-
-            {/* Araç plakası büyük badge */}
-            {vehicle?.plate && (
-                <div className="mb-3">
-                    <span className="inline-flex items-center gap-1.5 bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 font-bold text-sm px-3 py-1.5 rounded-lg tracking-widest">
-                        <Car className="w-4 h-4" />
-                        {vehicle.plate}
-                    </span>
-                </div>
-            )}
-
-            <div className="space-y-2 mb-4">
-                {workshop?.address && (
-                    <div className="flex items-start gap-2 text-xs text-gray-400">
-                        <MapPin className="w-3.5 h-3.5 text-gray-500 flex-shrink-0 mt-0.5" />
-                        <span className="line-clamp-1">{workshop.address}</span>
-                    </div>
-                )}
-                {vehicle && (
-                    <div className="flex items-center gap-2 text-xs text-gray-400">
-                        <Car className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />
-                        <span>
-                            {vehicle.brand} {vehicle.model}
-                            {vehicle.year ? ` (${vehicle.year})` : ''}
-                        </span>
-                    </div>
-                )}
-                {serviceNames && (
-                    <div className="flex items-start gap-2 text-xs text-gray-400">
-                        <Wrench className="w-3.5 h-3.5 text-gray-500 flex-shrink-0 mt-0.5" />
-                        <span className="line-clamp-2">{serviceNames}</span>
-                    </div>
-                )}
-                {(apt.attributes.scheduledDate || apt.attributes.createdAt) && (
-                    <div className="flex items-center gap-2 text-xs text-gray-400">
-                        <Calendar className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />
-                        <span>
-                            {apt.attributes.scheduledDate
-                                ? formatDate(apt.attributes.scheduledDate, apt.attributes.scheduledTime)
-                                : `Talep: ${formatDate(apt.attributes.createdAt)}`}
-                        </span>
-                    </div>
-                )}
-                {duration != null && duration > 0 && (
-                    <div className="flex items-center gap-2 text-xs text-gray-400">
-                        <Clock className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />
-                        <span>Tahmini süre: {duration} dk</span>
-                    </div>
-                )}
-            </div>
-
-            {(apt.attributes.totalPrice != null || apt.attributes.offerPrice != null) && (
-                <div className="flex items-center gap-3 mb-4 py-3 border-t border-gray-800">
-                    {apt.attributes.totalPrice != null && (
-                        <span className="text-sm font-bold text-white">
-                            {apt.attributes.totalPrice.toLocaleString('tr-TR')} TL
-                        </span>
-                    )}
-                    {apt.attributes.offerPrice != null && (
-                        <span className="text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">
-                            Teklif: {apt.attributes.offerPrice.toLocaleString('tr-TR')} TL
-                        </span>
-                    )}
-                </div>
-            )}
-
-            {apt.attributes.progressPercentage != null && apt.attributes.progressPercentage > 0 && (
-                <div className="mb-4">
-                    <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-xs text-gray-400 flex items-center gap-1">
-                            <TrendingUp className="w-3.5 h-3.5" />
-                            İlerleme
-                        </span>
-                        <span className="text-xs font-medium text-blue-400">
-                            {apt.attributes.progressPercentage}%
-                        </span>
-                    </div>
-                    <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                        <div
-                            className="h-full bg-blue-500 rounded-full transition-all"
-                            style={{ width: `${apt.attributes.progressPercentage}%` }}
-                        />
-                    </div>
-                </div>
-            )}
-
-            {isCancelled && apt.attributes.cancelReason && (
-                <div className="mb-4 px-3 py-2.5 bg-red-500/5 border border-red-500/20 rounded-xl">
-                    <p className="text-xs text-red-400">
-                        <span className="font-medium">İptal sebebi:</span> {apt.attributes.cancelReason}
-                    </p>
-                </div>
-            )}
-
-            <div className="flex flex-wrap gap-2 pt-3 border-t border-gray-800">
-                {status === 'Tarih Belirlendi' && (
-                    <>
-                        <button
-                            onClick={() => handleAction('confirm-attendance')}
-                            disabled={actionLoading === 'confirm-attendance'}
-                            className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20 transition-colors disabled:opacity-50"
-                        >
-                            {actionLoading === 'confirm-attendance' ? (
-                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+        <div className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden hover:border-gray-700 transition-colors">
+            {/* Card header */}
+            <div className="p-5">
+                <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className="flex items-center gap-3 min-w-0">
+                        {/* Service avatar */}
+                        <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
+                            {imageUrl ? (
+                                <Image
+                                    src={imageUrl}
+                                    alt={service?.name ?? 'Servis'}
+                                    width={44}
+                                    height={44}
+                                    className="object-cover w-full h-full"
+                                    unoptimized
+                                />
                             ) : (
-                                <CheckCircle className="w-3.5 h-3.5" />
+                                <Droplets className="w-5 h-5 text-amber-400" />
                             )}
-                            Onayla
-                        </button>
+                        </div>
+                        <div className="min-w-0">
+                            <p className="font-semibold text-white text-sm leading-tight truncate">
+                                {service?.name ?? 'Oto Yıkama Servisi'}
+                            </p>
+                            {service?.city && (
+                                <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
+                                    <MapPin className="w-3 h-3" />
+                                    {service.city}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                    <StatusBadge status={status} />
+                </div>
+
+                {/* Stepper */}
+                <ProgressStepper status={status} />
+
+                {/* Status description */}
+                {cfg && (
+                    <p className="text-xs text-gray-400 mb-4">{cfg.description}</p>
+                )}
+
+                {/* Badges row */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                    {vehicle?.plate && (
+                        <span className="inline-flex items-center gap-1.5 bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 font-bold text-xs px-2.5 py-1 rounded-lg tracking-widest">
+                            <Car className="w-3.5 h-3.5" />
+                            {vehicle.plate}
+                        </span>
+                    )}
+                    {apt.is_guaranteed && (
+                        <span className="inline-flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs px-2.5 py-1 rounded-lg font-medium">
+                            <Shield className="w-3.5 h-3.5" />
+                            TamirHanem Güvenceli
+                        </span>
+                    )}
+                    {apt.isNoShowReplacement && (
+                        <span className="inline-flex items-center gap-1.5 bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs px-2.5 py-1 rounded-lg font-medium">
+                            <Gift className="w-3.5 h-3.5" />
+                            Ücretsiz Randevu
+                        </span>
+                    )}
+                    {apt.paymentMethod && (
+                        <span className="inline-flex items-center gap-1 bg-gray-800 text-gray-400 text-xs px-2 py-1 rounded-lg">
+                            {apt.paymentMethod === 'wallet' ? 'Cüzdan' : 'Kart'}
+                        </span>
+                    )}
+                </div>
+
+                {/* Info rows */}
+                <div className="space-y-2 mb-4">
+                    {vehicle && (
+                        <div className="flex items-center gap-2 text-xs text-gray-400">
+                            <Car className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />
+                            <span>
+                                {vehicle.brand} {vehicle.model}
+                                {vehicle.year ? ` (${vehicle.year})` : ''}
+                            </span>
+                        </div>
+                    )}
+                    {scheduledLabel && (
+                        <div className="flex items-center gap-2 text-xs text-gray-400">
+                            <Calendar className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />
+                            <span>{scheduledLabel}</span>
+                        </div>
+                    )}
+                    {!scheduledLabel && (
+                        <div className="flex items-center gap-2 text-xs text-gray-400">
+                            <Calendar className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />
+                            <span>Talep: {formatDateShort(apt.createdAt)}</span>
+                        </div>
+                    )}
+                    {apt.total_duration > 0 && (
+                        <div className="flex items-center gap-2 text-xs text-gray-400">
+                            <Clock className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />
+                            <span>Tahmini süre: {apt.total_duration} dk</span>
+                        </div>
+                    )}
+                    {service?.address && (
+                        <div className="flex items-start gap-2 text-xs text-gray-400">
+                            <MapPin className="w-3.5 h-3.5 text-gray-500 flex-shrink-0 mt-0.5" />
+                            <span className="line-clamp-1">{service.address}</span>
+                        </div>
+                    )}
+                </div>
+
+                {/* Price row */}
+                {apt.total_price > 0 && (
+                    <div className="flex items-center gap-2 mb-4 py-2.5 px-3 bg-gray-800/60 rounded-xl">
+                        <span className="text-xs text-gray-400 flex-1">Toplam</span>
+                        <span className="text-sm font-bold text-white">
+                            ₺{apt.total_price.toLocaleString('tr-TR')}
+                        </span>
+                    </div>
+                )}
+
+                {/* Cancel reason */}
+                {isCancelled && apt.cancelReason && (
+                    <div className="mb-4 px-3 py-2.5 bg-red-500/5 border border-red-500/20 rounded-xl">
+                        <p className="text-xs text-red-400">
+                            <span className="font-medium">İptal sebebi: </span>
+                            {apt.cancelReason}
+                        </p>
+                    </div>
+                )}
+
+                {/* Offered dates (Tarih Belirlendi) */}
+                {status === 'Tarih Belirlendi' && apt.availableDates && apt.availableDates.length > 0 && (
+                    <div className="mb-4 px-3 py-2.5 bg-blue-500/5 border border-blue-500/20 rounded-xl">
+                        <p className="text-xs text-blue-400 font-medium mb-1">Servisin önerdiği tarih:</p>
+                        {apt.availableDates.map((d, i) => (
+                            <p key={i} className="text-xs text-blue-300">
+                                {formatDateTime(d.date, d.timeSlot)}
+                            </p>
+                        ))}
+                    </div>
+                )}
+
+                {/* Action buttons */}
+                <div className="flex flex-wrap gap-2 pt-3 border-t border-gray-800">
+                    {status === 'Beklemede' && (
                         <button
                             onClick={() => onCancelClick(apt.id)}
                             className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 transition-colors"
                         >
                             <XCircle className="w-3.5 h-3.5" />
-                            İptal
+                            İptal Et
                         </button>
-                    </>
-                )}
-                {status === 'Onaylandı' && (
-                    <button
-                        onClick={() => onCancelClick(apt.id)}
-                        className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 transition-colors"
-                    >
-                        <XCircle className="w-3.5 h-3.5" />
-                        İptal
-                    </button>
-                )}
-                {status === 'Müşteri Onayı Bekleniyor' && (
-                    <>
+                    )}
+
+                    {status === 'Tarih Belirlendi' && (
+                        <>
+                            <button
+                                onClick={handleAcceptDate}
+                                disabled={actionLoading === 'matchDate'}
+                                className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20 transition-colors disabled:opacity-50"
+                            >
+                                {actionLoading === 'matchDate' ? (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                ) : (
+                                    <CheckCircle className="w-3.5 h-3.5" />
+                                )}
+                                Onayla
+                            </button>
+                            <button
+                                onClick={() => onCancelClick(apt.id)}
+                                className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 transition-colors"
+                            >
+                                <XCircle className="w-3.5 h-3.5" />
+                                İptal Et
+                            </button>
+                        </>
+                    )}
+
+                    {status === 'Onaylandı' && canCancelByTime && (
+                        <button
+                            onClick={() => onCancelClick(apt.id)}
+                            className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 transition-colors"
+                        >
+                            <XCircle className="w-3.5 h-3.5" />
+                            İptal Et
+                        </button>
+                    )}
+
+                    {status === 'Araç Hazır' && (
                         <button
                             onClick={() => handleAction('confirm-completion')}
                             disabled={actionLoading === 'confirm-completion'}
@@ -438,56 +684,136 @@ function AppointmentCard({
                             ) : (
                                 <CheckCircle className="w-3.5 h-3.5" />
                             )}
-                            Onayla
+                            Teslim Aldım
                         </button>
+                    )}
+
+                    {status === 'Tamamlama Bekleniyor' && (
                         <button
-                            onClick={() => handleAction('customer-report-progress')}
-                            disabled={actionLoading === 'customer-report-progress'}
-                            className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/20 transition-colors disabled:opacity-50"
+                            onClick={() => handleAction('confirm-completion')}
+                            disabled={actionLoading === 'confirm-completion'}
+                            className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20 transition-colors disabled:opacity-50"
                         >
-                            {actionLoading === 'customer-report-progress' ? (
+                            {actionLoading === 'confirm-completion' ? (
                                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
                             ) : (
-                                <AlertTriangle className="w-3.5 h-3.5" />
+                                <CheckCircle className="w-3.5 h-3.5" />
                             )}
-                            İtiraz Et
+                            Tamamlandı
                         </button>
-                    </>
-                )}
-                {status === 'Tamamlandı' && (
-                    <button
-                        onClick={() => onRateClick(apt.id)}
-                        className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/20 transition-colors"
-                    >
-                        <Star className="w-3.5 h-3.5" />
-                        Değerlendir
-                    </button>
-                )}
+                    )}
+
+                    {status === 'Tamamlandı' && (
+                        <button
+                            onClick={() => onRateClick(apt.id, apt.service?.id)}
+                            className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/20 transition-colors"
+                        >
+                            <Star className="w-3.5 h-3.5" />
+                            Değerlendir
+                        </button>
+                    )}
+
+                    {/* Expand toggle */}
+                    {selectedServices.length > 0 && (
+                        <button
+                            onClick={() => setExpanded(v => !v)}
+                            className="ml-auto flex items-center gap-1 text-xs text-gray-500 hover:text-gray-300 transition-colors"
+                        >
+                            {expanded ? (
+                                <>
+                                    Gizle <ChevronUp className="w-3.5 h-3.5" />
+                                </>
+                            ) : (
+                                <>
+                                    Detaylar <ChevronDown className="w-3.5 h-3.5" />
+                                </>
+                            )}
+                        </button>
+                    )}
+                </div>
             </div>
+
+            {/* Expanded section */}
+            {expanded && (
+                <div className="border-t border-gray-800 px-5 py-4 bg-gray-900/50">
+                    {selectedServices.length > 0 && (
+                        <div className="mb-3">
+                            <p className="text-xs font-medium text-gray-400 mb-2">Seçilen Hizmetler</p>
+                            <div className="space-y-1.5">
+                                {selectedServices.map((s, i) => (
+                                    <div key={i} className="flex items-center justify-between">
+                                        <span className="text-xs text-gray-300">{s.name}</span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs text-gray-500">{s.duration} dk</span>
+                                            {s.price > 0 && (
+                                                <span className="text-xs font-medium text-white">
+                                                    ₺{s.price.toLocaleString('tr-TR')}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    {apt.notes && (
+                        <div className="mb-3">
+                            <p className="text-xs font-medium text-gray-400 mb-1">Notlar</p>
+                            <p className="text-xs text-gray-300">{apt.notes}</p>
+                        </div>
+                    )}
+                    <p className="text-xs text-gray-600">
+                        Randevu No: #{apt.id} · {formatDateShort(apt.createdAt)}
+                    </p>
+                </div>
+            )}
         </div>
     );
 }
 
-function RatingModalComponent({
+// ---------------------------------------------------------------------------
+// Rating Modal
+// ---------------------------------------------------------------------------
+
+interface RatingModalState {
+    open: boolean;
+    appointmentId: number | null;
+    serviceId: number | undefined;
+    rating: number;
+    comment: string;
+    submitting: boolean;
+    error: string;
+    submitted: boolean;
+}
+
+function RatingModal({
     modal,
     onClose,
     onSubmit,
     onChange,
 }: {
-    modal: RatingModal;
+    modal: RatingModalState;
     onClose: () => void;
     onSubmit: () => void;
-    onChange: (updates: Partial<RatingModal>) => void;
+    onChange: (updates: Partial<RatingModalState>) => void;
 }) {
     if (!modal.open) return null;
 
+    const ratingLabels: Record<number, string> = {
+        1: 'Çok Kötü',
+        2: 'Kötü',
+        3: 'Orta',
+        4: 'İyi',
+        5: 'Mükemmel',
+    };
+
     return (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4">
             <div className="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-md p-6">
                 <h2 className="text-lg font-bold text-white mb-1">Randevuyu Değerlendir</h2>
                 <p className="text-gray-400 text-sm mb-5">Hizmet deneyiminizi paylaşın</p>
 
-                <div className="flex gap-2 mb-5 justify-center">
+                <div className="flex gap-2 mb-2 justify-center">
                     {[1, 2, 3, 4, 5].map(s => (
                         <button
                             key={s}
@@ -504,27 +830,22 @@ function RatingModalComponent({
                         </button>
                     ))}
                 </div>
-
-                <div className="text-center mb-5">
-                    <span className="text-xs text-gray-500">
-                        {modal.rating === 1 && 'Çok Kötü'}
-                        {modal.rating === 2 && 'Kötü'}
-                        {modal.rating === 3 && 'Orta'}
-                        {modal.rating === 4 && 'İyi'}
-                        {modal.rating === 5 && 'Mükemmel'}
-                    </span>
-                </div>
+                <p className="text-center text-xs text-gray-500 mb-5">
+                    {ratingLabels[modal.rating] ?? ''}
+                </p>
 
                 <textarea
                     value={modal.comment}
                     onChange={e => onChange({ comment: e.target.value })}
                     placeholder="Yorumunuzu yazın (opsiyonel)"
                     rows={3}
-                    className="w-full bg-gray-800 border border-gray-700 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 resize-none placeholder-gray-500 mb-4 transition-colors"
+                    className="w-full bg-gray-800 border border-gray-700 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 resize-none placeholder-gray-500 mb-4 transition-colors"
                 />
 
                 {modal.error && (
-                    <p className="text-red-400 text-sm mb-3 bg-red-500/10 px-3 py-2 rounded-lg">{modal.error}</p>
+                    <p className="text-red-400 text-sm mb-3 bg-red-500/10 px-3 py-2 rounded-lg">
+                        {modal.error}
+                    </p>
                 )}
                 {modal.submitted && (
                     <p className="text-emerald-400 text-sm mb-3 bg-emerald-500/10 px-3 py-2 rounded-lg flex items-center gap-2">
@@ -554,19 +875,33 @@ function RatingModalComponent({
     );
 }
 
-function CancelModalComponent({
+// ---------------------------------------------------------------------------
+// Cancel Modal
+// ---------------------------------------------------------------------------
+
+interface CancelModalState {
+    open: boolean;
+    appointmentId: number | null;
+    reason: string;
+    submitting: boolean;
+    error: string;
+}
+
+function CancelModal({
     modal,
     onClose,
     onConfirm,
+    onChange,
 }: {
-    modal: CancelModal;
+    modal: CancelModalState;
     onClose: () => void;
     onConfirm: () => void;
+    onChange: (updates: Partial<CancelModalState>) => void;
 }) {
     if (!modal.open) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4">
             <div className="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-sm p-6">
                 <div className="flex items-center gap-3 mb-3">
                     <div className="w-10 h-10 bg-red-500/10 rounded-xl flex items-center justify-center">
@@ -574,11 +909,22 @@ function CancelModalComponent({
                     </div>
                     <h2 className="text-base font-bold text-white">Randevuyu İptal Et</h2>
                 </div>
-                <p className="text-gray-400 text-sm mb-5">
-                    Bu oto yıkama randevusunu iptal etmek istediğinize emin misiniz? Bu işlem geri alınamaz.
+                <p className="text-gray-400 text-sm mb-4">
+                    Bu oto yıkama randevusunu iptal etmek istediğinize emin misiniz?
                 </p>
+
+                <textarea
+                    value={modal.reason}
+                    onChange={e => onChange({ reason: e.target.value })}
+                    placeholder="İptal sebebi (opsiyonel)"
+                    rows={2}
+                    className="w-full bg-gray-800 border border-gray-700 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-red-500 resize-none placeholder-gray-500 mb-4 transition-colors"
+                />
+
                 {modal.error && (
-                    <p className="text-red-400 text-sm mb-4 bg-red-500/10 px-3 py-2 rounded-lg">{modal.error}</p>
+                    <p className="text-red-400 text-sm mb-4 bg-red-500/10 px-3 py-2 rounded-lg">
+                        {modal.error}
+                    </p>
                 )}
                 <div className="flex gap-3">
                     <button
@@ -602,94 +948,183 @@ function CancelModalComponent({
     );
 }
 
+// ---------------------------------------------------------------------------
+// Filter tab types
+// ---------------------------------------------------------------------------
+
+type FilterTab = 'aktif' | 'tamamlanan' | 'iptal' | 'tumu';
+
+const FILTER_TABS: { id: FilterTab; label: string }[] = [
+    { id: 'aktif', label: 'Aktif' },
+    { id: 'tamamlanan', label: 'Tamamlanan' },
+    { id: 'iptal', label: 'İptal' },
+    { id: 'tumu', label: 'Tümü' },
+];
+
+function filterAppointments(appointments: Appointment[], tab: FilterTab): Appointment[] {
+    switch (tab) {
+        case 'aktif':
+            return appointments.filter(a => ACTIVE_STATUSES.has(a.status));
+        case 'tamamlanan':
+            return appointments.filter(a => COMPLETED_STATUSES.has(a.status));
+        case 'iptal':
+            return appointments.filter(a => CANCELLED_STATUSES.has(a.status));
+        case 'tumu':
+        default:
+            return appointments;
+    }
+}
+
+function tabCount(appointments: Appointment[], tab: FilterTab): number {
+    return filterAppointments(appointments, tab).length;
+}
+
+// ---------------------------------------------------------------------------
+// Main page
+// ---------------------------------------------------------------------------
+
+const FETCH_URL =
+    '/api/appointments?populate[user][populate]=avatar&populate[service][populate][0]=ProfilePicture&populate[service][populate][1]=categories&populate[vehicle][populate]=*&populate[category][populate]=*&populate[attachments][populate]=*&populate[createdFromAppointment][fields][0]=id&populate[replacedByAppointment][fields][0]=id&filters[category][serviceType][$eq]=car_wash&sort=createdAt:desc';
+
+let toastCounter = 0;
+
 export default function OtoYikamaRandevularimPage() {
     const [jwt, setJwt] = useState<string | null>(null);
     const [jwtChecked, setJwtChecked] = useState(false);
-    const [activeTab, setActiveTab] = useState<'aktif' | 'gecmis'>('aktif');
-    const [allAppointments, setAllAppointments] = useState<Appointment[]>([]);
+    const [activeTab, setActiveTab] = useState<FilterTab>('aktif');
+    const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [loading, setLoading] = useState(false);
-    const [ratingModal, setRatingModal] = useState<RatingModal>({
+    const [error, setError] = useState<string | null>(null);
+    const [toasts, setToasts] = useState<Toast[]>([]);
+    const autoRefreshRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+    const [ratingModal, setRatingModal] = useState<RatingModalState>({
         open: false,
         appointmentId: null,
+        serviceId: undefined,
         rating: 5,
         comment: '',
         submitting: false,
         error: '',
         submitted: false,
     });
-    const [cancelModal, setCancelModal] = useState<CancelModal>({
+
+    const [cancelModal, setCancelModal] = useState<CancelModalState>({
         open: false,
         appointmentId: null,
+        reason: '',
         submitting: false,
         error: '',
     });
 
+    // Read JWT from localStorage on mount
     useEffect(() => {
         const token = localStorage.getItem('tamirhanem_jwt');
         setJwt(token);
         setJwtChecked(true);
     }, []);
 
-    const fetchAppointments = useCallback(async (token: string) => {
-        setLoading(true);
-        try {
-            const res = await fetch(
-                '/api/appointments?filters[serviceType][$eq]=car_wash&populate=vehicle,service,services&sort=createdAt:desc',
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            const data = await res.json();
-            if (data?.data) {
-                // Ek güvenlik filtresi: servis adında "yıkama" geçenler de dahil
-                const all: Appointment[] = data.data;
-                const filtered = all.filter((apt) => {
-                    const stype = apt.attributes.serviceType?.toLowerCase() ?? '';
-                    const sname = apt.attributes.service?.data?.attributes?.name?.toLowerCase() ?? '';
-                    return stype === 'car_wash' || sname.includes('yıkama') || sname.includes('yikama');
-                });
-                setAllAppointments(filtered.length > 0 ? filtered : all);
-            }
-        } catch {
-            // silently fail
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+    function addToast(message: string, type: 'success' | 'error') {
+        const id = ++toastCounter;
+        setToasts(prev => [...prev, { id, message, type }]);
+        setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
+    }
 
+    function removeToast(id: number) {
+        setToasts(prev => prev.filter(t => t.id !== id));
+    }
+
+    const fetchAppointments = useCallback(
+        async (token: string) => {
+            setLoading(true);
+            setError(null);
+            try {
+                const res = await fetch(FETCH_URL, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (!res.ok) {
+                    if (res.status === 401) {
+                        setError('Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.');
+                        return;
+                    }
+                    throw new Error(`HTTP ${res.status}`);
+                }
+                const data = await res.json();
+                if (data?.data && Array.isArray(data.data)) {
+                    setAppointments(data.data as Appointment[]);
+                } else {
+                    setAppointments([]);
+                }
+            } catch {
+                setError('Randevular yüklenemedi. Lütfen sayfayı yenileyin.');
+            } finally {
+                setLoading(false);
+            }
+        },
+        []
+    );
+
+    // Initial fetch
     useEffect(() => {
         if (jwt) fetchAppointments(jwt);
     }, [jwt, fetchAppointments]);
 
-    const activeAppointments = allAppointments.filter(a => !PAST_STATUSES.has(a.attributes.status));
-    const pastAppointments = allAppointments.filter(a => PAST_STATUSES.has(a.attributes.status));
-    const displayedAppointments = activeTab === 'aktif' ? activeAppointments : pastAppointments;
+    // Auto-refresh every 30 seconds when there are active appointments
+    useEffect(() => {
+        if (!jwt) return;
 
-    function openRateModal(id: number) {
-        setRatingModal({ open: true, appointmentId: id, rating: 5, comment: '', submitting: false, error: '', submitted: false });
-    }
+        const hasActive = appointments.some(a => ACTIVE_STATUSES.has(a.status));
 
-    function openCancelModal(id: number) {
-        setCancelModal({ open: true, appointmentId: id, submitting: false, error: '' });
+        if (hasActive) {
+            autoRefreshRef.current = setInterval(() => {
+                fetchAppointments(jwt);
+            }, 30_000);
+        }
+
+        return () => {
+            if (autoRefreshRef.current) clearInterval(autoRefreshRef.current);
+        };
+    }, [jwt, appointments, fetchAppointments]);
+
+    // Rating handlers
+    function openRateModal(id: number, serviceId?: number) {
+        setRatingModal({
+            open: true,
+            appointmentId: id,
+            serviceId,
+            rating: 5,
+            comment: '',
+            submitting: false,
+            error: '',
+            submitted: false,
+        });
     }
 
     async function handleRatingSubmit() {
         if (!jwt || !ratingModal.appointmentId) return;
         setRatingModal(prev => ({ ...prev, submitting: true, error: '' }));
         try {
+            const body: Record<string, unknown> = {
+                appointment: ratingModal.appointmentId,
+                rating: ratingModal.rating,
+                comment: ratingModal.comment,
+            };
+            if (ratingModal.serviceId) body.service = ratingModal.serviceId;
+
             const res = await fetch('/api/ratings', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${jwt}`,
                 },
-                body: JSON.stringify({
-                    appointment: ratingModal.appointmentId,
-                    rating: ratingModal.rating,
-                    comment: ratingModal.comment,
-                }),
+                body: JSON.stringify(body),
             });
             if (!res.ok) throw new Error();
             setRatingModal(prev => ({ ...prev, submitting: false, submitted: true }));
-            setTimeout(() => setRatingModal(prev => ({ ...prev, open: false })), 1500);
+            setTimeout(() => {
+                setRatingModal(prev => ({ ...prev, open: false }));
+                if (jwt) fetchAppointments(jwt);
+            }, 1500);
         } catch {
             setRatingModal(prev => ({
                 ...prev,
@@ -697,6 +1132,11 @@ export default function OtoYikamaRandevularimPage() {
                 error: 'Değerlendirme gönderilemedi. Lütfen tekrar deneyin.',
             }));
         }
+    }
+
+    // Cancel handlers
+    function openCancelModal(id: number) {
+        setCancelModal({ open: true, appointmentId: id, reason: '', submitting: false, error: '' });
     }
 
     async function handleCancelConfirm() {
@@ -709,10 +1149,11 @@ export default function OtoYikamaRandevularimPage() {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${jwt}`,
                 },
-                body: JSON.stringify({ reason: '' }),
+                body: JSON.stringify({ cancelReason: cancelModal.reason }),
             });
             if (!res.ok) throw new Error();
-            setCancelModal({ open: false, appointmentId: null, submitting: false, error: '' });
+            setCancelModal({ open: false, appointmentId: null, reason: '', submitting: false, error: '' });
+            addToast('Randevu başarıyla iptal edildi.', 'success');
             fetchAppointments(jwt);
         } catch {
             setCancelModal(prev => ({
@@ -723,16 +1164,25 @@ export default function OtoYikamaRandevularimPage() {
         }
     }
 
+    // Derived data
+    const displayedAppointments = filterAppointments(appointments, activeTab);
+
+    // ---------------------------------------------------------------------------
+    // Render — not logged in
+    // ---------------------------------------------------------------------------
+
     if (!jwtChecked) return null;
 
     if (!jwt) {
         return (
             <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center text-center px-4">
-                <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-4">
-                    <Droplets className="w-8 h-8 text-blue-400" />
+                <div className="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center mb-4">
+                    <Droplets className="w-8 h-8 text-amber-400" />
                 </div>
                 <h2 className="text-xl font-bold text-white mb-2">Giriş Yapmalısınız</h2>
-                <p className="text-gray-400 text-sm mb-6">Oto yıkama randevularınızı görüntülemek için hesabınıza giriş yapın.</p>
+                <p className="text-gray-400 text-sm mb-6">
+                    Oto yıkama randevularınızı görüntülemek için hesabınıza giriş yapın.
+                </p>
                 <Link
                     href="/giris"
                     className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-medium text-sm px-5 py-2.5 rounded-xl transition-colors"
@@ -744,87 +1194,119 @@ export default function OtoYikamaRandevularimPage() {
         );
     }
 
+    // ---------------------------------------------------------------------------
+    // Render — main
+    // ---------------------------------------------------------------------------
+
     return (
-        <div className="min-h-screen bg-gray-950 text-white">
+        <div className="min-h-screen bg-gray-950 text-white pb-20">
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-900/80 to-blue-800/60 border-b border-blue-800/50 sticky top-0 z-10 backdrop-blur-sm">
+            <div className="bg-gray-900 border-b border-gray-800 sticky top-0 z-10">
                 <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-                    <h1 className="text-xl font-bold text-white flex items-center gap-2.5">
-                        <Droplets className="w-5 h-5 text-blue-400" />
+                    <h1 className="text-lg font-bold text-white flex items-center gap-2.5">
+                        <Droplets className="w-5 h-5 text-amber-400" />
                         Oto Yıkama Randevularım
                     </h1>
-                    <Link
-                        href="/oto-yikama"
-                        className="text-xs text-blue-300 hover:text-blue-200 flex items-center gap-1 transition-colors"
-                    >
-                        Servisler
-                        <ChevronRight className="w-3.5 h-3.5" />
-                    </Link>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => fetchAppointments(jwt)}
+                            disabled={loading}
+                            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors disabled:opacity-50"
+                            aria-label="Yenile"
+                        >
+                            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                        </button>
+                        <Link
+                            href="/oto-yikama"
+                            className="inline-flex items-center gap-1.5 text-xs font-medium bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded-lg transition-colors"
+                        >
+                            <Plus className="w-3.5 h-3.5" />
+                            Yeni Randevu
+                        </Link>
+                    </div>
                 </div>
             </div>
 
-            <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
-                {/* Tabs */}
-                <div className="flex border-b border-gray-800">
-                    <button
-                        onClick={() => setActiveTab('aktif')}
-                        className={`flex-1 pb-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
-                            activeTab === 'aktif'
-                                ? 'border-b-2 border-blue-500 text-white'
-                                : 'text-gray-400 hover:text-gray-300'
-                        }`}
-                    >
-                        <Droplets className="w-4 h-4" />
-                        Aktif
-                        {activeAppointments.length > 0 && (
-                            <span className="text-xs bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded-full">
-                                {activeAppointments.length}
-                            </span>
-                        )}
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('gecmis')}
-                        className={`flex-1 pb-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
-                            activeTab === 'gecmis'
-                                ? 'border-b-2 border-blue-500 text-white'
-                                : 'text-gray-400 hover:text-gray-300'
-                        }`}
-                    >
-                        <CalendarX className="w-4 h-4" />
-                        Geçmiş
-                        {pastAppointments.length > 0 && (
-                            <span className="text-xs bg-gray-700 text-gray-400 px-1.5 py-0.5 rounded-full">
-                                {pastAppointments.length}
-                            </span>
-                        )}
-                    </button>
+            <div className="max-w-2xl mx-auto px-4 py-5 space-y-4">
+                {/* Filter tabs */}
+                <div className="flex border-b border-gray-800 overflow-x-auto no-scrollbar">
+                    {FILTER_TABS.map(tab => {
+                        const count = tabCount(appointments, tab.id);
+                        const isActive = activeTab === tab.id;
+                        return (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`flex-shrink-0 pb-3 px-4 text-sm font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+                                    isActive
+                                        ? 'border-b-2 border-amber-500 text-white'
+                                        : 'text-gray-400 hover:text-gray-300'
+                                }`}
+                            >
+                                {tab.label}
+                                {count > 0 && (
+                                    <span
+                                        className={`text-xs px-1.5 py-0.5 rounded-full ${
+                                            isActive
+                                                ? 'bg-amber-500/20 text-amber-400'
+                                                : 'bg-gray-800 text-gray-500'
+                                        }`}
+                                    >
+                                        {count}
+                                    </span>
+                                )}
+                            </button>
+                        );
+                    })}
                 </div>
 
+                {/* Error state */}
+                {error && !loading && (
+                    <div className="flex items-center gap-3 px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                        <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0" />
+                        <p className="text-sm text-red-400 flex-1">{error}</p>
+                        <button
+                            onClick={() => fetchAppointments(jwt)}
+                            className="text-xs text-red-400 underline hover:no-underline"
+                        >
+                            Tekrar Dene
+                        </button>
+                    </div>
+                )}
+
                 {/* Content */}
-                {loading ? (
+                {loading && appointments.length === 0 ? (
                     <div className="space-y-4">
-                        {[1, 2, 3].map(i => <SkeletonCard key={i} />)}
+                        {[1, 2, 3].map(i => (
+                            <SkeletonCard key={i} />
+                        ))}
                     </div>
                 ) : displayedAppointments.length === 0 ? (
                     <div className="text-center py-16">
-                        <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                            <Droplets className="w-8 h-8 text-blue-400" />
+                        <div className="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <Droplets className="w-8 h-8 text-amber-400" />
                         </div>
                         <p className="text-white font-semibold mb-1">
-                            {activeTab === 'aktif' ? 'Aktif randevu yok' : 'Geçmiş randevu yok'}
+                            {activeTab === 'aktif'
+                                ? 'Aktif randevu bulunamadı'
+                                : activeTab === 'tamamlanan'
+                                ? 'Tamamlanan randevu yok'
+                                : activeTab === 'iptal'
+                                ? 'İptal edilen randevu yok'
+                                : 'Oto yıkama randevunuz bulunmuyor'}
                         </p>
                         <p className="text-gray-400 text-sm mb-6">
                             {activeTab === 'aktif'
-                                ? 'Henüz aktif oto yıkama randevunuz bulunmuyor.'
-                                : 'Tamamlanmış veya iptal edilmiş randevunuz bulunmuyor.'}
+                                ? 'Yeni bir oto yıkama randevusu oluşturun.'
+                                : 'Geçmiş randevular burada listelenecek.'}
                         </p>
-                        {activeTab === 'aktif' && (
+                        {(activeTab === 'aktif' || activeTab === 'tumu') && (
                             <Link
                                 href="/oto-yikama"
                                 className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-medium text-sm px-5 py-2.5 rounded-xl transition-colors"
                             >
+                                <Plus className="w-4 h-4" />
                                 Randevu Al
-                                <ChevronRight className="w-4 h-4" />
                             </Link>
                         )}
                     </div>
@@ -838,23 +1320,36 @@ export default function OtoYikamaRandevularimPage() {
                                 onCancelClick={openCancelModal}
                                 onRateClick={openRateModal}
                                 onActionDone={() => fetchAppointments(jwt)}
+                                onToast={addToast}
                             />
                         ))}
+                        {loading && (
+                            <div className="flex justify-center py-2">
+                                <Loader2 className="w-5 h-5 text-gray-500 animate-spin" />
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
 
-            <RatingModalComponent
+            {/* Modals */}
+            <RatingModal
                 modal={ratingModal}
                 onClose={() => setRatingModal(prev => ({ ...prev, open: false }))}
                 onSubmit={handleRatingSubmit}
-                onChange={(updates) => setRatingModal(prev => ({ ...prev, ...updates }))}
+                onChange={updates => setRatingModal(prev => ({ ...prev, ...updates }))}
             />
-            <CancelModalComponent
+            <CancelModal
                 modal={cancelModal}
-                onClose={() => setCancelModal({ open: false, appointmentId: null, submitting: false, error: '' })}
+                onClose={() =>
+                    setCancelModal({ open: false, appointmentId: null, reason: '', submitting: false, error: '' })
+                }
                 onConfirm={handleCancelConfirm}
+                onChange={updates => setCancelModal(prev => ({ ...prev, ...updates }))}
             />
+
+            {/* Toast notifications */}
+            <ToastContainer toasts={toasts} onRemove={removeToast} />
         </div>
     );
 }
