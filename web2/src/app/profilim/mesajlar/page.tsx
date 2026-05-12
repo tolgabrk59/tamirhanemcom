@@ -114,9 +114,11 @@ export default function MesajlarPage() {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('th_user')
-      if (!stored) { router.push('/'); return }
-      const u: ThUser = JSON.parse(stored)
+      const jwt = localStorage.getItem('tamirhanem_jwt')
+      if (!jwt) { router.push('/'); return }
+      const storedUser = localStorage.getItem('tamirhanem_user')
+      const parsed = storedUser ? JSON.parse(storedUser) : {}
+      const u: ThUser = { id: parsed.id || 0, username: parsed.username || '', jwt, name: parsed.name, email: parsed.email, phone: parsed.phone, firstName: parsed.firstName, lastName: parsed.lastName }
       setUser(u)
       loadConversations(u)
     } catch {

@@ -68,11 +68,13 @@ export default function DegerlendirmelerPage() {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('th_user')
-      if (!stored) { router.push('/'); return }
-      const u: ThUser = JSON.parse(stored)
+      const jwt = localStorage.getItem('tamirhanem_jwt')
+      if (!jwt) { router.push('/'); return }
+      const storedUser = localStorage.getItem('tamirhanem_user')
+      const parsed = storedUser ? JSON.parse(storedUser) : {}
+      const u: ThUser = { id: parsed.id || 0, username: parsed.username || '', jwt, name: parsed.name }
       setUser(u)
-      fetch(`/api/user/ratings?jwt=${encodeURIComponent(u.jwt)}`)
+      fetch(`/api/user/ratings?jwt=${encodeURIComponent(jwt)}`)
         .then(r => r.ok ? r.json() : null)
         .then(d => {
           if (d?.success && Array.isArray(d.data) && d.data.length > 0) {
