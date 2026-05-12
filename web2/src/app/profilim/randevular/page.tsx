@@ -316,7 +316,7 @@ export default function RandevularPage() {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('th_user')
+      const stored = localStorage.getItem('tamirhanem_user')
       if (!stored) { router.push('/'); return }
       const u: ThUser = JSON.parse(stored)
       setUser(u)

@@ -118,7 +118,7 @@ export default function ServiceDetailPage() {
 
   // localStorage'dan oturum yükle + favori durumu kontrol et
   useEffect(() => {
-    const stored = typeof window !== 'undefined' ? localStorage.getItem('th_user') : null
+    const stored = typeof window !== 'undefined' ? localStorage.getItem('tamirhanem_user') : null
     if (stored) {
       try {
         const user = JSON.parse(stored)
@@ -197,7 +197,7 @@ export default function ServiceDetailPage() {
       }
       // Oturumu kaydet
       const user = { id: data.user.id, username: data.user.username, jwt: data.jwt }
-      localStorage.setItem('th_user', JSON.stringify(user))
+      localStorage.setItem('tamirhanem_user', JSON.stringify(user))
       setCurrentUser(user)
       setShowLoginModal(false)
       setLoginForm({ username: '', password: '' })

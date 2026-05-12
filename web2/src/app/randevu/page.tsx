@@ -143,10 +143,11 @@ function parseFixedPriceFromText(text: string): number {
 function getEffectiveDiscount(
   srv: ServiceItem,
   basePrice?: number
-): { percent: number; source: 'service' | 'campaign'; campaignTitle?: string } {
+): { percent: number; source: 'service' | 'campaign'; campaignTitle?: string; campaignId?: number } {
   let bestPercent = srv.discount && srv.discount > 0 ? srv.discount : 0
   let source: 'service' | 'campaign' = 'service'
   let campaignTitle: string | undefined
+  let campaignId: number | undefined
 
   for (const camp of srv.campaigns || []) {
     // 1) Strapi'deki discount_percentage
@@ -171,10 +172,11 @@ function getEffectiveDiscount(
       bestPercent = campPercent
       source = 'campaign'
       campaignTitle = camp.title
+      campaignId = camp.id
     }
   }
 
-  return { percent: bestPercent, source, campaignTitle }
+  return { percent: bestPercent, source, campaignTitle, campaignId }
 }
 
 function formatPrice(amount: number): string {
@@ -293,7 +295,7 @@ export default function RandevuPage() {
   // ─── Giriş yapan kullanıcıyı kontrol et ────────────────────
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('th_user')
+      const stored = localStorage.getItem('tamirhanem_user')
       if (!stored) return
       const user = JSON.parse(stored) as { id?: number; username?: string; jwt?: string; name?: string; phone?: string }
       if (!user.jwt || !user.id) return
@@ -383,7 +385,7 @@ export default function RandevuPage() {
     if (!selectedServicePricing) return null
     const { total, duration, breakdown } = selectedServicePricing
     const disc = applyDiscount(total, selectedServiceDiscount.percent)
-    return { ...disc, duration, breakdown, discountPercent: selectedServiceDiscount.percent, campaignTitle: selectedServiceDiscount.campaignTitle }
+    return { ...disc, duration, breakdown, discountPercent: selectedServiceDiscount.percent, campaignTitle: selectedServiceDiscount.campaignTitle, campaignId: selectedServiceDiscount.campaignId }
   }, [selectedServicePricing, selectedServiceDiscount])
 
   const today = new Date().toISOString().split('T')[0]
@@ -713,6 +715,7 @@ export default function RandevuPage() {
           total_price: finalPricing?.discounted || undefined,
           original_price: finalPricing?.original || undefined,
           discount_percent: selectedServiceDiscount.percent || undefined,
+          campaign_id: finalPricing?.campaignId || undefined,
           notes: notes || undefined,
           service_id: selectedService || undefined,
           appointment_date: appointmentDate || undefined,

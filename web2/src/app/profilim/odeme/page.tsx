@@ -33,7 +33,7 @@ export default function OdemePage() {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('th_user')
+      const stored = localStorage.getItem('tamirhanem_user')
       if (!stored) { router.push('/'); return }
       setUser(JSON.parse(stored))
     } catch { router.push('/') }

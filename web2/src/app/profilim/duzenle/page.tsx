@@ -66,7 +66,7 @@ export default function ProfilDuzenlePage() {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('th_user')
+      const stored = localStorage.getItem('tamirhanem_user')
       if (!stored) { router.push('/'); return }
       const u: ThUser = JSON.parse(stored)
       setUser(u)
@@ -101,9 +101,9 @@ export default function ProfilDuzenlePage() {
         })
         originalEmail.current = u.email || ''
         originalPhone.current = u.phone || ''
-        const stored = localStorage.getItem('th_user')
+        const stored = localStorage.getItem('tamirhanem_user')
         if (stored) {
-          localStorage.setItem('th_user', JSON.stringify({ ...JSON.parse(stored), ...u }))
+          localStorage.setItem('tamirhanem_user', JSON.stringify({ ...JSON.parse(stored), ...u }))
         }
       }
     } catch {
@@ -166,9 +166,9 @@ export default function ProfilDuzenlePage() {
         const field = verifyTarget.type === 'phone' ? 'phone' : 'email'
         if (verifyTarget.type === 'phone') originalPhone.current = verifyTarget.value
         else originalEmail.current = verifyTarget.value
-        const stored = localStorage.getItem('th_user')
+        const stored = localStorage.getItem('tamirhanem_user')
         if (stored) {
-          localStorage.setItem('th_user', JSON.stringify({ ...JSON.parse(stored), [field]: verifyTarget.value }))
+          localStorage.setItem('tamirhanem_user', JSON.stringify({ ...JSON.parse(stored), [field]: verifyTarget.value }))
         }
         closeVerifyModal()
       } else {
@@ -245,7 +245,7 @@ export default function ProfilDuzenlePage() {
           birthDate: form.birthDate,
           gender: form.gender,
         }
-        localStorage.setItem('th_user', JSON.stringify(updated))
+        localStorage.setItem('tamirhanem_user', JSON.stringify(updated))
         setUser(updated)
         setProfileMsg({ message: 'Değişiklik Kaydedildi', type: 'success' })
         setTimeout(() => setProfileMsg(null), 4000)

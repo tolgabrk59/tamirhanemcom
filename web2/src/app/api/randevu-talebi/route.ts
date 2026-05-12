@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     const {
       phone, name, city, district, brand, model, year, fuelType, category, notes,
       service_id, appointment_date, appointment_time, jwt, userId,
-      total_price, original_price, discount_percent, is_guaranteed,
+      total_price, original_price, discount_percent, is_guaranteed, campaign_id,
     } = body
 
     // Guest appointment: no jwt/userId — accept but mark as guest
@@ -130,6 +130,7 @@ export async function POST(request: NextRequest) {
           ...(original_price !== undefined && { original_price: Number(original_price) }),
           ...(discount_percent !== undefined && discount_percent > 0 && { discount_percentage: Number(discount_percent) }),
           ...(is_guaranteed && { is_guaranteed: true }),
+          ...(campaign_id && { applied_campaign: Number(campaign_id) }),
         },
       }),
     })

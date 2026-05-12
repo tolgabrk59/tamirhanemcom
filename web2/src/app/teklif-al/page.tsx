@@ -61,7 +61,7 @@ function TeklifAlContent() {
   // Load user
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('th_user')
+      const stored = localStorage.getItem('tamirhanem_user')
       if (stored) setUser(JSON.parse(stored))
     } catch {}
   }, [])
