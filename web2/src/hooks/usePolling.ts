@@ -32,5 +32,6 @@ export function usePolling(fn: (() => void) | null, intervalMs: number): void {
       clearInterval(intervalId)
       document.removeEventListener('visibilitychange', onVisibility)
     }
-  }, [fn, intervalMs])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [intervalMs])
 }
