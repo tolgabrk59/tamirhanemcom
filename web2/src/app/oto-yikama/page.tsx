@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Percent,
   LogIn,
+  Lock,
 } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
@@ -119,13 +120,21 @@ function CampaignCardSkeleton() {
 // Campaign card (horizontal carousel item)
 // ---------------------------------------------------------------------------
 
-function CampaignCard({ campaign, index }: { campaign: Campaign; index: number }) {
+function CampaignCard({ campaign, index, eligible }: { campaign: Campaign; index: number; eligible?: boolean }) {
   const imageUrl = resolveImageUrl(campaign.campaign_image?.url ?? null);
   const gradient = CAMPAIGN_GRADIENTS[index % CAMPAIGN_GRADIENTS.length];
   const serviceName = campaign.service?.name ?? campaign.services?.[0]?.name;
 
   return (
-    <div className="flex-shrink-0 w-64 bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden hover:border-gray-600 transition-all duration-200 hover:shadow-lg hover:shadow-black/30 flex flex-col">
+    <div className="flex-shrink-0 w-64 bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden hover:border-gray-600 transition-all duration-200 hover:shadow-lg hover:shadow-black/30 flex flex-col relative">
+      {eligible === false && (
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2 z-10">
+          <div className="w-10 h-10 rounded-full bg-gray-800/80 flex items-center justify-center">
+            <Lock className="w-5 h-5 text-gray-400" />
+          </div>
+          <p className="text-gray-300 text-xs font-medium text-center px-4">Uygunluk kriteri sağlanamadı</p>
+        </div>
+      )}
       <div className="relative h-36 overflow-hidden">
         {imageUrl ? (
           <>
@@ -162,7 +171,7 @@ function CampaignCard({ campaign, index }: { campaign: Campaign; index: number }
           <p className="text-gray-400 text-xs line-clamp-1">{serviceName}</p>
         )}
         <Link
-          href={`/servis/${campaign.service?.id ?? ''}`}
+          href={`/oto-yikama/randevu?serviceId=${campaign.service?.id ?? ''}`}
           className="mt-auto inline-flex items-center justify-center gap-1 bg-amber-500 hover:bg-amber-600 text-white text-xs font-medium rounded-xl py-1.5 px-3 transition-colors"
         >
           İncele
@@ -193,9 +202,7 @@ function ServiceCard({
   const [imgError, setImgError] = useState(false);
   const imageUrl = resolveImageUrl(service.ProfilePicture?.url ?? null);
 
-  const bookingHref =
-    `/servis/${service.id}` +
-    (firstVehiclePlate ? `?plate=${encodeURIComponent(firstVehiclePlate)}` : '');
+  const bookingHref = `/oto-yikama/randevu?serviceId=${service.id}${firstVehiclePlate ? `&plate=${encodeURIComponent(firstVehiclePlate)}` : ''}`;
 
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden hover:border-gray-600 transition-all duration-200 hover:shadow-lg hover:shadow-black/30 flex flex-col">
@@ -323,6 +330,7 @@ export default function OtoYikamaPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
+  const [eligibility, setEligibility] = useState<Record<number, { eligible: boolean }>>({});
 
   const [loadingServices, setLoadingServices] = useState(true);
   const [loadingCampaigns, setLoadingCampaigns] = useState(true);
@@ -427,6 +435,22 @@ export default function OtoYikamaPage() {
     const token = typeof window !== 'undefined' ? localStorage.getItem('tamirhanem_jwt') : null;
     if (token) fetchAuthData(token);
   }, [jwtChecked, fetchAuthData]);
+
+  useEffect(() => {
+    if (!jwtChecked || campaigns.length === 0) return;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('tamirhanem_jwt') : null;
+    if (!token) return;
+    fetch('/api/eligibility/campaigns', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ campaignIds: campaigns.map(c => c.id) }),
+    })
+      .then(r => r.json())
+      .then(json => {
+        if (json?.success && json?.data) setEligibility(json.data);
+      })
+      .catch(() => {});
+  }, [jwtChecked, campaigns]);
 
   // ---------------------------------------------------------------------------
   // Favorite toggle (optimistic)
@@ -596,7 +620,7 @@ export default function OtoYikamaPage() {
               {loadingCampaigns
                 ? Array.from({ length: 3 }).map((_, i) => <CampaignCardSkeleton key={i} />)
                 : campaigns.map((campaign, index) => (
-                    <CampaignCard key={campaign.id} campaign={campaign} index={index} />
+                    <CampaignCard key={campaign.id} campaign={campaign} index={index} eligible={eligibility[campaign.id]?.eligible} />
                   ))}
             </div>
           </section>

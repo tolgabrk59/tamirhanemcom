@@ -21,8 +21,10 @@ export async function GET(request: NextRequest, context: RouteContext) {
       headers: { Authorization: `Bearer ${jwt}`, 'Content-Type': 'application/json' },
     });
 
-    const data = await response.json();
-    return NextResponse.json(data, { status: response.status });
+    const raw = await response.json();
+    // Strapi custom route returns { conversation: {...} }
+    const conversation = raw?.conversation ?? raw?.data ?? null;
+    return NextResponse.json({ success: true, data: conversation }, { status: 200 });
   } catch (error: any) {
     logger.error({ error: error.message }, 'Support conversation detail fetch failed');
     return NextResponse.json({ success: false, error: 'Konuşma yüklenemedi' }, { status: 500 });

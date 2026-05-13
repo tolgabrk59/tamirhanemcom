@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { usePolling } from '@/hooks/usePolling';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Send, Clock, CheckCircle2 } from 'lucide-react';
@@ -34,7 +35,6 @@ export default function DestekDetayPage() {
 
   useEffect(() => {
     if (!jwt) { router.push('/giris'); return; }
-    fetchConversation();
     markAsRead();
   }, [id]);
 
@@ -48,11 +48,13 @@ export default function DestekDetayPage() {
         headers: { Authorization: `Bearer ${jwt}` },
       });
       const data = await res.json();
-      if (data.conversation) setConversation(data.conversation);
+      if (data.success && data.data) setConversation(data.data);
     } finally {
       setLoading(false);
     }
   };
+
+  usePolling(jwt ? fetchConversation : null, 3000);
 
   const markAsRead = async () => {
     try {

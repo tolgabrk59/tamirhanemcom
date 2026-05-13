@@ -17,8 +17,11 @@ export async function GET(request: NextRequest) {
       headers: { Authorization: `Bearer ${jwt}`, 'Content-Type': 'application/json' },
     });
 
-    const data = await response.json();
-    return NextResponse.json(data, { status: response.status });
+    const raw = await response.json();
+    // Strapi custom route returns { conversations: [...] }
+    const conversations = Array.isArray(raw?.conversations) ? raw.conversations :
+                          Array.isArray(raw?.data) ? raw.data : [];
+    return NextResponse.json({ success: true, data: conversations }, { status: 200 });
   } catch (error: any) {
     logger.error({ error: error.message }, 'Support conversations fetch failed');
     return NextResponse.json({ success: false, error: 'Konuşmalar yüklenemedi' }, { status: 500 });

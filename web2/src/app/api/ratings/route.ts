@@ -1,11 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createLogger } from '@/lib/logger';
+import { normalizeStrapiList } from '@/lib/strapi-normalize';
 
 const logger = createLogger('API_RATINGS');
 
 export const dynamic = 'force-dynamic';
 
 const STRAPI = process.env.STRAPI_API_URL || 'https://api.tamirhanem.net/api';
+
+function mapRating(flat: Record<string, unknown>) {
+  const service = (flat.service as { data?: { id?: number; attributes?: Record<string, unknown> } } | null)?.data;
+  const sa = service?.attributes || (service as Record<string, unknown>) || {};
+  return {
+    id: flat.id as number,
+    rating: Number(flat.rating || flat.score || flat.value || 0),
+    comment: String(flat.comment || flat.review || ''),
+    createdAt: String(flat.createdAt || ''),
+    serviceId: service?.id || null,
+    serviceName: String((sa as Record<string, unknown>).name || ''),
+    serviceCategory: String((sa as Record<string, unknown>).category || flat.serviceCategory || ''),
+    helpfulCount: Number(flat.helpfulCount || 0),
+    replyFrom: String(flat.replyFrom || ''),
+    reply: String(flat.reply || ''),
+  };
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,6 +37,7 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
+    searchParams.set('populate[service]', '*');
     const strapiUrl = `${STRAPI}/ratings?${searchParams.toString()}`;
 
     const response = await fetch(strapiUrl, {
@@ -34,8 +53,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const data = await response.json();
-    return NextResponse.json({ success: true, ...data });
+    const raw = await response.json();
+    return NextResponse.json({ success: true, data: normalizeStrapiList(raw, mapRating) });
   } catch (error) {
     logger.error({ error }, 'Ratings GET API hatası');
     return NextResponse.json(

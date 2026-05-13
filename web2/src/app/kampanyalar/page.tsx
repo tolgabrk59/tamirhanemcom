@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Gift, Car, Wrench, Tag, Clock, ChevronRight, Percent, TicketPercent } from 'lucide-react';
+import { Gift, Car, Wrench, Tag, Clock, ChevronRight, Percent, TicketPercent, Lock } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -159,12 +159,20 @@ function CampaignCard({ campaign, countdown }: { campaign: Campaign; countdown: 
   );
 }
 
-function WashCampaignCard({ campaign, countdown }: { campaign: WashCampaign; countdown: Record<string, string> }) {
+function WashCampaignCard({ campaign, countdown, eligible }: { campaign: WashCampaign; countdown: Record<string, string>; eligible?: boolean }) {
   const endKey = `wash-${campaign.id}`;
   const countdownText = campaign.validUntil ? (countdown[endKey] ?? getCountdown(campaign.validUntil)) : null;
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden hover:border-gray-600 transition-all duration-200 hover:shadow-lg hover:shadow-black/30 flex flex-col">
+    <div className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden hover:border-gray-600 transition-all duration-200 hover:shadow-lg hover:shadow-black/30 flex flex-col relative">
+      {eligible === false && (
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2 z-10">
+          <div className="w-10 h-10 rounded-full bg-gray-800/80 flex items-center justify-center">
+            <Lock className="w-5 h-5 text-gray-400" />
+          </div>
+          <p className="text-gray-300 text-xs font-medium text-center px-4">Uygunluk kriteri sağlanamadı</p>
+        </div>
+      )}
       <div className="relative h-44 overflow-hidden">
         {campaign.image ? (
           <>
@@ -314,6 +322,7 @@ export default function KampanyalarPage() {
   const [washCampaigns, setWashCampaigns] = useState<WashCampaign[]>([]);
   const [discounts, setDiscounts] = useState<ServiceDiscount[]>([]);
   const [countdown, setCountdown] = useState<Record<string, string>>({});
+  const [eligibility, setEligibility] = useState<Record<number, { eligible: boolean }>>({});
 
   const refreshCountdowns = useCallback(
     (camps: Campaign[], wash: WashCampaign[], discs: ServiceDiscount[]) => {
@@ -372,6 +381,20 @@ export default function KampanyalarPage() {
         setWashCampaigns(fetchedWash);
         setDiscounts(fetchedDiscs);
         refreshCountdowns(fetchedCamps, fetchedWash, fetchedDiscs);
+
+        if (jwt && fetchedWash.length > 0) {
+          const washIds = fetchedWash.map(w => w.id);
+          fetch('/api/eligibility/campaigns', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
+            body: JSON.stringify({ campaignIds: washIds }),
+          })
+            .then(r => r.json())
+            .then(json => {
+              if (json?.success && json?.data) setEligibility(json.data);
+            })
+            .catch(() => {});
+        }
       } catch {
         setError('Kampanyalar yüklenirken bir hata oluştu. Lütfen tekrar deneyin.');
       } finally {
@@ -524,6 +547,7 @@ export default function KampanyalarPage() {
                       key={`wash-${card.data.id}`}
                       campaign={card.data}
                       countdown={countdown}
+                      eligible={eligibility[card.data.id]?.eligible}
                     />
                   );
                 }

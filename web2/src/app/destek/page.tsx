@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePolling } from '@/hooks/usePolling';
 import Link from 'next/link';
 import { MessageCircle, CreditCard, User, Calendar, Smartphone, ThumbsUp, HelpCircle, ChevronRight, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 
@@ -43,10 +44,6 @@ export default function DestekPage() {
 
   const jwt = typeof window !== 'undefined' ? localStorage.getItem('tamirhanem_jwt') : null;
 
-  useEffect(() => {
-    if (jwt) fetchConversations();
-  }, [jwt]);
-
   const fetchConversations = async () => {
     setLoading(true);
     try {
@@ -54,12 +51,14 @@ export default function DestekPage() {
         headers: { Authorization: `Bearer ${jwt}` },
       });
       const data = await res.json();
-      if (data.conversations) setConversations(data.conversations);
+      if (data.success && data.data) setConversations(data.data);
     } catch {
     } finally {
       setLoading(false);
     }
   };
+
+  usePolling(jwt ? fetchConversations : null, 5000);
 
   const handleCreate = async () => {
     if (!selectedCategory || !subject.trim() || !message.trim()) {
