@@ -353,40 +353,27 @@ export default function Hero() {
         )}
       </AnimatePresence>
 
-      {/* Decorative glow dots */}
-      <div className="glow-dot w-[500px] h-[500px] -top-40 -left-40 opacity-40" aria-hidden="true" />
-      <div className="glow-dot w-[400px] h-[400px] top-1/3 -right-32 opacity-25" aria-hidden="true" />
-      <div className="glow-dot w-[300px] h-[300px] bottom-20 left-1/4 opacity-20" aria-hidden="true" />
+      {/* Decorative glow dots — desktop only for performance */}
+      <div className="hidden lg:block glow-dot w-[500px] h-[500px] -top-40 -left-40 opacity-40" aria-hidden="true" />
+      <div className="hidden lg:block glow-dot w-[400px] h-[400px] top-1/3 -right-32 opacity-25" aria-hidden="true" />
+      <div className="hidden lg:block glow-dot w-[300px] h-[300px] bottom-20 left-1/4 opacity-20" aria-hidden="true" />
 
-      {/* Floating decorative shapes */}
+      {/* Floating decorative shapes — desktop only */}
       <motion.div
-        className="absolute top-[15%] right-[12%] w-20 h-20 rounded-full border border-brand-500/10"
+        className="hidden lg:block absolute top-[15%] right-[12%] w-20 h-20 rounded-full border border-brand-500/10"
         animate={{ y: [-10, 15, -10], rotate: [0, 90, 0] }}
         transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
         aria-hidden="true"
       />
       <motion.div
-        className="absolute bottom-[25%] left-[8%] w-14 h-14 rounded-lg border border-brand-500/10 rotate-45"
+        className="hidden lg:block absolute bottom-[25%] left-[8%] w-14 h-14 rounded-lg border border-brand-500/10 rotate-45"
         animate={{ y: [10, -15, 10], rotate: [45, 135, 45] }}
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
         aria-hidden="true"
       />
-      <motion.div
-        className="absolute top-[40%] left-[15%] w-3 h-3 rounded-full bg-brand-500/20"
-        animate={{ y: [-8, 12, -8], x: [-5, 5, -5] }}
-        transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-        aria-hidden="true"
-      />
-      <motion.div
-        className="absolute top-[20%] left-[45%] w-2 h-2 rounded-full bg-brand-500/15"
-        animate={{ y: [5, -10, 5] }}
-        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-        aria-hidden="true"
-      />
 
-      {/* Content */}
-      <motion.div
-        style={{ opacity: heroOpacity, scale: heroScale }}
+      {/* Content — no scroll parallax for better mobile perf */}
+      <div
         className="relative z-10 section-container w-full pt-8 pb-28 lg:pb-36"
       >
         <motion.div
@@ -745,7 +732,7 @@ export default function Hero() {
             </div>
           </motion.div>
         </motion.div>
-      </motion.div>
+      </div>
 
       {/* Bottom gradient fade */}
       <div

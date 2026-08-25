@@ -42,7 +42,7 @@ export default function CarBrandLogos() {
   }, [])
 
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none z-[1]" aria-hidden="true">
+    <div className="hidden lg:block fixed inset-0 overflow-hidden pointer-events-none z-[1]" aria-hidden="true">
       <AnimatePresence>
         {activeLogos.map((logo) => (
           <motion.div
@@ -53,11 +53,10 @@ export default function CarBrandLogos() {
               top: `${logo.y}%`,
               transform: 'translate(-50%, -50%)',
             }}
-            initial={{ opacity: 0, scale: 0.3, filter: 'blur(10px)' }}
+            initial={{ opacity: 0, scale: 0.3 }}
             animate={{
               opacity: [0, 0.05, 0.05, 0],
               scale: [0.3, 1, 1, 0.7],
-              filter: ['blur(10px)', 'blur(0px)', 'blur(0px)', 'blur(5px)'],
             }}
             exit={{ opacity: 0, scale: 0.5 }}
             transition={{
