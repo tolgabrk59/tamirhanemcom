@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Home, Search, CalendarDays, Wrench, Bot, Zap, Bell, Tag,
-  ChevronDown, User, X, Menu, Sun, Moon,
+  ChevronDown, User, X, Menu, Sun, Moon, Car, BookOpen, Building2, Phone,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -59,6 +59,48 @@ const megaMenus: Record<string, MegaMenuDef> = {
       ],
     }],
   },
+  aracim: {
+    title: 'Araç Bilgi Bankası',
+    icon: Car,
+    columns: [
+      {
+        title: 'Temel Bilgiler',
+        items: [
+          { href: '/arac/genel-bakis', label: 'Aracınıza Genel Bakış' },
+          { href: '/arac-degeri', label: 'Araç Değeri Hesapla' },
+          { href: '/arac/bakim-tavsiyeleri', label: 'Bakım Tavsiyeleri' },
+          { href: '/arac/ansiklopedi', label: 'Araç Ansiklopedisi' },
+          { href: '/arac/lastik-secimi', label: 'Lastik Seçimi' },
+          { href: '/arac/ariza-lambalari', label: 'Arıza Lambaları' },
+        ],
+      },
+      {
+        title: 'Sorun Giderme',
+        items: [
+          { href: '/ariza-rehberi', label: 'Arıza Rehberi' },
+          { href: '/kronik-sorunlar', label: 'Kronik Sorunlar' },
+          { href: '/geri-cagrima', label: 'Geri Çağırmalar' },
+          { href: '/obd', label: 'OBD-II Kodları' },
+          { href: '/bakim-planlama', label: 'Bakım Planlama' },
+        ],
+      },
+    ],
+  },
+  rehber: {
+    title: 'Araç Rehberi',
+    icon: BookOpen,
+    columns: [{
+      title: 'Araştırma',
+      items: [
+        { href: '/incelemeler', label: 'Araba İncelemeleri' },
+        { href: '/karsilastirma', label: 'Karşılaştırmalar' },
+        { href: '/karsilastirma/olustur', label: 'Araba Karşılaştır' },
+        { href: '/guvenilirlik', label: 'Güvenilirlik Derecelendirmeleri' },
+        { href: '/arac/workshop-kilavuzlari', label: 'Workshop Kılavuzları' },
+        { href: '/arac/videolar', label: 'Video İçerik Merkezi' },
+      ],
+    }],
+  },
   asistan: {
     title: 'AI Asistan',
     icon: Bot,
@@ -71,6 +113,11 @@ const megaMenus: Record<string, MegaMenuDef> = {
     }],
   },
 }
+
+const simpleLinks: NavLink[] = [
+  { href: '/kurumsal', label: 'Kurumsal', icon: Building2 },
+  { href: '/iletisim', label: 'İletişim', icon: Phone },
+]
 
 // ─── Component ──────────────────────────────────
 export default function Sidebar() {
@@ -245,6 +292,31 @@ export default function Sidebar() {
               )
             })}
           </nav>
+
+          {/* Simple Links */}
+          <div className="px-2 pb-1">
+            <div className="my-3 border-t border-brand-700/30" />
+            {simpleLinks.map((link) => {
+              const Icon = link.icon
+              const active = isActive(link.href)
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setIsMobileOpen(false)}
+                  className={cn(
+                    'flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200',
+                    active
+                      ? 'bg-brand-600/40 text-brand-950'
+                      : 'text-brand-950/80 hover:bg-brand-600/20'
+                  )}
+                >
+                  <Icon className="w-5 h-5 shrink-0" />
+                  <span className="text-[15px] font-semibold font-display">{link.label}</span>
+                </Link>
+              )
+            })}
+          </div>
 
           <div className="p-3 border-t border-brand-700/30 space-y-2">
             <button

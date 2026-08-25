@@ -214,7 +214,7 @@ export default function Footer() {
               alt="İş Ortakları ve Ödeme Yöntemleri"
               width={500}
               height={40}
-              className="h-8 object-contain brightness-0 invert opacity-30 hover:opacity-50 transition-opacity duration-300"
+              className="h-8 w-full max-w-[500px] object-contain brightness-0 invert opacity-30 hover:opacity-50 transition-opacity duration-300"
             />
             <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-3">
               <p className="text-xs text-slate-600">

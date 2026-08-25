@@ -83,7 +83,7 @@ export default function RootLayout({
           <CarBrandLogos />
           <Sidebar />
           <Header />
-          <div className="lg:pl-16 lg:pb-14 pt-14 lg:pt-0 min-h-screen flex flex-col">
+          <div className="lg:pl-16 lg:pb-14 pt-14 lg:pt-16 min-h-screen flex flex-col">
             <main className="flex-1">{children}</main>
             <Footer />
           </div>
