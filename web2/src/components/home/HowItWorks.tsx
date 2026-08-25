@@ -38,7 +38,7 @@ const steps: Step[] = [
 
 export default function HowItWorks() {
   return (
-    <section className="relative py-16 md:py-24 overflow-hidden">
+    <section className="relative py-10 md:py-20 overflow-hidden">
       {/* Background accent */}
       <div className="absolute inset-0 bg-mesh-gradient opacity-50" aria-hidden="true" />
 
@@ -120,7 +120,7 @@ export default function HowItWorks() {
       </div>
 
       {/* Section divider */}
-      <div className="section-divider mt-12 md:mt-20" />
+      <div className="section-divider mt-6 md:mt-16" />
     </section>
   )
 }

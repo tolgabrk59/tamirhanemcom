@@ -256,7 +256,7 @@ export default function AIRecommendation() {
   }
 
   return (
-    <section id="ai-asistan" className="relative py-16 md:py-24 scroll-mt-8">
+    <section id="ai-asistan" className="relative py-10 md:py-20 scroll-mt-8">
       <div className="section-container">
         {/* Header */}
         <AnimatedSection className="text-center mb-12">
@@ -593,7 +593,7 @@ export default function AIRecommendation() {
       </div>
 
       {/* Section divider */}
-      <div className="section-divider mt-12 md:mt-20" />
+      <div className="section-divider mt-6 md:mt-16" />
     </section>
   )
 }

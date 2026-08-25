@@ -77,7 +77,7 @@ export default function Stats() {
   const isInView = useInView(ref, { once: true, margin: '-100px' })
 
   return (
-    <section className="relative py-16 md:py-24 overflow-hidden">
+    <section className="relative py-10 md:py-20 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-mesh-gradient" aria-hidden="true" />
 

@@ -136,7 +136,7 @@ export default function Categories() {
   const hasMore = categories.length > initialCount
 
   return (
-    <section className="relative py-16 md:py-24">
+    <section className="relative py-10 md:py-20">
       <div className="section-container">
         {/* Section Header */}
         <AnimatedSection className="text-center mb-16">
@@ -263,7 +263,7 @@ export default function Categories() {
       </div>
 
       {/* Section divider */}
-      <div className="section-divider mt-12 md:mt-20" />
+      <div className="section-divider mt-6 md:mt-16" />
     </section>
   )
 }

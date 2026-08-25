@@ -40,7 +40,7 @@ const severityColors: Record<string, string> = {
 
 export default function ObdInfo() {
   return (
-    <section className="relative py-16 md:py-24">
+    <section className="relative py-10 md:py-20">
       <div className="section-container">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
           {/* Left Content */}
@@ -129,7 +129,7 @@ export default function ObdInfo() {
         </div>
       </div>
 
-      <div className="section-divider mt-12 md:mt-20" />
+      <div className="section-divider mt-6 md:mt-16" />
     </section>
   )
 }

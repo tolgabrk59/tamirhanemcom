@@ -6,7 +6,7 @@ import Button from '@/components/ui/Button'
 
 export default function CTA() {
   return (
-    <section className="relative py-16 md:py-24 overflow-hidden">
+    <section className="relative py-10 md:py-20 overflow-hidden">
       {/* Background glow */}
       <div
         className="absolute inset-0 bg-hero-gradient opacity-40"
