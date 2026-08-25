@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Search, MapPin, Droplets, Factory, ShieldCheck, CarFront, Recycle, Clock, Wrench, Tag, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
@@ -102,12 +102,6 @@ export default function Hero() {
   const debounceRef = useRef<NodeJS.Timeout | null>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start start', 'end start'],
-  })
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
-  const heroScale = useTransform(scrollYProgress, [0, 0.8], [1, 0.96])
 
   const rotatingPhrases = [
     'Dijital Servisi',
@@ -385,7 +379,7 @@ export default function Hero() {
           {/* Badge */}
           <motion.div variants={fadeUpItem}>
             <Badge variant="gold" className="mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse-glow" />
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
               Türkiye&apos;nin Yeni Nesil Servis Platformu
             </Badge>
           </motion.div>

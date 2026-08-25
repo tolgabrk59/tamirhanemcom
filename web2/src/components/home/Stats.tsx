@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useEffect, useState } from 'react'
-import { motion, useInView, useMotionValue, useSpring } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import { Building2, Users, Star, MapPin } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { LucideIcon } from 'lucide-react'
@@ -32,32 +32,37 @@ function AnimatedCounter({
   decimals?: number
   isInView: boolean
 }) {
-  const motionValue = useMotionValue(0)
-  const springValue = useSpring(motionValue, {
-    stiffness: 50,
-    damping: 30,
-    duration: 2,
-  })
   const [displayValue, setDisplayValue] = useState('0')
+  const hasAnimated = useRef(false)
 
   useEffect(() => {
-    if (isInView) {
-      motionValue.set(target)
-    }
-  }, [isInView, motionValue, target])
+    if (!isInView || hasAnimated.current) return
+    hasAnimated.current = true
 
-  useEffect(() => {
-    const unsubscribe = springValue.on('change', (latest) => {
+    const duration = 1500
+    const startTime = performance.now()
+    let rafId: number
+
+    const animate = (now: number) => {
+      const elapsed = now - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      const current = eased * target
+
       if (decimals > 0) {
-        setDisplayValue(latest.toFixed(decimals))
+        setDisplayValue(current.toFixed(decimals))
       } else {
-        setDisplayValue(
-          Math.round(latest).toLocaleString('tr-TR')
-        )
+        setDisplayValue(Math.round(current).toLocaleString('tr-TR'))
       }
-    })
-    return unsubscribe
-  }, [springValue, decimals])
+
+      if (progress < 1) {
+        rafId = requestAnimationFrame(animate)
+      }
+    }
+
+    rafId = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(rafId)
+  }, [isInView, target, decimals])
 
   return (
     <span>
@@ -72,7 +77,7 @@ export default function Stats() {
   const isInView = useInView(ref, { once: true, margin: '-100px' })
 
   return (
-    <section className="relative py-24 md:py-32 overflow-hidden">
+    <section className="relative py-16 md:py-24 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-mesh-gradient" aria-hidden="true" />
 

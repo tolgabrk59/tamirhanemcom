@@ -168,8 +168,6 @@
   .glass-card {
     @apply relative overflow-hidden;
     background: var(--glass-bg);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--glass-border);
     border-radius: 1rem;
     transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
@@ -474,8 +472,14 @@
   .store-badge {
     @apply flex items-center gap-2 rounded-xl px-4 py-2.5 transition-all duration-300 cursor-pointer;
     background: rgb(var(--th-overlay) / 0.05);
-    backdrop-filter: blur(8px);
     border: 1px solid rgb(var(--th-border) / 0.1);
+  }
+
+  @media (min-width: 1024px) {
+    .store-badge {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
   }
 
   .store-badge:hover {

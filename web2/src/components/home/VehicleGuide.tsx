@@ -57,7 +57,7 @@ const GUIDE_CARDS: GuideCard[] = [
 
 export default function VehicleGuide() {
   return (
-    <section className="relative py-24 md:py-32">
+    <section className="relative py-16 md:py-24">
       <div className="section-container">
         {/* Header */}
         <AnimatedSection className="text-center mb-16">
@@ -108,7 +108,7 @@ export default function VehicleGuide() {
         </div>
       </div>
 
-      <div className="section-divider mt-24" />
+      <div className="section-divider mt-12 md:mt-20" />
     </section>
   )
 }

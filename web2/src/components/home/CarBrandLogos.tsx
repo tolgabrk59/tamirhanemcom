@@ -26,6 +26,9 @@ export default function CarBrandLogos() {
   const logoIdRef = useRef(0)
 
   useEffect(() => {
+    // Skip on mobile — component is hidden but interval wastes CPU
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) return
+
     const spawnLogo = () => {
       const brand = carBrands[Math.floor(Math.random() * carBrands.length)]
       const logo: LogoItem = {

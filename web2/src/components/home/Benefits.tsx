@@ -92,7 +92,7 @@ function BenefitColumn({
 
 export default function Benefits() {
   return (
-    <section className="relative py-24 md:py-32">
+    <section className="relative py-16 md:py-24">
       <div className="section-container">
         {/* Header */}
         <AnimatedSection className="text-center mb-16">
@@ -163,7 +163,7 @@ export default function Benefits() {
         </AnimatedSection>
       </div>
 
-      <div className="section-divider mt-24" />
+      <div className="section-divider mt-12 md:mt-20" />
     </section>
   )
 }
